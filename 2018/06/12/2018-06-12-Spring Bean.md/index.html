@@ -1,0 +1,19 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Spring Bean · Utop's Blog</title><meta name="description" content="Spring Bean - Utop"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://utop.xin/atom.xml" title="Utop's Blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/sunchongsheng" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/pinggod" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Spring Bean</h1><div class="post-info">Jun 12, 2018</div><div class="post-content"><h2 id="Spring-Bean"><a href="#Spring-Bean" class="headerlink" title="Spring Bean"></a>Spring Bean</h2><h3 id="BeanFactory"><a href="#BeanFactory" class="headerlink" title="BeanFactory"></a>BeanFactory</h3><ul>
+<li>实现类持有bean的定义(以唯一名称区分)，支持“原型” and “单例”对bean进行管理(由BeanFactory的配置进行区分)</li>
+<li>应用组件的注册器、中心化配置管理器</li>
+<li>使用者应该趋向于使用<strong>依赖注入</strong>(Push)的形式，而非pull的形式让bean工厂遍历整个项目</li>
+<li>通常beanFactory将会通过配置文件(XML等)来获取bean配置，但是，使用任何技术(LDAP, RDBMS, XML, properties file)实现配置都是毫无约束的。</li>
+<li><strong>&amp;</strong> 用于区分 Factory bean OR bean</li>
+</ul>
+<p>###ListableBeanFactory</p>
+<ul>
+<li>扩展 BeanFactory 接口，提供所有 bean 实例的枚举，不必再通过实例名进行查找。</li>
+<li>只会处理属于本 Factory 的 bean，而不论 parent Factory 以及 other Factory</li>
+</ul>
+<h3 id="HierarchicalBeanFactory"><a href="#HierarchicalBeanFactory" class="headerlink" title="HierarchicalBeanFactory"></a>HierarchicalBeanFactory</h3><ul>
+<li>扩展 BeanFactory 接口，提供两个接口方法(1. 获取该 beanFactory 的父 Factory, 2. 判断一个类是不是在该 beanFactory 下)</li>
+</ul>
+<h3 id="SingletonBeanRegistry"><a href="#SingletonBeanRegistry" class="headerlink" title="SingletonBeanRegistry"></a>SingletonBeanRegistry</h3><ul>
+<li>单例 Bean 注册器，用于管理被声明为单例的Bean</li>
+</ul>
+</div></article></div></main><footer><div class="paginator"><a href="/2018/06/11/2018-06-11-ASM-ClassReader/" class="next">下一篇</a></div><div class="copyright"><p>© 2015 - 2018 <a href="http://utop.xin">Utop</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
