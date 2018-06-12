@@ -1,0 +1,96 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 区块链技术概述 · Utop's Blog</title><meta name="description" content="区块链技术概述 - Utop"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://utop.xin/atom.xml" title="Utop's Blog"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="https://github.com/DorMOUSE-None" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">区块链技术概述</h1><div class="post-info">Jun 12, 2018</div><div class="post-content"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  __                    __</span><br><span class="line"> / _| __ _ _ __   __ _ / _| ___ _ __   __ _</span><br><span class="line">| |_ / _` | &apos;_ \ / _` | |_ / _ \ &apos;_ \ / _` |</span><br><span class="line">|  _| (_| | | | | (_| |  _|  __/ | | | (_| |</span><br><span class="line">|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |</span><br><span class="line">                 |___/                |___/</span><br></pre></td></tr></table></figure>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fs8oc4ri7qj30mq055aap.jpg" alt="区块链简单结构"></p>
+<center><small>图1. 区块链简单结构</small></center>
+
+
+
+<p><img src="https://ws1.sinaimg.cn/large/006tNc79gy1foxcpmmpfhj31kw107n2e.jpg" alt="Merkle tree"></p>
+<center><small>图2. 单个区块的抽象结构</small></center>
+
+<h2 id="基本工作流程"><a href="#基本工作流程" class="headerlink" title="基本工作流程"></a>基本工作流程</h2><p>###新交易发起流程</p>
+<ol>
+<li>用户通过公/私钥与区块链网络进行交互</li>
+<li>处理用户交易的节点向网络邻节点广播用户交易</li>
+<li>邻节点验证交易的有效性；可信，继续向其它邻节点广播；不可信，丢弃。</li>
+</ol>
+<h3 id="新区块产生流程"><a href="#新区块产生流程" class="headerlink" title="新区块产生流程"></a>新区块产生流程</h3><ol>
+<li>矿工尝试将一个时间区间内的交易进行打包形成新区块（怎么打包，看下文）</li>
+<li>生产出新区块的矿工节点向网络广播新区块</li>
+<li>收到新区块的网络节点验证该区块的有效性</li>
+</ol>
+<p><a href="https://blockchain.info/zh-cn" target="_blank" rel="noopener">比特币区块浏览器</a>      更多<a href="https://en.wikipedia.org/wiki/Metric_prefix" target="_blank" rel="noopener">国际单位制前缀</a></p>
+<h2 id="网络共识"><a href="#网络共识" class="headerlink" title="网络共识"></a>网络共识</h2><p>所有区块链网络节点需要对交易以及其在新区块里面的顺序达成一致（交易的有效性以及交易的打包顺序）。</p>
+<p>可能出现：</p>
+<ul>
+<li>女巫攻击——单一实体以多重身份重复对新区块结果进行表决（少数人抓住了网络的投票权）</li>
+<li><a href="https://zh.wikipedia.org/wiki/%E6%8B%9C%E5%8D%A0%E5%BA%AD%E5%B0%86%E5%86%9B%E9%97%AE%E9%A2%98" target="_blank" rel="noopener">拜占庭将军问题</a>——分布式对等网络的通信容错问题<ul>
+<li>不同的计算机通过通讯交换信息达成共识而按照同一套协作策略行动<ul>
+<li>成员计算机可能出错而发送错误信息</li>
+<li>网络的不可靠性</li>
+<li>从而影响网络共识的达成，破坏一致性。</li>
+</ul>
+</li>
+<li>不解决的话可能导致——区块链分叉</li>
+</ul>
+</li>
+</ul>
+<p>解决方案：</p>
+<ul>
+<li>工作量证明（proof-of-work, PoW），权益证明(proof-of-stake, PoS)，白名单机制（仅适用于私有网络）等</li>
+<li>实用拜占庭容错算法</li>
+</ul>
+<h3 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h3><p>网络共识机制的实现导致了：</p>
+<ol>
+<li>交易吞吐量</li>
+<li>更高的交易时延。交易确认时间（只有打包的新区块中才交易才会被承认）。</li>
+</ol>
+<p>共识机制的伸缩可以一定程度上解决上述问题</p>
+<h2 id="资产交易"><a href="#资产交易" class="headerlink" title="资产交易"></a>资产交易</h2><p>简单交易状态描述，以集中式数据库为例</p>
+<p>假设初始状态为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-------------------------</span><br><span class="line">| 资产类型 | 所有者 | 数量 |</span><br><span class="line">-------------------------</span><br><span class="line">|   CNY   |  防风  |  10 |</span><br><span class="line">-------------------------</span><br><span class="line">|   CNY   |  红薯  |  0  |</span><br><span class="line">-------------------------</span><br></pre></td></tr></table></figure>
+<p>防风 向 红薯 转账 2 CNY </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-------------------------</span><br><span class="line">| 资产类型 | 所有者 | 数量 |</span><br><span class="line">-------------------------</span><br><span class="line">|   CNY   |  防风  |  8  |</span><br><span class="line">-------------------------</span><br><span class="line">|   CNY   |  红薯  |  2  |</span><br><span class="line">-------------------------</span><br></pre></td></tr></table></figure>
+<p>数据库中相应记录的更改完成了资产的交易过程。</p>
+<p>在区块链中，仍然将分布式链看作是一个达成共识的集中式数据库</p>
+<p>那么现在的初始状态可以表示成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---------------------------------</span><br><span class="line">| 资产类型 |     所有者     | 数量 |</span><br><span class="line">---------------------------------</span><br><span class="line">|   IOTA  |  防风 pub_key  | 10  |</span><br><span class="line">---------------------------------</span><br></pre></td></tr></table></figure>
+<p>现在的所有者由公钥表示，想要修改记录必须提供对应的密钥。</p>
+<p>例如，防风 向 红薯 转账 2 IOTA ，需要提供防风的私钥和红薯的公钥。交易记录修改结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">---------------------------------</span><br><span class="line">| 资产类型 |     所有者     | 数量 |</span><br><span class="line">---------------------------------</span><br><span class="line">                                 被删除了         |   IOTA  |  防风 pub_key  | 10  |</span><br><span class="line">---------------------------------</span><br><span class="line">|   IOTA  |  红薯 pub_key  |  2  |</span><br><span class="line">---------------------------------</span><br><span class="line">|   IOTA  |  防风 pub_key  |  8  |</span><br></pre></td></tr></table></figure>
+<p>交易的概念流程：</p>
+<ol>
+<li>定位防风所有的资产记录行</li>
+<li>删除该行前验证密钥</li>
+<li>确认该记录没有被别的交易使用（双花问题，双重交易）</li>
+<li>写入新的正确的记录（红薯获得的资产 &amp; 防风剩余的资产），确保交易前与交易后资产总额不变</li>
+</ol>
+<p>上面的模型 —— 基于比特币的交易模型(UTXO <em>model</em>)</p>
+<p><strong>适合于数字标记资产的传输与追踪</strong></p>
+<ul>
+<li>概念：UTXO (unspent transaction outputs) 未花费的交易输出：数据库现有的记录</li>
+</ul>
+<p>-——————————–</p>
+<p>另一种模型常用于智能合约 —— 基于账号的模型(account-based <em>model</em>)</p>
+<p><strong>提供了建立多步骤执行的基本机制</strong> </p>
+<h3 id="资产如何产生"><a href="#资产如何产生" class="headerlink" title="资产如何产生"></a>资产如何产生</h3><ul>
+<li>比特币：<ul>
+<li>矿工节点允许在挖出的新节点中加入一种 coinbase 类型的交易（不存在交易输入，新资产数额有比特币链提前定义）</li>
+</ul>
+</li>
+<li>在创始新代币的时候全额发行</li>
+<li>其它机制</li>
+</ul>
+<h2 id="区块链特性"><a href="#区块链特性" class="headerlink" title="区块链特性"></a>区块链特性</h2><ol>
+<li>一种健壮的、真正的分布式对等系统，它能容忍节点故障。</li>
+<li>能够识别冲突和分叉并自动解决的网络，以便收敛到单一的、公认的唯一状态。（区块链永远选择最长的分支来达成网络上的共识）</li>
+<li>网络活动的透明性、可验证性、可审计性。我们能获取可验证的过程，无论它们是否交换和跟踪数字资产，还是数据驱动的交互。每一个行为，都存有公开的与网络交互的记录，并以此来消除人为的矛盾。</li>
+<li>这是一种可以标记不同信息的触发者的方法，并且能够在没有中央权威的情况下强制执行。</li>
+<li>这是一个使得不信任双方根据可预测的、确定性的方式交互的系统。</li>
+</ol>
+<h2 id="智能合约"><a href="#智能合约" class="headerlink" title="智能合约"></a>智能合约</h2><p>自动化地执行一系列合约条款的交易协议</p>
+<p>智能合约是存储在区块链中的脚本（认识上可以与关系型数据库的存储过程类似）。</p>
+<p>以基于账号的模型为例对合约执行进行描述：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">假设定义一个合约，包括三个方法</span><br><span class="line"></span><br><span class="line">(1) “存储”——合约的“存款”功能允许 防风（通过防风的密钥验证）将若干单位的X存入合约中；</span><br><span class="line">(2) “交易”——“交易”功能允许任何人向合约发送5单位Y，并从合约持有的X中返回1单位给交易方；</span><br><span class="line">(3) “撤销”——“撤销”功能允许 防风 取出合约中存有的所有资产。</span><br><span class="line"></span><br><span class="line">	请注意，上述“存款”和“撤销”功能被限制为只允许被 防风（实际上是防风的私钥）调用。当然，这只有由于上述合约由防风制定。若人为的制定一个所有人都能调用任何功能的合约也是允许的（虽然这在事实上没有意义）。</span><br></pre></td></tr></table></figure>
+<p>那么在基于账户的模型下，可以认为 拥有“存储”、“交易”、“撤销”方法的合约持有一个单独的账户（与用户所持有的账户等价）。</p>
+<p>在上述合约下，这个账户将可能持有一定数量的资产。除了只能按照预定的合约步骤对资产进行处置之外，其它与用户持有的账户别无二致。</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2018-06-12-Spring-JDBC-Source-Code-Reading/" class="next">NEXT</a></div><div class="copyright"><p>© 2018 <a href="http://utop.xin">Utop</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
