@@ -177,6 +177,12 @@
           newcounter.set('title', title);
           newcounter.set('url', url);
           newcounter.set('time', 1);
+          
+          var acl = new AC.ACL();
+          acl.setPublicReadAccess(true);
+          acl.setPublicWriteAccess(true);
+            
+          newcounter.setACL(acl);
 
           newcounter.save().then(function () {
             updateVisits($visits, newcounter.get('time'));
