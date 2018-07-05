@@ -178,7 +178,7 @@
           newcounter.set('url', url);
           newcounter.set('time', 1);
           
-          var acl = new AC.ACL();
+          var acl = new AV.ACL();
           acl.setPublicReadAccess(true);
           acl.setPublicWriteAccess(true);
             
