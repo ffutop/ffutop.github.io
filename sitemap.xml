@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://DorMOUSE-None.github.io/2018-07-20-Java-Proxy/</loc>
+    
+    <lastmod>2018-07-21T06:09:36.678Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://DorMOUSE-None.github.io/about/index.html</loc>
+    
+    <lastmod>2018-07-20T13:05:40.608Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://DorMOUSE-None.github.io/2018-07-13-How-to-easily-get-CGlib-generated-code/</loc>
     
     <lastmod>2018-07-13T12:55:17.325Z</lastmod>
@@ -47,13 +61,6 @@
     <loc>https://DorMOUSE-None.github.io/2018-06-11-ASM-ClassReader/</loc>
     
     <lastmod>2018-06-22T08:26:20.743Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://DorMOUSE-None.github.io/about/index.html</loc>
-    
-    <lastmod>2018-06-15T11:55:50.868Z</lastmod>
     
   </url>
   
