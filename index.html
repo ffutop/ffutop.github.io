@@ -221,6 +221,60 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018-08-26-understand-Kernel-2/">理解 Linux Kernel (2) - 多任务切换</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-08-26
+        </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2018-08-26-understand-Kernel-2/"
+             data-title="理解 Linux Kernel (2) - 多任务切换">
+            阅读次数 0
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>《只是为了好玩》一书中，林纳斯描述过他最早的试验性程序就是让 CPU 执行两个不同的任务(一个不断输出A，另一个输出B)，同时不断地让 CPU 在两个任务间的切换。</p>
+<p>结合《Linux 内核完全注释》一书，得到了多任务切换的示例程序。</p>
+<p>本节所要描述的内容，正是结合一个框架式的汇编程序(多任务切换程序, 书中提供的内容比较老，无法适应目前的各种工具、环境)，在现有环境中加以处理并成功运行。</p>
+<p>关于运行环境的说明，欢迎参考 <a href="https://dormouse-none.github.io/2018-08-19-understand-Kernel-0/">理解 Linux Kernel (0)</a></p>
+          <div class="read-more">
+            <a href="/2018-08-26-understand-Kernel-2/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018-08-19-understand-Kernel-1/">理解 Linux Kernel (1) - BIOS</a>
         
       </h1>
@@ -716,89 +770,6 @@
           <h2 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息"></a>报错信息</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.VerifyError: <span class="class"><span class="keyword">class</span> <span class="title">net</span>.<span class="title">sf</span>.<span class="title">cglib</span>.<span class="title">core</span>.<span class="title">DebuggingClassWriter</span> <span class="title">overrides</span> <span class="title">final</span> <span class="title">method</span> <span class="title">visit</span>.(<span class="title">IILjava</span>/<span class="title">lang</span>/<span class="title">String</span></span>;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V</span><br></pre></td></tr></table></figure>
           <div class="read-more">
             <a href="/2018-06-28-ASM-VerifyError/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-06-25-ASM-Core/">ASM 核心包基本内容漫谈</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-06-25
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2018-06-25-ASM-Core/"
-             data-title="ASM 核心包基本内容漫谈">
-            阅读次数 0
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <blockquote>
-<p>本文描述的 ASM 指的是 OW2 ASM</p>
-</blockquote>
-<h2 id="ASM-Core-的结构"><a href="#ASM-Core-的结构" class="headerlink" title="ASM-Core 的结构"></a>ASM-Core 的结构</h2><p><em>首先是一些概述性的内容。</em></p>
-<p>由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。<br>因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)</p>
-<p>从核心包声明的类来看，主要包括:</p>
-<ol>
-<li><p>ClassReader - 作为结构化对象，将接收(accept)访问者的访问</p>
-</li>
-<li><p>几种访问者抽象类以及相应的实现类</p>
-</li>
-</ol>
-<ul>
-<li>AnnotationVisitor -&gt; AnnotationWriter</li>
-<li>ClassVisitor -&gt; ClassWriter</li>
-<li>FieldVisitor -&gt; FieldWriter</li>
-<li>MethodVisitor -&gt; MethodWriter</li>
-<li>ModuleVisitor -&gt; ModuleWriter</li>
-</ul>
-<ol start="3">
-<li><p>Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值</p>
-</li>
-<li><p>其它一些辅助的类</p>
-</li>
-</ol>
-<ul>
-<li>Attribute - 用于处理非标准化的属性(ClassFile 允许<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html" target="_blank" rel="noopener">JVMS</a> 中未定义的 Attribute)</li>
-<li>ByteArray - 动态可自适应的 byte[] (字节数组)</li>
-<li>Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象</li>
-<li>Symbol - 用于表示 ClassFile 中描述的 Constant 的基类</li>
-<li>SymbolTable - 用于存储常量池对象</li>
-<li>其它内容省略</li>
-</ul>
-          <div class="read-more">
-            <a href="/2018-06-25-ASM-Core/" class="read-more-link">阅读更多</a>
           </div>
         
       
