@@ -17,12 +17,12 @@
 
 
 
-  <meta name="description" content="ASM-VerifyError错误信息解决"/>
+  <meta name="description" content="Understand MAIL"/>
 
 
 
 
-  <meta name="keywords" content="Java, CGlib, ASM, Utop's Blog" />
+  <meta name="keywords" content="mail, SMTP, TCP, Utop's Blog" />
 
 
 
@@ -42,7 +42,7 @@
 
 
 
-<link rel="canonical" href="https://DorMOUSE-None.github.io/2018-06-28-ASM-VerifyError/"/>
+<link rel="canonical" href="https://DorMOUSE-None.github.io/2018-09-27-mail/"/>
 
 
 
@@ -107,7 +107,7 @@
   window.config = {"title":"Utop's Blog","subtitle":null,"description":null,"author":"Utop","language":"zh-cn","timezone":"Asia/Shanghai","url":"https://DorMOUSE-None.github.io","root":"/","permalink":":title/","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null,"first_line_number":"always1"},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":10,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"https://github.com/DorMOUSE-None/DorMOUSE-None.github.io.git","branch":"master","name":"DorMOUSE-None","email":"17816873960@163.com"},"ignore":[],"keywords":null,"index_generator":{"per_page":10,"order_by":"-date","path":""},"archive_generator":{"per_page":10,"yearly":true,"monthly":true,"daily":false},"category_generator":{"per_page":10},"feed":{"type":"atom","limit":20,"hub":"","content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"sitemap":{"path":"sitemap.xml"},"tag_generator":{"per_page":10},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true,"modifyAnchors":"","autolink":true},"server":{"port":4000,"log":false,"ip":"0.0.0.0","compress":false,"header":true},"since":2018,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","Tags":"/tags","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"dormousenone@gmail.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/DorMOUSE-None","weibo":null,"zhihu":null,"douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":"2IQmE2X540kOtTtNPDzsNh3e-9Nh9j0Va","app_key":"Vk01nlYJoGnfxJ4HCPUqW7p2"},"baidu_analytics":null,"baidu_verification":null,"google_analytics":"UA-92258941-1","google_verification":null,"disqus_shortname":"utop-blog","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.9.0"};
 </script>
 
-    <title> ASM-VerifyError错误信息解决 - Utop's Blog </title>
+    <title> Understand MAIL - Utop's Blog </title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -223,19 +223,19 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          ASM-VerifyError错误信息解决
+          Understand MAIL
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2018-06-28
+          2018-09-27
         </span>
         
         
         <div class="post-visits"
-             data-url="/2018-06-28-ASM-VerifyError/"
-             data-title="ASM-VerifyError错误信息解决">
+             data-url="/2018-09-27-mail/"
+             data-title="Understand MAIL">
             阅读次数 0
           </div>
         
@@ -247,7 +247,7 @@
   <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#报错信息"><span class="toc-text">报错信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#问题定位"><span class="toc-text">问题定位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决"><span class="toc-text">解决</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SMTP-协议"><span class="toc-text">SMTP 协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#几个主要的-SMTP-交互指令"><span class="toc-text">几个主要的 SMTP 交互指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#几个次要的-SMTP-交互指令"><span class="toc-text">几个次要的 SMTP 交互指令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMTP-扩展"><span class="toc-text">SMTP 扩展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMTP-安全"><span class="toc-text">SMTP 安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-text">参考</span></a></li></ol>
     </div>
   </div>
 
@@ -255,24 +255,44 @@
 
     <div class="post-content">
       
-        <h2 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息"></a>报错信息</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.VerifyError: <span class="class"><span class="keyword">class</span> <span class="title">net</span>.<span class="title">sf</span>.<span class="title">cglib</span>.<span class="title">core</span>.<span class="title">DebuggingClassWriter</span> <span class="title">overrides</span> <span class="title">final</span> <span class="title">method</span> <span class="title">visit</span>.(<span class="title">IILjava</span>/<span class="title">lang</span>/<span class="title">String</span></span>;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V</span><br></pre></td></tr></table></figure>
+        <p>在网络协议上，高层协议确实比底层协议更容易理解，也更加的人性化。<br>传输层的 TCP, UDP 都还停留在各种字节内容的整合和校验上，而更上层的应用层协议就已经能够直观到通过直接解读就能理解其每条消息的含义了。</p>
 <a id="more"></a>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>项目依赖的 </p>
-<ul>
-<li>CGlib 版本是 2.2.2</li>
-<li>ASM 版本是 3.3.1</li>
+<h2 id="SMTP-协议"><a href="#SMTP-协议" class="headerlink" title="SMTP 协议"></a>SMTP 协议</h2><p>SMTP，简单邮件传输协议。单从协议内容上来说确实没有太多的学习难度。但是，扭转“常识”恰恰是巨大的绊脚石。<br>直接就进入了网页邮件系统 or 客户端邮件系统的时代。图形化的界面配合上一些关键字的内容 (比如收件人，主题等)。<br>点击发送就觉得一封邮件已经发出去了。</p>
+<p>但是，究竟这中间做了什么呢？<br>163，GMAIL, QQ 等邮箱究竟又在其中扮演着怎样的一个角色？</p>
+<p>首先，SMTP 是为了高效、可靠地传递邮件而存在的。</p>
+<p>下面先给一段演示。通过 telnet 连接到 183.57.48.34 (这个是腾讯企业邮其中一台机器的 IP) 25 (SMTP 服务端口) ，以本机作为 SMTP 的客户端，而将 183.XXX 作为 SMTP 的服务端，来完成邮件信息的一次交互。 (当然，最后失败了。被企业邮识别为垃圾邮件了…)</p>
+<p>下列每行 <code>#</code> 开始及之后的内容是个人添加的注释，其它内容是 telnet 交互的内容。<br>同时，<code>--</code> 标志该行内容由</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ telnet 183.57.48.34 25</span><br><span class="line">Trying 183.57.48.34...</span><br><span class="line">Connected to 183.57.48.34.</span><br><span class="line">Escape character is &apos;^]&apos;.</span><br><span class="line">220 bizmx17.qq.com MX QQ Mail Server</span><br><span class="line">HELO test                               -- # MEANS HELLO &lt;domain&gt; 在每次建立连接通道后，发送的第一条消息</span><br><span class="line">250 bizmx17.qq.com                         # 服务器的回复值 Code 250 </span><br><span class="line">MAIL FROM: &lt;from@test.net&gt;              -- # MAIL 表示邮件的发起方，用于退信等其他邮件反向事件</span><br><span class="line">250 Ok                                   </span><br><span class="line">RCPT TO: &lt;to@xxx.xxx&gt;                   -- # RCPT 表示邮件的接收方，用于投递邮件等正向事件</span><br><span class="line">250 Ok</span><br><span class="line">DATA                                    -- # DATA 表示之后的内容将作为邮件正文 (正文这个描述可能不太恰当，更应该是等同于信封内的所有内容)</span><br><span class="line">354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;</span><br><span class="line">                                        --</span><br><span class="line">It&apos;s a fake mail.                       -- # 邮件正文，其实还可以写上诸如 &apos;Subject: XXX&apos; &apos;Cc: XXX&apos; 的内容</span><br><span class="line">.                                       -- # 正文内容结束的标志，&lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;</span><br><span class="line">550 Mail content denied. http://service.exmail.qq.com/cgi-bin/help?subtype=1&amp;&amp;id=20022&amp;&amp;no=1000726 # 这里很无奈，没腾讯给拦了，没发出去。不过反正是假的，邮件信息不全。</span><br></pre></td></tr></table></figure>
+<h3 id="几个主要的-SMTP-交互指令"><a href="#几个主要的-SMTP-交互指令" class="headerlink" title="几个主要的 SMTP 交互指令"></a>几个主要的 SMTP 交互指令</h3><ul>
+<li>HELO: (HELLO)<br>  主要用于让 SMTP 服务器对当前连接的 SMTP 客户端(上例是 telnet 模拟的) 建立一个身份标志 (一般是当前的主机名)</li>
+<li>MAIL:<br>  用法 MAIL FROM: <a href="mailto:&#120;&#x78;&#x40;&#x78;&#120;&#x2e;&#120;&#x78;" target="_blank" rel="noopener">&#120;&#x78;&#x40;&#x78;&#120;&#x2e;&#120;&#x78;</a> (不区分大小写)<br>  可以将其与普通信件的信封等同。毕竟都是要写上发信人，如果没人收信，也就可以根据这个声明将信件退回。</li>
+<li>RCPT: (RECIPIENT)<br>  用法 RCPT TO: <a href="mailto:&#120;&#120;&#x40;&#120;&#x78;&#x2e;&#120;&#120;" target="_blank" rel="noopener">&#120;&#120;&#x40;&#120;&#x78;&#x2e;&#120;&#120;</a> (可多次重复声明，即将一封信件复制多次投送给每次声明的对象)<br>  相当于普通信件的收信人。不过也有点区别，毕竟普通信件没法一件多发嘛。</li>
+<li>DATA:<br>  <code>DATA</code> 之后到 <code>&lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;</code> 之前的所有内容都作为邮件的正文内容。等同于普通信件信封内的信纸(当然了，信纸上在写上 <code>To XXX:</code> <code>Yours XXX</code> 也是很正常的嘛)，类似的也就是 DATA 数据中也可以包括 <code>Subject:</code> (主题), <code>From:</code> (写信人), <code>Date:</code> (日期), <code>To:</code>(收件人)等内容。</li>
 </ul>
-<h2 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h2><p>前两天刚粗略通读了 ASM ，结果就遇上这样一个问题。</p>
-<p>从 <code>net.sf.cglib.core.DebuggingClassWriter</code> 看，这是 CGlib 的一个实现类</p>
-<p>从描述 <code>overrides final method visit.(IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V</code><br>以及 DebuggingClassWriter 类的字节码反编译结果</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DebuggingClassWriter</span> <span class="keyword">extends</span> <span class="title">ClassWriter</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visit</span><span class="params">(<span class="keyword">int</span> version, <span class="keyword">int</span> access, String name, String signature, String superName, String[] interfaces)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.className = name.replace(<span class="string">'/'</span>, <span class="string">'.'</span>);</span><br><span class="line">        <span class="keyword">this</span>.superName = superName.replace(<span class="string">'/'</span>, <span class="string">'.'</span>);</span><br><span class="line">        <span class="keyword">super</span>.visit(version, access, name, signature, superName, interfaces);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>至少应该是 visit(…) 方法要重载的父类的被声明为 final 的 ClassWriter.visit(…) 才导致的问题。</p>
-<p>但是从 ASM 3.3.1 版本的 ClassWriter 类可以看到</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">visit</span><span class="params">(<span class="keyword">int</span> var1, <span class="keyword">int</span> var2, String var3, String var4, String var5, String[] var6)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>visit 方法并没有被声明为 final 。</p>
-<p>但是，结合一定的背景知识，ASM 项目在加入了 OW2 组织后的新版本(asm-3.3.1 是未加入 OW2 前的最后一个版本)，<br>ClassWriter 类的所有 visitXxx(…) 方法都被添加了 <code>final</code> 限制。</p>
-<p>因此，怀疑是项目实际依赖了高版本的 asm (asm 4.x 及以上)</p>
-<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>经过确认，由于整个项目依赖关系复杂，有其它项目引入了 asm-4.1.jar。<br>而且由于使用 MAVEN 进行项目依赖管理，asm-4.1.jar 与依赖树根的深度更浅，<br>因此，最终打包的 war 里面确实引入了 asm-4.1.jar 。导致了这个问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  __                    __                  </span><br><span class="line"> / _| __ _ _ __   __ _ / _| ___ _ __   __ _ </span><br><span class="line">| |_ / _` | &apos;_ \ / _` | |_ / _ \ &apos;_ \ / _` |</span><br><span class="line">|  _| (_| | | | | (_| |  _|  __/ | | | (_| |</span><br><span class="line">|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |</span><br><span class="line">                 |___/                |___/</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h3 id="几个次要的-SMTP-交互指令"><a href="#几个次要的-SMTP-交互指令" class="headerlink" title="几个次要的 SMTP 交互指令"></a>几个次要的 SMTP 交互指令</h3><ul>
+<li><p>RSET: (Reset)<br>  重置，丢弃之前针对邮件所描述的所有内容，重新开始。</p>
+</li>
+<li><p>VRFY: (VERIFY)<br>  用于确认收件人是否存在，以及收件人的完整地址</p>
+</li>
+<li><p>NOOP:<br>  强制服务器做出一个回应，没有实际意义。</p>
+</li>
+<li><p>QUIT:<br>  要求收信服务器返回一个邮件接收成功的信号，之后释放连接通道。</p>
+</li>
+</ul>
+<h2 id="SMTP-扩展"><a href="#SMTP-扩展" class="headerlink" title="SMTP 扩展"></a>SMTP 扩展</h2><p>前面描述了这么多，应该来说找一些支持 TCP (或者其他稳定的传输层连接也是可以的) 连接的命令就完全可以支持一次邮件发送的需求。</p>
+<p>但是，如果想要发送一些中文字符之类的，马上就出现了问题。</p>
+<p>这里有几种方式，但本人还没有理解透彻。仅列出知道的可行方案。</p>
+<ul>
+<li>通过 IMF (Internet Message Format) 进行发件</li>
+<li>通过 ESMTP </li>
+</ul>
+<h2 id="SMTP-安全"><a href="#SMTP-安全" class="headerlink" title="SMTP 安全"></a>SMTP 安全</h2><p>出于 SMTP 本身协议的设计，没有一个有效的身份认证机制。</p>
+<p>纵使通过 <code>MAIL FROM: &lt;A@test.net&gt;</code> 在信封上写明了是由 A 发出的信件。<br>但是，装在信封内的信纸却可以属上另一个人的名字。</p>
+<p>利用这种规则，也就出现了伪装发信人这样的操作。当然，现在的大量邮箱服务提供商都会对这种情况进行标记。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tNc79gy1fvpbzedf67j315e01q0sp.jpg" alt="“代发”标记"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>\1. <a href="https://tools.ietf.org/html/rfc821" target="_blank" rel="noopener">SIMPLE MAIL TRANSFER PROTOCOL</a><br>\2. <a href="http://www.ruanyifeng.com/blog/2008/06/mime.html" target="_blank" rel="noopener">MIME</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  __                    __                  </span><br><span class="line"> / _| __ _ _ __   __ _ / _| ___ _ __   __ _ </span><br><span class="line">| |_ / _` | &apos;_ \ / _` | |_ / _ \ &apos;_ \ / _` |</span><br><span class="line">|  _| (_| | | | | (_| |  _|  __/ | | | (_| |</span><br><span class="line">|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |</span><br><span class="line">                 |___/                |___/</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -288,7 +308,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="https://DorMOUSE-None.github.io/2018-06-28-ASM-VerifyError/">https://DorMOUSE-None.github.io/2018-06-28-ASM-VerifyError/</a>
+      <a href="https://DorMOUSE-None.github.io/2018-09-27-mail/">https://DorMOUSE-None.github.io/2018-09-27-mail/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -308,11 +328,11 @@
         
           <div class="post-tags">
             
-              <a href="/tags/Java/">Java</a>
+              <a href="/tags/mail/">mail</a>
             
-              <a href="/tags/CGlib/">CGlib</a>
+              <a href="/tags/SMTP/">SMTP</a>
             
-              <a href="/tags/ASM/">ASM</a>
+              <a href="/tags/TCP/">TCP</a>
             
           </div>
         
@@ -320,15 +340,9 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2018-07-04-JDK-Permission/">
-        <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default">Java 安全访问与权限控制</span>
-        <span class="prev-text nav-mobile">上一篇</span>
-      </a>
     
-    
-      <a class="next" href="/2018-06-25-ASM-Core/">
-        <span class="next-text nav-default">ASM 核心包基本内容漫谈</span>
+      <a class="next" href="/2018-09-18-TCP-SYN/">
+        <span class="next-text nav-default">TCP SYN 包模拟</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
@@ -437,9 +451,9 @@
   
   <script type="text/javascript">
     var disqus_config = function () {
-        this.page.url = 'https://DorMOUSE-None.github.io/2018-06-28-ASM-VerifyError/';
-        this.page.identifier = '2018-06-28-ASM-VerifyError/';
-        this.page.title = 'ASM-VerifyError错误信息解决';
+        this.page.url = 'https://DorMOUSE-None.github.io/2018-09-27-mail/';
+        this.page.identifier = '2018-09-27-mail/';
+        this.page.title = 'Understand MAIL';
     };
     (function() {
     var d = document, s = d.createElement('script');
