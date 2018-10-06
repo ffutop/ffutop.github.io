@@ -17,8 +17,12 @@
 
 
 
+  <meta name="description" content="理解 Linux Kernel (3) - 操作系统启动"/>
 
 
+
+
+  <meta name="keywords" content="Linux, Kernel, OS, Utop's Blog" />
 
 
 
@@ -38,7 +42,7 @@
 
 
 
-<link rel="canonical" href="https://DorMOUSE-None.github.io/"/>
+<link rel="canonical" href="https://DorMOUSE-None.github.io/2018-10-06-understand-Kernel-3/"/>
 
 
 
@@ -103,7 +107,7 @@
   window.config = {"title":"Utop's Blog","subtitle":null,"description":null,"author":"Utop","language":"zh-cn","timezone":"Asia/Shanghai","url":"https://DorMOUSE-None.github.io","root":"/","permalink":":title/","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null,"first_line_number":"always1"},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":10,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"https://github.com/DorMOUSE-None/DorMOUSE-None.github.io.git","branch":"master","name":"DorMOUSE-None","email":"17816873960@163.com"},"ignore":[],"keywords":null,"index_generator":{"per_page":10,"order_by":"-date","path":""},"category_generator":{"per_page":10},"feed":{"type":"atom","limit":20,"hub":"","content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"archive_generator":{"per_page":10,"yearly":true,"monthly":true,"daily":false},"sitemap":{"path":"sitemap.xml"},"tag_generator":{"per_page":10},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true,"modifyAnchors":"","autolink":true},"server":{"port":4000,"log":false,"ip":"0.0.0.0","compress":false,"header":true},"since":2018,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","Tags":"/tags","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"dormousenone@gmail.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/DorMOUSE-None","weibo":null,"zhihu":null,"douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":"2IQmE2X540kOtTtNPDzsNh3e-9Nh9j0Va","app_key":"Vk01nlYJoGnfxJ4HCPUqW7p2"},"baidu_analytics":null,"baidu_verification":null,"google_analytics":"UA-92258941-1","google_verification":null,"disqus_shortname":"utop-blog","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.9.0"};
 </script>
 
-    <title> Utop's Blog </title>
+    <title> 理解 Linux Kernel (3) - 操作系统启动 - Utop's Blog </title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -214,14 +218,12 @@
         <div class="content-wrapper">
           <div id="content" class="content">
             
-  <section id="posts" class="posts">
-    
-      
+  
   <article class="post">
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2018-10-06-understand-Kernel-3/">理解 Linux Kernel (3) - 操作系统启动</a>
+          理解 Linux Kernel (3) - 操作系统启动
         
       </h1>
 
@@ -242,15 +244,18 @@
 
     
     
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#引导程序"><span class="toc-text">引导程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SETUP-程序"><span class="toc-text">SETUP 程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#操作系统程序"><span class="toc-text">操作系统程序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#main-c"><span class="toc-text">main.c</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#main-void"><span class="toc-text">main(void)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#init-void"><span class="toc-text">init(void)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#小结"><span class="toc-text">小结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#附录"><span class="toc-text">附录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#附录一"><span class="toc-text">附录一</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
 
 
     <div class="post-content">
       
-        
-        
-
-        
-          <p>这次拖得有够久的，毕竟需要将知识串联起来并不是一件容易的事情。更何况很多内容可以说和常理(个人理解的常理)有了比较大的偏差。</p>
+        <p>这次拖得有够久的，毕竟需要将知识串联起来并不是一件容易的事情。更何况很多内容可以说和常理(个人理解的常理)有了比较大的偏差。</p>
 <p>不过确实比较有意思。从引导程序到操作系统启动，这中间究竟经历了多少流程呢？</p>
 <p>由于有了前几节的内容，这里不会再对引导程序及汇编语法做过多的介绍。而着重在于整个流程的描述。</p>
 <h2 id="引导程序"><a href="#引导程序" class="headerlink" title="引导程序"></a>引导程序</h2><p>从 BIOS 将512字节长的引导程序加载到物理内存<code>0x7c00</code>开始的连续递增空间后，即将程序的执行权交给了引导程序(这里指的执行权可以简单理解成CS:IP)</p>
@@ -346,532 +351,80 @@
 <h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="附录一"><a href="#附录一" class="headerlink" title="附录一"></a>附录一</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- Makefile</span><br><span class="line">|-- boot</span><br><span class="line">|   |-- head.s</span><br><span class="line">|-- fs</span><br><span class="line">|   |-- Makefile</span><br><span class="line">|   |-- bitmap.c</span><br><span class="line">|   |-- block_dev.c</span><br><span class="line">|   |-- buffer.c</span><br><span class="line">|   |-- char_dev.c</span><br><span class="line">|   |-- exec.c</span><br><span class="line">|   |-- fcntl.c</span><br><span class="line">|   |-- file_dev.c</span><br><span class="line">|   |-- file_table.c</span><br><span class="line">|   |-- inode.c</span><br><span class="line">|   |-- ioctl.c</span><br><span class="line">|   |-- namei.c</span><br><span class="line">|   |-- open.c</span><br><span class="line">|   |-- pipe.c</span><br><span class="line">|   |-- read_write.c</span><br><span class="line">|   |-- stat.c</span><br><span class="line">|   |-- super.c</span><br><span class="line">|   `-- truncate.c</span><br><span class="line">|-- include</span><br><span class="line">|   |-- a.out.h</span><br><span class="line">|   |-- asm</span><br><span class="line">|   |   |-- io.h</span><br><span class="line">|   |   |-- memory.h</span><br><span class="line">|   |   |-- segment.h</span><br><span class="line">|   |   `-- system.h</span><br><span class="line">|   |-- const.h</span><br><span class="line">|   |-- ctype.h</span><br><span class="line">|   |-- errno.h</span><br><span class="line">|   |-- fcntl.h</span><br><span class="line">|   |-- linux</span><br><span class="line">|   |   |-- config.h</span><br><span class="line">|   |   |-- fdreg.h</span><br><span class="line">|   |   |-- fs.h</span><br><span class="line">|   |   |-- hdreg.h</span><br><span class="line">|   |   |-- head.h</span><br><span class="line">|   |   |-- kernel.h</span><br><span class="line">|   |   |-- mm.h</span><br><span class="line">|   |   |-- sched.h</span><br><span class="line">|   |   |-- sys.h</span><br><span class="line">|   |   `-- tty.h</span><br><span class="line">|   |-- signal.h</span><br><span class="line">|   |-- stdarg.h</span><br><span class="line">|   |-- stddef.h</span><br><span class="line">|   |-- string.h</span><br><span class="line">|   |-- sys</span><br><span class="line">|   |   |-- stat.h</span><br><span class="line">|   |   |-- times.h</span><br><span class="line">|   |   |-- types.h</span><br><span class="line">|   |   |-- utsname.h</span><br><span class="line">|   |   `-- wait.h</span><br><span class="line">|   |-- termios.h</span><br><span class="line">|   |-- time.h</span><br><span class="line">|   |-- unistd.h</span><br><span class="line">|   `-- utime.h</span><br><span class="line">|-- init</span><br><span class="line">|   |-- main.c</span><br><span class="line">|-- kernel</span><br><span class="line">|   |-- Makefile</span><br><span class="line">|   |-- asm.o</span><br><span class="line">|   |-- asm.s</span><br><span class="line">|   |-- blk_drv</span><br><span class="line">|   |   |-- Makefile</span><br><span class="line">|   |   |-- blk.h</span><br><span class="line">|   |   |-- floppy.c</span><br><span class="line">|   |   |-- hd.c</span><br><span class="line">|   |   |-- ll_rw_blk.c</span><br><span class="line">|   |   `-- ramdisk.c</span><br><span class="line">|   |-- chr_drv</span><br><span class="line">|   |   |-- Makefile</span><br><span class="line">|   |   |-- console.c</span><br><span class="line">|   |   |-- keyboard.S</span><br><span class="line">|   |   |-- rs_io.s</span><br><span class="line">|   |   |-- serial.c</span><br><span class="line">|   |   |-- tty_io.c</span><br><span class="line">|   |   `-- tty_ioctl.c</span><br><span class="line">|   |-- exit.c</span><br><span class="line">|   |-- fork.c</span><br><span class="line">|   |-- fork.i</span><br><span class="line">|   |-- math</span><br><span class="line">|   |   |-- Makefile</span><br><span class="line">|   |   `-- math_emulate.c</span><br><span class="line">|   |-- mktime.c</span><br><span class="line">|   |-- panic.c</span><br><span class="line">|   |-- printk.c</span><br><span class="line">|   |-- sched.c</span><br><span class="line">|   |-- sched.o</span><br><span class="line">|   |-- signal.c</span><br><span class="line">|   |-- sys.c</span><br><span class="line">|   |-- system_call.o</span><br><span class="line">|   |-- system_call.s</span><br><span class="line">|   |-- traps.c</span><br><span class="line">|   |-- traps.o</span><br><span class="line">|   `-- vsprintf.c</span><br><span class="line">|-- lib</span><br><span class="line">|   |-- Makefile</span><br><span class="line">|   |-- _exit.c</span><br><span class="line">|   |-- close.c</span><br><span class="line">|   |-- ctype.c</span><br><span class="line">|   |-- dup.c</span><br><span class="line">|   |-- errno.c</span><br><span class="line">|   |-- execve.c</span><br><span class="line">|   |-- malloc.c</span><br><span class="line">|   |-- open.c</span><br><span class="line">|   |-- setsid.c</span><br><span class="line">|   |-- string.c</span><br><span class="line">|   |-- wait.c</span><br><span class="line">|   `-- write.c</span><br><span class="line">|-- mm</span><br><span class="line">|   |-- Makefile</span><br><span class="line">|   |-- memory.c</span><br><span class="line">|   `-- page.s</span><br><span class="line">`-- tools</span><br><span class="line">    `-- build.c</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  __                    __                  </span><br><span class="line"> / _| __ _ _ __   __ _ / _| ___ _ __   __ _ </span><br><span class="line">| |_ / _` | &apos;_ \ / _` | |_ / _ \ &apos;_ \ / _` |</span><br><span class="line">|  _| (_| | | | | (_| |  _|  __/ | | | (_| |</span><br><span class="line">|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |</span><br><span class="line">                 |___/                |___/</span><br></pre></td></tr></table></figure>
 
-        
       
     </div>
 
     
-
-    
-
-  </article>
-
-    
       
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-09-27-mail/">Understand MAIL</a>
-        
-      </h1>
+      
 
-      <div class="post-meta">
-        <span class="post-time">
-          2018-09-27
-        </span>
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://DorMOUSE-None.github.io">Utop</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://DorMOUSE-None.github.io/2018-10-06-understand-Kernel-3/">https://DorMOUSE-None.github.io/2018-10-06-understand-Kernel-3/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
         
-        
-        <div class="post-visits"
-             data-url="/2018-09-27-mail/"
-             data-title="Understand MAIL">
-            阅读次数 0
+          <div class="post-tags">
+            
+              <a href="/tags/Linux/">Linux</a>
+            
+              <a href="/tags/Kernel/">Kernel</a>
+            
+              <a href="/tags/OS/">OS</a>
+            
           </div>
         
-      </div>
-    </header>
-
+        
+        
+  <nav class="post-nav">
     
     
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>在网络协议上，高层协议确实比底层协议更容易理解，也更加的人性化。<br>传输层的 TCP, UDP 都还停留在各种字节内容的整合和校验上，而更上层的应用层协议就已经能够直观到通过直接解读就能理解其每条消息的含义了。</p>
-          <div class="read-more">
-            <a href="/2018-09-27-mail/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-09-18-TCP-SYN/">TCP SYN 包模拟</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-09-18
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2018-09-18-TCP-SYN/"
-             data-title="TCP SYN 包模拟">
-            阅读次数 0
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>写了两天，几乎是从零开始，C 语言搞了一个发 TCP SYN 包的小程序。<br>从协议到程序代码的转换，确实没有花费太多的时间，但是为了字节序(byteorder)的问题简直折腾得…</p>
-          <div class="read-more">
-            <a href="/2018-09-18-TCP-SYN/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-09-08-preprocessor-output/">Preprocessor Output</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-09-08
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2018-09-08-preprocessor-output/"
-             data-title="Preprocessor Output">
-            阅读次数 0
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>最近重新开始回顾 C 语言以及其编译后的文件格式 ELF。<br>暂时告别一步到位的命令 <code>gcc main.c</code>，如果从 <code>.c</code> 文件的编译来说，主要分为预编译(preprocess)、编译(Compilation)、汇编(Assembly)、链接(Linking) 四个步骤。<br>但是，仅仅从第一个流程 <strong>预编译</strong> 而言，就已经遇到了一些麻烦。</p>
-<p><small>program.i</small><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># <span class="number">1</span> <span class="string">"program.c"</span></span><br><span class="line"># <span class="number">1</span> <span class="string">"&lt;built-in&gt;"</span></span><br><span class="line"># <span class="number">1</span> <span class="string">"&lt;command-line&gt;"</span></span><br><span class="line"># <span class="number">1</span> <span class="string">"/usr/include/stdc-predef.h"</span> <span class="number">1</span> <span class="number">3</span> <span class="number">4</span></span><br><span class="line"># <span class="number">1</span> <span class="string">"&lt;command-line&gt;"</span> <span class="number">2</span></span><br><span class="line"># <span class="number">1</span> <span class="string">"program.c"</span></span><br><span class="line"># <span class="number">1</span> <span class="string">"header.h"</span> <span class="number">1</span></span><br><span class="line"><span class="function"><span class="keyword">char</span> *<span class="title">test</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line"># <span class="number">2</span> <span class="string">"program.c"</span> <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>预编译后的问题出现了诸如 <code># 1 &quot;program.c&quot;</code> 的 <em>注释?</em> </p>
-<p>这里简单记录预处理输出文件的基本格式，方便今后回顾。<br>
-          <div class="read-more">
-            <a href="/2018-09-08-preprocessor-output/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-08-26-understand-Kernel-2/">理解 Linux Kernel (2) - 多任务切换</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-08-26
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2018-08-26-understand-Kernel-2/"
-             data-title="理解 Linux Kernel (2) - 多任务切换">
-            阅读次数 0
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>《只是为了好玩》一书中，林纳斯描述过他最早的试验性程序就是让 CPU 执行两个不同的任务(一个不断输出A，另一个输出B)，同时不断地让 CPU 在两个任务间的切换。</p>
-<p>结合《Linux 内核完全注释》一书，得到了多任务切换的示例程序。</p>
-<p>本节所要描述的内容，正是结合一个框架式的汇编程序(多任务切换程序, 书中提供的内容比较老，无法适应目前的各种工具、环境)，在现有环境中加以处理并成功运行。</p>
-<p>关于运行环境的说明，欢迎参考 <a href="https://dormouse-none.github.io/2018-08-19-understand-Kernel-0/">理解 Linux Kernel (0)</a></p>
-          <div class="read-more">
-            <a href="/2018-08-26-understand-Kernel-2/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-08-19-understand-Kernel-0/">理解 Linux Kernel (0) - 概述</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-08-19
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2018-08-19-understand-Kernel-0/"
-             data-title="理解 Linux Kernel (0) - 概述">
-            阅读次数 0
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>之所以想要了解 Linux Kernel，与前一个月的 JVM ClassFile 的学习有这很大的关联。</p>
-<p>说实话，刨除 JVM 的具体实现，Sun (或者现在该说是 Oracle) 确实将 Java 的底层逻辑设计得相当简单。</p>
-<ol>
-<li>有限而统一的指令集(不超过 256 个，可以用 1 字节表示)</li>
-<li>操作数栈+局部变量表共同实现的指令运算</li>
-<li>高度封装的成员变量/方法的寻址方式</li>
-<li>… (见识短浅，想不到了…以后再补充吧)</li>
-</ol>
-<p>但是，与 JVM 模拟的虚拟机不同，实体机器有着更为复杂的结构。<br>最根本的，不同厂商的机器就带来了不同的 CPU 指令集，这就已经让人难以接受了。</p>
-<p>其实最初，是想要继续去看看 Hotspot 虚拟机的。但是，混杂的代码(C++, Java, 平台相关各种实现) 带来了很大的阅读障碍。<br>最根本的，我甚至找不到一个学习的基本立足点，出发点(当然，也可能我根本就没仔细去看，哈哈)。</p>
-<p>借着一次机会，我开始看《程序员的自我修养——链接、装载与库》一书。确实无论是 ELF 格式，静态链接与动态链接甚至 Linux 的内建函数<br>都给了我比较深刻的印象，向我展示了 C 更深入的一面。但是，macOS 给我带来了比较大的客观阻碍(即使用 Docker 容器得到了一个可用的 Linux 环境，但是否与直接建立在机器上的系统有所区别，此处还得打个问号)。<br>同时，书中的部分内容上下不统一，缺少前后文也是一个重大的问题。总之，这并不完全适合我这种初学者逐一进行书中所描述的全部实验。</p>
-<p>最后，我决定展开对 Linux Kernel 的学习，试图通过对直接构架在硬件上的操作系统进行一番比较深入的学习。</p>
-<p>期间，找过一些资料，也了解到 Linus Torvals 直接领导着的 <a href="https://www.kernel.org/" target="_blank" rel="noopener">Kernel 项目的官网</a>；甚至，找到了各个版本的 kernel 源码(虽然确实地丢失了最早期 0.XX 的若干版本)。<br>不得不说，就目前来讲，我觉得《Linux内核完全注释》是最适合(<em>打个问号，至少暂时是的</em>)我学习的一书。</p>
-<p>之后的若干博文，将都以《Linux内核完全注释》中的内容为基础，结合目前的实际需要，从而进行实操性的认知与学习。</p>
-          <div class="read-more">
-            <a href="/2018-08-19-understand-Kernel-0/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-08-19-understand-Kernel-1/">理解 Linux Kernel (1) - BIOS</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-08-19
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2018-08-19-understand-Kernel-1/"
-             data-title="理解 Linux Kernel (1) - BIOS">
-            阅读次数 0
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在<a href="https://dormouse-none.github.io/2018-08-19-understand-Kernel-0/">概述</a>，我想我已经介绍过我开始这一些列博文的原因。<br>我不能担保我所进行的所有试验性操作都是对的，但是，至少这些在我所描述的环境下成功的运行了起来，并帮助我触及我始终敬畏而又敬而远之的<strong>硬件&amp;OS</strong></p>
-<p>在《Linux内核完全注释》一书第三章——内核编程语言和环境，描述了用 as86 汇编语言构建 boot 引导程序，并最终通过 Bochs 仿真器在模拟开机通电后，BIOS Load<br>boot 程序，通过显示器输出 <em>Loading System…</em> 。</p>
-<p>这些，将是这里所要描述的主要内容。</p>
-          <div class="read-more">
-            <a href="/2018-08-19-understand-Kernel-1/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-08-15-Java-Instrumentation/">Java Instrumentation</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-08-15
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2018-08-15-Java-Instrumentation/"
-             data-title="Java Instrumentation">
-            阅读次数 0
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="Start"><a href="#Start" class="headerlink" title="Start"></a>Start</h2><p>从现有的前置知识来说，我们能够认识到两个事实:</p>
-<ol>
-<li>Java Class 通过 ClassLoader 进行加载。<br>通过<code>全限定名</code>进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。<br>换句话说: Class 一经加载，就不会尝试重复加载 (至少按绝大多数人的认知来说，确实是的)</li>
-<li>有没有可能让被加载的 Class 与物理存储上的 .class 内容不同。<br>当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧<br>(虽然可能不了解细节。在此，欢迎学习前置技能 <a href="https://dormouse-none.github.io/2018-07-10-CGlib-Enhancer/">CGlib Enhancer 主流程源码解析</a> 和 <a href="https://dormouse-none.github.io/2018-07-20-Java-Proxy/">Java Proxy 源码解析</a>。不过不影响本文后续内容)</li>
-</ol>
-<p>另一个方面，也许绝大多数人都听说过所谓的<code>热部署</code>。但是究竟怎么才能做到 <code>热部署</code>(话题开得有点大哈。Y_Y 本文不讲这个)</p>
-<p>操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。</p>
-<p>如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚…</p>
-<p>Java 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的</p>
-<h2 id="Instrumentation"><a href="#Instrumentation" class="headerlink" title="Instrumentation"></a>Instrumentation</h2><p><code>java.lang.instrument.Instrumentation</code> 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)</p>
-<p>相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。</p>
-<p>下列有两种方法可以达到目的</p>
-<ol>
-<li>当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。</li>
-<li>当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。</li>
-</ol>
-<p>话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了<em>检测</em>的目的)的使用</p>
-          <div class="read-more">
-            <a href="/2018-08-15-Java-Instrumentation/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-07-24-JVM-Instruction/">JVM 指令简析</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-07-24
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2018-07-24-JVM-Instruction/"
-             data-title="JVM 指令简析">
-            阅读次数 0
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>在之前描述过包括 ASM, CGlib, Java Proxy 的基本内容之后，本文将就更为基础的 JVM 指令集进行简单而有效的介绍。</p>
-<p>当然，在开始正文前，读者需要了解到，JVM 指令集这种类似于汇编的规范性内容，包含一百多个指令，若要求一一介绍。<br>那么，直接阅读 <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html" target="_blank" rel="noopener">官方文档</a> 绝对是比本文的内容更为详实且准确。</p>
-<p>这篇文档的目的，只是为了使读者建立起关于 JVM 指令集基本的常识性观念。</p>
-          <div class="read-more">
-            <a href="/2018-07-24-JVM-Instruction/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-07-20-Java-Proxy/">Java Proxy 源码解析</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-07-20
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2018-07-20-Java-Proxy/"
-             data-title="Java Proxy 源码解析">
-            阅读次数 0
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>在 Java 整个生态里面, 通用的有两类动态代理的应用: Java Proxy 与 CGlib 代理。</p>
-<p>从宽泛的区别来说，Java Proxy 只能对接口进行增强，而 CGlib 同时适用于类和接口的增强。<br>而且，业内普遍的认知是，CGlib 动态代理较之于 Java Proxy 在生成字节码的速度上也更为高效。</p>
-          <div class="read-more">
-            <a href="/2018-07-20-Java-Proxy/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-  </section>
-
-  
-  <nav class="pagination">
-    
-    
-      <a class="next" href="/page/2/">
-        <span class="next-text">下一页</span>
+      <a class="next" href="/2018-09-27-mail/">
+        <span class="next-text nav-default">Understand MAIL</span>
+        <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
     
   </nav>
 
+      </footer>
+    
+
+  </article>
+
 
           </div>
           
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
 
         </div>
       </main>
@@ -952,6 +505,27 @@
     </div>
 
     
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'https://DorMOUSE-None.github.io/2018-10-06-understand-Kernel-3/';
+        this.page.identifier = '2018-10-06-understand-Kernel-3/';
+        this.page.title = '理解 Linux Kernel (3) - 操作系统启动';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//utop-blog.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+  
+
+  
+
 
 
     
