@@ -221,6 +221,65 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018-11-16-regex-exponential-explosion/">正则表达式指数爆炸</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-11-16
+        </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2018-11-16-regex-exponential-explosion/"
+             data-title="正则表达式指数爆炸">
+            阅读次数 0
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>昨天接触到一个很有意思的问题, 公司测试环境一台机器 CPU 跑到了 400%，导致该机器上的所有服务都挂掉了。</p>
+<p>最后查到的原因竟然是正则表达式所引起的，大大出乎意料啊。虽然早就知道正则效率很差，但绝对没有想到会导致整个机器上服务崩溃的情况。</p>
+<p>先简单展示下问题正则:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String regex = <span class="string">"(\\w+,?)+"</span>;</span><br><span class="line">String val = <span class="string">"abcdefghijklmno,abcdefghijklmno+"</span>;</span><br><span class="line">System.out.println(val.matches(regex));</span><br></pre></td></tr></table></figure>
+<p>最终的执行时间是 17s 左右。</p>
+<p>相反，如果改成 <code>String val = &quot;abcdefghijklmno,abcdefghijklmno&quot;</code> ，实际执行时间 1ms 左右。</p>
+<p>哈哈，完全不是一个量级的结果。</p>
+<p>最后，当然是要找原因了:&lt; 当然，有其它重要的事在耽搁，没时间去看 Java Regex 源码。不过，从正则本身下手反而是个好事情。毕竟几乎所有的编程语言都有对正则的支持。而同样的，都存在着这样的问题。那就可以大胆猜想其实是和语言本身无关，而在于正则规范本身了。</p>
+<p>先给个结果，罪魁祸首就是<code>指数爆炸</code></p>
+          <div class="read-more">
+            <a href="/2018-11-16-regex-exponential-explosion/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018-11-11-understand-Kernel-6/">理解 Linux Kernel (6) - read & write</a>
         
       </h1>
@@ -679,70 +738,6 @@
 <p>这些，将是这里所要描述的主要内容。</p>
           <div class="read-more">
             <a href="/2018-08-19-understand-Kernel-1/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-08-19-understand-Kernel-0/">理解 Linux Kernel (0) - 概述</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-08-19
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2018-08-19-understand-Kernel-0/"
-             data-title="理解 Linux Kernel (0) - 概述">
-            阅读次数 0
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>之所以想要了解 Linux Kernel，与前一个月的 JVM ClassFile 的学习有这很大的关联。</p>
-<p>说实话，刨除 JVM 的具体实现，Sun (或者现在该说是 Oracle) 确实将 Java 的底层逻辑设计得相当简单。</p>
-<ol>
-<li>有限而统一的指令集(不超过 256 个，可以用 1 字节表示)</li>
-<li>操作数栈+局部变量表共同实现的指令运算</li>
-<li>高度封装的成员变量/方法的寻址方式</li>
-<li>… (见识短浅，想不到了…以后再补充吧)</li>
-</ol>
-<p>但是，与 JVM 模拟的虚拟机不同，实体机器有着更为复杂的结构。<br>最根本的，不同厂商的机器就带来了不同的 CPU 指令集，这就已经让人难以接受了。</p>
-<p>其实最初，是想要继续去看看 Hotspot 虚拟机的。但是，混杂的代码(C++, Java, 平台相关各种实现) 带来了很大的阅读障碍。<br>最根本的，我甚至找不到一个学习的基本立足点，出发点(当然，也可能我根本就没仔细去看，哈哈)。</p>
-<p>借着一次机会，我开始看《程序员的自我修养——链接、装载与库》一书。确实无论是 ELF 格式，静态链接与动态链接甚至 Linux 的内建函数<br>都给了我比较深刻的印象，向我展示了 C 更深入的一面。但是，macOS 给我带来了比较大的客观阻碍(即使用 Docker 容器得到了一个可用的 Linux 环境，但是否与直接建立在机器上的系统有所区别，此处还得打个问号)。<br>同时，书中的部分内容上下不统一，缺少前后文也是一个重大的问题。总之，这并不完全适合我这种初学者逐一进行书中所描述的全部实验。</p>
-<p>最后，我决定展开对 Linux Kernel 的学习，试图通过对直接构架在硬件上的操作系统进行一番比较深入的学习。</p>
-<p>期间，找过一些资料，也了解到 Linus Torvals 直接领导着的 <a href="https://www.kernel.org/" target="_blank" rel="noopener">Kernel 项目的官网</a>；甚至，找到了各个版本的 kernel 源码(虽然确实地丢失了最早期 0.XX 的若干版本)。<br>不得不说，就目前来讲，我觉得《Linux内核完全注释》是最适合(<em>打个问号，至少暂时是的</em>)我学习的一书。</p>
-<p>之后的若干博文，将都以《Linux内核完全注释》中的内容为基础，结合目前的实际需要，从而进行实操性的认知与学习。</p>
-          <div class="read-more">
-            <a href="/2018-08-19-understand-Kernel-0/" class="read-more-link">阅读更多</a>
           </div>
         
       

@@ -221,6 +221,61 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018-06-11-ASM-ClassReader/">ASM - ClassReader 与 Java ClassFile 文件格式</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-06-11
+        </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2018-06-11-ASM-ClassReader/"
+             data-title="ASM - ClassReader 与 Java ClassFile 文件格式">
+            阅读次数 0
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="Java-ClassFile-文件格式"><a href="#Java-ClassFile-文件格式" class="headerlink" title="Java ClassFile 文件格式"></a>Java ClassFile 文件格式</h2><p>读了将近一周的时间，勉强算是把 ClassFile 的文件格式给简单的梳理了个脉络。<br><a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html" target="_blank" rel="noopener">The class File Format(Java SE 8)</a> </p>
+<blockquote>
+<p>u1, u2, u4 分别表示无符号的一字节、二字节、四字节数据(以大端存储)</p>
+</blockquote>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;                                   <span class="comment">// 魔数(magic) 固定为 0xCAFEBABE</span></span><br><span class="line">    u2             minor_version;                           <span class="comment">// 次版本号</span></span><br><span class="line">    u2             major_version;                           <span class="comment">// 主版本号</span></span><br><span class="line">    u2             constant_pool_count;                     <span class="comment">// 常量池 constant_pool 的数量 + 1, 最大为 (2&lt;&lt;16 - 1) = 65535</span></span><br><span class="line">    cp_info        constant_pool[constant_pool_count<span class="number">-1</span>];    <span class="comment">// 常量池 取值下标为 [1, constant_pool_count)</span></span><br><span class="line">    u2             access_flags;                            <span class="comment">// 对类 or 接口的访问权限和属性的标志的掩码</span></span><br><span class="line">    u2             this_class;                              <span class="comment">// 值为 constant_pool 的有效下标(且 constant_pool[this_class] 的类型为 CONSTANT_Class_info)</span></span><br><span class="line">    u2             super_class;                             <span class="comment">// 值为 0 或者 constant_pool 的有效下标(同上), 如果是 interface, 则该值一定为有效下标</span></span><br><span class="line">    u2             interfaces_count;                        <span class="comment">// 直接父接口的数量</span></span><br><span class="line">    u2             interfaces[interfaces_count];            <span class="comment">// 值必须是 constant_pool 的有效下标, 且 interfaces[i](0≤i&lt;interfaces_count), 指向的类型为 CONSTANT_Class_info)</span></span><br><span class="line">    u2             fields_count;                            <span class="comment">// 字段数量, 统计所有字段, 包括 class variables(静态变量) 和 instance variables(实例变量)</span></span><br><span class="line">    field_info     fields[fields_count];                    <span class="comment">// 字段的详细声明, 不包含继承来的字段</span></span><br><span class="line">    u2             methods_count;                           <span class="comment">// 方法数量</span></span><br><span class="line">    method_info    methods[methods_count];                  <span class="comment">// 方法的详细声明, 不包括继承来的方法</span></span><br><span class="line">    u2             attributes_count;                        <span class="comment">// 属性数量</span></span><br><span class="line">    attribute_info attributes[attributes_count];            <span class="comment">// 属性的详细声明</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2018-06-11-ASM-ClassReader/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018-03-01-区块链简单介绍/">区块链技术概述</a>
         
       </h1>
