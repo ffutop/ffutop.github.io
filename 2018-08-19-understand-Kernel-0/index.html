@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="理解 Linux Kernel (0) - 概述">
+
+
+
+
+  <meta name="keywords" content="Linux, Kernel, Utop's Blog">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Utop's Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.9.0">
+
+
+
+<link rel="canonical" href="https://DorMOUSE-None.github.io/2018-08-19-understand-Kernel-0/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.9.0">
+
+
+
+  
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-92258941-1');
+</script>
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "2IQmE2X540kOtTtNPDzsNh3e-9Nh9j0Va",
+      appKey: "Vk01nlYJoGnfxJ4HCPUqW7p2"
+    });
+  </script>
+
+
+
+
+<script>
+  window.config = {"title":"Utop's Blog","subtitle":null,"description":null,"author":"Utop","language":"zh-cn","timezone":"Asia/Shanghai","url":"https://DorMOUSE-None.github.io","root":"/","permalink":":title/","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null,"first_line_number":"always1"},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":10,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"https://github.com/DorMOUSE-None/DorMOUSE-None.github.io.git","branch":"master","name":"DorMOUSE-None","email":"17816873960@163.com"},"ignore":[],"keywords":null,"index_generator":{"per_page":10,"order_by":"-date","path":""},"archive_generator":{"per_page":10,"yearly":true,"monthly":true,"daily":false},"category_generator":{"per_page":10},"tag_generator":{"per_page":10},"sitemap":{"path":"sitemap.xml"},"feed":{"type":"atom","limit":20,"hub":"","content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true,"modifyAnchors":"","autolink":true},"server":{"port":4000,"log":false,"ip":"0.0.0.0","compress":false,"header":true},"since":2018,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","Tags":"/tags","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"dormousenone@gmail.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/DorMOUSE-None","weibo":null,"zhihu":null,"douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":"2IQmE2X540kOtTtNPDzsNh3e-9Nh9j0Va","app_key":"Vk01nlYJoGnfxJ4HCPUqW7p2"},"baidu_analytics":null,"baidu_verification":null,"google_analytics":"UA-92258941-1","google_verification":null,"disqus_shortname":"utop-blog","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"mathjax":{"enable":true,"per_page":false,"cdn":"//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"},"version":"2.9.0"};
+</script>
+
+    <title> 理解 Linux Kernel (0) - 概述 - Utop's Blog </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Utop's Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Utop's Blog</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          理解 Linux Kernel (0) - 概述
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-08-19
+        </span>
+        
+        
+        <div class="post-visits" data-url="/2018-08-19-understand-Kernel-0/" data-title="理解 Linux Kernel (0) - 概述">
+            阅读次数 0
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#软硬件描述"><span class="toc-text">软硬件描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bochs"><span class="toc-text">Bochs</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#目录结构"><span class="toc-text">目录结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#简单使用"><span class="toc-text">简单使用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-容器中运行-Ubuntu"><span class="toc-text">Docker 容器中运行 Ubuntu</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-text">参考</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>之所以想要了解 Linux Kernel，与前一个月的 JVM ClassFile 的学习有这很大的关联。</p>
+<p>说实话，刨除 JVM 的具体实现，Sun (或者现在该说是 Oracle) 确实将 Java 的底层逻辑设计得相当简单。</p>
+<ol>
+<li>有限而统一的指令集(不超过 256 个，可以用 1 字节表示)</li>
+<li>操作数栈+局部变量表共同实现的指令运算</li>
+<li>高度封装的成员变量/方法的寻址方式</li>
+<li>… (见识短浅，想不到了…以后再补充吧)</li>
+</ol>
+<p>但是，与 JVM 模拟的虚拟机不同，实体机器有着更为复杂的结构。<br>最根本的，不同厂商的机器就带来了不同的 CPU 指令集，这就已经让人难以接受了。</p>
+<p>其实最初，是想要继续去看看 Hotspot 虚拟机的。但是，混杂的代码(C++, Java, 平台相关各种实现) 带来了很大的阅读障碍。<br>最根本的，我甚至找不到一个学习的基本立足点，出发点(当然，也可能我根本就没仔细去看，哈哈)。</p>
+<p>借着一次机会，我开始看《程序员的自我修养——链接、装载与库》一书。确实无论是 ELF 格式，静态链接与动态链接甚至 Linux 的内建函数<br>都给了我比较深刻的印象，向我展示了 C 更深入的一面。但是，macOS 给我带来了比较大的客观阻碍(即使用 Docker 容器得到了一个可用的 Linux 环境，但是否与直接建立在机器上的系统有所区别，此处还得打个问号)。<br>同时，书中的部分内容上下不统一，缺少前后文也是一个重大的问题。总之，这并不完全适合我这种初学者逐一进行书中所描述的全部实验。</p>
+<p>最后，我决定展开对 Linux Kernel 的学习，试图通过对直接构架在硬件上的操作系统进行一番比较深入的学习。</p>
+<p>期间，找过一些资料，也了解到 Linus Torvals 直接领导着的 <a href="https://www.kernel.org/" target="_blank" rel="noopener">Kernel 项目的官网</a>；甚至，找到了各个版本的 kernel 源码(虽然确实地丢失了最早期 0.XX 的若干版本)。<br>不得不说，就目前来讲，我觉得《Linux内核完全注释》是最适合(<em>打个问号，至少暂时是的</em>)我学习的一书。</p>
+<p>之后的若干博文，将都以《Linux内核完全注释》中的内容为基础，结合目前的实际需要，从而进行实操性的认知与学习。</p>
+<a id="more"></a>
+<h2 id="软硬件描述"><a href="#软硬件描述" class="headerlink" title="软硬件描述"></a>软硬件描述</h2><p>进行这方面的描述，是因为 Linux Kernel 将直接与底层硬件打交道(当然，这方面使用的 Bochs 仿真器)。<br>但是，准备诸如 .img (磁盘映像文件), 机器指令文件等都不得不借助于现有的平台。</p>
+<ul>
+<li>操作系统: macOS 10.13.6 , Ubuntu 16.04 (Docker 虚拟机容器)</li>
+<li>仿真器  : Bochs 2.6.9_2 (macOS 与 Ubuntu 上相同)</li>
+<li>更多    : 将直接在正文首次使用到时进行说明</li>
+</ul>
+<h2 id="Bochs"><a href="#Bochs" class="headerlink" title="Bochs"></a>Bochs</h2><p><a href="http://bochs.sourceforge.net/" target="_blank" rel="noopener">Bochs 官网</a></p>
+<p><a href="https://sourceforge.net/projects/bochs/files/" target="_blank" rel="noopener">Bochs 下载链</a></p>
+<p>说实话这一周都差不多要被 Bochs 折腾死，用源码进行编译出现各种各样的问题。(我猜新版本根本就没考虑对 macOS 做兼容)</p>
+<p>最后，不得不使用经编译后的二进制分发版。 <code>brew install bochs</code> 当然了，反正也能用，就不纠结非得自己编译了。(如果哪位能成功编译个 macOS 可用的应用，希望能把踩得坑整理整理，供后来者参考)</p>
+<h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── CHANGES</span><br><span class="line">├── COPYING</span><br><span class="line">├── INSTALL_RECEIPT.json</span><br><span class="line">├── LICENSE</span><br><span class="line">├── README</span><br><span class="line">├── TODO</span><br><span class="line">├── bin</span><br><span class="line">│   ├── bochs                           // bochs 可执行文件</span><br><span class="line">│   └── bximage                         // 制作磁盘映像文件的工具</span><br><span class="line">├── lib                                 // 动态库目录</span><br><span class="line">│   └── bochs</span><br><span class="line">│       └── plugins</span><br><span class="line">│           ├── libbx_acpi.0.0.0.so</span><br><span class="line">│           ├── ... 略</span><br><span class="line">│           └── libbx_vga.so -&gt; libbx_vga.0.0.0.so</span><br><span class="line">└── share                               // 与体系结构无关的文件放在此目录下</span><br><span class="line">    ├── bochs</span><br><span class="line">    │   ├── BIOS-bochs-latest</span><br><span class="line">    │   ├── BIOS-bochs-legacy</span><br><span class="line">    │   ├── SeaBIOS-README</span><br><span class="line">    │   ├── VGABIOS-elpin-2.40</span><br><span class="line">    │   ├── VGABIOS-elpin-LICENSE</span><br><span class="line">    │   ├── VGABIOS-lgpl-README</span><br><span class="line">    │   ├── VGABIOS-lgpl-latest</span><br><span class="line">    │   ├── VGABIOS-lgpl-latest-cirrus</span><br><span class="line">    │   ├── VGABIOS-lgpl-latest-cirrus-debug</span><br><span class="line">    │   ├── VGABIOS-lgpl-latest-debug</span><br><span class="line">    │   ├── bios.bin-1.7.5</span><br><span class="line">    │   └── keymaps</span><br><span class="line">    │       ├── sdl-pc-us.map</span><br><span class="line">    │       ├── ... 略</span><br><span class="line">    │       └── x11-pc-us.map</span><br><span class="line">    ├── doc</span><br><span class="line">    │   └── bochs</span><br><span class="line">    │       ├── CHANGES</span><br><span class="line">    │       ├── COPYING</span><br><span class="line">    │       ├── LICENSE</span><br><span class="line">    │       ├── README</span><br><span class="line">    │       ├── TODO</span><br><span class="line">    │       ├── bochsrc-sample.txt      // bochsrc 配置文件的示例样板</span><br><span class="line">    │       └── slirp.conf</span><br><span class="line">    └── man</span><br><span class="line">        ├── man1</span><br><span class="line">        │   ├── bochs-dlx.1.gz</span><br><span class="line">        │   ├── bochs.1.gz</span><br><span class="line">        │   └── bximage.1.gz</span><br><span class="line">        └── man5</span><br><span class="line">            └── bochsrc.5.gz</span><br></pre></td></tr></table></figure>
+<h3 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h3><p>Bochs 下载链提供了 Bochs 不同版本的源码的下载，同时也提供了一些可用的磁盘映像文件(都是一些已经经过处理，可用使用进行仿真运行的 OS )</p>
+<p>说实话，这是绝对有必要进行的一步，不仅仅是了解配置文件 bochsrc 的配置方式，更可用借此了解一下仿真器的使用方式。(在启动系统上，我也被坑了一天，后面细说)</p>
+<p>首先，这里演示的将是 DLX Linux 。</p>
+<ol>
+<li><p>下载，解压，进入目录。</p>
+</li>
+<li><p>目录下文件如下</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── bochsrc.txt         // bochs 启动时将默认通过这个文件读取仿真器配置</span><br><span class="line">├── hd10meg.img         // 磁盘映像文件</span><br><span class="line">├── readme.txt</span><br><span class="line">└── testform.txt</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>启动仿真器</li>
+</ol>
+<p>在 DLX Linux 目录下键入命令 <code>bochs</code>, 观察到命令行输出:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">========================================================================</span><br><span class="line">                       Bochs x86 Emulator 2.6.9</span><br><span class="line">               Built from SVN snapshot on April 9, 2017</span><br><span class="line">                  Compiled on May  2 2018 at 13:26:32</span><br><span class="line">========================================================================</span><br><span class="line">00000000000i[      ] LTDL_LIBRARY_PATH not set. using compile time default &apos;/usr/local/Cellar/bochs/2.6.9_2/lib/bochs/plugins&apos;</span><br><span class="line">00000000000i[      ] BXSHARE not set. using compile time default &apos;/usr/local/Cellar/bochs/2.6.9_2/share/bochs&apos;</span><br><span class="line">00000000000i[      ] lt_dlhandle is 0x7fef2252a500</span><br><span class="line">00000000000i[PLUGIN] loaded plugin libbx_usb_common.so</span><br><span class="line">00000000000i[      ] lt_dlhandle is 0x7fef2252a8a0</span><br><span class="line">00000000000i[PLUGIN] loaded plugin libbx_unmapped.so</span><br><span class="line">00000000000i[      ] lt_dlhandle is 0x7fef2252ad00</span><br><span class="line">00000000000i[PLUGIN] loaded plugin libbx_biosdev.so</span><br><span class="line">00000000000i[      ] lt_dlhandle is 0x7fef2252b1e0</span><br><span class="line">00000000000i[PLUGIN] loaded plugin libbx_speaker.so</span><br><span class="line">00000000000i[      ] lt_dlhandle is 0x7fef2252ba50</span><br><span class="line">00000000000i[PLUGIN] loaded plugin libbx_extfpuirq.so</span><br><span class="line">00000000000i[      ] lt_dlhandle is 0x7fef2252be70</span><br><span class="line">00000000000i[PLUGIN] loaded plugin libbx_parallel.so</span><br><span class="line">00000000000i[      ] lt_dlhandle is 0x7fef238013c0</span><br><span class="line">00000000000i[PLUGIN] loaded plugin libbx_serial.so</span><br><span class="line">00000000000i[      ] lt_dlhandle is 0x7fef22706cd0</span><br><span class="line">00000000000i[PLUGIN] loaded plugin libbx_iodebug.so</span><br><span class="line">00000000000i[      ] reading configuration from bochsrc.txt</span><br><span class="line">------------------------------</span><br><span class="line">Bochs Configuration: Main Menu</span><br><span class="line">------------------------------</span><br><span class="line"></span><br><span class="line">This is the Bochs Configuration Interface, where you can describe the</span><br><span class="line">machine that you want to simulate.  Bochs has already searched for a</span><br><span class="line">configuration file (typically called bochsrc.txt) and loaded it if it</span><br><span class="line">could be found.  When you are satisfied with the configuration, go</span><br><span class="line">ahead and start the simulation.</span><br><span class="line"></span><br><span class="line">You can also start bochs with the -q option to skip these menus.</span><br><span class="line"></span><br><span class="line">1. Restore factory default configuration</span><br><span class="line">2. Read options from...</span><br><span class="line">3. Edit options</span><br><span class="line">4. Save options to...</span><br><span class="line">5. Restore the Bochs state from...</span><br><span class="line">6. Begin simulation</span><br><span class="line">7. Quit now</span><br><span class="line"></span><br><span class="line">Please choose one: [6]</span><br></pre></td></tr></table></figure>
+<p>bochs 默认读取当前目录下 <code>bochsrc.txt</code> 文件，因此不需要其他配置。</p>
+<p>选择 6 或者直接 <em>回车</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">00000000000i[      ] lt_dlhandle is 0x7fef22707270</span><br><span class="line">00000000000i[PLUGIN] loaded plugin libbx_sdl2.so</span><br><span class="line">00000000000i[      ] installing sdl2 module as the Bochs GUI</span><br><span class="line">00000000000i[SDL2  ] maximum host resolution: x=2880 y=1800</span><br><span class="line">00000000000i[      ] using log file bochsout.txt</span><br><span class="line">Next at t=0</span><br><span class="line">(0) [0x0000fffffff0] f000:fff0 (unk. ctxt): jmpf 0xf000:e05b          ; ea5be000f0</span><br><span class="line">&lt;bochs:1&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fuevtktuh0j30zc0tcwfd.jpg" alt=""></p>
+<p>终端出现更多输出，同时 Bochs 开启了一个可视化终端(当然，现在还没有任何内容)。</p>
+<p>在这儿被坑了好久。本来以为 Bochs 会直接执行 BIOS 指令，启动操作系统，但是自始至终，停在这里就没动过…</p>
+<p>这边是由于 Bochs 本身是支持调试的(T_T，见鬼)，就像是 GDB 和 LLDB 一样，进入调试后，需要指令 <code>c</code> (continue) 来继续执行(当然，还有其它调试命令)</p>
+<ol start="4">
+<li>键入 <code>c</code> </li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;bochs:1&gt; c</span><br></pre></td></tr></table></figure>
+<p>仿真器开始引导程序的加载</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fuew9zoocuj313c0pstaw.jpg" alt=""></p>
+<p>OS Kernel 启动，等待用户登录 (默认的用户是 root , 没有密码)。<br>之后就和普通的 Linux 机器类似，不过支持的命令比较少。毕竟是一个精简后的系统。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fuewamqzm6j313q0pqjtw.jpg" alt=""></p>
+<ol start="5">
+<li>关机</li>
+</ol>
+<p><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fuewi9wjawj313q0q2gnc.jpg" alt=""></p>
+<p>仿真器仿真了许多实体机案件，右上角最后一个就是关机键</p>
+<h2 id="Docker-容器中运行-Ubuntu"><a href="#Docker-容器中运行-Ubuntu" class="headerlink" title="Docker 容器中运行 Ubuntu"></a>Docker 容器中运行 Ubuntu</h2><p>这部分不详述，作为一个热门的技术，这方面的资料很多。Ubuntu 系统只是为了来执行一些 macOS 上没有的命令的(比如 <code>as86</code>, <code>ld86</code>)</p>
+<p>简述两个 docker 容器和宿主机间复制文件的命令 </p>
+<p>在宿主机下执行命令:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker cp [OPTIONS] CONTAINER:SRC_PATH DEST_PATH|-</span><br><span class="line">docker cp [OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH [flags]</span><br></pre></td></tr></table></figure>
+<p>例如:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker cp linux:/root/hello.c ./hello.c         <span class="comment"># 这里 linux 是 docker 容器名</span></span><br><span class="line">docker cp 92dfc8ad70e1:/root/hello.c ./hello.c  <span class="comment"># 这里 92dfc8ad70e1 是 docker 容器 ID</span></span><br></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1]. 俞甲子. 程序员的自我修养[M]. 电子工业出版社, 2009.<br>[2]. 赵炯. Linux内核完全注释 内核版本0.11 V3.0[EB/OL]. <a href="http://www.oldlinux.org/" target="_blank" rel="noopener">http://www.oldlinux.org/</a>, 2007</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  __                    __                  </span><br><span class="line"> / _| __ _ _ __   __ _ / _| ___ _ __   __ _ </span><br><span class="line">| |_ / _` | &apos;_ \ / _` | |_ / _ \ &apos;_ \ / _` |</span><br><span class="line">|  _| (_| | | | | (_| |  _|  __/ | | | (_| |</span><br><span class="line">|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |</span><br><span class="line">                 |___/                |___/</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://DorMOUSE-None.github.io">Utop</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://DorMOUSE-None.github.io/2018-08-19-understand-Kernel-0/">https://DorMOUSE-None.github.io/2018-08-19-understand-Kernel-0/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/Linux/">Linux</a>
+            
+              <a href="/tags/Kernel/">Kernel</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2018-08-26-understand-Kernel-2/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">理解 Linux Kernel (2) - 多任务切换</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
+    
+      <a class="next" href="/2018-08-19-understand-Kernel-1/">
+        <span class="next-text nav-default">理解 Linux Kernel (1) - BIOS</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:dormousenone@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/DorMOUSE-None" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+    
+    2018
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Utop</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'https://DorMOUSE-None.github.io/2018-08-19-understand-Kernel-0/';
+        this.page.identifier = '2018-08-19-understand-Kernel-0/';
+        this.page.title = '理解 Linux Kernel (0) - 概述';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//utop-blog.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.9.0"></script>
+
+  </body>
+</html>

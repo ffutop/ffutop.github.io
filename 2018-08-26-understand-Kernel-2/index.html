@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="理解 Linux Kernel (2) - 多任务切换">
+
+
+
+
+  <meta name="keywords" content="Linux, Kernel, Multi-Task, Utop's Blog">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Utop's Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.9.0">
+
+
+
+<link rel="canonical" href="https://DorMOUSE-None.github.io/2018-08-26-understand-Kernel-2/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.9.0">
+
+
+
+  
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-92258941-1');
+</script>
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "2IQmE2X540kOtTtNPDzsNh3e-9Nh9j0Va",
+      appKey: "Vk01nlYJoGnfxJ4HCPUqW7p2"
+    });
+  </script>
+
+
+
+
+<script>
+  window.config = {"title":"Utop's Blog","subtitle":null,"description":null,"author":"Utop","language":"zh-cn","timezone":"Asia/Shanghai","url":"https://DorMOUSE-None.github.io","root":"/","permalink":":title/","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null,"first_line_number":"always1"},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":10,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"https://github.com/DorMOUSE-None/DorMOUSE-None.github.io.git","branch":"master","name":"DorMOUSE-None","email":"17816873960@163.com"},"ignore":[],"keywords":null,"index_generator":{"per_page":10,"order_by":"-date","path":""},"archive_generator":{"per_page":10,"yearly":true,"monthly":true,"daily":false},"category_generator":{"per_page":10},"tag_generator":{"per_page":10},"sitemap":{"path":"sitemap.xml"},"feed":{"type":"atom","limit":20,"hub":"","content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true,"modifyAnchors":"","autolink":true},"server":{"port":4000,"log":false,"ip":"0.0.0.0","compress":false,"header":true},"since":2018,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","Tags":"/tags","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"dormousenone@gmail.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/DorMOUSE-None","weibo":null,"zhihu":null,"douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":"2IQmE2X540kOtTtNPDzsNh3e-9Nh9j0Va","app_key":"Vk01nlYJoGnfxJ4HCPUqW7p2"},"baidu_analytics":null,"baidu_verification":null,"google_analytics":"UA-92258941-1","google_verification":null,"disqus_shortname":"utop-blog","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"mathjax":{"enable":true,"per_page":false,"cdn":"//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"},"version":"2.9.0"};
+</script>
+
+    <title> 理解 Linux Kernel (2) - 多任务切换 - Utop's Blog </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Utop's Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Utop's Blog</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          理解 Linux Kernel (2) - 多任务切换
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-08-26
+        </span>
+        
+        
+        <div class="post-visits" data-url="/2018-08-26-understand-Kernel-2/" data-title="理解 Linux Kernel (2) - 多任务切换">
+            阅读次数 0
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#引导程序"><span class="toc-text">引导程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#多任务程序"><span class="toc-text">多任务程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#运行结果"><span class="toc-text">运行结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#附件"><span class="toc-text">附件</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>《只是为了好玩》一书中，林纳斯描述过他最早的试验性程序就是让 CPU 执行两个不同的任务(一个不断输出A，另一个输出B)，同时不断地让 CPU 在两个任务间的切换。</p>
+<p>结合《Linux 内核完全注释》一书，得到了多任务切换的示例程序。</p>
+<p>本节所要描述的内容，正是结合一个框架式的汇编程序(多任务切换程序, 书中提供的内容比较老，无法适应目前的各种工具、环境)，在现有环境中加以处理并成功运行。</p>
+<p>关于运行环境的说明，欢迎参考 <a href="https://dormouse-none.github.io/2018-08-19-understand-Kernel-0/">理解 Linux Kernel (0)</a></p>
+<a id="more"></a>
+<h2 id="引导程序"><a href="#引导程序" class="headerlink" title="引导程序"></a>引导程序</h2><p>在 <a href="https://dormouse-none.github.io/2018-08-19-understand-Kernel-1/">理解 Linux Kernel (1)</a> 已经描述过通过 BIOS 加载引导程序，并执行引导程序的全部流程。<br>当然，也就仅仅到引导程序就结束了。诸如操作系统之类的内容根本就没有涉及。</p>
+<p>不过，无论是操作系统，还是用户程序，都是基于 CPU、内存等硬件而进一步抽象的上层概念。如果问没有操作系统而直接运行程序是否可行？毫无疑问，这绝对是没有问题的。</p>
+<p>CPU 只是忠实地执行寄存器定位到的机器指令，并加以执行。特别是，如果在 <a href="https://dormouse-none.github.io/2018-08-19-understand-Kernel-1/">理解 Linux Kernel (1)</a> 提供的输出 “System Loading…” 的示例程序上继续加以改编，无论是算术运算、显示文本等等目的都是没有问题的。<br>当然，限制也还是有的，512B 是引导程序的上限。</p>
+<p>在机器上电启动之后，存储在非易失性存储器 / 只读存储器上的 BIOS 程序将被加载到内存，并进行执行(至于细节，不甚了解，不表)<br>之后，BIOS 将默认地将指定磁盘(软盘、硬盘等) 首个扇区 512 字节的内容(称为 boot 引导程序)加载到内存地址，并 JMP 到 CS:IP = 0x07c00:0x0000 的位置。从而触发引导程序。</p>
+<p>继而，如果在编写 boot 引导程序的时候，我们使其能够从外存加载额外的代码，并在引导程序结束位置将 CPU 的控制权交给这段额外加载的代码。显然，操作系统就是这样子被加载的。</p>
+<p><code>BIOS -&gt; boot 引导程序 -&gt; 操作系统引导程序 -&gt; 操作系统</code><br>这就构成了一个宏观的操作系统启动的一个流程。</p>
+<p>boot.s 引导程序 <small>主体代码来自《Linux 内核完全注释》，进行了一定量的改写</small></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">BOOTSEG = 0x07c0</span><br><span class="line">SYSSEG = 0x0100</span><br><span class="line">SYSLEN = 17</span><br><span class="line"></span><br><span class="line">entry start</span><br><span class="line">start:</span><br><span class="line">    jmpi    go,#BOOTSEG</span><br><span class="line">go:</span><br><span class="line">    mov ax,cs</span><br><span class="line">    mov ds,ax</span><br><span class="line">    mov ss,ax</span><br><span class="line">    mov sp,#0x0400</span><br><span class="line"></span><br><span class="line">load_system:</span><br><span class="line">    xor dx,dx       ! 开始位置, 磁头:硬盘号</span><br><span class="line">    mov cx,#0x0002  ! 开始位置, 磁道:扇区</span><br><span class="line">    mov ax,#0x0100</span><br><span class="line">    mov es,ax       ! 载入到, ES 段</span><br><span class="line">    xor bx,bx       ! 载入到, 偏移量 </span><br><span class="line">    mov ax,#0x0211  ! AH: 读取扇区子功能, AL: 读取多少个扇区</span><br><span class="line">    int 0x13        ! BIOS 13 号中断</span><br><span class="line">    jnc continue_load   ! JUMP if CF = 0</span><br><span class="line">die:</span><br><span class="line">    jmp die</span><br><span class="line"></span><br><span class="line">continue_load:</span><br><span class="line">    cli             ! 清除中断允许位标志</span><br><span class="line">    mov ax,#SYSSEG </span><br><span class="line">    mov ds,ax       ! 设置数据段寄存器位置 0x1000</span><br><span class="line">    xor ax,ax</span><br><span class="line">    mov es,ax       ! 设置扩展段寄存器 0x0000</span><br><span class="line">    mov cx,#0x1000  ! 计数器</span><br><span class="line">    sub si,si</span><br><span class="line">    sub di,di</span><br><span class="line">    rep </span><br><span class="line">    movsw</span><br><span class="line"></span><br><span class="line">    mov ax,#BOOTSEG</span><br><span class="line">    mov ds,ax       ! 重新设置数据段寄存器到当前数据段基地址</span><br><span class="line">    lidt idt_48     ! 设置中断描述符表寄存器</span><br><span class="line">    lgdt gdt_48     ! 设置全局描述符表寄存器</span><br><span class="line"></span><br><span class="line">    mov ax,#0x0001</span><br><span class="line">    lmsw ax         ! 设置 CR0, 进入保护模式</span><br><span class="line">    jmpi 0,8</span><br><span class="line"></span><br><span class="line">gdt:</span><br><span class="line">    .word   0,0,0,0</span><br><span class="line">    .word   0x07FF,0x0000,0x9A00,0x00C0</span><br><span class="line">    .word   0x07FF,0x0000,0x9200,0x00C0</span><br><span class="line"></span><br><span class="line">idt_48:</span><br><span class="line">    .word   0,0,0</span><br><span class="line">gdt_48:</span><br><span class="line">    .word   0x07FF,0x7C00+gdt,0</span><br><span class="line"></span><br><span class="line">.org 510</span><br><span class="line">    .word   0xAA55</span><br></pre></td></tr></table></figure>
+<p>这段汇编程序，通过 <code>load_system</code> 标识符标识的这段程序表明需要加载0号磁盘,0号磁头,0号磁道,从第2扇区开始,连续17个扇区的内容(这里将存储支持任务切换的程序)，加载到内存以 0x1000 开始的物理地址处。</p>
+<p><code>continue_load</code> 标识将 0x1000 物理地址开始的 4096 字 (即 8192 字节) 的内容依次复制到以 0x0000 开始的物理地址处。</p>
+<p>其后，设置 IDT (中断描述符表)、IDTR(中断描述符表寄存器) 及 GDT(全局描述符表)、GDTR(全局描述符表寄存器)，将 CPU 运行模式改成 <code>保护模式</code> ，继而将控制权转交给这个被加载进来的程序。</p>
+<h2 id="多任务程序"><a href="#多任务程序" class="headerlink" title="多任务程序"></a>多任务程序</h2><p><small>主体内容来自《Linux 内核完全注释》，经过一定量改变以适应当前运行环境</small><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br></pre></td><td class="code"><pre><span class="line"># head.s</span><br><span class="line">.code32</span><br><span class="line">LATCH = 11930</span><br><span class="line">SCRN_SEL = 0x18</span><br><span class="line">TSS0_SEL = 0x20</span><br><span class="line">LDT0_SEL = 0x28</span><br><span class="line">TSS1_SEL = 0x30</span><br><span class="line">LDT1_SEL = 0x38</span><br><span class="line"></span><br><span class="line">.text</span><br><span class="line">.globl startup_32</span><br><span class="line">startup_32:</span><br><span class="line"></span><br><span class="line">    movl $0x00000010,%eax       # 段选择符 2</span><br><span class="line">    mov %ax,%ds                </span><br><span class="line">    lss init_stack,%esp         # Load Far Pointer 加载到 SS:ESP </span><br><span class="line"></span><br><span class="line">    call setup_idt              # 设置中断描述符表</span><br><span class="line">    call setup_gdt              # 设置全局描述符表</span><br><span class="line">    movl $0x00000010,%eax</span><br><span class="line">    mov %ax,%ds</span><br><span class="line">    mov %ax,%es</span><br><span class="line">    mov %ax,%fs</span><br><span class="line">    mov %ax,%gs</span><br><span class="line">    lss init_stack,%esp         # Load Far Pointer 加载到 SS:ESP</span><br><span class="line"></span><br><span class="line"># 设置 8253 定时芯片 10s 一个中断</span><br><span class="line">    movb $0x36,%al  </span><br><span class="line">    movl $0x00000043,%edx</span><br><span class="line">    outb %al,%dx</span><br><span class="line">    movl $LATCH,%eax</span><br><span class="line">    movl $0x40,%edx</span><br><span class="line">    outb %al,%dx</span><br><span class="line">    movb %ah,%al</span><br><span class="line">    outb %al,%dx</span><br><span class="line"></span><br><span class="line">    movl $0x00080000,%eax       # 重新设置 int 0x08 时钟中断</span><br><span class="line">    movw $timer_interrupt,%ax</span><br><span class="line">    movw $0x8E00,%dx</span><br><span class="line">    movl $0x08,%ecx</span><br><span class="line">    lea idt(,%ecx,8),%esi</span><br><span class="line">    movl %eax,(%esi)</span><br><span class="line">    movl %edx,4(%esi)</span><br><span class="line">    movw $system_interrupt,%ax  # 重新设置 int 0x80 系统中断</span><br><span class="line">    movw $0xef00,%dx</span><br><span class="line">    movl $0x80,%ecx</span><br><span class="line">    lea idt(,%ecx,8),%esi</span><br><span class="line">    movl %eax,(%esi)</span><br><span class="line">    movl %edx,4(%esi)</span><br><span class="line"></span><br><span class="line">    pushfl                      # 重置 EFLAGS 嵌套任务标志位</span><br><span class="line">    andl $0xffffbfff,(%esp)</span><br><span class="line">    popfl</span><br><span class="line">    movl $TSS0_SEL,%eax</span><br><span class="line">    ltr %ax                     # Load Task Register</span><br><span class="line">    movl $LDT0_SEL,%eax</span><br><span class="line">    lldt %ax                    # Load Local Descriptor Register</span><br><span class="line">    movl $0,current</span><br><span class="line">    sti                         # set interrupt flag</span><br><span class="line">    pushl $0x17</span><br><span class="line">    pushl $init_stack</span><br><span class="line">    pushfl</span><br><span class="line">    pushl $0x0f</span><br><span class="line">    pushl $task0</span><br><span class="line">    iret</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">setup_gdt:</span><br><span class="line">    lgdt lgdt_opcode</span><br><span class="line">    ret</span><br><span class="line">setup_idt:</span><br><span class="line">    lea ignore_int,%edx         # 预先把中断处理程序的偏移地址 ignore_int 存到 EDX</span><br><span class="line">    movl $0x00080000,%eax       # 预存 0x0008 - 段选择符</span><br><span class="line">    movw %dx,%ax                # 补上 0-15 位偏移地址</span><br><span class="line">    movw $0x8E00,%dx            # DX 补上标志位</span><br><span class="line">    lea idt,%edi</span><br><span class="line">    mov $256,%ecx</span><br><span class="line">rp_idt: movl %eax,(%edi)        # 循环 256 遍处理 IDT</span><br><span class="line">    movl %edx,4(%edi)</span><br><span class="line">    addl $8,%edi</span><br><span class="line">    dec %ecx</span><br><span class="line">    jne rp_idt</span><br><span class="line">    lidt lidt_opcode</span><br><span class="line">    ret</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">write_char:</span><br><span class="line">    push %gs</span><br><span class="line">    pushl %ebx</span><br><span class="line">    mov $SCRN_SEL,%ebx</span><br><span class="line">    mov %bx,%gs</span><br><span class="line">    movl scr_loc,%ebx</span><br><span class="line">    shl $1,%ebx</span><br><span class="line">    movb %al,%gs:(%ebx)</span><br><span class="line">    shr $1,%ebx</span><br><span class="line">    incl %ebx</span><br><span class="line">    cmpl $2000,%ebx</span><br><span class="line">    jb 1f</span><br><span class="line">    movl $0,%ebx</span><br><span class="line">1:  movl %ebx,scr_loc</span><br><span class="line">    popl %ebx</span><br><span class="line">    pop %gs</span><br><span class="line">    ret</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">.align 4</span><br><span class="line">ignore_int:                 # 默认的中断处理程序</span><br><span class="line">    push %ds</span><br><span class="line">    pushl %eax</span><br><span class="line">    movl $0x10,%eax</span><br><span class="line">    mov %ax,%ds</span><br><span class="line">    movl $67,%eax</span><br><span class="line">    call write_char</span><br><span class="line">    popl %eax</span><br><span class="line">    pop %ds</span><br><span class="line">    iret</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">.align 4</span><br><span class="line">timer_interrupt:            # 定时中断处理程序</span><br><span class="line">    push %ds</span><br><span class="line">    pushl %eax</span><br><span class="line">    movl $0x10,%eax</span><br><span class="line">    mov %ax,%ds</span><br><span class="line">    movb $0x20,%al</span><br><span class="line">    outb %al,$0x20</span><br><span class="line">    movl $1,%eax</span><br><span class="line">    cmpl %eax,current</span><br><span class="line">    je 1f</span><br><span class="line">    movl %eax,current</span><br><span class="line">    jmp $TSS1_SEL, $0</span><br><span class="line">    jmp 2f</span><br><span class="line">1:  movl $0,current</span><br><span class="line">    jmp $TSS0_SEL, $0</span><br><span class="line">2:  popl %eax</span><br><span class="line">    pop %ds</span><br><span class="line">    iret</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">.align 4</span><br><span class="line">system_interrupt:           # 系统调用中断处理程序</span><br><span class="line">    push %ds</span><br><span class="line">    pushl %edx</span><br><span class="line">    pushl %ecx</span><br><span class="line">    pushl %ebx</span><br><span class="line">    pushl %eax</span><br><span class="line">    movl $0x10,%edx</span><br><span class="line">    mov %dx,%ds</span><br><span class="line">    call write_char</span><br><span class="line">    popl %eax</span><br><span class="line">    popl %ebx</span><br><span class="line">    popl %ecx</span><br><span class="line">    popl %edx</span><br><span class="line">    pop %ds</span><br><span class="line">    iret</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">current:.long 0</span><br><span class="line">scr_loc:.long 0</span><br><span class="line"></span><br><span class="line">.align 4</span><br><span class="line">lidt_opcode:</span><br><span class="line">    .word 256*8-1</span><br><span class="line">    .long idt</span><br><span class="line">lgdt_opcode:</span><br><span class="line">    .word (end_gdt-gdt)-1</span><br><span class="line">    .long gdt</span><br><span class="line"></span><br><span class="line">.align 8</span><br><span class="line">idt:    .fill 256,8,0</span><br><span class="line"></span><br><span class="line">gdt:    .quad 0x0000000000000000</span><br><span class="line">        .quad 0x00c09a00000007ff</span><br><span class="line">        .quad 0x00c09200000007ff</span><br><span class="line">        .quad 0x00c0920b80000002</span><br><span class="line">        .word 0x68,tss0,0xe900,0x0</span><br><span class="line">        .word 0x40,ldt0,0xe200,0x0</span><br><span class="line">        .word 0x68,tss1,0xe900,0x0</span><br><span class="line">        .word 0x40,ldt1,0xe200,0x0</span><br><span class="line">end_gdt:</span><br><span class="line">        .fill 128,4,0</span><br><span class="line">init_stack:</span><br><span class="line">    .long init_stack</span><br><span class="line">    .word 0x0010</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">.align 8</span><br><span class="line">ldt0:   .quad 0x0000000000000000</span><br><span class="line">        .quad 0x00c0fa00000003ff</span><br><span class="line">        .quad 0x00c0f200000003ff</span><br><span class="line"></span><br><span class="line">tss0:   .long 0</span><br><span class="line">        .long krn_stk0, 0x10</span><br><span class="line">        .long 0,0,0,0,0</span><br><span class="line">        .long 0,0,0,0,0</span><br><span class="line">        .long 0,0,0,0,0</span><br><span class="line">        .long 0,0,0,0,0,0</span><br><span class="line">        .long LDT0_SEL,0x8000000</span><br><span class="line"></span><br><span class="line">        .fill 128,4,0</span><br><span class="line">krn_stk0:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">.align 8</span><br><span class="line">ldt1:   .quad 0x0000000000000000</span><br><span class="line">        .quad 0x00c0fa00000003ff</span><br><span class="line">        .quad 0x00c0f200000003ff</span><br><span class="line"></span><br><span class="line">tss1:   .long 0</span><br><span class="line">        .long krn_stk1,0x10</span><br><span class="line">        .long 0,0,0,0,0</span><br><span class="line">        .long task1,0x200</span><br><span class="line">        .long 0,0,0,0</span><br><span class="line">        .long usr_stk1,0,0,0</span><br><span class="line">        .long 0x17,0x0f,0x17,0x17,0x17,0x17</span><br><span class="line">        .long LDT1_SEL,0x8000000</span><br><span class="line"></span><br><span class="line">        .fill 128,4,0</span><br><span class="line">krn_stk1:</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">task0:</span><br><span class="line">    movl $0x17,%eax</span><br><span class="line">    movw %ax,%ds</span><br><span class="line">    mov $65,%al</span><br><span class="line">    int $0x80</span><br><span class="line">    movl $0xfff,%ecx</span><br><span class="line">1:  loop 1b</span><br><span class="line">    jmp task0</span><br><span class="line">task1:</span><br><span class="line">    mov $66,%al</span><br><span class="line">    int $0x80</span><br><span class="line">    movl $0xfff,%ecx</span><br><span class="line">1:  loop 1b</span><br><span class="line">    jmp task1</span><br><span class="line"></span><br><span class="line">    .fill 128,4,0</span><br><span class="line">usr_stk1:</span><br></pre></td></tr></table></figure></p>
+<p>上面的这个程序内容不再详述，想了解细节请参考 《Linux 内核完全注释》</p>
+<p>下面提供编译 <code>boot.s</code> 以及 <code>head.s</code> 的可用 Makefile</p>
+<p>首先描述一下额外的工具版本</p>
+<ul>
+<li>GNU as : GNU assembler version 2.26.1 </li>
+<li>GNU ld : GNU ld 2.26.1<br>其它内容详见 <a href="https://dormouse-none.github.io/2018-08-19-understand-Kernel-0/">理解 Linux Kernel (0)</a></li>
+</ul>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Makefile for the simple example kernel.</span></span><br><span class="line">AS86	=as86 -0 -a</span><br><span class="line">LD86	=ld86 -0</span><br><span class="line">AS	=as</span><br><span class="line">ASFLAGS =-32</span><br><span class="line">LD	=ld</span><br><span class="line">LDFLAGS	=-s -x -M -m elf_i386 -e startup_32 -Ttext 0x0</span><br><span class="line"></span><br><span class="line"><span class="section">all:	Image</span></span><br><span class="line"></span><br><span class="line"><span class="section">Image: boot system</span></span><br><span class="line">	dd bs=32 if=boot of=Image skip=1</span><br><span class="line">	dd bs=512 if=system of=Image skip=8 seek=1</span><br><span class="line">	sync</span><br><span class="line"></span><br><span class="line"><span class="section">disk: Image</span></span><br><span class="line">	dd bs=8192 if=Image of=/dev/fd0</span><br><span class="line">	sync;sync;sync</span><br><span class="line"></span><br><span class="line"><span class="section">head.o: </span></span><br><span class="line">	<span class="variable">$(AS)</span> <span class="variable">$(ASFLAGS)</span> -o head.o head.s</span><br><span class="line"></span><br><span class="line"><span class="section">system:	head.o </span></span><br><span class="line">	<span class="variable">$(LD)</span> <span class="variable">$(LDFLAGS)</span> head.o  -o system &gt; System.map</span><br><span class="line"></span><br><span class="line"><span class="section">boot:	boot.s</span></span><br><span class="line">	<span class="variable">$(AS86)</span> -o boot.o boot.s</span><br><span class="line">	<span class="variable">$(LD86)</span> -s -o boot boot.o</span><br><span class="line"></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	rm -f Image System.map core boot *.o system</span><br></pre></td></tr></table></figure>
+<h2 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h2><p>想了解更多细节的请自行实操查看吧!</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fun1fvafhwg30k40d4x6p.gif" alt=""></p>
+<h2 id="附件"><a href="#附件" class="headerlink" title="附件"></a>附件</h2><p><a href="https://raw.githubusercontent.com/DorMOUSE-None/Repo/master/understand-kernel-2.zip" target="_blank" rel="noopener">程序源码</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  __                    __                  </span><br><span class="line"> / _| __ _ _ __   __ _ / _| ___ _ __   __ _ </span><br><span class="line">| |_ / _` | &apos;_ \ / _` | |_ / _ \ &apos;_ \ / _` |</span><br><span class="line">|  _| (_| | | | | (_| |  _|  __/ | | | (_| |</span><br><span class="line">|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |</span><br><span class="line">                 |___/                |___/</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://DorMOUSE-None.github.io">Utop</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://DorMOUSE-None.github.io/2018-08-26-understand-Kernel-2/">https://DorMOUSE-None.github.io/2018-08-26-understand-Kernel-2/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/Linux/">Linux</a>
+            
+              <a href="/tags/Kernel/">Kernel</a>
+            
+              <a href="/tags/Multi-Task/">Multi-Task</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2018-09-08-preprocessor-output/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Preprocessor Output</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
+    
+      <a class="next" href="/2018-08-19-understand-Kernel-0/">
+        <span class="next-text nav-default">理解 Linux Kernel (0) - 概述</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:dormousenone@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/DorMOUSE-None" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+    
+    2018
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Utop</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'https://DorMOUSE-None.github.io/2018-08-26-understand-Kernel-2/';
+        this.page.identifier = '2018-08-26-understand-Kernel-2/';
+        this.page.title = '理解 Linux Kernel (2) - 多任务切换';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//utop-blog.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.9.0"></script>
+
+  </body>
+</html>
