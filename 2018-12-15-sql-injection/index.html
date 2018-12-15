@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="SQL 注入">
+
+
+
+
+  <meta name="keywords" content="Security, SQL, Utop's Blog">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Utop's Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.9.0">
+
+
+
+<link rel="canonical" href="https://DorMOUSE-None.github.io/2018-12-15-sql-injection/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.9.0">
+
+
+
+  
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-92258941-1');
+</script>
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "2IQmE2X540kOtTtNPDzsNh3e-9Nh9j0Va",
+      appKey: "Vk01nlYJoGnfxJ4HCPUqW7p2"
+    });
+  </script>
+
+
+
+
+<script>
+  window.config = {"title":"Utop's Blog","subtitle":null,"description":null,"author":"Utop","language":"zh-cn","timezone":"Asia/Shanghai","url":"https://DorMOUSE-None.github.io","root":"/","permalink":":title/","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null,"first_line_number":"always1"},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":10,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"https://github.com/DorMOUSE-None/DorMOUSE-None.github.io.git","branch":"master","name":"DorMOUSE-None","email":"17816873960@163.com"},"ignore":[],"keywords":null,"index_generator":{"per_page":10,"order_by":"-date","path":""},"math":{"engine":"mathjax","mathjax":{"src":"//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML","config":{"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}}}},"feed":{"type":"atom","limit":20,"hub":"","content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"archive_generator":{"per_page":10,"yearly":true,"monthly":true,"daily":false},"category_generator":{"per_page":10},"sitemap":{"path":"sitemap.xml"},"tag_generator":{"per_page":10},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true,"modifyAnchors":"","autolink":true},"server":{"port":4000,"log":false,"ip":"0.0.0.0","compress":false,"header":true},"since":2018,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","Tags":"/tags","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"dormousenone@gmail.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/DorMOUSE-None","weibo":null,"zhihu":null,"douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":"2IQmE2X540kOtTtNPDzsNh3e-9Nh9j0Va","app_key":"Vk01nlYJoGnfxJ4HCPUqW7p2"},"baidu_analytics":null,"baidu_verification":null,"google_analytics":"UA-92258941-1","google_verification":null,"disqus_shortname":"utop-blog","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"mathjax":{"enable":true,"per_page":false,"cdn":"//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"},"version":"2.9.0"};
+</script>
+
+    <title> SQL 注入 - Utop's Blog </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Utop's Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Utop's Blog</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          SQL 注入
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-12-15
+        </span>
+        
+        
+        <div class="post-visits" data-url="/2018-12-15-sql-injection/" data-title="SQL 注入">
+            阅读次数 0
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概要"><span class="toc-text">概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL-注入技术"><span class="toc-text">SQL 注入技术</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基于布尔的注入"><span class="toc-text">基于布尔的注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于时间的注入"><span class="toc-text">基于时间的注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于报错的注入"><span class="toc-text">基于报错的注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#联合查询注入"><span class="toc-text">联合查询注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#堆查询注入"><span class="toc-text">堆查询注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#另类注入"><span class="toc-text">另类注入</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQLMAP"><span class="toc-text">SQLMAP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#预编译-SQL"><span class="toc-text">预编译 SQL</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <p>说实话此前对 SQL 注入的理解仅仅只是皮毛。当然，目前也是，只是有了一定程度的理解。</p>
+<p>最近好像工具用得有些过头了，需要停下来整理下工具的实现原理。</p>
+<p>更好地理解了工具实现，才能更加心安理得地使用工具。毕竟等别人怼的时候，还能够比较安心地回道: “我用不用现成的工具只是取决于我想不想自己再写一套”</p>
+<p>当然，毕竟成熟的工具有更多的优化，这就不是短时间内我想不想自己写的问题了，哈哈。</p>
+<a id="more"></a>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>SQL 注入漏洞究竟会产生怎么样的危害性，仅仅只是绕过某些登录账号密码的验证? 只是绕过某些访问限制实现特权内容的访问?</p>
+<p>此前我的认识也仅仅只是停留在这里。可谁曾想，SQL SELECT 语句真的是功能强大啊。通过各种各样的字符串拼接，最终能达到的目的，可以说把整个数据库的内容拖下来也不为过。当然，这也是限定在没有实现分库分表，数据库查询账号的权限过大的前提下。</p>
+<p>不过，这也就够了。只有真正认识到问题的严重性，最终才会想着去做出一些改善。</p>
+<h2 id="SQL-注入技术"><a href="#SQL-注入技术" class="headerlink" title="SQL 注入技术"></a>SQL 注入技术</h2><h3 id="基于布尔的注入"><a href="#基于布尔的注入" class="headerlink" title="基于布尔的注入"></a>基于布尔的注入</h3><p>最早接触到 SQL 注入问题，还是两个月前。操作的内容也相当简单，猜解某账号的密码。</p>
+<p>某接口提供了查询账号的功能，后台的拼接 SQL 可以简单理解成 <code>SELECT * FROM users WHERE username = &#39;${}&#39;</code> 。其中 <code>${}</code> 就是直接使用的接口请求参数。</p>
+<p>而接口的请求结果会根据 SQL 查询的结果，有或没有记录呈现两个不同的页面。</p>
+<p>这算是最简单容易的 SQL 注入了，也是凭借个人能力直接能够想到注入点的问题了。</p>
+<p>最先做的就是猜解存储密码字段的字段名究竟是什么? 很好，符合常理的设计，直接就是 <code>passwd</code> 。</p>
+<p>下面就是苦力工作，利用 SQL LIKE 操作符，逐一去猜每一位。<code>${}</code> 的注入内容就类似 <code>admin&#39; AND passwd LIKE &#39;?%</code> 这里的问号就是逐一猜解的内容(1-9a-zA-Z + 特殊符号)</p>
+<p>至于为什么利用 LIKE 操作符，很明确，减少猜解的次数。否则，在密码未知的情况下，即使六位密码也有猜解百万次。而 LIKE 操作符能将猜解次数降为线性，<code>密码长度 * 字符集数</code> 次</p>
+<p>这里仅仅用了 <code>AND</code>，但熟悉了一个，其它就基本类似了。</p>
+<p>如果登录也能够注入，认证 SQL 类似 <code>SELECT * FROM users WHERE username = &#39;${}&#39; AND passwd = &#39;${}&#39;</code>，那么直接在第一个 <code>${}</code> 处注入 <code>admin&#39; OR 1=1; --</code></p>
+<h3 id="基于时间的注入"><a href="#基于时间的注入" class="headerlink" title="基于时间的注入"></a>基于时间的注入</h3><p>绝大多数时候，注入绝对没有这么简单。也许注入点背后的拼接 SQL 并不对返回值产生影响。例如仅仅只是为了从 DB 查询用户信息，并打一条日志，返回的永远是静态日志（当然，我知道这个例子不恰当，无奈目前只能想到这个）。</p>
+<p>既然拼接 SQL 总是存在，但没法给我们一个直观的注入成功 OR 失败的提示。那么，时间就成了一个最好的判断。毕竟是阻塞式的执行。</p>
+<p>还是以 <code>SELECT * FROM users WHERE username = &#39;${}&#39;</code> 为例，使用类似 <code>admin&#39; AND IF(passwd LIKE &#39;5%&#39;, SLEEP(5), 1);--</code> 的 PAYLOAD ，当满足 <code>passwd</code> 以 5 开始时，则 IF 判断进入 <code>SLEEP(5)</code> ，根据网页的响应时长就可以进行相应的判断。</p>
+<h3 id="基于报错的注入"><a href="#基于报错的注入" class="headerlink" title="基于报错的注入"></a>基于报错的注入</h3><p>这应该也算一种比较容易自动化的注入方式了。其实在猜解存储密码字段的字段名时，前面也是这样用的。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; SELECT * FROM users WHERE password ='1';</span><br><span class="line">ERROR 1054 (42S22): Unknown column 'password' in 'where clause'</span><br></pre></td></tr></table></figure>
+<p>如果程序不做任何处理，对 SQL 错误直接抛出，那么，通过这个就能获得相当多的信息。</p>
+<p>由于这部分接触不深，仅仅给出 sqlmap 提的 PAYLOAD</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AND (SELECT [RANDNUM] FROM(SELECT COUNT(*),CONCAT(&apos;[DELIMITER_START]&apos;,([QUERY]),&apos;[DELIMITER_STOP]&apos;,FLOOR(RAND(0)*2))x FROM INFORMATION_SCHEMA.PLUGINS GROUP BY x)a)</span><br></pre></td></tr></table></figure>
+<p>很标准的 PAYLOAD，而且完全可以。<code>INFORMATION_SCHEMA</code> 库的表对所有用户都可查，因此不存在授权的问题。而且表中数据至少大于等于 3 条。</p>
+<p>这个 PAYLOAD 一定导致报错的主因，就是对 <code>RAND()</code> 与 <code>GROUP BY</code> 的配合应用。</p>
+<blockquote>
+<p>Use of a column with RAND() values in an ORDER BY or GROUP BY clause may yield unexpected results because for either clause a RAND() expression can be evaluated multiple times for the same row, each time returning a different result. If the goal is to retrieve rows in random order, you can use a statement like this:</p>
+</blockquote>
+<p>而真正想要得到的内容，通过 <code>CONCAT(&#39;[DELIMITER_START]&#39;,([QUERY]),&#39;[DELIMITER_STOP]&#39;,FLOOR(RAND(0)*2))x</code> 得到，<code>[QUERY]</code> 就是真正想要注入的完整SQL串。</p>
+<p>而这里的 <code>DELIMITER_START</code> <code>DELIMITER_STOP</code> 作为界定符，帮助程序提取 <code>[QUERY]</code> 得到的结果。否则，直接对请求返回的结果进行过滤可真是太困难了。</p>
+<h3 id="联合查询注入"><a href="#联合查询注入" class="headerlink" title="联合查询注入"></a>联合查询注入</h3><p>联合查询，应该算是最顾名思义的注入方式。使用 <code>UNION</code> 在原 SQL 已经限定了查询表的前提下，获得数据库其它库表的信息。</p>
+<p>LIKE: <code>1&#39; UNION SELECT * FROM users;--</code> 这样的 PAYLOAD。</p>
+<h3 id="堆查询注入"><a href="#堆查询注入" class="headerlink" title="堆查询注入"></a>堆查询注入</h3><p>我想这应该是最让人摸不着头脑的命名方式了。</p>
+<p>形象化的，我们利用 PAYLOAD 来进行说明。<code>1&#39;; INSERT INTO users (user, passwd) VALUES (&#39;aaa&#39;, &#39;aaa&#39;);--</code></p>
+<p>看起来和 UNION 挺像的哈，都是补充上一个 OR 多个 SQL 。当然，也是有区别的，否则为什么会出现这样一种技术呢。</p>
+<p>最大的区别，就是堆查询注入能够完成 <code>UPDATE</code>, <code>INSERT</code>, <code>DELETE</code> 等操作，毕竟，UNION 联合的只能是作为查询了（可能说法不太恰当，但姑且这样吧）</p>
+<h3 id="另类注入"><a href="#另类注入" class="headerlink" title="另类注入"></a>另类注入</h3><p>之前的几种，我们都是利用了 <code>SELECT</code> 完成的注入，那么对于 <code>INSERT</code>, <code>UPDATE</code> 之类的语句是否有注入的可能呢。当然也是存在可能的。</p>
+<p>不过，精力有限，而且目前看来也不需要做到这一步。暂时挖个坑吧。不填</p>
+<h2 id="SQLMAP"><a href="#SQLMAP" class="headerlink" title="SQLMAP"></a>SQLMAP</h2><p>简单的了解了几种注入原理之后，还是要看看 SQL 注入神器的——<code>SQLMAP</code></p>
+<p>也算是尝试了好久才真正了解它的强大之处。此处强烈推荐 DVWA，<code>Damn Vulnerable Web Application</code>，一个用来合法攻击的工具。</p>
+<p>部署方式也是开箱可用，只要有 docker，直接 <code>docker run --rm -it -p 80:80 vulnerables/web-dvwa</code> 即可完成部署。</p>
+<p>对于将 DVWA 安全级别设置为 low 时，仅仅只需要执行下列命令就可以获取到 DB 里几乎完整的信息。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sqlmap -u http://127.0.0.1/vulnerabilities/sqli/\?id\=1\&amp;Submit\=Submit\<span class="comment"># --cookie="PHPSESSID=jhton35qahj78l3unjea9k2lf7;security=low" -v 3 --banner</span></span><br></pre></td></tr></table></figure>
+<p>当然，换一下相关获取的内容，例如把 <code>--banner</code> 换成 <code>--dump</code> ，我们借此来简单看看 SQL 注入漏洞的可怕之处</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">[10:41:39] [INFO] using default dictionary</span><br><span class="line"><span class="keyword">do</span> you want to use common password suffixes? (slow!) [y/N]</span><br><span class="line">[10:41:40] [INFO] starting dictionary-based cracking (md5_generic_passwd)</span><br><span class="line">[10:41:40] [INFO] starting 8 processes</span><br><span class="line">[10:41:42] [INFO] cracked password <span class="string">'abc123'</span> <span class="keyword">for</span> <span class="built_in">hash</span> <span class="string">'e99a18c428cb38d5f260853678922e03'</span></span><br><span class="line">[10:41:44] [INFO] cracked password <span class="string">'charley'</span> <span class="keyword">for</span> <span class="built_in">hash</span> <span class="string">'8d3533d75ae2c3966d7e0d4fcc69216b'</span></span><br><span class="line">[10:41:47] [INFO] cracked password <span class="string">'letmein'</span> <span class="keyword">for</span> <span class="built_in">hash</span> <span class="string">'0d107d09f5bbe40cade3de5c71e9e9b7'</span></span><br><span class="line">[10:41:49] [INFO] cracked password <span class="string">'password'</span> <span class="keyword">for</span> <span class="built_in">hash</span> <span class="string">'5f4dcc3b5aa765d61d8327deb882cf99'</span></span><br><span class="line">[10:41:53] [DEBUG] post-processing table dump</span><br><span class="line">Database: dvwa</span><br><span class="line">Table: users</span><br><span class="line">[5 entries]</span><br><span class="line">+---------+-----------------------------+---------+---------------------------------------------+-----------+------------+---------------------+--------------+</span><br><span class="line">| user_id | avatar                      | user    | password                                    | last_name | first_name | last_login          | failed_login |</span><br><span class="line">+---------+-----------------------------+---------+---------------------------------------------+-----------+------------+---------------------+--------------+</span><br><span class="line">| 1       | /hackable/users/admin.jpg   | admin   | 5f4dcc3b5aa765d61d8327deb882cf99 (password) | admin     | admin      | 2018-12-15 00:42:31 | 0            |</span><br><span class="line">| 2       | /hackable/users/gordonb.jpg | gordonb | e99a18c428cb38d5f260853678922e03 (abc123)   | Brown     | Gordon     | 2018-12-15 00:42:31 | 0            |</span><br><span class="line">| 3       | /hackable/users/1337.jpg    | 1337    | 8d3533d75ae2c3966d7e0d4fcc69216b (charley)  | Me        | Hack       | 2018-12-15 00:42:31 | 0            |</span><br><span class="line">| 4       | /hackable/users/pablo.jpg   | pablo   | 0d107d09f5bbe40cade3de5c71e9e9b7 (letmein)  | Picasso   | Pablo      | 2018-12-15 00:42:31 | 0            |</span><br><span class="line">| 5       | /hackable/users/smithy.jpg  | smithy  | 5f4dcc3b5aa765d61d8327deb882cf99 (password) | Smith     | Bob        | 2018-12-15 00:42:31 | 0            |</span><br><span class="line">+---------+-----------------------------+---------+---------------------------------------------+-----------+------------+---------------------+--------------+</span><br></pre></td></tr></table></figure>
+<p>这里就可以看到 <code>dvwa.users</code> 表的全部内容，甚至连简单密码都帮你完成了爆破。</p>
+<p>更多内容可以自行尝试，说真的，这个工具相当强大。如果仅仅说我针对某型数据库(例如 MySQL)完成诸如基于报错的注入，在不考虑鲁棒性的情况下，完全可以做到。但是支持超10余种数据库，且自动完成注入的全过程…</p>
+<h2 id="预编译-SQL"><a href="#预编译-SQL" class="headerlink" title="预编译 SQL"></a>预编译 SQL</h2><p>提了这么多，究竟 SQL 注入就不能够预防吗? 当然可以，不然整个网络环境下的WEB应用不得都完蛋了。有釜底抽薪的处理方式吗，也有。</p>
+<p>预编译 SQL 就是一个超级 OK 的解决方案。同时在使用上也能够明显提升 DB 查询效率</p>
+<p>我相信预编译 SQL 很多人写过，毕竟借助例如 MyBatis 框架，能够快速实现 SQL 预编译语句的编写。同时在求学过程中估计也都用过 Java 原生 JDBC 的 <code>PreparedStatement</code> 。</p>
+<p>那么，与 MySQL 交互时的预编译 SQL 是怎么样地填上了占位符呢? 先来看看再说</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; prepare &#123;name&#125; from 'SELECT * FROM users WHERE user=? AND passwd=?'; # 这里的 &#123;name&#125; 可以自定义命名，无需 &#123;&#125;</span><br><span class="line"></span><br><span class="line">mysql&gt; set @a='admin', @b='password';     # 声明变量，并赋值</span><br><span class="line"></span><br><span class="line">mysql&gt; execute &#123;name&#125; using @a, @b;     # 提供变量并执行预编译 SQL</span><br></pre></td></tr></table></figure>
+<p>我想看到这里应该就应该能够明白了吧，MySQL 对于预编译 SQL 的每一个占位符，都已经认定了是单一的元素，也就不可能存在允许打破已有预编译结果的内容了。</p>
+<p>即使真的注入了 <code>admin OR 1=1</code> 之类的内容，也是会被认为这是一个完整的字符串，用来替代 <code>user</code> 字段或 <code>passwd</code> 字段，根本不可能重新拆解。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  __                    __                  </span><br><span class="line"> / _| __ _ _ __   __ _ / _| ___ _ __   __ _ </span><br><span class="line">| |_ / _` | &apos;_ \ / _` | |_ / _ \ &apos;_ \ / _` |</span><br><span class="line">|  _| (_| | | | | (_| |  _|  __/ | | | (_| |</span><br><span class="line">|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |</span><br><span class="line">                 |___/                |___/</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://DorMOUSE-None.github.io">Utop</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://DorMOUSE-None.github.io/2018-12-15-sql-injection/">https://DorMOUSE-None.github.io/2018-12-15-sql-injection/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/Security/">Security</a>
+            
+              <a href="/tags/SQL/">SQL</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2018-11-16-regex-exponential-explosion/">
+        <span class="next-text nav-default">正则表达式指数爆炸</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:dormousenone@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/DorMOUSE-None" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+    
+    2018
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Utop</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'https://DorMOUSE-None.github.io/2018-12-15-sql-injection/';
+        this.page.identifier = '2018-12-15-sql-injection/';
+        this.page.title = 'SQL 注入';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//utop-blog.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.9.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+  </body>
+</html>
