@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://DorMOUSE-None.github.io/"/>
-  <updated>2019-01-15T02:41:27.028Z</updated>
+  <updated>2019-01-15T06:05:20.845Z</updated>
   <id>https://DorMOUSE-None.github.io/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://DorMOUSE-None.github.io/2019-01-15-understand-Kernel-8/"/>
     <id>https://DorMOUSE-None.github.io/2019-01-15-understand-Kernel-8/</id>
     <published>2019-01-14T16:00:00.000Z</published>
-    <updated>2019-01-15T02:41:27.028Z</updated>
+    <updated>2019-01-15T06:05:20.845Z</updated>
     
     <content type="html"><![CDATA[<div class="row"><iframe src="https://drive.google.com/file/d/1l5Vjrs8vKy6b9EvZFP7c7hOblv2kHgNx/preview" style="width:100%; height:550px"></iframe></div>]]></content>
     
@@ -37,6 +37,12 @@
     
     </summary>
     
+    
+      <category term="Linux" scheme="https://DorMOUSE-None.github.io/tags/Linux/"/>
+    
+      <category term="Kernel" scheme="https://DorMOUSE-None.github.io/tags/Kernel/"/>
+    
+      <category term="Network" scheme="https://DorMOUSE-None.github.io/tags/Network/"/>
     
   </entry>
   
