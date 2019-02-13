@@ -1451,3 +1451,23 @@ h6 {
   border: solid 2px #545b62;
   padding: 2px 10px;
   font-weight: 700; }
+
+.about-contact {
+  position: relative;
+  margin-top: 40px;
+  border-top: #EBF2F6 2px solid;
+  padding-top: 40px; }
+
+.about-icon {
+  max-width: 12%;
+  position: absolute;
+  border-radius: 50%;
+  border: 2px double #545b62;
+  margin: 0;
+  top: -44px;
+  left: 44%;
+  background: #FFFFFF; }
+
+.about-split img {
+  max-width: 100%;
+  border-radius: 50%; }
