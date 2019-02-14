@@ -1425,9 +1425,9 @@ h6 {
   vertical-align: top; }
 
 .about-intro h1 {
-  font-size: 36px;
+  font-size: 2.25rem;
   margin-top: 0;
-  margin-bottom: 15px; }
+  margin-bottom: 0.9375rem; }
 
 .about-intro ul {
   padding: 0; }
@@ -1436,9 +1436,8 @@ h6 {
   display: inline-block;
   border: 2px solid #545b62;
   border-radius: 5px;
-  box-shadow: 3px 2px #545b62;
   background: #545b62;
-  padding: 2px 1px;
+  padding: 2px 10px;
   margin-right: 10px;
   color: #ffffff;
   font-weight: 700; }
@@ -1454,20 +1453,29 @@ h6 {
 
 .about-contact {
   position: relative;
-  margin-top: 40px;
+  margin-top: 2.5rem;
   border-top: #EBF2F6 2px solid;
-  padding-top: 40px; }
+  padding-bottom: 2rem;
+  border-bottom: #EBF2F6 2px solid;
+  margin-bottom: 2.5rem; }
 
 .about-icon {
-  max-width: 12%;
-  position: absolute;
+  position: relative;
+  width: 5rem;
   border-radius: 50%;
   border: 2px double #545b62;
-  margin: 0;
-  top: -44px;
-  left: 44%;
+  margin: 0 auto;
+  top: -2.5rem;
   background: #FFFFFF; }
 
-.about-split img {
-  max-width: 100%;
-  border-radius: 50%; }
+.about-icon img {
+  width: 5rem; }
+
+.about-contact ul {
+  padding: 0;
+  margin: 0.25rem auto;
+  text-align: center; }
+
+.about-contact li {
+  display: inline-block;
+  padding: 0 0.5rem; }
