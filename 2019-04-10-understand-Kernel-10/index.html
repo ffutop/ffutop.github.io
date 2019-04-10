@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head><meta name="generator" content="Hexo 3.8.0">
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+<meta name="theme-color" content="#f8f5ec">
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="理解 Linux Kernel(10) - Context of Execution">
+
+
+
+
+  <meta name="keywords" content="Linux, Kernel, COE, Utop's Blog">
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Utop's Blog">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.9.0">
+
+
+
+<link rel="canonical" href="https://DorMOUSE-None.github.io/2019-04-10-understand-Kernel-10/">
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.9.0">
+
+
+<link href="https://fonts.googleapis.com/css?family=Noto+Sans+SC" rel="stylesheet">
+
+
+<link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC:400,700" rel="stylesheet">
+
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+
+
+  
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-92258941-1');
+</script>
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "2IQmE2X540kOtTtNPDzsNh3e-9Nh9j0Va",
+      appKey: "Vk01nlYJoGnfxJ4HCPUqW7p2"
+    });
+  </script>
+
+
+
+
+<script>
+  window.config = {"title":"Utop's Blog","subtitle":null,"description":null,"author":"Utop","language":"zh-cn","timezone":"Asia/Shanghai","url":"https://DorMOUSE-None.github.io","root":"/","permalink":":title/","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null,"first_line_number":"always1"},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":0,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"https://github.com/DorMOUSE-None/DorMOUSE-None.github.io.git","branch":"master","name":"DorMOUSE-None","email":"17816873960@163.com"},"ignore":[],"keywords":null,"index_generator":{"per_page":10,"order_by":"-date","path":""},"math":{"engine":"mathjax","mathjax":{"src":"//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML","config":{"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}}}},"archive_generator":{"per_page":0,"yearly":true,"monthly":true,"daily":false},"category_generator":{"per_page":0},"feed":{"type":"atom","limit":20,"hub":"","content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"tag_generator":{"per_page":0},"sitemap":{"path":"sitemap.xml"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true,"modifyAnchors":"","autolink":true},"server":{"port":4000,"log":false,"ip":"0.0.0.0","compress":false,"header":true},"since":2018,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","Tags":"/tags","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"dormousenone@gmail.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/DorMOUSE-None","weibo":null,"zhihu":null,"douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":"2IQmE2X540kOtTtNPDzsNh3e-9Nh9j0Va","app_key":"Vk01nlYJoGnfxJ4HCPUqW7p2"},"baidu_analytics":null,"baidu_verification":null,"google_analytics":"UA-92258941-1","google_verification":null,"disqus_shortname":"utop-blog","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"mathjax":{"enable":true,"per_page":false,"cdn":"//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"},"version":"2.9.0"};
+</script>
+
+    <title> 理解 Linux Kernel(10) - Context of Execution - Utop's Blog </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">Utop's Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            首页
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            归档
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            标签
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            关于
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Utop's Blog</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          理解 Linux Kernel(10) - Context of Execution
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-04-10
+        </span>
+        
+        
+        <div class="post-visits" data-url="/2019-04-10-understand-Kernel-10/" data-title="理解 Linux Kernel(10) - Context of Execution">
+            阅读次数 0
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#fork-clone"><span class="toc-text">fork, clone</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#do-fork"><span class="toc-text">do_fork</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pid-tgid"><span class="toc-text">pid, tgid</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#schedule"><span class="toc-text">schedule</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#concept-of-Thread"><span class="toc-text">concept of Thread</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Thread-Model"><span class="toc-text">Thread Model</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-Model"><span class="toc-text">1:1 Model</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#N-1-Model"><span class="toc-text">N:1 Model</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#M-N-Model"><span class="toc-text">M:N Model</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Threads-vs-Events"><span class="toc-text">Threads vs Events</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-text">参考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用户级线程资料参考"><span class="toc-text">用户级线程资料参考</span></a></li></ol>
+    </div>
+  </div>
+
+
+
+    <div class="post-content">
+      
+        <p>在进行<a href="https://www.ffutop.com/2018-10-12-understand-Kernel-4/" target="_blank" rel="noopener">第四篇(任务调度)</a>行文描述时，就一直闹不清内核所谓的<code>task</code>的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：<strong>我们错误地将理论和实践不加区分地混淆了</strong>。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，<code>task</code> 也就是 <code>Context of Execution</code> 概念在实现上的表征。</p>
+<a id="more"></a>
+<p>执行的上下文(Context of Execution, COE)，记录了所有程序执行中的状态，包括：CPU状态（寄存器信息等）、MMU状态（页映射）、权限状态（uid、gid等）和一些公共属性（打开的文件、信号处理函数等）。对比理论上的进程/线程概念，粗略地讲就是同一线程组的线程各自持有CPU状态而共享其它状态，而认为两进程不共享任何状态。当然，在内核的概念里，进程/线程只是COE共享部分状态中的一个特例。</p>
+<h2 id="fork-clone"><a href="#fork-clone" class="headerlink" title="fork, clone"></a>fork, clone</h2><p>如果用进程/线程的概念来看，内核提供了 <code>fork</code> 来完成进程的复制，提供了 <code>clone</code> 来处理线程的拷贝，另外还有 <code>vfork</code> , <code>kernel_thread</code> 等。</p>
+<p><strong>syscall fork</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">asmlinkage <span class="keyword">int</span> <span class="title">sys_fork</span><span class="params">(struct pt_regs regs)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> do_fork(SIGCHLD, regs.esp, &amp;regs, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>syscall clone</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">asmlinkage <span class="keyword">int</span> <span class="title">sys_clone</span><span class="params">(struct pt_regs regs)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> clone_flags;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> newsp;</span><br><span class="line">    <span class="keyword">int</span> __user *parent_tidptr, *child_tidptr;</span><br><span class="line">    </span><br><span class="line">    clone_flags = regs.ebx;</span><br><span class="line">    newsp = regs.ecx;</span><br><span class="line">    parent_tidptr = (<span class="keyword">int</span> __user *)regs.edx;</span><br><span class="line">    child_tidptr = (<span class="keyword">int</span> __user *)regs.edi;</span><br><span class="line">    <span class="keyword">if</span> (!newsp)</span><br><span class="line">        newsp = regs.esp;</span><br><span class="line">    <span class="keyword">return</span> do_fork(clone_flags, newsp, &amp;regs, <span class="number">0</span>, parent_tidptr, child_tidptr);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>syscall vfork</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">asmlinkage <span class="keyword">int</span> <span class="title">sys_vfork</span><span class="params">(struct pt_regs regs)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> do_fork(CLONE_VFORK | CLONE_VM | SIGCHLD, regs.esp, &amp;regs, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>kernel function: kernel_thread</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">kernel_thread</span><span class="params">(<span class="keyword">int</span> (*fn)(<span class="keyword">void</span> *), <span class="keyword">void</span> * arg, <span class="keyword">unsigned</span> <span class="keyword">long</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">return</span> do_fork(flags | CLONE_VM | CLONE_UNTRACED, <span class="number">0</span>, &amp;regs, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>fork</code>, <code>clone</code>, <code>vfork</code> 的入参怎么和日常使用的系统调用入参不同？且看：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">	.macro PTREGSCALL label, func, arg</span><br><span class="line">	.globl \label</span><br><span class="line">\label:</span><br><span class="line">	leaq \func(%rip),%rax</span><br><span class="line">	leaq -ARGOFFSET+<span class="number">8</span>(%rsp),\arg	<span class="comment">/* 8 for return address */</span></span><br><span class="line">	jmp  ia32_ptregs_common</span><br><span class="line">	.endm</span><br><span class="line"></span><br><span class="line">	CFI_STARTPROC32</span><br><span class="line"></span><br><span class="line">	PTREGSCALL stub32_rt_sigreturn, sys32_rt_sigreturn, %rdi</span><br><span class="line">	PTREGSCALL stub32_sigreturn, sys32_sigreturn, %rdi</span><br><span class="line">	PTREGSCALL stub32_sigaltstack, sys32_sigaltstack, %rdx</span><br><span class="line">	PTREGSCALL stub32_sigsuspend, sys32_sigsuspend, %rcx</span><br><span class="line">	PTREGSCALL stub32_execve, sys32_execve, %rcx</span><br><span class="line">	PTREGSCALL stub32_fork, sys_fork, %rdi</span><br><span class="line">	PTREGSCALL stub32_clone, sys32_clone, %rdx</span><br><span class="line">	PTREGSCALL stub32_vfork, sys_vfork, %rdi</span><br><span class="line">	PTREGSCALL stub32_iopl, sys_iopl, %rsi</span><br><span class="line">	PTREGSCALL stub32_rt_sigsuspend, sys_rt_sigsuspend, %rdx</span><br><span class="line"></span><br><span class="line">ENTRY(ia32_ptregs_common)</span><br><span class="line">	popq %r11</span><br><span class="line">	CFI_ENDPROC</span><br><span class="line">	CFI_STARTPROC32	simple</span><br><span class="line">	CFI_SIGNAL_FRAME</span><br><span class="line">	CFI_DEF_CFA	rsp,SS+<span class="number">8</span>-ARGOFFSET</span><br><span class="line">	CFI_REL_OFFSET	rax,RAX-ARGOFFSET</span><br><span class="line">	CFI_REL_OFFSET	rcx,RCX-ARGOFFSET</span><br><span class="line">	CFI_REL_OFFSET	rdx,RDX-ARGOFFSET</span><br><span class="line">	CFI_REL_OFFSET	rsi,RSI-ARGOFFSET</span><br><span class="line">	CFI_REL_OFFSET	rdi,RDI-ARGOFFSET</span><br><span class="line">	CFI_REL_OFFSET	rip,RIP-ARGOFFSET</span><br><span class="line"><span class="comment">/*	CFI_REL_OFFSET	cs,CS-ARGOFFSET*/</span></span><br><span class="line"><span class="comment">/*	CFI_REL_OFFSET	rflags,EFLAGS-ARGOFFSET*/</span></span><br><span class="line">	CFI_REL_OFFSET	rsp,RSP-ARGOFFSET</span><br><span class="line"><span class="comment">/*	CFI_REL_OFFSET	ss,SS-ARGOFFSET*/</span></span><br><span class="line">	SAVE_REST</span><br><span class="line">	call *%rax</span><br><span class="line">	RESTORE_REST</span><br><span class="line">	jmp  ia32_sysret	<span class="comment">/* misbalances the return cache */</span></span><br><span class="line">	CFI_ENDPROC</span><br><span class="line">END(ia32_ptregs_common)</span><br></pre></td></tr></table></figure>
+<p>进行系统调用时的处理逻辑统一地将这些内容进行了整合，并将CPU状态（所有通用寄存器状态）维护到 <code>struct pt_regs</code> 数据块中。总结起来，三种系统调用最终都委托给 <code>do_fork</code> 进行实现，只是在参数的选择方面做了不同的预处理。这在用户层的函数原型上就更为明显，<code>fork</code> 和 <code>vfork</code> 都不允许参数的调用。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pid_t</span> fork(<span class="keyword">void</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* for x86-32 */</span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">clone</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> flags, <span class="keyword">void</span> *child_stack,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span> *ptid, <span class="keyword">unsigned</span> <span class="keyword">long</span> newtls,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span> *ctid)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pid_t</span> vfork(<span class="keyword">void</span>);</span><br></pre></td></tr></table></figure>
+<p>再看看 <code>flags</code> 有哪些值可选。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * cloning flags:</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CSIGNAL		0x000000ff	<span class="comment">/* signal mask to be sent at exit */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_VM	0x00000100	<span class="comment">/* set if VM shared between processes */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_FS	0x00000200	<span class="comment">/* set if fs info shared between processes */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_FILES	0x00000400	<span class="comment">/* set if open files shared between processes */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_SIGHAND	0x00000800	<span class="comment">/* set if signal handlers and blocked signals shared */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_PTRACE	0x00002000	<span class="comment">/* set if we want to let tracing continue on the child too */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_VFORK	0x00004000	<span class="comment">/* set if the parent wants the child to wake it up on mm_release */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_PARENT	0x00008000	<span class="comment">/* set if we want to have the same parent as the cloner */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_THREAD	0x00010000	<span class="comment">/* Same thread group? */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_NEWNS	0x00020000	<span class="comment">/* New namespace group? */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_SYSVSEM	0x00040000	<span class="comment">/* share system V SEM_UNDO semantics */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_SETTLS	0x00080000	<span class="comment">/* create a new TLS for the child */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_PARENT_SETTID	0x00100000	<span class="comment">/* set the TID in the parent */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_CHILD_CLEARTID	0x00200000	<span class="comment">/* clear the TID in the child */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_DETACHED		0x00400000	<span class="comment">/* Unused, ignored */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_UNTRACED		0x00800000	<span class="comment">/* set if the tracing process can't force CLONE_PTRACE on this clone */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_CHILD_SETTID	0x01000000	<span class="comment">/* set the TID in the child */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_STOPPED		0x02000000	<span class="comment">/* Start in stopped state */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_NEWUTS		0x04000000	<span class="comment">/* New utsname group? */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_NEWIPC		0x08000000	<span class="comment">/* New ipcs */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_NEWUSER		0x10000000	<span class="comment">/* New user namespace */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_NEWPID		0x20000000	<span class="comment">/* New pid namespace */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLONE_NEWNET		0x40000000	<span class="comment">/* New network namespace */</span></span></span><br></pre></td></tr></table></figure>
+<p><code>xxx shared between processes</code> ，描述即将被创建的新任务将进行哪些状态/资源的共享，而哪些状态需要进行拷贝。</p>
+<h3 id="do-fork"><a href="#do-fork" class="headerlink" title="do_fork"></a><code>do_fork</code></h3><p>先看看核心的 <code>do_fork</code> 的逻辑。</p>
+<p><em>Hint: 下列代码经过大量的删减</em><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">do_fork</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> clone_flags,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">unsigned</span> <span class="keyword">long</span> stack_start,</span></span></span><br><span class="line"><span class="function"><span class="params">        struct pt_regs *regs,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">unsigned</span> <span class="keyword">long</span> stack_size,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span> __user *parent_tidptr,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span> __user *child_tidptr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    p = copy_process(clone_flags, stack_start, regs, stack_size, child_tidptr, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span> (!IS_ERR(p)) &#123;</span><br><span class="line">        nr = (clone_flags &amp; CLONE_NEWPID) ?</span><br><span class="line">            task_pid_nr_ns(p, current-&gt;nsproxy-&gt;pid_ns) :</span><br><span class="line">                task_pid_vnr(p);</span><br><span class="line">        <span class="keyword">if</span> (!(clone_flags &amp; CLONE_STOPPED))</span><br><span class="line">            wake_up_new_task(p, clone_flags);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            p-&gt;state = TASK_STOPPED;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        nr = PTR_ERR(p);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> nr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> struct task_struct *<span class="title">copy_process</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> clone_flags,</span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">unsigned</span> <span class="keyword">long</span> stack_start,</span></span></span><br><span class="line"><span class="function"><span class="params">                    struct pt_regs *regs,</span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">unsigned</span> <span class="keyword">long</span> stack_size,</span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">int</span> __user *child_tidptr,</span></span></span><br><span class="line"><span class="function"><span class="params">                    struct pid *pid)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/* 预分配 task_struct 数据结构空间 */</span></span><br><span class="line">    retval = security_task_create(clone_flags);</span><br><span class="line">    <span class="comment">/* 复制 current 的 task_struct 数据结构 */</span></span><br><span class="line">    p = dup_task_struct(current);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (nr_threads &gt;= max_threads)</span><br><span class="line">    	<span class="keyword">goto</span> bad_fork_cleanup_count;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 针对多核CPU，为新任务分配CPU */</span></span><br><span class="line">    sched_fork(p, clone_flags);</span><br><span class="line">    <span class="comment">/* 复制 thread_info 数据结构及线程栈 */</span></span><br><span class="line">    retval = copy_thread(<span class="number">0</span>, clone_flags, stack_start, stack_size, p, regs);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 分配新的 pid */</span></span><br><span class="line">    p-&gt;pid = pid_nr(pid);</span><br><span class="line">    <span class="comment">/* thread group id = new pid */</span></span><br><span class="line">    p-&gt;tgid = p-&gt;pid;</span><br><span class="line">    <span class="comment">/* 如果标志是 CLONE_THREAD，tgid = 父任务id */</span></span><br><span class="line">    <span class="keyword">if</span> (clone_flags &amp; CLONE_THREAD)</span><br><span class="line">    	p-&gt;tgid = current-&gt;tgid;</span><br><span class="line"></span><br><span class="line">    p-&gt;set_child_tid = (clone_flags &amp; CLONE_CHILD_SETTID) ? child_tidptr : <span class="literal">NULL</span>;</span><br><span class="line">    p-&gt;clear_child_tid = (clone_flags &amp; CLONE_CHILD_CLEARTID) ? child_tidptr: <span class="literal">NULL</span>;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * sigaltstack should be cleared when sharing the same VM</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">if</span> ((clone_flags &amp; (CLONE_VM|CLONE_VFORK)) == CLONE_VM)</span><br><span class="line">    	p-&gt;sas_ss_sp = p-&gt;sas_ss_size = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* ok, now we should be set up.. */</span></span><br><span class="line">    p-&gt;exit_signal = (clone_flags &amp; CLONE_THREAD) ? <span class="number">-1</span> : (clone_flags &amp; CSIGNAL);</span><br><span class="line">    p-&gt;pdeath_signal = <span class="number">0</span>;</span><br><span class="line">    p-&gt;exit_state = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * Ok, make it visible to the rest of the system.</span></span><br><span class="line"><span class="comment">     * We dont wake it up yet.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    p-&gt;group_leader = p;</span><br><span class="line">    INIT_LIST_HEAD(&amp;p-&gt;thread_group);</span><br><span class="line">    INIT_LIST_HEAD(&amp;p-&gt;ptrace_children);</span><br><span class="line">    INIT_LIST_HEAD(&amp;p-&gt;ptrace_list);</span><br><span class="line"></span><br><span class="line">    p-&gt;cpus_allowed = current-&gt;cpus_allowed;</span><br><span class="line">    <span class="keyword">if</span> (unlikely(!cpu_isset(task_cpu(p), p-&gt;cpus_allowed) ||</span><br><span class="line">    		!cpu_online(task_cpu(p))))</span><br><span class="line">    	set_task_cpu(p, smp_processor_id());</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* CLONE_PARENT re-uses the old parent */</span></span><br><span class="line">    <span class="keyword">if</span> (clone_flags &amp; (CLONE_PARENT|CLONE_THREAD))</span><br><span class="line">    	p-&gt;real_parent = current-&gt;real_parent;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    	p-&gt;real_parent = current;</span><br><span class="line">    p-&gt;parent = p-&gt;real_parent;</span><br><span class="line"></span><br><span class="line">    spin_lock(&amp;current-&gt;sighand-&gt;siglock);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (clone_flags &amp; CLONE_THREAD) &#123;</span><br><span class="line">    	p-&gt;group_leader = current-&gt;group_leader;</span><br><span class="line">    	list_add_tail_rcu(&amp;p-&gt;thread_group, &amp;p-&gt;group_leader-&gt;thread_group);</span><br><span class="line"></span><br><span class="line">    	<span class="keyword">if</span> (!cputime_eq(current-&gt;signal-&gt;it_virt_expires,</span><br><span class="line">    			cputime_zero) ||</span><br><span class="line">    	    !cputime_eq(current-&gt;signal-&gt;it_prof_expires,</span><br><span class="line">    			cputime_zero) ||</span><br><span class="line">    	    current-&gt;signal-&gt;rlim[RLIMIT_CPU].rlim_cur != RLIM_INFINITY ||</span><br><span class="line">    	    !list_empty(&amp;current-&gt;signal-&gt;cpu_timers[<span class="number">0</span>]) ||</span><br><span class="line">    	    !list_empty(&amp;current-&gt;signal-&gt;cpu_timers[<span class="number">1</span>]) ||</span><br><span class="line">    	    !list_empty(&amp;current-&gt;signal-&gt;cpu_timers[<span class="number">2</span>])) &#123;</span><br><span class="line">    		<span class="comment">/*</span></span><br><span class="line"><span class="comment">    		 * Have child wake up on its first tick to check</span></span><br><span class="line"><span class="comment">    		 * for process CPU timers.</span></span><br><span class="line"><span class="comment">    		 */</span></span><br><span class="line">    		p-&gt;it_prof_expires = jiffies_to_cputime(<span class="number">1</span>);</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (likely(p-&gt;pid)) &#123;</span><br><span class="line">    	add_parent(p);</span><br><span class="line">    	<span class="keyword">if</span> (unlikely(p-&gt;ptrace &amp; PT_PTRACED))</span><br><span class="line">    		__ptrace_link(p, current-&gt;parent);</span><br><span class="line"></span><br><span class="line">    	<span class="keyword">if</span> (thread_group_leader(p)) &#123;</span><br><span class="line">    		<span class="keyword">if</span> (clone_flags &amp; CLONE_NEWPID)</span><br><span class="line">    			p-&gt;nsproxy-&gt;pid_ns-&gt;child_reaper = p;</span><br><span class="line"></span><br><span class="line">    		p-&gt;signal-&gt;tty = current-&gt;signal-&gt;tty;</span><br><span class="line">    		set_task_pgrp(p, task_pgrp_nr(current));</span><br><span class="line">    		set_task_session(p, task_session_nr(current));</span><br><span class="line">    		attach_pid(p, PIDTYPE_PGID, task_pgrp(current));</span><br><span class="line">    		attach_pid(p, PIDTYPE_SID, task_session(current));</span><br><span class="line">    		list_add_tail_rcu(&amp;p-&gt;tasks, &amp;init_task.tasks);</span><br><span class="line">    		__get_cpu_var(process_counts)++;</span><br><span class="line">    	&#125;</span><br><span class="line">    	attach_pid(p, PIDTYPE_PID, pid);</span><br><span class="line">    	nr_threads++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    total_forks++;</span><br><span class="line">    spin_unlock(&amp;current-&gt;sighand-&gt;siglock);</span><br><span class="line">    write_unlock_irq(&amp;tasklist_lock);</span><br><span class="line">    proc_fork_connector(p);</span><br><span class="line">    cgroup_post_fork(p);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据入参配置的 <code>flags</code> ，<code>copy_process</code> 确定了新任务与父任务共享的状态，以及一些需要拷贝的状态。</p>
+<ul>
+<li><code>fork</code> 产生一个新的任务，与父任务不存在任何资源共享的情况。</li>
+<li><code>clone</code> 可高度定制化的系统调用，几乎可以自由组合定制新的任务</li>
+<li><code>vfork</code> 历史原因而存在的系统调用，设计目的在于一般 <code>fork</code> 之后都将调用 <code>execve</code> 来执行全新的任务，也就导致了 <code>fork</code> 所做的拷贝全部白费，因此搞了个轻量级的 <code>vfork</code> 来避免做内存的拷贝。</li>
+</ul>
+<blockquote>
+<p><strong>VFORK</strong><br>Historic description<br>Under Linux, fork(2) is implemented using copy-on-write pages, so the only penalty incurred by fork(2) is the time and memory required to duplicate the  parent’s page tables, and to create a unique task structure for the child.  However, in the bad old days a fork(2) would require making a complete copy of the caller’s data space, often needlessly, since usually immediately afterward an exec(3) is done.  Thus, for greater efficiency, BSD introduced  the  vfork() system call, which did not fully copy the address space of the parent process, but borrowed the parent’s memory and thread of control until a call to execve(2) or an exit occurred.  The parent process was suspended while the child was using its resources.   The  use  of vfork() was tricky: for example, not modifying data in the parent process depended on knowing which variables were held in a register.</p>
+</blockquote>
+<h2 id="pid-tgid"><a href="#pid-tgid" class="headerlink" title="pid, tgid"></a>pid, tgid</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 分配新的 pid */</span></span><br><span class="line">p-&gt;pid = pid_nr(pid);</span><br><span class="line"><span class="comment">/* thread group id = new pid */</span></span><br><span class="line">p-&gt;tgid = p-&gt;pid;</span><br><span class="line"><span class="comment">/* 如果标志是 CLONE_THREAD，tgid = 父任务id */</span></span><br><span class="line"><span class="keyword">if</span> (clone_flags &amp; CLONE_THREAD)</span><br><span class="line">	p-&gt;tgid = current-&gt;tgid;</span><br></pre></td></tr></table></figure>
+<p><code>pid</code> 作为每个 <code>task</code> 的唯一标识符存在。<code>tgid</code> 用于指代线程组id，从代码上看也就是进程主线程id。（请原谅我又用了进程/线程的表述）</p>
+<p>看着没有问题？当然不可能。这段代码可是意味着 <code>pid</code> 唯一啊，这可不符合日常表述啊。对于系统的终端用户来讲，一个进程可以有一个或多个线程。<code>pid</code> 可是一直被翻译成进程ID(process id)。难道？</p>
+<p>这就是本质实现与表面功夫的差别啦。<code>pid_t getpid(void);</code>, <code>pid_t gettid(void);</code> 两个系统调用分别被用来提供进程ID和线程ID（请仔细思考下代码实现和对外展示的差距）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * sys_getpid - return the thread group id of the current process</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Note, despite the name, this returns the tgid not the pid.  The tgid and</span></span><br><span class="line"><span class="comment"> * the pid are identical unless CLONE_THREAD was specified on clone() in</span></span><br><span class="line"><span class="comment"> * which case the tgid is the same in all threads of the same group.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * This is SMP safe as current-&gt;tgid does not change.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">asmlinkage <span class="keyword">long</span> <span class="title">sys_getpid</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> task_tgid_vnr(current);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Thread ID - the internal kernel "pid" */</span></span><br><span class="line"><span class="function">asmlinkage <span class="keyword">long</span> <span class="title">sys_gettid</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> task_pid_vnr(current);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就好懂多了吧。用户态通过系统调用取到的 <code>pid</code>, <code>tid</code> 已经经过了一层加工，分别映射着内核实现的 <code>tgid</code>, <code>pid</code> 。</p>
+<p><em>额外地：想通过 <code>ps</code> 查看进程/线程可以使用 <code>ps -eLf</code></em></p>
+<h2 id="schedule"><a href="#schedule" class="headerlink" title="schedule"></a>schedule</h2><p>再来回顾下任务调度是如何实现的。与<a href="https://www.ffutop.com/2018-10-12-understand-Kernel-4/" target="_blank" rel="noopener">第四篇 任务调度</a>描述的并无太大不同。要说最大的区分，就是早期版本与时下版本顺时的演进。当然，还有就是多核CPU下的SMP调度。</p>
+<p>至于多核下的所谓进程/线程如何调度。内核根本认识不到进程/线程的概念，唯一的只有任务(task, or COE)。而每个用户所认为的线程在内核的认识下也是一个任务。因此，所谓用户认识到的多线程并发执行在多核CPU下也就完全是可行的。</p>
+<h2 id="concept-of-Thread"><a href="#concept-of-Thread" class="headerlink" title="concept of Thread"></a>concept of Thread</h2><p>且不论Linux内核没有线程概念的前提，线程的定义总是存在的，而满足其定义的实现，也就可以被称为“线程”。哪些要素组成了线程呢？</p>
+<ol>
+<li>线程是与其它代码共享进程地址空间的最小执行流</li>
+<li>诸如栈、寄存器信息、本地线程数据需要保持独立</li>
+<li>互斥锁(Mutex)、条件变量(Condition Variable)、线程间同步管理的支持</li>
+<li>…</li>
+</ol>
+<p>既然都说了Linux内核没有线程概念，现在却又开始提，这不是打脸嘛？OK，具体情况是：内核本身不支持线程，甚至没有线程概念。但其通过GLIBC的NPTL(Native POSIX Thread Library)支持了线程。</p>
+<blockquote>
+<p>在Linux内核2.6出现之前任务是(最小)可调度的对象，当时的Linux不真正支持线程。但是Linux内核有一个系统调用指令<code>clone()</code>，这个指令将产生一个调用方任务的拷贝，而且这个拷贝可以与原任务使用同一地址空间。LinuxThreads计划使用这个系统调用来提供一个内核级别的线程支持。但是这个解决方法与真正的POSIX标准有一些不兼容的地方，尤其是在信号处理、进程调度和进程间同步原语方面。<br><em>Copied From <a href="https://en.wikipedia.org/wiki/Native_POSIX_Thread_Library" target="_blank" rel="noopener">Wikipedia NPTL</a></em></p>
+</blockquote>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1g1x9mjuahnj31400u0doi.jpg" alt="Linux 架构"></p>
+<h2 id="Thread-Model"><a href="#Thread-Model" class="headerlink" title="Thread Model"></a>Thread Model</h2><p>最后，聊聊线程模型。相信各位不管懂或不懂，至少都听说过 1:1, N:1, M:N 线程模型。至于究竟这些模型是怎么回事呢？且看：</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1g1xhulou5bj30go08zglv.jpg" alt="Thread Model"></p>
+<h3 id="1-1-Model"><a href="#1-1-Model" class="headerlink" title="1:1 Model"></a>1:1 Model</h3><p>最简单的线程模型，也是内核通过NPTL最容易实现的一种模型。每个通过 <code>clone</code> 产生的新任务（当然，至少要符合共享内存等线程定义）对应用程序来说就是一个新线程。所谓的用户级线程和内核级线程，在 1:1 模型中就是同一个任务，只是新任务在被内核 <code>clone</code> 之后，又由NPTL做了进一步的管理，因此在形式上看似有用户级/内核级之分。</p>
+<h3 id="N-1-Model"><a href="#N-1-Model" class="headerlink" title="N:1 Model"></a>N:1 Model</h3><p>N:1 线程模型又称为“用户级线程模型”。在这种模型下，线程的概念由用户态代码进行支持，包括用来管理线程的用户空间调度器以及以非阻塞模式捕捉和处理I/O机制。使用N:1模型的好处在于其上下文切换的代价几乎为零，毕竟这是纯用户态的。当然，缺点也比较明显：由于对内核来说，认为这只是单个任务，也就无法充分利用多核CPU的特性。</p>
+<h3 id="M-N-Model"><a href="#M-N-Model" class="headerlink" title="M:N Model"></a>M:N Model</h3><p>有没有方式整合1:1模型和N:1模型，让内核意识到有几个任务，但又存在更多的线程在用户级执行呢？当然也是可行，但如何协调调度又是费事费力的实现了。</p>
+<h2 id="Threads-vs-Events"><a href="#Threads-vs-Events" class="headerlink" title="Threads vs Events"></a>Threads vs Events</h2><p>线程怎么又和事件扯上关系了呢？先来回顾下任务调度的几种模式：</p>
+<ol>
+<li>串行，每个任务依次执行，不存在任务调度</li>
+<li>抢占式，通过时钟中断决定是否切换任务</li>
+<li>协作式，只有当任务主动放弃对CPU的占用，才能轮到下一个任务。</li>
+</ol>
+<p>对于用户级线程来说，内核无法意识到这些线程的存在，硬件发起的所有中断又都被内核捕获。因此，想要实现抢占式是不可能完成的任务（至少以本人目前所知是不可能的）。故协作式线程调度是用户级线程的唯一选择。而协作式就意味着是由线程硬编码主动放弃任务执行（<code>yield</code> / <code>schedule</code> / etc.）。如此这般，与事件驱动下，不同代码片之间的调度又是何其相似。当然，只是开个玩笑，如果都一样了，直接用事件驱动不就OK了。线程之所以是线程，有其独特的定义在。不过不再细说，可以参考 <a href="http://courses.cs.vt.edu/cs5204/fall09-kafura/Presentations/Threads-VS-Events.pdf" target="_blank" rel="noopener">Threads vs Events</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1]. Mauerer W. Professional Linux kernel architecture[M]. John Wiley &amp; Sons, 2010.<br>[2]. <a href="http://lkml.iu.edu/hypermail/linux/kernel/9608/0191.html" target="_blank" rel="noopener">Linus Torvalds. Re: proc fs and shared pids</a>[EL/OL]. Aug 6th, 1996.<br>[3]. <a href="https://randu.org/tutorials/threads/" target="_blank" rel="noopener">Multithreaded Programming (POSIX pthreads Tutorial)</a>[EL/OL].<br>[4]. <a href="https://blog.csdn.net/u012432778/article/details/47378321" target="_blank" rel="noopener">线程模型</a>[EL/OL].<br>[5]. <a href="https://www.evanjones.ca/software/threading.html" target="_blank" rel="noopener">Implementing a Thread Library on Linux</a>[EL/OL]. Dec 10th, 2003.</p>
+<h2 id="用户级线程资料参考"><a href="#用户级线程资料参考" class="headerlink" title="用户级线程资料参考"></a>用户级线程资料参考</h2><p>[1]. <code>man makecontext</code> &amp; <code>man swapcontext</code><br>[2]. <a href="https://github.com/brianwatling/libfiber" target="_blank" rel="noopener">Libfiber</a><br>[3]. <a href="https://github.com/dramesh/GTThreads" target="_blank" rel="noopener"><strong>所谓的</strong>抢占式用户线程实现</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  __                    __                  </span><br><span class="line"> / _| __ _ _ __   __ _ / _| ___ _ __   __ _ </span><br><span class="line">| |_ / _` | &apos;_ \ / _` | |_ / _ \ &apos;_ \ / _` |</span><br><span class="line">|  _| (_| | | | | (_| |  _|  __/ | | | (_| |</span><br><span class="line">|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |</span><br><span class="line">                 |___/                |___/</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://DorMOUSE-None.github.io">Utop</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://DorMOUSE-None.github.io/2019-04-10-understand-Kernel-10/">https://DorMOUSE-None.github.io/2019-04-10-understand-Kernel-10/</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/Linux/">Linux</a>
+            
+              <a href="/tags/Kernel/">Kernel</a>
+            
+              <a href="/tags/COE/">COE</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2019-03-25-mem-dump/">
+        <span class="next-text nav-default">如何获取运行时进程堆栈</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:dormousenone@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/DorMOUSE-None" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2018 - 
+    
+    2019
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Utop</span>
+  </span>
+</div>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'https://DorMOUSE-None.github.io/2019-04-10-understand-Kernel-10/';
+        this.page.identifier = '2019-04-10-understand-Kernel-10/';
+        this.page.title = '理解 Linux Kernel(10) - Context of Execution';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//utop-blog.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+  
+
+  
+
+
+
+    
+  
+
+
+
+  
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.9.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+  </body>
+</html>
