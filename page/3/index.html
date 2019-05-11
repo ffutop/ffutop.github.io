@@ -230,17 +230,17 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2018-08-19-understand-Kernel-0/">理解 Linux Kernel (0) - 概述</a>
+          <a class="post-link" href="/2018-08-26-understand-Kernel-2/">理解 Linux Kernel (2) - 多任务切换</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2018-08-19
+          2018-08-26
         </span>
         
         
-        <div class="post-visits" data-url="/2018-08-19-understand-Kernel-0/" data-title="理解 Linux Kernel (0) - 概述">
+        <div class="post-visits" data-url="/2018-08-26-understand-Kernel-2/" data-title="理解 Linux Kernel (2) - 多任务切换">
             阅读次数 0
           </div>
         
@@ -259,12 +259,10 @@
         
 
         
-          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>《理解Linux Kernel》系列最早开始于 2018 年中，当时我刚刚结束对 JVM (Java Virtual Machine, Java 虚拟机) <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html" target="_blank" rel="noopener">ClassFile 文件格式</a>的学习。彼时，在<em>实现新编程语言</em>、<em>学习 Linux 内核实现</em>、<em>继续深入 JVM 源码</em>三个下一阶段的命题中，我选择了拥抱 Linux 源码。</p>
-<p>时间过去了大半年，我已经简单地建立了对 Linux Kernel 的结构化认知。趁着现阶段有一些闲暇，整理过去的文章，以期删繁就简，并对错误的描述进行修正。</p>
-<p>《理解 Linux Kernel》系列最早发布于<a href="https://www.ffutop.com/" target="_blank" rel="noopener">我的博客 (Utop’s Blog)</a>。由于这些文章的完成完全出于个人兴趣，对每个内核子系统的学习往往浅尝辄止，但我依旧认为这个系列对初学者来说是大有裨益的。</p>
-<p>本系列对内核的学习完全建立在 0.11、2.6.24 两个版本源码的基础上。从 0.11 版本入门，学习硬件启动阶段进行的主要操作、任务调度、文件系统等早期版本已初现雏形的子系统；从 2.6.24 版本进阶，学习网络、内存管理等子系统的实现。在此强烈推荐，直接阅读源码对理解的帮助最为深远。请随时备上两个版本的源码，以备深入理解。</p>
+          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>《只是为了好玩》书中，林纳斯描述过他最早的试验性程序就是执行两个不同的任务（一个不断输出A，另一个输出B），同时不断地让 CPU 在两个任务间做切换。结合《Linux 内核完全注释》提供的一个多任务切换示例程序，本篇将就多任务切换程序的执行流程进行详述，并提供当下汇编工具下的适配。</p>
+<p>关于运行环境的说明，欢迎参考 <a href="https://www.ffutop.com/2018-08-19-understand-Kernel-1/#Bochs-%E4%BB%BF%E7%9C%9F%E5%99%A8" target="_blank" rel="noopener">Bochs 仿真器使用简介</a></p>
           <div class="read-more">
-            <a href="/2018-08-19-understand-Kernel-0/" class="read-more-link">阅读更多</a>
+            <a href="/2018-08-26-understand-Kernel-2/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -315,6 +313,58 @@
 <p>《Linux 内核完全注释》第三章——内核编程语言和环境，描述了用 as86 汇编语言构建 boot 引导程序，在 Bochs 仿真器成功模拟开机运行，最终输出 <em>Loading System…</em>。这就是本篇所要尝试的核心实验。之所以在已经有资料的基础上再写一遍，是书中缺失了仿真器模拟的环节。</p>
           <div class="read-more">
             <a href="/2018-08-19-understand-Kernel-1/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2018-08-19-understand-Kernel-0/">理解 Linux Kernel (0) - 概述</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-08-19
+        </span>
+        
+        
+        <div class="post-visits" data-url="/2018-08-19-understand-Kernel-0/" data-title="理解 Linux Kernel (0) - 概述">
+            阅读次数 0
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>《理解Linux Kernel》系列最早开始于 2018 年中，当时我刚刚结束对 JVM (Java Virtual Machine, Java 虚拟机) <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html" target="_blank" rel="noopener">ClassFile 文件格式</a>的学习。彼时，在<em>实现新编程语言</em>、<em>学习 Linux 内核实现</em>、<em>继续深入 JVM 源码</em>三个下一阶段的命题中，我选择了拥抱 Linux 源码。</p>
+<p>时间过去了大半年，我已经简单地建立了对 Linux Kernel 的结构化认知。趁着现阶段有一些闲暇，整理过去的文章，以期删繁就简，并对错误的描述进行修正。</p>
+<p>《理解 Linux Kernel》系列最早发布于<a href="https://www.ffutop.com/" target="_blank" rel="noopener">我的博客 (Utop’s Blog)</a>。由于这些文章的完成完全出于个人兴趣，对每个内核子系统的学习往往浅尝辄止，但我依旧认为这个系列对初学者来说是大有裨益的。</p>
+<p>本系列对内核的学习完全建立在 0.11、2.6.24 两个版本源码的基础上。从 0.11 版本入门，学习硬件启动阶段进行的主要操作、任务调度、文件系统等早期版本已初现雏形的子系统；从 2.6.24 版本进阶，学习网络、内存管理等子系统的实现。在此强烈推荐，直接阅读源码对理解的帮助最为深远。请随时备上两个版本的源码，以备深入理解。</p>
+          <div class="read-more">
+            <a href="/2018-08-19-understand-Kernel-0/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -696,87 +746,6 @@
           <h2 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息"></a>报错信息</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.VerifyError: <span class="class"><span class="keyword">class</span> <span class="title">net</span>.<span class="title">sf</span>.<span class="title">cglib</span>.<span class="title">core</span>.<span class="title">DebuggingClassWriter</span> <span class="title">overrides</span> <span class="title">final</span> <span class="title">method</span> <span class="title">visit</span>.(<span class="title">IILjava</span>/<span class="title">lang</span>/<span class="title">String</span></span>;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V</span><br></pre></td></tr></table></figure>
           <div class="read-more">
             <a href="/2018-06-28-ASM-VerifyError/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-06-25-ASM-Core/">ASM 核心包基本内容漫谈</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-06-25
-        </span>
-        
-        
-        <div class="post-visits" data-url="/2018-06-25-ASM-Core/" data-title="ASM 核心包基本内容漫谈">
-            阅读次数 0
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <blockquote>
-<p>本文描述的 ASM 指的是 OW2 ASM</p>
-</blockquote>
-<h2 id="ASM-Core-的结构"><a href="#ASM-Core-的结构" class="headerlink" title="ASM-Core 的结构"></a>ASM-Core 的结构</h2><p><em>首先是一些概述性的内容。</em></p>
-<p>由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。<br>因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)</p>
-<p>从核心包声明的类来看，主要包括:</p>
-<ol>
-<li><p>ClassReader - 作为结构化对象，将接收(accept)访问者的访问</p>
-</li>
-<li><p>几种访问者抽象类以及相应的实现类</p>
-</li>
-</ol>
-<ul>
-<li>AnnotationVisitor -&gt; AnnotationWriter</li>
-<li>ClassVisitor -&gt; ClassWriter</li>
-<li>FieldVisitor -&gt; FieldWriter</li>
-<li>MethodVisitor -&gt; MethodWriter</li>
-<li>ModuleVisitor -&gt; ModuleWriter</li>
-</ul>
-<ol start="3">
-<li><p>Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值</p>
-</li>
-<li><p>其它一些辅助的类</p>
-</li>
-</ol>
-<ul>
-<li>Attribute - 用于处理非标准化的属性(ClassFile 允许<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html" target="_blank" rel="noopener">JVMS</a> 中未定义的 Attribute)</li>
-<li>ByteArray - 动态可自适应的 byte[] (字节数组)</li>
-<li>Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象</li>
-<li>Symbol - 用于表示 ClassFile 中描述的 Constant 的基类</li>
-<li>SymbolTable - 用于存储常量池对象</li>
-<li>其它内容省略</li>
-</ul>
-          <div class="read-more">
-            <a href="/2018-06-25-ASM-Core/" class="read-more-link">阅读更多</a>
           </div>
         
       

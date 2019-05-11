@@ -230,6 +230,60 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2019-05-10-png-structure/">PNG 文件格式</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2019-05-10
+        </span>
+        
+        
+        <div class="post-visits" data-url="/2019-05-10-png-structure/" data-title="PNG 文件格式">
+            阅读次数 0
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>PNG (Portable Network Graphics) 文件格式(第二版)。PNG 文件格式由两类结构——<code>PNG 签名(PNG Signature)</code>和若干<code>数据块(chunk)</code>组成。</p>
+<p>PNG 签名相当于其他文件格式中的魔数，用于声明二进制数据所代表的格式。类似的有 <code>JAVA</code> class 文件的 <code>ca fe ba be</code>、<code>ELF</code> 文件的 <code>7f 45 4c 46</code> (.ELF) 。PNG 签名使用 <code>89 50 4e 47 0d 0a 1a 0a</code> (.PNG….) 作为魔数。</p>
+<blockquote>
+<p>HINT 上述的 <code>.</code> 仅仅是为了指代非打印字符，并非真的是 <code>点号</code>。</p>
+</blockquote>
+<p>在 <code>PNG 签名</code> 数据之后，紧接着就是 <code>数据块(chunk)</code> 的数据。虽然统称<code>数据块</code>，但存在不同类型的数据块（例如 IHDR, PLTE, IDAT, IEND 等）。每个 PNG 文件可以有若干连续的数据块（至少 3 个数据块），其中第一个数据块和最后一个数据块类型分别是 IHDR、IEND 。</p>
+          <div class="read-more">
+            <a href="/2019-05-10-png-structure/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2019-04-26-time-accuracy/">MySQL TIMESTAMP 时间精度问题</a>
         
       </h1>
@@ -676,57 +730,6 @@
 
 
 
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2018-12-28-understand-Kernel-7/">理解 Linux Kernel (7) - 字符设备</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2018-12-28
-        </span>
-        
-        
-        <div class="post-visits" data-url="/2018-12-28-understand-Kernel-7/" data-title="理解 Linux Kernel (7) - 字符设备">
-            阅读次数 0
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>相比较于块设备，字符设备无论从物理认知上，抑或是理论理解上，都存在着相当大的入门门槛。特别是在将字符设备与控制台、命令行终端混淆的时候，就更加难以进行分辨了。</p>
-<p>回到字符设备本身，字符设备与块设备最主要的区别就在于块设备可以随机读写，而字符设备只能够顺序读，顺序写。</p>
-<p>那么，常见的字符设备有什么？显示器、键盘、鼠标。</p>
-          <div class="read-more">
-            <a href="/2018-12-28-understand-Kernel-7/" class="read-more-link">阅读更多</a>
-          </div>
         
       
     </div>
