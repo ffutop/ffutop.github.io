@@ -1,0 +1,833 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Utop&#39;s Blog</title>
+    <link>https://dormouse-none.github.io/posts/</link>
+    <description>Recent content in Posts on Utop&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>2018-2019 © ffutop</copyright>
+    <lastBuildDate>Wed, 17 Jul 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://dormouse-none.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>理解 Linux Kernel (13) - 虚拟内存</title>
+      <link>https://dormouse-none.github.io/posts/2019-07-17-understand-kernel-13/</link>
+      <pubDate>Wed, 17 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-07-17-understand-kernel-13/</guid>
+      <description>几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。
+本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。
+启动新进程 虚拟地址空间与进程挂钩，在进程数据结构 task_struct 中由一个重要的参数 mm_struct 来维护。
+struct mm_struct { struct vm_area_struct * mmap; /* list of VMAs */ struct rb_root mm_rb; unsigned long mmap_base; /* base of mmap area */ unsigned long task_size; /* size of task vm space */ pgd_t * pgd; atomic_t mm_count; /* How many references to &amp;quot;struct mm_struct&amp;quot; (users count as 1) */ int map_count; /* number of VMAs */ unsigned long start_code, end_code, start_data, end_data; unsigned long start_brk, brk, start_stack; unsigned long arg_start, arg_end, env_start, env_end; struct file *exe_file; /* .</description>
+    </item>
+    
+    <item>
+      <title>JNI 引发的堆外内存泄露</title>
+      <link>https://dormouse-none.github.io/posts/2019-07-06-jni_problem/</link>
+      <pubDate>Sat, 06 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-07-06-jni_problem/</guid>
+      <description>&lt;p&gt;本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。&lt;/p&gt;
+
+&lt;p&gt;为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。&lt;/p&gt;
+
+&lt;p&gt;问题代码类似于下列代码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;#include &amp;quot;Main.h&amp;quot;
+
+JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
+{
+    const char *str = (*env)-&amp;gt;GetStringUTFChars(env, jstr, 0);
+    int len = (*env)-&amp;gt;GetStringUTFLength(env, jstr);
+
+    // ... some code omitted 
+
+    return ;
+}
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel (12) - Linux 容器化技术</title>
+      <link>https://dormouse-none.github.io/posts/2019-06-18-understand-kernel-12/</link>
+      <pubDate>Tue, 18 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-06-18-understand-kernel-12/</guid>
+      <description>&lt;p&gt;由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png&#34; alt=&#34;Containerd VS VM&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;small&gt;&lt;center&gt;Copied From docker.com&lt;/center&gt;&lt;/small&gt;&lt;/p&gt;
+
+&lt;p&gt;如何实现容器化，显然需要从操作系统层面进行支撑。这其中涉及到的核心技术，就包括命名空间(namespace)和控制组(Control Group, cgroup)，前者用来对资源进行隔离，后者用来对资源加以限制。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04&lt;/p&gt;
+&lt;/blockquote&gt;</description>
+    </item>
+    
+    <item>
+      <title>跟踪内核函数的工具—— Ftrace</title>
+      <link>https://dormouse-none.github.io/posts/2019-06-02-ftrace/</link>
+      <pubDate>Sun, 02 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-06-02-ftrace/</guid>
+      <description>&lt;p&gt;前两天仿照 &lt;code&gt;strings&lt;/code&gt; 工具写了个打印进程运行时堆栈可打印字符的工具 &lt;a href=&#34;https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c&#34;&gt;ffstrings&lt;/a&gt; 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&amp;lt;&lt;/p&gt;
+
+&lt;p&gt;在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— &lt;code&gt;ftrace&lt;/code&gt; 。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。&lt;/p&gt;
+
+&lt;p&gt;虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 &lt;code&gt;ffstrings&lt;/code&gt; 出现 &lt;code&gt;EPERM&lt;/code&gt; 的原因。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel (11) - 进程间通信</title>
+      <link>https://dormouse-none.github.io/posts/2019-05-27-understand-kernel-11/</link>
+      <pubDate>Mon, 27 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-05-27-understand-kernel-11/</guid>
+      <description>&lt;p&gt;进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;本篇基于 Linux 4.9.87 版本源码&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>pipe 导致的 CLOSE_WAIT</title>
+      <link>https://dormouse-none.github.io/posts/2019-05-20-close_wait_problem/</link>
+      <pubDate>Mon, 20 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-05-20-close_wait_problem/</guid>
+      <description>&lt;p&gt;历时一周总算把导致服务大量 &lt;code&gt;CLOSE_WAIT&lt;/code&gt; 的原因给找到了。打印任务调用栈果然的必备手段啊！&lt;/p&gt;
+
+&lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;
+
+&lt;p&gt;Python 服务 A，用于接收心跳包确认其他服务是否存活。其他服务每 5 分钟向 A 发送一次心跳包；总计 &amp;lt; 100 个其他服务。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;05-11 19:30 ，首次出现 Python 服务大量 &lt;code&gt;CLOSE_WAIT&lt;/code&gt;，至 13 日发现，总计 10k 左右 &lt;code&gt;CLOSE_WAIT&lt;/code&gt; 的 TCP 连接。05-13 15:30 通过运维平台重新部署&amp;hellip;&lt;/li&gt;
+&lt;li&gt;05-14 16:30 ，再次出现。19:30 手动重启。&lt;/li&gt;
+&lt;li&gt;其间给 Python 服务 A 添加了打印调用栈的模块 &lt;a href=&#34;https://pypi.org/project/pdbx/&#34;&gt;pdbx&lt;/a&gt;，通过运维平台重新部署&lt;/li&gt;
+&lt;li&gt;05-17 19:00 ，再次出现。等待打印调用栈，不小心杀掉了服务&amp;hellip;&lt;/li&gt;
+&lt;li&gt;05-19 14:30 ，重现。&lt;/li&gt;
+&lt;li&gt;05-20 08:30 ，查找原因，解决问题。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;由于不是本人负责的服务，于 16 日凭兴趣开始有限介入，协助排查。现将排查流程一一记述，给自己和大家未来排查问题提供一个借鉴。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>PNG 文件格式</title>
+      <link>https://dormouse-none.github.io/posts/2019-05-10-png-structure/</link>
+      <pubDate>Fri, 10 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-05-10-png-structure/</guid>
+      <description>&lt;p&gt;PNG (Portable Network Graphics) 文件格式(第二版)。PNG 文件格式由两类结构——&lt;code&gt;PNG 签名(PNG Signature)&lt;/code&gt;和若干&lt;code&gt;数据块(chunk)&lt;/code&gt;组成。&lt;/p&gt;
+
+&lt;p&gt;PNG 签名相当于其他文件格式中的魔数，用于声明二进制数据所代表的格式。类似的有 &lt;code&gt;JAVA&lt;/code&gt; class 文件的 &lt;code&gt;ca fe ba be&lt;/code&gt;、&lt;code&gt;ELF&lt;/code&gt; 文件的 &lt;code&gt;7f 45 4c 46&lt;/code&gt; (.ELF) 。PNG 签名使用 &lt;code&gt;89 50 4e 47 0d 0a 1a 0a&lt;/code&gt; (.PNG&amp;hellip;.) 作为魔数。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;HINT 上述的 &lt;code&gt;.&lt;/code&gt; 仅仅是为了指代非打印字符，并非真的是 &lt;code&gt;点号&lt;/code&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;在 &lt;code&gt;PNG 签名&lt;/code&gt; 数据之后，紧接着就是 &lt;code&gt;数据块(chunk)&lt;/code&gt; 的数据。虽然统称&lt;code&gt;数据块&lt;/code&gt;，但存在不同类型的数据块（例如 IHDR, PLTE, IDAT, IEND 等）。每个 PNG 文件可以有若干连续的数据块（至少 3 个数据块），其中第一个数据块和最后一个数据块类型分别是 IHDR、IEND 。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>MySQL TIMESTAMP 时间精度问题</title>
+      <link>https://dormouse-none.github.io/posts/2019-04-26-time-accuracy/</link>
+      <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-04-26-time-accuracy/</guid>
+      <description>&lt;p&gt;最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+  * 表结构
+  * CREATE TABLE `time_0` (
+  *     `timeout` timestamp NOT NULL
+  * )
+  */
+
+// part 1
+jdbcTemplate.execute(&amp;quot;UPDATE `time_0` SET `timeout`=now() WHERE `id` = xxx;&amp;quot;);
+
+// part 2
+Date timeout = jdbcTemplate.queryForObject(&amp;quot;SELECT `timeout` FROM `time_0` WHERE `id` = xxx;&amp;quot;, Date.class);
+Assert.assertTrue(timeout.getTime() &amp;lt; System.currentTimeMillis());
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在绝大多数模拟中，先执行 &lt;code&gt;part 1&lt;/code&gt;，紧跟着执行 &lt;code&gt;part 2&lt;/code&gt; 都能通过测试。但偶尔还是挂掉了。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Lex &amp; Yacc 学习笔记</title>
+      <link>https://dormouse-none.github.io/posts/2019-04-25-lex-and-yacc/</link>
+      <pubDate>Thu, 25 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-04-25-lex-and-yacc/</guid>
+      <description>&lt;p&gt;高级语言相较于机器语言、汇编语言，更加符合人的思考习惯。换句话说，更偏向于自然语言的风格而更偏离指令化的描述。用高级语言编写的一行代码，最终可能需要处理器执行若干条指令。如何让机器意识到高级语言代码对应的机器指令是哪些呢？当然就需要一个优秀的翻译。&lt;/p&gt;
+
+&lt;p&gt;无论是编译型语言还是解释型语言，总逃脱不了这样一个流程：高级语言 ➜ 目标平台的指令。所谓编译型/解释型的区别，在于其转换流程是在线的(online)还是离线的(offline)。在线的方式无法意识到后续的代码，但胜在即时反应；离线的方式可以统揽全局，进行更多的优化，但代码文本必须完整。&lt;/p&gt;
+
+&lt;p&gt;高级语言 ➜ 目标平台的指令，这样的流程如何实现。一般来说，划分为四个阶段：词法分析、语法分析、语义分析、目标代码生成。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://ws2.sinaimg.cn/large/006tNc79ly1g2b583io0ej30wq094aa5.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;本篇的主要目的，是展示“语言翻译”的几个阶段工作，以及通过 Lex &amp;amp; Yacc 工具演示一门自定义语言的“翻译”。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel(10) - Context of Execution</title>
+      <link>https://dormouse-none.github.io/posts/2019-04-10-understand-kernel-10/</link>
+      <pubDate>Wed, 10 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-04-10-understand-kernel-10/</guid>
+      <description>&lt;p&gt;在进行&lt;a href=&#34;https://www.ffutop.com/2018-10-12-understand-Kernel-4/&#34;&gt;第四篇(任务调度)&lt;/a&gt;行文描述时，就一直闹不清内核所谓的&lt;code&gt;task&lt;/code&gt;的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：&lt;strong&gt;我们错误地将理论和实践不加区分地混淆了&lt;/strong&gt;。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，&lt;code&gt;task&lt;/code&gt; 也就是 &lt;code&gt;Context of Execution&lt;/code&gt; 概念在实现上的表征。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>如何获取运行时进程堆栈</title>
+      <link>https://dormouse-none.github.io/posts/2019-03-25-mem-dump/</link>
+      <pubDate>Mon, 25 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-03-25-mem-dump/</guid>
+      <description>&lt;p&gt;前些天看了关于在密码学应用中使用&lt;code&gt;java.lang.String&lt;/code&gt;与&lt;code&gt;byte[]&lt;/code&gt;的相关讨论，不推荐使用&lt;code&gt;java.lang.String&lt;/code&gt;的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。&lt;/p&gt;
+
+&lt;h2 id=&#34;proc-pid-maps&#34;&gt;/proc/${pid}/maps&lt;/h2&gt;
+
+&lt;p&gt;首先当然是确定进程堆栈在物理内存的位置啦。很遗憾，没有找到相关的方案。毕竟进程记录的都是虚拟线性地址，而通过内核分段、分页机制最终映射到物理内存。不过，从&lt;code&gt;/proc&lt;/code&gt;虚拟文件系统中，提供了进程虚拟地址映射。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;address                   perm offset   dev   inode                      pathname
+556566cb5000-556566cb6000 r-xp 00000000 fc:01 2496598                    /root/ffTrace/run
+556566eb5000-556566eb6000 r--p 00000000 fc:01 2496598                    /root/ffTrace/run
+556566eb6000-556566eb7000 rw-p 00001000 fc:01 2496598                    /root/ffTrace/run
+55656814f000-556568170000 rw-p 00000000 00:00 0                          [heap]
+7f2a95f91000-7f2a96178000 r-xp 00000000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a96178000-7f2a96378000 ---p 001e7000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a96378000-7f2a9637c000 r--p 001e7000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a9637c000-7f2a9637e000 rw-p 001eb000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a9637e000-7f2a96382000 rw-p 00000000 00:00 0
+7f2a96382000-7f2a963a9000 r-xp 00000000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965a0000-7f2a965a2000 rw-p 00000000 00:00 0
+7f2a965a9000-7f2a965aa000 r--p 00027000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965aa000-7f2a965ab000 rw-p 00028000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965ab000-7f2a965ac000 rw-p 00000000 00:00 0
+7ffe2cf5e000-7ffe2cf7f000 rw-p 00000000 00:00 0                          [stack]
+7ffe2cfed000-7ffe2cff0000 r--p 00000000 00:00 0                          [vvar]
+7ffe2cff0000-7ffe2cff2000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>认证与授权·简述</title>
+      <link>https://dormouse-none.github.io/posts/2019-03-19-janus/</link>
+      <pubDate>Tue, 19 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-03-19-janus/</guid>
+      <description>&lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;在大多数系统中，都或多或少需要认证授权模型/系统的支持。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;认证/授权是什么？最简单的，我们的系统要求用户必须在“登录”之后才允许进行一些操作。“登录”的过程就是认证；而区别与未登录状态，只允许登录用户进行一些操作，这就是授权。认证与授权相互独立，有协同配合，共同支撑起系统对安全的基本要求。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel (9) - IO Multiplexing</title>
+      <link>https://dormouse-none.github.io/posts/2019-03-05-understand-kernel-9/</link>
+      <pubDate>Tue, 05 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-03-05-understand-kernel-9/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;./2019-01-15-understand-Kernel-8/&#34;&gt;前一篇&lt;/a&gt;已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 &lt;code&gt;struct sock&lt;/code&gt; 对象，将其逐级从网络接口层逐级提升到网络层、传输层&amp;hellip;最终添加到接收队列 &lt;code&gt;sk_receive_queue&lt;/code&gt; 中；用户进程通过 &lt;code&gt;read&lt;/code&gt;、&lt;code&gt;recv&lt;/code&gt;、&lt;code&gt;recvfrom&lt;/code&gt; 等命令检查并获取 &lt;code&gt;sk_receive_queue&lt;/code&gt; 中的数据。&lt;/p&gt;
+
+&lt;p&gt;整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。&lt;/p&gt;
+
+&lt;p&gt;那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（&lt;code&gt;select&lt;/code&gt;, &lt;code&gt;poll&lt;/code&gt;, &lt;code&gt;epoll&lt;/code&gt;）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 &lt;code&gt;select&lt;/code&gt; 和 &lt;code&gt;epoll&lt;/code&gt; 两类系统调用的实现进行探究。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>【Java】API 参数误定义的后果</title>
+      <link>https://dormouse-none.github.io/posts/2019-02-27-java-fatal-api/</link>
+      <pubDate>Wed, 27 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-02-27-java-fatal-api/</guid>
+      <description>&lt;p&gt;工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。&lt;/p&gt;
+
+&lt;p&gt;想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！&lt;/p&gt;
+
+&lt;p&gt;想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把&lt;code&gt;void add(int)&lt;/code&gt; API 改写成 &lt;code&gt;int add(int)&lt;/code&gt;，可能得到的大多数回答都是可以。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>字符集与字符编码</title>
+      <link>https://dormouse-none.github.io/posts/2019-02-02-unicode/</link>
+      <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-02-02-unicode/</guid>
+      <description>{% pdf https://drive.google.com/file/d/1MuBNtZPMWCt9kGlpqiAtG3i3Al2MaknY/preview %}</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel (8) - 网络</title>
+      <link>https://dormouse-none.github.io/posts/2019-01-15-understand-kernel-8/</link>
+      <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-01-15-understand-kernel-8/</guid>
+      <description>PDF</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel (7) - 字符设备</title>
+      <link>https://dormouse-none.github.io/posts/2018-12-28-understand-kernel-7/</link>
+      <pubDate>Fri, 28 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-12-28-understand-kernel-7/</guid>
+      <description>&lt;p&gt;相比较于块设备，字符设备无论从物理认知上，抑或是理论理解上，都存在着相当大的入门门槛。特别是在将字符设备与控制台、命令行终端混淆的时候，就更加难以进行分辨了。&lt;/p&gt;
+
+&lt;p&gt;回到字符设备本身，字符设备与块设备最主要的区别就在于块设备可以随机读写，而字符设备只能够顺序读，顺序写。&lt;/p&gt;
+
+&lt;p&gt;那么，常见的字符设备有什么？显示器、键盘、鼠标。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>SQL 注入</title>
+      <link>https://dormouse-none.github.io/posts/2018-12-15-sql-injection/</link>
+      <pubDate>Sat, 15 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-12-15-sql-injection/</guid>
+      <description>&lt;p&gt;说实话此前对 SQL 注入的理解仅仅只是皮毛。当然，目前也是，只是有了一定程度的理解。&lt;/p&gt;
+
+&lt;p&gt;最近好像工具用得有些过头了，需要停下来整理下工具的实现原理。&lt;/p&gt;
+
+&lt;p&gt;更好地理解了工具实现，才能更加心安理得地使用工具。毕竟等别人怼的时候，还能够比较安心地回道: &amp;ldquo;我用不用现成的工具只是取决于我想不想自己再写一套&amp;rdquo;&lt;/p&gt;
+
+&lt;p&gt;当然，毕竟成熟的工具有更多的优化，这就不是短时间内我想不想自己写的问题了，哈哈。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>正则表达式指数爆炸</title>
+      <link>https://dormouse-none.github.io/posts/2018-11-16-regex-exponential-explosion/</link>
+      <pubDate>Fri, 16 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-11-16-regex-exponential-explosion/</guid>
+      <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
+
+&lt;p&gt;昨天接触到一个很有意思的问题, 公司测试环境一台机器 CPU 跑到了 400%，导致该机器上的所有服务都挂掉了。&lt;/p&gt;
+
+&lt;p&gt;最后查到的原因竟然是正则表达式所引起的，大大出乎意料啊。虽然早就知道正则效率很差，但绝对没有想到会导致整个机器上服务崩溃的情况。&lt;/p&gt;
+
+&lt;p&gt;先简单展示下问题正则:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;String regex = &amp;quot;(\\w+,?)+&amp;quot;;
+String val = &amp;quot;abcdefghijklmno,abcdefghijklmno+&amp;quot;;
+System.out.println(val.matches(regex));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最终的执行时间是 17s 左右。&lt;/p&gt;
+
+&lt;p&gt;相反，如果改成 &lt;code&gt;String val = &amp;quot;abcdefghijklmno,abcdefghijklmno&amp;quot;&lt;/code&gt; ，实际执行时间 1ms 左右。&lt;/p&gt;
+
+&lt;p&gt;哈哈，完全不是一个量级的结果。&lt;/p&gt;
+
+&lt;p&gt;最后，当然是要找原因了:&amp;lt; 当然，有其它重要的事在耽搁，没时间去看 Java Regex 源码。不过，从正则本身下手反而是个好事情。毕竟几乎所有的编程语言都有对正则的支持。而同样的，都存在着这样的问题。那就可以大胆猜想其实是和语言本身无关，而在于正则规范本身了。&lt;/p&gt;
+
+&lt;p&gt;先给个结果，罪魁祸首就是&lt;code&gt;指数爆炸&lt;/code&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel (6) - read &amp; write</title>
+      <link>https://dormouse-none.github.io/posts/2018-11-11-understand-kernel-6/</link>
+      <pubDate>Sun, 11 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-11-11-understand-kernel-6/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/&#34;&gt;前一篇&lt;/a&gt;已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。&lt;/p&gt;
+
+&lt;p&gt;首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;#include &amp;lt;stdio.h&amp;gt;
+#include &amp;lt;stdlib.h&amp;gt;
+#include &amp;lt;string.h&amp;gt;
+#include &amp;lt;unistd.h&amp;gt;
+#include &amp;lt;fcntl.h&amp;gt;
+#include &amp;lt;errno.h&amp;gt;
+#include &amp;lt;sys/types.h&amp;gt;
+#include &amp;lt;sys/stat.h&amp;gt;
+
+int panic()
+{
+    fprintf(stderr, &amp;quot;%s (errno=%d)\n&amp;quot;, strerror(errno), errno);
+    return -1;
+}
+
+int main(int argc, char *argv[])
+{
+    /* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */
+    int fd = open(&amp;quot;/root/frw.txt&amp;quot;, O_RDWR | O_CREAT);
+    if (fd == -1)
+        return panic();
+
+    /* 向文件写入 Hello World! 共计 12 个字符 */
+    ssize_t wsize = write(fd, &amp;quot;Hello World!&amp;quot;, 12);
+    if (wsize == -1)
+        return panic();
+
+    /* 重定位文件读写指针 */
+    off_t off = lseek(fd, 0, SEEK_SET);
+    if (off == -1)
+        return panic();
+
+    char* buf = (char *) malloc(wsize);
+    /* 读取文件内容 */
+    ssize_t rsize = read(fd, buf, wsize);
+    if (rsize == -1)
+        return panic();
+
+    printf(&amp;quot;%s\n&amp;quot;, buf);
+    free(buf);
+    /* 关闭文件 */
+    int stat = close(fd);
+    if (stat == -1)
+        return panic();
+
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel (5) - 文件系统(宏观描述)</title>
+      <link>https://dormouse-none.github.io/posts/2018-10-14-understand-kernel-5/</link>
+      <pubDate>Sun, 14 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-10-14-understand-kernel-5/</guid>
+      <description>&lt;p&gt;用惯了类 Unix 系统，应该说文件系统是日常最常接触的一个操作系统模块之一了。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ ls
+Applications Network      Users        bin          data         etc          net          sbin         usr
+Library      System       Volumes      cores        dev          home         private      tmp          var
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;但是，究竟什么是文件系统? 为什么需要文件系统? 难道文件不是简单地存储到存储设备一块连续区域的吗?&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel (4) - 任务调度</title>
+      <link>https://dormouse-none.github.io/posts/2018-10-12-understand-kernel-4/</link>
+      <pubDate>Fri, 12 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-10-12-understand-kernel-4/</guid>
+      <description>&lt;p&gt;前面几节已经描述过，对于单核 CPU 来说。CPU 就处于不断地执行指令的过程(或者通过 &lt;code&gt;hlt&lt;/code&gt; 指令直接停止工作)。&lt;/p&gt;
+
+&lt;p&gt;针对于每一个程序来说，这个程序执行流程是通过 CPU 中几组寄存器(通用寄存器、段寄存器、控制寄存器等) 和存储在内存中的代码和数据协作完成的。&lt;/p&gt;
+
+&lt;p&gt;如果要达到单核多任务的目的，首先要做的就是完成对几组寄存器中当前值的保存(我称之为保存现场)。而对于内存来说，多个任务的代码、数据同时存在内存是完全合理且可行的。毕竟相较于有限的寄存器，内存实在是太大了(相对而言)。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel (3) - 操作系统启动</title>
+      <link>https://dormouse-none.github.io/posts/2018-10-06-understand-kernel-3/</link>
+      <pubDate>Sat, 06 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-10-06-understand-kernel-3/</guid>
+      <description>&lt;p&gt;这次拖得有够久的，毕竟需要将知识串联起来并不是一件容易的事情。更何况很多内容可以说和常理(个人理解的常理)有了比较大的偏差。&lt;/p&gt;
+
+&lt;p&gt;不过确实比较有意思。从引导程序到操作系统启动，这中间究竟经历了多少流程呢？&lt;/p&gt;
+
+&lt;p&gt;由于前几篇已经有过介绍，这里不会再对引导程序及汇编语法做过多的介绍。而着重描述整个操作系统的启动流程。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Understand MAIL</title>
+      <link>https://dormouse-none.github.io/posts/2018-09-27-mail/</link>
+      <pubDate>Thu, 27 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-09-27-mail/</guid>
+      <description>&lt;p&gt;在网络协议上，高层协议确实比底层协议更容易理解，也更加的人性化。
+传输层的 TCP, UDP 都还停留在各种字节内容的整合和校验上，而更上层的应用层协议就已经能够直观到通过直接解读就能理解其每条消息的含义了。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>TCP SYN 包模拟</title>
+      <link>https://dormouse-none.github.io/posts/2018-09-18-tcp-syn/</link>
+      <pubDate>Tue, 18 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-09-18-tcp-syn/</guid>
+      <description>&lt;p&gt;写了两天，几乎是从零开始，C 语言搞了一个发 TCP SYN 包的小程序。
+从协议到程序代码的转换，确实没有花费太多的时间，但是为了字节序(byteorder)的问题简直折腾得&amp;hellip;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Preprocessor Output</title>
+      <link>https://dormouse-none.github.io/posts/2018-09-08-preprocessor-output/</link>
+      <pubDate>Sat, 08 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-09-08-preprocessor-output/</guid>
+      <description>&lt;p&gt;最近重新开始回顾 C 语言以及其编译后的文件格式 ELF。
+暂时告别一步到位的命令 &lt;code&gt;gcc main.c&lt;/code&gt;，如果从 &lt;code&gt;.c&lt;/code&gt; 文件的编译来说，主要分为预编译(preprocess)、编译(Compilation)、汇编(Assembly)、链接(Linking) 四个步骤。
+但是，仅仅从第一个流程 &lt;strong&gt;预编译&lt;/strong&gt; 而言，就已经遇到了一些麻烦。&lt;/p&gt;
+
+&lt;p&gt;&lt;small&gt;program.i&lt;/small&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;# 1 &amp;quot;program.c&amp;quot;
+# 1 &amp;quot;&amp;lt;built-in&amp;gt;&amp;quot;
+# 1 &amp;quot;&amp;lt;command-line&amp;gt;&amp;quot;
+# 1 &amp;quot;/usr/include/stdc-predef.h&amp;quot; 1 3 4
+# 1 &amp;quot;&amp;lt;command-line&amp;gt;&amp;quot; 2
+# 1 &amp;quot;program.c&amp;quot;
+# 1 &amp;quot;header.h&amp;quot; 1
+char *test(void);
+# 2 &amp;quot;program.c&amp;quot; 2
+
+int main(void)
+{
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;预编译后的问题出现了诸如 &lt;code&gt;# 1 &amp;quot;program.c&amp;quot;&lt;/code&gt; 的 &lt;em&gt;注释?&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;这里简单记录预处理输出文件的基本格式，方便今后回顾。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel (2) - 多任务切换</title>
+      <link>https://dormouse-none.github.io/posts/2018-08-26-understand-kernel-2/</link>
+      <pubDate>Sun, 26 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-08-26-understand-kernel-2/</guid>
+      <description>&lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+
+&lt;p&gt;《只是为了好玩》书中，林纳斯描述过他最早的试验性程序就是执行两个不同的任务（一个不断输出A，另一个输出B），同时不断地让 CPU 在两个任务间做切换。结合《Linux 内核完全注释》提供的一个多任务切换示例程序，本篇将就多任务切换程序的执行流程进行详述，并提供当下汇编工具下的适配。&lt;/p&gt;
+
+&lt;p&gt;关于运行环境的说明，欢迎参考 &lt;a href=&#34;https://www.ffutop.com/2018-08-19-understand-Kernel-1/#Bochs-%E4%BB%BF%E7%9C%9F%E5%99%A8&#34;&gt;Bochs 仿真器使用简介&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel (0) - 概述</title>
+      <link>https://dormouse-none.github.io/posts/2018-08-19-understand-kernel-0/</link>
+      <pubDate>Sun, 19 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-08-19-understand-kernel-0/</guid>
+      <description>&lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+
+&lt;p&gt;《理解Linux Kernel》系列最早开始于 2018 年中，当时我刚刚结束对 JVM (Java Virtual Machine, Java 虚拟机) &lt;a href=&#34;https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html&#34;&gt;ClassFile 文件格式&lt;/a&gt;的学习。彼时，在*实现新编程语言*、*学习 Linux 内核实现*、*继续深入 JVM 源码*三个下一阶段的命题中，我选择了拥抱 Linux 源码。&lt;/p&gt;
+
+&lt;p&gt;时间过去了大半年，我已经简单地建立了对 Linux Kernel 的结构化认知。趁着现阶段有一些闲暇，整理过去的文章，以期删繁就简，并对错误的描述进行修正。&lt;/p&gt;
+
+&lt;p&gt;《理解 Linux Kernel》系列最早发布于&lt;a href=&#34;https://www.ffutop.com/&#34;&gt;我的博客 (Utop&amp;rsquo;s Blog)&lt;/a&gt;。由于这些文章的完成完全出于个人兴趣，对每个内核子系统的学习往往浅尝辄止，但我依旧认为这个系列对初学者来说是大有裨益的。&lt;/p&gt;
+
+&lt;p&gt;本系列对内核的学习完全建立在 0.11、2.6.24 两个版本源码的基础上。从 0.11 版本入门，学习硬件启动阶段进行的主要操作、任务调度、文件系统等早期版本已初现雏形的子系统；从 2.6.24 版本进阶，学习网络、内存管理等子系统的实现。在此强烈推荐，直接阅读源码对理解的帮助最为深远。请随时备上两个版本的源码，以备深入理解。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>理解 Linux Kernel (1) - BIOS</title>
+      <link>https://dormouse-none.github.io/posts/2018-08-19-understand-kernel-1/</link>
+      <pubDate>Sun, 19 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-08-19-understand-kernel-1/</guid>
+      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;在&lt;a href=&#34;https://www.ffutop.com/2018-08-19-understand-Kernel-0/&#34;&gt;概述&lt;/a&gt;，我已经介绍过《理解 Linux Kernel》系列文章的写作原因。我不能担保我所进行的所有试验性操作都是对的，但至少操作我的环境下成功地运行了，并帮助我触及我始终敬畏的&lt;strong&gt;硬件&amp;amp;OS&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;《Linux 内核完全注释》第三章——内核编程语言和环境，描述了用 as86 汇编语言构建 boot 引导程序，在 Bochs 仿真器成功模拟开机运行，最终输出 *Loading System&amp;hellip;*。这就是本篇所要尝试的核心实验。之所以在已经有资料的基础上再写一遍，是书中缺失了仿真器模拟的环节。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Java Instrumentation</title>
+      <link>https://dormouse-none.github.io/posts/2018-08-15-java-instrumentation/</link>
+      <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-08-15-java-instrumentation/</guid>
+      <description>&lt;h2 id=&#34;start&#34;&gt;Start&lt;/h2&gt;
+
+&lt;p&gt;从现有的前置知识来说，我们能够认识到两个事实:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Java Class 通过 ClassLoader 进行加载。
+通过&lt;code&gt;全限定名&lt;/code&gt;进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。
+换句话说: Class 一经加载，就不会尝试重复加载 (至少按绝大多数人的认知来说，确实是的)&lt;/li&gt;
+&lt;li&gt;有没有可能让被加载的 Class 与物理存储上的 .class 内容不同。
+当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧
+(虽然可能不了解细节。在此，欢迎学习前置技能 &lt;a href=&#34;https://dormouse-none.github.io/2018-07-10-CGlib-Enhancer/&#34;&gt;CGlib Enhancer 主流程源码解析&lt;/a&gt; 和 &lt;a href=&#34;https://dormouse-none.github.io/2018-07-20-Java-Proxy/&#34;&gt;Java Proxy 源码解析&lt;/a&gt;。不过不影响本文后续内容)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;另一个方面，也许绝大多数人都听说过所谓的&lt;code&gt;热部署&lt;/code&gt;。但是究竟怎么才能做到 &lt;code&gt;热部署&lt;/code&gt;(话题开得有点大哈。Y_Y 本文不讲这个)&lt;/p&gt;
+
+&lt;p&gt;操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。&lt;/p&gt;
+
+&lt;p&gt;如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;Java 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的&lt;/p&gt;
+
+&lt;h2 id=&#34;instrumentation&#34;&gt;Instrumentation&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;java.lang.instrument.Instrumentation&lt;/code&gt; 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)&lt;/p&gt;
+
+&lt;p&gt;相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。&lt;/p&gt;
+
+&lt;p&gt;下列有两种方法可以达到目的&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。&lt;/li&gt;
+&lt;li&gt;当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了*检测*的目的)的使用&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>JVM 指令简析</title>
+      <link>https://dormouse-none.github.io/posts/2018-07-24-jvm-instruction/</link>
+      <pubDate>Tue, 24 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-07-24-jvm-instruction/</guid>
+      <description>&lt;p&gt;在之前描述过包括 ASM, CGlib, Java Proxy 的基本内容之后，本文将就更为基础的 JVM 指令集进行简单而有效的介绍。&lt;/p&gt;
+
+&lt;p&gt;当然，在开始正文前，读者需要了解到，JVM 指令集这种类似于汇编的规范性内容，包含一百多个指令，若要求一一介绍。
+那么，直接阅读 &lt;a href=&#34;https://docs.oracle.com/javase/specs/jvms/se8/html/index.html&#34;&gt;官方文档&lt;/a&gt; 绝对是比本文的内容更为详实且准确。&lt;/p&gt;
+
+&lt;p&gt;这篇文档的目的，只是为了使读者建立起关于 JVM 指令集基本的常识性观念。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Java Proxy 源码解析</title>
+      <link>https://dormouse-none.github.io/posts/2018-07-20-java-proxy/</link>
+      <pubDate>Fri, 20 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-07-20-java-proxy/</guid>
+      <description>&lt;p&gt;在 Java 整个生态里面, 通用的有两类动态代理的应用: Java Proxy 与 CGlib 代理。&lt;/p&gt;
+
+&lt;p&gt;从宽泛的区别来说，Java Proxy 只能对接口进行增强，而 CGlib 同时适用于类和接口的增强。
+而且，业内普遍的认知是，CGlib 动态代理较之于 Java Proxy 在生成字节码的速度上也更为高效。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>如何方便地获取 CGlib 生成类</title>
+      <link>https://dormouse-none.github.io/posts/2018-07-13-how-to-easily-get-cglib-generated-code/</link>
+      <pubDate>Fri, 13 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-07-13-how-to-easily-get-cglib-generated-code/</guid>
+      <description>&lt;h2 id=&#34;配置参数&#34;&gt;配置参数&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;命令行使用&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;在 java 启动命令中添加参数配置项 &lt;code&gt;-Dcglib.debugLocation=&amp;lt;Custom Path&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;编码实现&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;在执行 CGlib 获取新生成类之前，调用 &lt;code&gt;System.setProperty(&amp;quot;cglib.debugLocation&amp;quot;, &amp;lt;Custom Path&amp;gt;)&lt;/code&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>CGlib Enhancer 主流程源码解析</title>
+      <link>https://dormouse-none.github.io/posts/2018-07-10-cglib-enhancer/</link>
+      <pubDate>Tue, 10 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-07-10-cglib-enhancer/</guid>
+      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;此博文写作的目的:
+  - (Core) 通过了解 CGlib Enhancer 的整个调用链，了解其对于唯一依赖的 ASM 库的调用方式。
+  - 基于 Enhancer 对已有字节码进行增强的进一步理解与掌握。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Java 安全访问与权限控制</title>
+      <link>https://dormouse-none.github.io/posts/2018-07-04-jdk-permission/</link>
+      <pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-07-04-jdk-permission/</guid>
+      <description>&lt;h2 id=&#34;绪论&#34;&gt;绪论&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;本文只是对 Java 安全访问与权限控制的基础性探究。&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;本节与全文内容无关，如无兴趣阅读，可以跳过&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;了解 Java 安全访问相关内容的初衷，是准备在项目中利用 Java 标准库提供的 ServiceLoader 对 SPI 实现类进行&amp;rdquo;自动发现&amp;rdquo;和加载。
+这对于将本项目作为二方库来依赖的上层项目将更为方便，只需要
+1. 在 &lt;code&gt;META-INF.services&lt;/code&gt; 目录下配置被命名为 SPI 接口全限定名的文件及添加相关内容
+2. 由项目的注册管理器触发下列 Java 代码&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;{
+    ServiceLoader&amp;lt;XxxPolicy&amp;gt; xxxPolicyServiceLoader = ServiceLoader.load(XxxPolicy.class);
+    for (Iterator&amp;lt;XxxPolicy&amp;gt; it = xxxPolicyServiceLoader.iterator(); it.hasNext(); ) {
+        XxxPolicy xxxPolicy = it.next();
+        // ... more code ...
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;就可以完成一个新的 SPI 策略的注册工作。&lt;/p&gt;
+
+&lt;p&gt;但是，在尝试实现，了解了 ServiceLoader 源码，以及 DriverManager 和 mysql-connection-java-&lt;version&gt;.jar 在注册 Driver 相关的代码。
+发现怎么也绕不开 Java 安全访问相关的内容。诸如下列这段来自 DriverManager.loadInitialDrivers() 的代码:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;AccessController.doPrivileged(new PrivilegedAction&amp;lt;Void&amp;gt;() {
+    public Void run() {
+
+        ServiceLoader&amp;lt;Driver&amp;gt; loadedDrivers = ServiceLoader.load(Driver.class);
+        Iterator&amp;lt;Driver&amp;gt; driversIterator = loadedDrivers.iterator();
+
+        try{
+            while(driversIterator.hasNext()) {
+            driversIterator.next();
+            }
+        } catch(Throwable t) {
+                // Do nothing
+        }
+        return null;
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。&lt;/p&gt;
+
+&lt;p&gt;为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>ASM-VerifyError错误信息解决</title>
+      <link>https://dormouse-none.github.io/posts/2018-06-28-asm-verifyerror/</link>
+      <pubDate>Thu, 28 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-06-28-asm-verifyerror/</guid>
+      <description>&lt;h2 id=&#34;报错信息&#34;&gt;报错信息&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;java.lang.VerifyError: class net.sf.cglib.core.DebuggingClassWriter overrides final method visit.(IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>ASM 核心包基本内容漫谈</title>
+      <link>https://dormouse-none.github.io/posts/2018-06-25-asm-core/</link>
+      <pubDate>Mon, 25 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-06-25-asm-core/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;本文描述的 ASM 指的是 OW2 ASM&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;asm-core-的结构&#34;&gt;ASM-Core 的结构&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;首先是一些概述性的内容。&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。
+因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)&lt;/p&gt;
+
+&lt;p&gt;从核心包声明的类来看，主要包括:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;ClassReader - 作为结构化对象，将接收(accept)访问者的访问&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;几种访问者抽象类以及相应的实现类&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;AnnotationVisitor -&amp;gt; AnnotationWriter&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;ClassVisitor -&amp;gt; ClassWriter&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;FieldVisitor -&amp;gt; FieldWriter&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;MethodVisitor -&amp;gt; MethodWriter&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;ModuleVisitor -&amp;gt; ModuleWriter&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Opcodes &amp;amp; Constants - ClassFile 中描述的大量常量符号与值&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;其它一些辅助的类&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Attribute - 用于处理非标准化的属性(ClassFile 允许&lt;a href=&#34;https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html&#34;&gt;JVMS&lt;/a&gt; 中未定义的 Attribute)&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;ByteArray - 动态可自适应的 byte[] (字节数组)&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Symbol - 用于表示 ClassFile 中描述的 Constant 的基类&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;SymbolTable - 用于存储常量池对象&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;其它内容省略&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
+    
+    <item>
+      <title>java-memory-model</title>
+      <link>https://dormouse-none.github.io/posts/2018-06-21-java-memory-model/</link>
+      <pubDate>Thu, 21 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-06-21-java-memory-model/</guid>
+      <description>&lt;h2 id=&#34;jvm-运行时数据区&#34;&gt;JVM 运行时数据区&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>ASM - ClassReader 与 Java ClassFile 文件格式</title>
+      <link>https://dormouse-none.github.io/posts/2018-06-11-asm-classreader/</link>
+      <pubDate>Mon, 11 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-06-11-asm-classreader/</guid>
+      <description>&lt;h2 id=&#34;java-classfile-文件格式&#34;&gt;Java ClassFile 文件格式&lt;/h2&gt;
+
+&lt;p&gt;读了将近一周的时间，勉强算是把 ClassFile 的文件格式给简单的梳理了个脉络。
+&lt;a href=&#34;https://docs.oracle.com/javase/specs/jvms/se8/html/index.html&#34;&gt;The class File Format(Java SE 8)&lt;/a&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;u1, u2, u4 分别表示无符号的一字节、二字节、四字节数据(以大端存储)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c++&#34;&gt;ClassFile {
+    u4             magic;                                   // 魔数(magic) 固定为 0xCAFEBABE
+    u2             minor_version;                           // 次版本号
+    u2             major_version;                           // 主版本号
+    u2             constant_pool_count;                     // 常量池 constant_pool 的数量 + 1, 最大为 (2&amp;lt;&amp;lt;16 - 1) = 65535
+    cp_info        constant_pool[constant_pool_count-1];    // 常量池 取值下标为 [1, constant_pool_count)
+    u2             access_flags;                            // 对类 or 接口的访问权限和属性的标志的掩码
+    u2             this_class;                              // 值为 constant_pool 的有效下标(且 constant_pool[this_class] 的类型为 CONSTANT_Class_info)
+    u2             super_class;                             // 值为 0 或者 constant_pool 的有效下标(同上), 如果是 interface, 则该值一定为有效下标
+    u2             interfaces_count;                        // 直接父接口的数量
+    u2             interfaces[interfaces_count];            // 值必须是 constant_pool 的有效下标, 且 interfaces[i](0≤i&amp;lt;interfaces_count), 指向的类型为 CONSTANT_Class_info)
+    u2             fields_count;                            // 字段数量, 统计所有字段, 包括 class variables(静态变量) 和 instance variables(实例变量)
+    field_info     fields[fields_count];                    // 字段的详细声明, 不包含继承来的字段
+    u2             methods_count;                           // 方法数量
+    method_info    methods[methods_count];                  // 方法的详细声明, 不包括继承来的方法
+    u2             attributes_count;                        // 属性数量
+    attribute_info attributes[attributes_count];            // 属性的详细声明
+}
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>区块链技术概述</title>
+      <link>https://dormouse-none.github.io/posts/2018-03-01-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/</link>
+      <pubDate>Thu, 01 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-03-01-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;https://ws3.sinaimg.cn/large/006tKfTcgy1fs8oc4ri7qj30mq055aap.jpg&#34; alt=&#34;区块链简单结构&#34; /&gt;
+&lt;center&gt;&lt;small&gt;图1. 区块链简单结构&lt;/small&gt;&lt;/center&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://ws1.sinaimg.cn/large/006tNc79gy1foxcpmmpfhj31kw107n2e.jpg&#34; alt=&#34;Merkle tree&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;center&gt;&lt;small&gt;图2. 单个区块的抽象结构&lt;/small&gt;&lt;/center&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Spring JDBC 源码学习</title>
+      <link>https://dormouse-none.github.io/posts/2018-01-15-spring-jdbc-code-reading/</link>
+      <pubDate>Mon, 15 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-01-15-spring-jdbc-code-reading/</guid>
+      <description>&lt;h2 id=&#34;概览&#34;&gt;概览&lt;/h2&gt;
+
+&lt;p&gt;在学习 Spring-JDBC 之前，我们有必要从 Java 原生提供的 JDBC 开始，对 JDBC 操作的一整套完整的流程有一个清晰的概念。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

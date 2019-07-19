@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>API on Utop&#39;s Blog</title>
+    <link>https://dormouse-none.github.io/tags/api/</link>
+    <description>Recent content in API on Utop&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>2018-2019 © ffutop</copyright>
+    <lastBuildDate>Wed, 27 Feb 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://dormouse-none.github.io/tags/api/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>【Java】API 参数误定义的后果</title>
+      <link>https://dormouse-none.github.io/posts/2019-02-27-java-fatal-api/</link>
+      <pubDate>Wed, 27 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-02-27-java-fatal-api/</guid>
+      <description>&lt;p&gt;工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。&lt;/p&gt;
+
+&lt;p&gt;想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！&lt;/p&gt;
+
+&lt;p&gt;想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把&lt;code&gt;void add(int)&lt;/code&gt; API 改写成 &lt;code&gt;int add(int)&lt;/code&gt;，可能得到的大多数回答都是可以。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

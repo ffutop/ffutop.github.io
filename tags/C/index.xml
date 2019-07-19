@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>C on Utop&#39;s Blog</title>
+    <link>https://dormouse-none.github.io/tags/c/</link>
+    <description>Recent content in C on Utop&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>2018-2019 © ffutop</copyright>
+    <lastBuildDate>Sat, 08 Sep 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://dormouse-none.github.io/tags/c/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Preprocessor Output</title>
+      <link>https://dormouse-none.github.io/posts/2018-09-08-preprocessor-output/</link>
+      <pubDate>Sat, 08 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-09-08-preprocessor-output/</guid>
+      <description>&lt;p&gt;最近重新开始回顾 C 语言以及其编译后的文件格式 ELF。
+暂时告别一步到位的命令 &lt;code&gt;gcc main.c&lt;/code&gt;，如果从 &lt;code&gt;.c&lt;/code&gt; 文件的编译来说，主要分为预编译(preprocess)、编译(Compilation)、汇编(Assembly)、链接(Linking) 四个步骤。
+但是，仅仅从第一个流程 &lt;strong&gt;预编译&lt;/strong&gt; 而言，就已经遇到了一些麻烦。&lt;/p&gt;
+
+&lt;p&gt;&lt;small&gt;program.i&lt;/small&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;# 1 &amp;quot;program.c&amp;quot;
+# 1 &amp;quot;&amp;lt;built-in&amp;gt;&amp;quot;
+# 1 &amp;quot;&amp;lt;command-line&amp;gt;&amp;quot;
+# 1 &amp;quot;/usr/include/stdc-predef.h&amp;quot; 1 3 4
+# 1 &amp;quot;&amp;lt;command-line&amp;gt;&amp;quot; 2
+# 1 &amp;quot;program.c&amp;quot;
+# 1 &amp;quot;header.h&amp;quot; 1
+char *test(void);
+# 2 &amp;quot;program.c&amp;quot; 2
+
+int main(void)
+{
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;预编译后的问题出现了诸如 &lt;code&gt;# 1 &amp;quot;program.c&amp;quot;&lt;/code&gt; 的 &lt;em&gt;注释?&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;这里简单记录预处理输出文件的基本格式，方便今后回顾。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

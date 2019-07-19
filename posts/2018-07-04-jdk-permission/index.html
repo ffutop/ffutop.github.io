@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  
+    <title>Java 安全访问与权限控制 :: Utop&#39;s Blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="description" content="绪论 本文只是对 Java 安全访问与权限控制的基础性探究。
+本节与全文内容无关，如无兴趣阅读，可以跳过
+了解 Java 安全访问相关内容的初衷，是准备在项目中利用 Java 标准库提供的 ServiceLoader 对 SPI 实现类进行&amp;rdquo;自动发现&amp;rdquo;和加载。 这对于将本项目作为二方库来依赖的上层项目将更为方便，只需要 1. 在 META-INF.services 目录下配置被命名为 SPI 接口全限定名的文件及添加相关内容 2. 由项目的注册管理器触发下列 Java 代码
+{ ServiceLoader&amp;lt;XxxPolicy&amp;gt; xxxPolicyServiceLoader = ServiceLoader.load(XxxPolicy.class); for (Iterator&amp;lt;XxxPolicy&amp;gt; it = xxxPolicyServiceLoader.iterator(); it.hasNext(); ) { XxxPolicy xxxPolicy = it.next(); // ... more code ... } }  就可以完成一个新的 SPI 策略的注册工作。
+但是，在尝试实现，了解了 ServiceLoader 源码，以及 DriverManager 和 mysql-connection-java-.jar 在注册 Driver 相关的代码。 发现怎么也绕不开 Java 安全访问相关的内容。诸如下列这段来自 DriverManager.loadInitialDrivers() 的代码:
+AccessController.doPrivileged(new PrivilegedAction&amp;lt;Void&amp;gt;() { public Void run() { ServiceLoader&amp;lt;Driver&amp;gt; loadedDrivers = ServiceLoader.load(Driver.class); Iterator&amp;lt;Driver&amp;gt; driversIterator = loadedDrivers.iterator(); try{ while(driversIterator.hasNext()) { driversIterator.next(); } } catch(Throwable t) { // Do nothing } return null; } });  诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。
+为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。
+"/>
+<meta name="keywords" content="BLOG"/>
+<meta name="robots" content="noodp"/>
+<link rel="canonical" href="https://dormouse-none.github.io/posts/2018-07-04-jdk-permission/" />
+
+
+<link rel="stylesheet" href="https://dormouse-none.github.io/assets/style.css">
+
+  <link rel="stylesheet" href="https://dormouse-none.github.io/assets/blue.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://dormouse-none.github.io/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://dormouse-none.github.io/favicon.ico">
+
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Java 安全访问与权限控制 :: Utop&#39;s Blog — " />
+<meta name="twitter:description" content="绪论 本文只是对 Java 安全访问与权限控制的基础性探究。
+本节与全文内容无关，如无兴趣阅读，可以跳过
+了解 Java 安全访问相关内容的初衷，是准备在项目中利用 Java 标准库提供的 ServiceLoader 对 SPI 实现类进行&amp;rdquo;自动发现&amp;rdquo;和加载。 这对于将本项目作为二方库来依赖的上层项目将更为方便，只需要 1. 在 META-INF.services 目录下配置被命名为 SPI 接口全限定名的文件及添加相关内容 2. 由项目的注册管理器触发下列 Java 代码
+{ ServiceLoader&amp;lt;XxxPolicy&amp;gt; xxxPolicyServiceLoader = ServiceLoader.load(XxxPolicy.class); for (Iterator&amp;lt;XxxPolicy&amp;gt; it = xxxPolicyServiceLoader.iterator(); it.hasNext(); ) { XxxPolicy xxxPolicy = it.next(); // ... more code ... } }  就可以完成一个新的 SPI 策略的注册工作。
+但是，在尝试实现，了解了 ServiceLoader 源码，以及 DriverManager 和 mysql-connection-java-.jar 在注册 Driver 相关的代码。 发现怎么也绕不开 Java 安全访问相关的内容。诸如下列这段来自 DriverManager.loadInitialDrivers() 的代码:
+AccessController.doPrivileged(new PrivilegedAction&amp;lt;Void&amp;gt;() { public Void run() { ServiceLoader&amp;lt;Driver&amp;gt; loadedDrivers = ServiceLoader.load(Driver.class); Iterator&amp;lt;Driver&amp;gt; driversIterator = loadedDrivers.iterator(); try{ while(driversIterator.hasNext()) { driversIterator.next(); } } catch(Throwable t) { // Do nothing } return null; } });  诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。
+为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。
+" />
+<meta name="twitter:site" content="https://dormouse-none.github.io/" />
+<meta name="twitter:creator" content="fangfeng" />
+<meta name="twitter:image" content="">
+
+
+<meta property="og:locale" content="zh-cn" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Java 安全访问与权限控制 :: Utop&#39;s Blog — ">
+<meta property="og:description" content="绪论 本文只是对 Java 安全访问与权限控制的基础性探究。
+本节与全文内容无关，如无兴趣阅读，可以跳过
+了解 Java 安全访问相关内容的初衷，是准备在项目中利用 Java 标准库提供的 ServiceLoader 对 SPI 实现类进行&amp;rdquo;自动发现&amp;rdquo;和加载。 这对于将本项目作为二方库来依赖的上层项目将更为方便，只需要 1. 在 META-INF.services 目录下配置被命名为 SPI 接口全限定名的文件及添加相关内容 2. 由项目的注册管理器触发下列 Java 代码
+{ ServiceLoader&amp;lt;XxxPolicy&amp;gt; xxxPolicyServiceLoader = ServiceLoader.load(XxxPolicy.class); for (Iterator&amp;lt;XxxPolicy&amp;gt; it = xxxPolicyServiceLoader.iterator(); it.hasNext(); ) { XxxPolicy xxxPolicy = it.next(); // ... more code ... } }  就可以完成一个新的 SPI 策略的注册工作。
+但是，在尝试实现，了解了 ServiceLoader 源码，以及 DriverManager 和 mysql-connection-java-.jar 在注册 Driver 相关的代码。 发现怎么也绕不开 Java 安全访问相关的内容。诸如下列这段来自 DriverManager.loadInitialDrivers() 的代码:
+AccessController.doPrivileged(new PrivilegedAction&amp;lt;Void&amp;gt;() { public Void run() { ServiceLoader&amp;lt;Driver&amp;gt; loadedDrivers = ServiceLoader.load(Driver.class); Iterator&amp;lt;Driver&amp;gt; driversIterator = loadedDrivers.iterator(); try{ while(driversIterator.hasNext()) { driversIterator.next(); } } catch(Throwable t) { // Do nothing } return null; } });  诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。
+为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。
+" />
+<meta property="og:url" content="https://dormouse-none.github.io/posts/2018-07-04-jdk-permission/" />
+<meta property="og:site_name" content="Java 安全访问与权限控制" />
+<meta property="og:image" content="">
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+<meta property="article:published_time" content="2018-07-04 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="">
+
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    ffutop
+  </div>
+</a>
+
+    </div>
+    <div class="menu-trigger">menu</div>
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">关于</a></li>
+        
+      
+        
+          <li><a href="/archives">归档</a></li>
+        
+      
+      
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">关于</a></li>
+      
+    
+      
+        <li><a href="/archives">归档</a></li>
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="https://dormouse-none.github.io/posts/2018-07-04-jdk-permission/">Java 安全访问与权限控制</a></h1>
+  <div class="post-meta">
+      
+    <span class="post-date">
+      2018-07-04
+    </span>
+    
+    
+    <span class="post-author">::
+      fangfeng
+    </span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="https://dormouse-none.github.io/tags/java/">Java</a>&nbsp;
+    
+    #<a href="https://dormouse-none.github.io/tags/security/">Security</a>&nbsp;
+    
+    #<a href="https://dormouse-none.github.io/tags/permission/">Permission</a>&nbsp;
+    
+  </span>
+  
+
+  
+
+  <div class="post-content">
+    <h2 id="绪论">绪论</h2>
+
+<p><em>本文只是对 Java 安全访问与权限控制的基础性探究。</em></p>
+
+<p><strong>本节与全文内容无关，如无兴趣阅读，可以跳过</strong></p>
+
+<p>了解 Java 安全访问相关内容的初衷，是准备在项目中利用 Java 标准库提供的 ServiceLoader 对 SPI 实现类进行&rdquo;自动发现&rdquo;和加载。
+这对于将本项目作为二方库来依赖的上层项目将更为方便，只需要
+1. 在 <code>META-INF.services</code> 目录下配置被命名为 SPI 接口全限定名的文件及添加相关内容
+2. 由项目的注册管理器触发下列 Java 代码</p>
+
+<pre><code class="language-java">{
+    ServiceLoader&lt;XxxPolicy&gt; xxxPolicyServiceLoader = ServiceLoader.load(XxxPolicy.class);
+    for (Iterator&lt;XxxPolicy&gt; it = xxxPolicyServiceLoader.iterator(); it.hasNext(); ) {
+        XxxPolicy xxxPolicy = it.next();
+        // ... more code ...
+    }
+}
+</code></pre>
+
+<p>就可以完成一个新的 SPI 策略的注册工作。</p>
+
+<p>但是，在尝试实现，了解了 ServiceLoader 源码，以及 DriverManager 和 mysql-connection-java-<version>.jar 在注册 Driver 相关的代码。
+发现怎么也绕不开 Java 安全访问相关的内容。诸如下列这段来自 DriverManager.loadInitialDrivers() 的代码:</p>
+
+<pre><code class="language-java">AccessController.doPrivileged(new PrivilegedAction&lt;Void&gt;() {
+    public Void run() {
+
+        ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);
+        Iterator&lt;Driver&gt; driversIterator = loadedDrivers.iterator();
+
+        try{
+            while(driversIterator.hasNext()) {
+            driversIterator.next();
+            }
+        } catch(Throwable t) {
+                // Do nothing
+        }
+        return null;
+    }
+});
+</code></pre>
+
+<p>诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。</p>
+
+<p>为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。</p>
+
+<h2 id="从现象开始">从现象开始&hellip;</h2>
+
+<p>在通过 <code>java</code> 命令执行本地代码时，偶尔/经常会出现文件I/O操作。</p>
+
+<pre><code class="language-java">public static void main(String... args) throws IOException {
+
+    System.out.println(System.getSecurityManager());
+
+    FileInputStream fis = new FileInputStream(&quot;/Users/fangfeng/test.in&quot;);
+    for (int chr; (chr = fis.read()) != -1;) {
+        System.out.print((char) chr);
+    }
+    fis.close();
+}
+</code></pre>
+
+<p>诸如上面这段代码，意在读取外部路径下 <code>test.in</code> 文件(不要放在项目路径下，文本内容为 <code>0123456789</code>)。当然，还包括打印 System.getSecurityManager().toString() 。</p>
+
+<p>正常情况下，这都是能够执行成功，结果为:</p>
+
+<pre><code class="language-plain">null
+0123456789
+</code></pre>
+
+<p>但是，通过在命令行 <code>java</code> 中添加选项 <code>-Djava.security.manager</code>，再次执行代码，结果为:</p>
+
+<pre><code class="language-plain">java.lang.SecurityManager@4e25154f
+Exception in thread &quot;main&quot; java.security.AccessControlException: access denied (&quot;java.io.FilePermission&quot; &quot;/Users/fangfeng/test.in&quot; &quot;read&quot;)
+	at java.security.AccessControlContext.checkPermission(AccessControlContext.java:472)
+	at java.security.AccessController.checkPermission(AccessController.java:884)
+	at java.lang.SecurityManager.checkPermission(SecurityManager.java:549)
+	at java.lang.SecurityManager.checkRead(SecurityManager.java:888)
+	at java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:127)
+	at java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:93)
+	at me.fangfeng.security.SecurityTest.main(SecurityTest.java:16)
+</code></pre>
+
+<p>现在已经能够获取到 <code>System.getSecuriryManager</code> 的实例。
+但是想要读取 <code>test.in</code> 文件却失败了，表现为 access denied（访问被拒绝）。</p>
+
+<p>现在，在用户目录下(这里是 /Users/fangfeng, 不同系统不同用户请做相应修改) 添加 <code>.java.policy</code> 文件，添加下列文本:</p>
+
+<pre><code class="language-plain">grant {
+    permission java.io.FilePermission &quot;/Users/fangfeng/test.in&quot;, &quot;read&quot;;
+};
+</code></pre>
+
+<p>再次 <code>java -Djava.security.manager &lt;class's path&gt;</code>，不仅能够得到 SecurityManager 的实例，同时也读取到了文本内容。</p>
+
+<pre><code class="language-plain">java.lang.SecurityManager@3af49f1c
+0123456789
+</code></pre>
+
+<hr/>
+
+<p>到此为止，应该已经能够感受到 Java 对安全访问的控制在文件I/O上的体现了。</p>
+
+<h2 id="安全控制下的操作">安全控制下的操作</h2>
+
+<p><strong>在开始下列内容之前，需要提前了解一个前提:</strong>
+<strong>Java 对操作权限的控制是通过检查当前线程操作上下文的代码是否存在要求的操作权限实现的(除了特权的声明以及其它还需要控制别的线程上下文权限的情况)</strong></p>
+
+<p>上一节演示了权限控制下本地代码对本地资源的访问。但是，安全控制真的有必要吗？
+- 就本地程序而言，不必要。事实上，Java 也确实是这么做的。平时在本地利用 <code>java</code> 命令执行程序，都不会受到任何限制。Java 启动时默认不会装载 SecurityManager，也就不会触发对各种操作的权限验证。
+- 可如果程序运行与网络上其它程序交互，甚至直接加载来自网络的字节码。那么，权限控制确实是有必要的。至少，如果不存在权限控制，来自网络的恶意代码访问整台机器的任意资源都将畅通无阻。</p>
+
+<h3 id="securitymanager">SecurityManager</h3>
+
+<p>SecurityManager 是整个访问控制的管理器和基本入口。所有涉及到权限控制的代码，都会类似地存在下列这般的代码:</p>
+
+<pre><code class="language-java">SecurityManager security = System.getSecurityManager();
+// 如果系统存在安全管理器
+if (security != null) {
+    // 调用 SecurityManager 中以 check 开头的方法
+    security.checkXxx(...);
+}
+</code></pre>
+
+<p><code>security.checkXxx(...)</code> 是没有返回值的(除了 checkTopLevelWindow)；对于没有操作权限的代码，直接抛出异常</p>
+
+<p>至于到底在 check 什么，Java 中定义了包括文件(File)、套接字(Socket)、网络(Net)、安全性(Security)、运行时(Runtime)、属性(Property)、AWT、反射(Reflect)和可序列化(Serializable) 九类权限。</p>
+
+<p>通常，security.checkXxx(&hellip;) 方法将构造一个 XxxPermission(&hellip;) 对象来调用 SecurityManager 提供的统一方法 checkPermission(Permission) 。</p>
+
+<pre><code class="language-java">// 以 checkRead(name) 为例
+public void checkRead(String file) {
+    checkPermission(new FilePermission(file, SecurityConstants.FILE_READ_ACTION));
+}
+
+// 调用 checkPermission(Permission) 方法
+public void checkPermission(Permission perm) {
+    // 直接调用 访问控制器 来对权限进行鉴别
+    java.security.AccessController.checkPermission(perm);
+}
+</code></pre>
+
+<h3 id="accesscontroller">AccessController</h3>
+
+<p>AccessController 用于与访问控制相关的操作和决定。</p>
+
+<blockquote>
+<p>AccessController 类用于以下三个目的：</p>
+
+<p>基于当前生效的安全策略决定是允许还是拒绝对关键系统资源的访问
+将代码标记为享有“特权”，从而影响后续访问决定，以及
+获取当前调用上下文的“快照”，这样便可以相对于已保存的上下文作出其他上下文的访问控制决定</p>
+</blockquote>
+
+<h3 id="小结">小结</h3>
+
+<p>总的来说，Java 的访问控制就是通过针对不同的操作构建不同的 Permission 对象，然后通过与 AccessControllerContent 持有的各代码的权限进行比对，
+从而判断代码是否存在相应的访问权限。</p>
+
+<p><em>所谓的Permission判断将是对当前线程的调用栈的每个调用者逐一倒序递归，判断是否拥有权限。如果其中的某个代码被声明为 Privileged，则直接认为是拥有权限</em></p>
+
+<p><strong>更多的关于 checkPermission(&hellip;) 调用相关的内容，可以自行查阅资料进行学习，在此不做过多陈述。:)</strong></p>
+
+<h2 id="为操作赋权">为操作赋权</h2>
+
+<p>上一节讲完了如果对当前项目配置了 SecurityManager ，将对各种敏感操作进行访问控制，并且将根据整个调用链被赋予的权限来决定是允许执行还是抛出 access denied。</p>
+
+<p>但是，究竟怎么才能够给 code 赋予权限呢？</p>
+
+<p>回顾前一节的内容，在基本探究中，其实一个能够看到</p>
+
+<pre><code class="language-java">grant {
+    permission java.io.FilePermission &quot;/Users/fangfeng/test.in&quot;, &quot;read&quot;;
+};
+</code></pre>
+
+<p>这就是一种赋权的操作。</p>
+
+<p>通过在指定的文件中写入符合特定规则的代码，来完成对 code 的赋权。<a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/PolicyFiles.html">Default Policy Implementation and Policy File Syntax</a></p>
+
+<p>在项目启动的时候，默认就会读取 $JAVA_HOME/jre/lib/security/java.policy 以及 ${user.home}/.java.policy 两个文件的赋权内容，并做缓存给后面代码使用。</p>
+
+<p>当然，Java 也提供指定自定义的赋权文件，通过 -Djava.security.policy=<policy file> 或者 -Djava.security.policy==<policy file> 。</p>
+
+<h2 id="参考">参考</h2>
+
+<p>[1]. Java Document - Security. <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/index.html">https://docs.oracle.com/javase/8/docs/technotes/guides/security/index.html</a></p>
+
+<pre><code class="language-plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre>
+  </div>
+  
+  <div class="pagination">
+    <div class="pagination__title">
+      <span
+        class="pagination__title-h">Read other posts</span>
+      <hr />
+    </div>
+    <div class="pagination__buttons">
+      
+      <span class="button previous">
+        <a href="https://dormouse-none.github.io/posts/2018-07-10-cglib-enhancer/">
+          <span class="button__icon">←</span>
+          <span class="button__text">CGlib Enhancer 主流程源码解析</span>
+        </a>
+      </span>
+      
+      
+      <span class="button next">
+        <a href="https://dormouse-none.github.io/posts/2018-06-28-asm-verifyerror/">
+          <span class="button__text">ASM-VerifyError错误信息解决</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+      
+    </div>
+  </div>
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright copyright--user">
+        <span>2018-2019 © ffutop</span>
+        <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
+      </div>
+    
+  </div>
+</footer>
+
+<script src="https://dormouse-none.github.io/assets/main.js"></script>
+<script src="https://dormouse-none.github.io/assets/prism.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  
+    <title>跟踪内核函数的工具—— Ftrace :: Utop&#39;s Blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="description" content="前两天仿照 strings 工具写了个打印进程运行时堆栈可打印字符的工具 ffstrings 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&amp;lt;
+在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— ftrace 。
+ Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。
+虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。
+ 当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 ffstrings 出现 EPERM 的原因。
+"/>
+<meta name="keywords" content="BLOG"/>
+<meta name="robots" content="noodp"/>
+<link rel="canonical" href="https://dormouse-none.github.io/posts/2019-06-02-ftrace/" />
+
+
+<link rel="stylesheet" href="https://dormouse-none.github.io/assets/style.css">
+
+  <link rel="stylesheet" href="https://dormouse-none.github.io/assets/blue.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://dormouse-none.github.io/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://dormouse-none.github.io/favicon.ico">
+
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="跟踪内核函数的工具—— Ftrace :: Utop&#39;s Blog — " />
+<meta name="twitter:description" content="前两天仿照 strings 工具写了个打印进程运行时堆栈可打印字符的工具 ffstrings 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&amp;lt;
+在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— ftrace 。
+ Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。
+虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。
+ 当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 ffstrings 出现 EPERM 的原因。
+" />
+<meta name="twitter:site" content="https://dormouse-none.github.io/" />
+<meta name="twitter:creator" content="fangfeng" />
+<meta name="twitter:image" content="">
+
+
+<meta property="og:locale" content="zh-cn" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="跟踪内核函数的工具—— Ftrace :: Utop&#39;s Blog — ">
+<meta property="og:description" content="前两天仿照 strings 工具写了个打印进程运行时堆栈可打印字符的工具 ffstrings 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&amp;lt;
+在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— ftrace 。
+ Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。
+虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。
+ 当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 ffstrings 出现 EPERM 的原因。
+" />
+<meta property="og:url" content="https://dormouse-none.github.io/posts/2019-06-02-ftrace/" />
+<meta property="og:site_name" content="跟踪内核函数的工具—— Ftrace" />
+<meta property="og:image" content="">
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+<meta property="article:published_time" content="2019-06-02 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="">
+
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    ffutop
+  </div>
+</a>
+
+    </div>
+    <div class="menu-trigger">menu</div>
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">关于</a></li>
+        
+      
+        
+          <li><a href="/archives">归档</a></li>
+        
+      
+      
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">关于</a></li>
+      
+    
+      
+        <li><a href="/archives">归档</a></li>
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="https://dormouse-none.github.io/posts/2019-06-02-ftrace/">跟踪内核函数的工具—— Ftrace</a></h1>
+  <div class="post-meta">
+      
+    <span class="post-date">
+      2019-06-02
+    </span>
+    
+    
+    <span class="post-author">::
+      fangfeng
+    </span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+    
+    #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+    
+    #<a href="https://dormouse-none.github.io/tags/ftrace/">ftrace</a>&nbsp;
+    
+  </span>
+  
+
+  
+
+  <div class="post-content">
+    <p>前两天仿照 <code>strings</code> 工具写了个打印进程运行时堆栈可打印字符的工具 <a href="https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c">ffstrings</a> 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&lt;</p>
+
+<p>在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— <code>ftrace</code> 。</p>
+
+<blockquote>
+<p>Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。</p>
+
+<p>虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。</p>
+</blockquote>
+
+<p>当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 <code>ffstrings</code> 出现 <code>EPERM</code> 的原因。</p>
+
+<h2 id="启用-ftrace">启用 Ftrace</h2>
+
+<p><code>Ftrace</code> 自版本 2.6.28 开始加入内核。首先要做的就是确保内核已经集成了 <code>Ftrace</code> 。当然，目前的内核版本都已经到 5.X 了，而且云服务器的普及，相信已经没有太多还在使用7、8年前 Linux 发行版的机器了吧 :)</p>
+
+<p><code>Ftrace</code> 使用 debugfs 文件系统以文件的形式来维护控制项和跟踪器输出。一般来说，这个文件系统将挂载在 <code>/sys/kernel/debug</code> 目录下。如果没有找到，那就主动先挂载上 debugfs 文件系统：</p>
+
+<pre><code class="language-sh">mount -t debugfs nodev /sys/kernel/debug
+</code></pre>
+
+<p>挂载文件系统之后，可以检查下 <code>/sys/kernel/debug/tracing</code> 目录，这里就是 <code>Ftrace</code> 全部的可配置项和输出。</p>
+
+<p>几个重要的文件包括：</p>
+
+<ul>
+<li><code>current_tracer</code>, 配置当前跟踪器进行哪些项目的跟踪</li>
+<li><code>available_tracers</code>, 当前内核支持的所有跟踪项目</li>
+<li><code>tracing_on</code>, 开启/关闭跟踪器 (0 表示关闭, 1 表示开启)</li>
+<li><code>trace</code>, 用户可读的跟踪结果文件</li>
+<li><code>trace_pipe</code>, 与 <code>trace</code> 文件静态呈现的形式相对，里面的数据只能消费一次</li>
+<li><code>trace_options</code>, 配置输出文件的格式</li>
+<li><code>tracing_max_latency</code>, 记录最大延时</li>
+<li><code>buffer_size_kb</code>, 用于设置单个CPU使用的跟踪器缓存大小。跟踪器缓存使用环形缓存，老的缓存会在空间不足时被新缓存覆盖</li>
+<li><code>tracing_cpumask</code>, 用来配置需要监控的CPU</li>
+<li><code>set_ftrace_filter</code>, 显示指定跟踪特定的函数</li>
+<li><code>set_ftrace_notrace</code>, 与 <code>set_ftrace_filter</code> 功能恰好相反</li>
+<li><code>set_ftrace_pid</code>, 只跟踪特定的任务</li>
+<li><code>set_graph_function</code>, 设置要清晰显示调用关系的函数，以 C 语言缩进式地呈现</li>
+<li><code>available_filter_functions</code>, 显示目前可以跟踪的所有内核函数</li>
+</ul>
+
+<h2 id="使用-ftrace">使用 Ftrace</h2>
+
+<p>配置 <code>current_tracer</code> ，跟踪内核所有函数的调用</p>
+
+<pre><code class="language-sh">$ echo function &gt; current_tracer
+</code></pre>
+
+<p>配置 <code>tracing_enabled</code>，开启跟踪器</p>
+
+<pre><code class="language-sh">$ echo 1 &gt; tracing_on
+</code></pre>
+
+<p>查看 <code>trace</code> 文件中记录的跟踪器输出</p>
+
+<pre><code class="language-sh">$ head -15 trace
+# tracer: function
+#
+#                              _-----=&gt; irqs-off
+#                             / _----=&gt; need-resched
+#                            | / _---=&gt; hardirq/softirq
+#                            || / _--=&gt; preempt-depth
+#                            ||| /     delay
+#           TASK-PID   CPU#  ||||    TIMESTAMP  FUNCTION
+#              | |       |   ||||       |         |
+             zsh-23126 [000] d... 5252243.233084: do_syscall_64 &lt;-entry_SYSCALL_64_after_hwframe
+             zsh-23126 [000] .... 5252243.233084: SyS_rt_sigprocmask &lt;-do_syscall_64
+             zsh-23126 [000] .... 5252243.233084: sigprocmask &lt;-SyS_rt_sigprocmask
+             zsh-23126 [000] .... 5252243.233084: __set_current_blocked &lt;-sigprocmask
+             zsh-23126 [000] .... 5252243.233084: _raw_spin_lock_irq &lt;-__set_current_blocked
+             zsh-23126 [000] d... 5252243.233085: __set_task_blocked &lt;-__set_current_blocked
+</code></pre>
+
+<p>OK，如果觉得这个结果并不直观，可以重新配置 <code>current_tracer</code>，使用 <code>function_graph</code></p>
+
+<pre><code class="language-sh">$ echo function_graph &gt; current_tracer
+$ head -15 trace
+# tracer: function_graph
+#
+# CPU  DURATION                  FUNCTION CALLS
+# |     |   |                     |   |   |   |
+ 0)               |      __fdget_pos() {
+ 0)   0.072 us    |        __fget_light();
+ 0)   0.377 us    |      }
+ 0)               |      vfs_read() {
+ 0)               |        rw_verify_area() {
+ 0)               |          security_file_permission() {
+ 0)               |            apparmor_file_permission() {
+ 0)               |              common_file_perm() {
+ 0)   0.079 us    |                aa_file_perm();
+ 0)   0.480 us    |              }
+ 0)   0.877 us    |            }
+</code></pre>
+
+<h2 id="跟踪应用程序的系统调用">跟踪应用程序的系统调用</h2>
+
+<p>虽然 <code>strace</code> 就可以打印出任务的每个系统调用，但是，它所能完成的仅仅只是对每个系统调用及结果进行记录，而无法看到系统调用内部究竟发生了什么。而 ftrace 可以很好的完成这一点。当然，这需要一点点编码量。</p>
+
+<p>回到最初的命题，执行 <code>ffstrings</code> 过程中，抛出了 <code>EPERM</code> 错误码。首先使用 <code>strace</code> 进行定位，究竟是哪个系统调用出了问题</p>
+
+<pre><code class="language-sh">$ strace ./ffstrings &lt;PID&gt;
+# ... omitted output
+read(4, 0x7f9ac2970000, 1024)           = -1 EPERM (Operation not permitted)
+# ... omitted output
+</code></pre>
+
+<p>修改应用程序代码，添加两个新的函数 (<code>trace_on</code>, <code>trace_off</code>)。</p>
+
+<p><em>Hint: 这段代码的健壮性并不好，请各位多担待</em></p>
+
+<pre><code class="language-c">int trace_fd = -1;
+int marker_fd = -1;
+char *debugfs = &quot;/sys/kernel/debug&quot;;
+
+void trace_on()
+{
+	char path[256];
+
+	strcpy(path, debugfs);  /* BEWARE buffer overflow */
+	strcat(path,&quot;/tracing/tracing_on&quot;);
+	trace_fd = open(path, O_WRONLY);
+	if (trace_fd &gt;= 0)
+		write(trace_fd, &quot;1&quot;, 1);
+
+	strcpy(path, debugfs);
+	strcat(path,&quot;/tracing/trace_marker&quot;);
+	marker_fd = open(path, O_WRONLY);
+    if (marker_fd &gt;= 0)
+	    write(marker_fd, &quot;In critical area\n&quot;, 17);
+}
+
+void trace_off()
+{
+    if (marker_fd &gt;= 0)
+	    write(marker_fd, &quot;Out critical area\n&quot;, 17);
+    write(trace_fd, &quot;0&quot;, 1);
+    close(trace_fd);
+    close(marker_fd);
+    trace_fd = -1;
+    marker_fd = -1;
+}
+</code></pre>
+
+<p>在问题代码前后执行这两个新的函数</p>
+
+<pre><code class="language-c">trace_on();
+char c = getc(mem);
+trace_off();
+</code></pre>
+
+<p>再去从 <code>trace</code> 文件中取一下执行结果（局部结果）</p>
+
+<p><img src="http://img.ffutop.com/669F0256-7612-48E5-9069-292D4E687660.png" alt="" /></p>
+
+<p>到此为止，就可以简单的实现对内核函数的跟踪。</p>
+
+<p>不过，这仅仅只能看到内核函数调用，具体的调用关系，还是得拿到相应版本的内核代码仔细研读研读。毕竟，内核代码的改动也是相当频繁的，不同版本调用关系会出现很大的变化。</p>
+
+<pre><code class="language-plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre>
+  </div>
+  
+  <div class="pagination">
+    <div class="pagination__title">
+      <span
+        class="pagination__title-h">Read other posts</span>
+      <hr />
+    </div>
+    <div class="pagination__buttons">
+      
+      <span class="button previous">
+        <a href="https://dormouse-none.github.io/posts/2019-06-18-understand-kernel-12/">
+          <span class="button__icon">←</span>
+          <span class="button__text">理解 Linux Kernel (12) - Linux 容器化技术</span>
+        </a>
+      </span>
+      
+      
+      <span class="button next">
+        <a href="https://dormouse-none.github.io/posts/2019-05-27-understand-kernel-11/">
+          <span class="button__text">理解 Linux Kernel (11) - 进程间通信</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+      
+    </div>
+  </div>
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright copyright--user">
+        <span>2018-2019 © ffutop</span>
+        <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
+      </div>
+    
+  </div>
+</footer>
+
+<script src="https://dormouse-none.github.io/assets/main.js"></script>
+<script src="https://dormouse-none.github.io/assets/prism.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

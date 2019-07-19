@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Security on Utop&#39;s Blog</title>
+    <link>https://dormouse-none.github.io/tags/security/</link>
+    <description>Recent content in Security on Utop&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>2018-2019 © ffutop</copyright>
+    <lastBuildDate>Sat, 15 Dec 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://dormouse-none.github.io/tags/security/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>SQL 注入</title>
+      <link>https://dormouse-none.github.io/posts/2018-12-15-sql-injection/</link>
+      <pubDate>Sat, 15 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-12-15-sql-injection/</guid>
+      <description>&lt;p&gt;说实话此前对 SQL 注入的理解仅仅只是皮毛。当然，目前也是，只是有了一定程度的理解。&lt;/p&gt;
+
+&lt;p&gt;最近好像工具用得有些过头了，需要停下来整理下工具的实现原理。&lt;/p&gt;
+
+&lt;p&gt;更好地理解了工具实现，才能更加心安理得地使用工具。毕竟等别人怼的时候，还能够比较安心地回道: &amp;ldquo;我用不用现成的工具只是取决于我想不想自己再写一套&amp;rdquo;&lt;/p&gt;
+
+&lt;p&gt;当然，毕竟成熟的工具有更多的优化，这就不是短时间内我想不想自己写的问题了，哈哈。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Java 安全访问与权限控制</title>
+      <link>https://dormouse-none.github.io/posts/2018-07-04-jdk-permission/</link>
+      <pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-07-04-jdk-permission/</guid>
+      <description>&lt;h2 id=&#34;绪论&#34;&gt;绪论&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;本文只是对 Java 安全访问与权限控制的基础性探究。&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;本节与全文内容无关，如无兴趣阅读，可以跳过&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;了解 Java 安全访问相关内容的初衷，是准备在项目中利用 Java 标准库提供的 ServiceLoader 对 SPI 实现类进行&amp;rdquo;自动发现&amp;rdquo;和加载。
+这对于将本项目作为二方库来依赖的上层项目将更为方便，只需要
+1. 在 &lt;code&gt;META-INF.services&lt;/code&gt; 目录下配置被命名为 SPI 接口全限定名的文件及添加相关内容
+2. 由项目的注册管理器触发下列 Java 代码&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;{
+    ServiceLoader&amp;lt;XxxPolicy&amp;gt; xxxPolicyServiceLoader = ServiceLoader.load(XxxPolicy.class);
+    for (Iterator&amp;lt;XxxPolicy&amp;gt; it = xxxPolicyServiceLoader.iterator(); it.hasNext(); ) {
+        XxxPolicy xxxPolicy = it.next();
+        // ... more code ...
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;就可以完成一个新的 SPI 策略的注册工作。&lt;/p&gt;
+
+&lt;p&gt;但是，在尝试实现，了解了 ServiceLoader 源码，以及 DriverManager 和 mysql-connection-java-&lt;version&gt;.jar 在注册 Driver 相关的代码。
+发现怎么也绕不开 Java 安全访问相关的内容。诸如下列这段来自 DriverManager.loadInitialDrivers() 的代码:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;AccessController.doPrivileged(new PrivilegedAction&amp;lt;Void&amp;gt;() {
+    public Void run() {
+
+        ServiceLoader&amp;lt;Driver&amp;gt; loadedDrivers = ServiceLoader.load(Driver.class);
+        Iterator&amp;lt;Driver&amp;gt; driversIterator = loadedDrivers.iterator();
+
+        try{
+            while(driversIterator.hasNext()) {
+            driversIterator.next();
+            }
+        } catch(Throwable t) {
+                // Do nothing
+        }
+        return null;
+    }
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。&lt;/p&gt;
+
+&lt;p&gt;为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
