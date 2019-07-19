@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  
+    <title>如何获取运行时进程堆栈 :: Utop&#39;s Blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="description" content="前些天看了关于在密码学应用中使用java.lang.String与byte[]的相关讨论，不推荐使用java.lang.String的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。
+/proc/${pid}/maps 首先当然是确定进程堆栈在物理内存的位置啦。很遗憾，没有找到相关的方案。毕竟进程记录的都是虚拟线性地址，而通过内核分段、分页机制最终映射到物理内存。不过，从/proc虚拟文件系统中，提供了进程虚拟地址映射。
+address perm offset dev inode pathname 556566cb5000-556566cb6000 r-xp 00000000 fc:01 2496598 /root/ffTrace/run 556566eb5000-556566eb6000 r--p 00000000 fc:01 2496598 /root/ffTrace/run 556566eb6000-556566eb7000 rw-p 00001000 fc:01 2496598 /root/ffTrace/run 55656814f000-556568170000 rw-p 00000000 00:00 0 [heap] 7f2a95f91000-7f2a96178000 r-xp 00000000 fc:01 1835434 /lib/x86_64-linux-gnu/libc-2.27.so 7f2a96178000-7f2a96378000 ---p 001e7000 fc:01 1835434 /lib/x86_64-linux-gnu/libc-2.27.so 7f2a96378000-7f2a9637c000 r--p 001e7000 fc:01 1835434 /lib/x86_64-linux-gnu/libc-2.27.so 7f2a9637c000-7f2a9637e000 rw-p 001eb000 fc:01 1835434 /lib/x86_64-linux-gnu/libc-2.27.so 7f2a9637e000-7f2a96382000 rw-p 00000000 00:00 0 7f2a96382000-7f2a963a9000 r-xp 00000000 fc:01 1835410 /lib/x86_64-linux-gnu/ld-2.27.so 7f2a965a0000-7f2a965a2000 rw-p 00000000 00:00 0 7f2a965a9000-7f2a965aa000 r--p 00027000 fc:01 1835410 /lib/x86_64-linux-gnu/ld-2.27.so 7f2a965aa000-7f2a965ab000 rw-p 00028000 fc:01 1835410 /lib/x86_64-linux-gnu/ld-2.27.so 7f2a965ab000-7f2a965ac000 rw-p 00000000 00:00 0 7ffe2cf5e000-7ffe2cf7f000 rw-p 00000000 00:00 0 [stack] 7ffe2cfed000-7ffe2cff0000 r--p 00000000 00:00 0 [vvar] 7ffe2cff0000-7ffe2cff2000 r-xp 00000000 00:00 0 [vdso] ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0 [vsyscall] "/>
+<meta name="keywords" content="BLOG"/>
+<meta name="robots" content="noodp"/>
+<link rel="canonical" href="https://dormouse-none.github.io/posts/2019-03-25-mem-dump/" />
+
+
+<link rel="stylesheet" href="https://dormouse-none.github.io/assets/style.css">
+
+  <link rel="stylesheet" href="https://dormouse-none.github.io/assets/blue.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://dormouse-none.github.io/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://dormouse-none.github.io/favicon.ico">
+
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="如何获取运行时进程堆栈 :: Utop&#39;s Blog — " />
+<meta name="twitter:description" content="前些天看了关于在密码学应用中使用java.lang.String与byte[]的相关讨论，不推荐使用java.lang.String的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。
+/proc/${pid}/maps 首先当然是确定进程堆栈在物理内存的位置啦。很遗憾，没有找到相关的方案。毕竟进程记录的都是虚拟线性地址，而通过内核分段、分页机制最终映射到物理内存。不过，从/proc虚拟文件系统中，提供了进程虚拟地址映射。
+address perm offset dev inode pathname 556566cb5000-556566cb6000 r-xp 00000000 fc:01 2496598 /root/ffTrace/run 556566eb5000-556566eb6000 r--p 00000000 fc:01 2496598 /root/ffTrace/run 556566eb6000-556566eb7000 rw-p 00001000 fc:01 2496598 /root/ffTrace/run 55656814f000-556568170000 rw-p 00000000 00:00 0 [heap] 7f2a95f91000-7f2a96178000 r-xp 00000000 fc:01 1835434 /lib/x86_64-linux-gnu/libc-2.27.so 7f2a96178000-7f2a96378000 ---p 001e7000 fc:01 1835434 /lib/x86_64-linux-gnu/libc-2.27.so 7f2a96378000-7f2a9637c000 r--p 001e7000 fc:01 1835434 /lib/x86_64-linux-gnu/libc-2.27.so 7f2a9637c000-7f2a9637e000 rw-p 001eb000 fc:01 1835434 /lib/x86_64-linux-gnu/libc-2.27.so 7f2a9637e000-7f2a96382000 rw-p 00000000 00:00 0 7f2a96382000-7f2a963a9000 r-xp 00000000 fc:01 1835410 /lib/x86_64-linux-gnu/ld-2.27.so 7f2a965a0000-7f2a965a2000 rw-p 00000000 00:00 0 7f2a965a9000-7f2a965aa000 r--p 00027000 fc:01 1835410 /lib/x86_64-linux-gnu/ld-2.27.so 7f2a965aa000-7f2a965ab000 rw-p 00028000 fc:01 1835410 /lib/x86_64-linux-gnu/ld-2.27.so 7f2a965ab000-7f2a965ac000 rw-p 00000000 00:00 0 7ffe2cf5e000-7ffe2cf7f000 rw-p 00000000 00:00 0 [stack] 7ffe2cfed000-7ffe2cff0000 r--p 00000000 00:00 0 [vvar] 7ffe2cff0000-7ffe2cff2000 r-xp 00000000 00:00 0 [vdso] ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0 [vsyscall] " />
+<meta name="twitter:site" content="https://dormouse-none.github.io/" />
+<meta name="twitter:creator" content="fangfeng" />
+<meta name="twitter:image" content="">
+
+
+<meta property="og:locale" content="zh-cn" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="如何获取运行时进程堆栈 :: Utop&#39;s Blog — ">
+<meta property="og:description" content="前些天看了关于在密码学应用中使用java.lang.String与byte[]的相关讨论，不推荐使用java.lang.String的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。
+/proc/${pid}/maps 首先当然是确定进程堆栈在物理内存的位置啦。很遗憾，没有找到相关的方案。毕竟进程记录的都是虚拟线性地址，而通过内核分段、分页机制最终映射到物理内存。不过，从/proc虚拟文件系统中，提供了进程虚拟地址映射。
+address perm offset dev inode pathname 556566cb5000-556566cb6000 r-xp 00000000 fc:01 2496598 /root/ffTrace/run 556566eb5000-556566eb6000 r--p 00000000 fc:01 2496598 /root/ffTrace/run 556566eb6000-556566eb7000 rw-p 00001000 fc:01 2496598 /root/ffTrace/run 55656814f000-556568170000 rw-p 00000000 00:00 0 [heap] 7f2a95f91000-7f2a96178000 r-xp 00000000 fc:01 1835434 /lib/x86_64-linux-gnu/libc-2.27.so 7f2a96178000-7f2a96378000 ---p 001e7000 fc:01 1835434 /lib/x86_64-linux-gnu/libc-2.27.so 7f2a96378000-7f2a9637c000 r--p 001e7000 fc:01 1835434 /lib/x86_64-linux-gnu/libc-2.27.so 7f2a9637c000-7f2a9637e000 rw-p 001eb000 fc:01 1835434 /lib/x86_64-linux-gnu/libc-2.27.so 7f2a9637e000-7f2a96382000 rw-p 00000000 00:00 0 7f2a96382000-7f2a963a9000 r-xp 00000000 fc:01 1835410 /lib/x86_64-linux-gnu/ld-2.27.so 7f2a965a0000-7f2a965a2000 rw-p 00000000 00:00 0 7f2a965a9000-7f2a965aa000 r--p 00027000 fc:01 1835410 /lib/x86_64-linux-gnu/ld-2.27.so 7f2a965aa000-7f2a965ab000 rw-p 00028000 fc:01 1835410 /lib/x86_64-linux-gnu/ld-2.27.so 7f2a965ab000-7f2a965ac000 rw-p 00000000 00:00 0 7ffe2cf5e000-7ffe2cf7f000 rw-p 00000000 00:00 0 [stack] 7ffe2cfed000-7ffe2cff0000 r--p 00000000 00:00 0 [vvar] 7ffe2cff0000-7ffe2cff2000 r-xp 00000000 00:00 0 [vdso] ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0 [vsyscall] " />
+<meta property="og:url" content="https://dormouse-none.github.io/posts/2019-03-25-mem-dump/" />
+<meta property="og:site_name" content="如何获取运行时进程堆栈" />
+<meta property="og:image" content="">
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+<meta property="article:published_time" content="2019-03-25 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="">
+
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    ffutop
+  </div>
+</a>
+
+    </div>
+    <div class="menu-trigger">menu</div>
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">关于</a></li>
+        
+      
+        
+          <li><a href="/archives">归档</a></li>
+        
+      
+      
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">关于</a></li>
+      
+    
+      
+        <li><a href="/archives">归档</a></li>
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="https://dormouse-none.github.io/posts/2019-03-25-mem-dump/">如何获取运行时进程堆栈</a></h1>
+  <div class="post-meta">
+      
+    <span class="post-date">
+      2019-03-25
+    </span>
+    
+    
+    <span class="post-author">::
+      fangfeng
+    </span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+    
+    #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+    
+    #<a href="https://dormouse-none.github.io/tags/dump/">dump</a>&nbsp;
+    
+  </span>
+  
+
+  
+
+  <div class="post-content">
+    <p>前些天看了关于在密码学应用中使用<code>java.lang.String</code>与<code>byte[]</code>的相关讨论，不推荐使用<code>java.lang.String</code>的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。</p>
+
+<h2 id="proc-pid-maps">/proc/${pid}/maps</h2>
+
+<p>首先当然是确定进程堆栈在物理内存的位置啦。很遗憾，没有找到相关的方案。毕竟进程记录的都是虚拟线性地址，而通过内核分段、分页机制最终映射到物理内存。不过，从<code>/proc</code>虚拟文件系统中，提供了进程虚拟地址映射。</p>
+
+<pre><code>address                   perm offset   dev   inode                      pathname
+556566cb5000-556566cb6000 r-xp 00000000 fc:01 2496598                    /root/ffTrace/run
+556566eb5000-556566eb6000 r--p 00000000 fc:01 2496598                    /root/ffTrace/run
+556566eb6000-556566eb7000 rw-p 00001000 fc:01 2496598                    /root/ffTrace/run
+55656814f000-556568170000 rw-p 00000000 00:00 0                          [heap]
+7f2a95f91000-7f2a96178000 r-xp 00000000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a96178000-7f2a96378000 ---p 001e7000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a96378000-7f2a9637c000 r--p 001e7000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a9637c000-7f2a9637e000 rw-p 001eb000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a9637e000-7f2a96382000 rw-p 00000000 00:00 0
+7f2a96382000-7f2a963a9000 r-xp 00000000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965a0000-7f2a965a2000 rw-p 00000000 00:00 0
+7f2a965a9000-7f2a965aa000 r--p 00027000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965aa000-7f2a965ab000 rw-p 00028000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965ab000-7f2a965ac000 rw-p 00000000 00:00 0
+7ffe2cf5e000-7ffe2cf7f000 rw-p 00000000 00:00 0                          [stack]
+7ffe2cfed000-7ffe2cff0000 r--p 00000000 00:00 0                          [vvar]
+7ffe2cff0000-7ffe2cff2000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+</code></pre>
+
+<p><code>/proc/${pid}/maps</code> 记录了当前进程虚拟内存区域的分配以及其访问控制。
+- 前三行表述的是当前进程ELF文件在虚拟内存中的地址（这里使用的ELF文件名为 <code>run</code> ）
+    - 第一行 <code>r-xp</code> 表示其将配合<code>Code Segment Register (CS)</code> 作为CPU执行指令的直接依据。
+    - 第二三行分别用作可读、可写数据区，将配合 <code>Data Segment Register (DS), ES, FS, GS</code> 等使用
+- 第四行直截了当，就是分配给堆的地址空间。当然，如果不够，可以不断地向上扩张。
+- <code>xxx.so</code> 文件描述的是C共享库在虚拟内存中的地址。
+- 最后才是栈内存，将以倒序的方式下内存低地址扩张。
+- 至于之后的内容，不了解，不表。</p>
+
+<h2 id="ptrace">ptrace</h2>
+
+<p>拿到了进程虚拟内存分布，又如何获取其中的内容。<code>ptrace</code> 总算是派上用场了。之前在阅读内核源码的时候，任务数据结构 <code>struct task</code> 专门为此预留了一些字段来加以描述，但始终找不到其用途。现在总算对其有了初步的了解。</p>
+
+<p>一般来说，进程彼此之间应该相互独立，虽然运行在同一台机器上，但应该是相互间不知道其他进程的存在。那又如何能够通过一个进程的代码来获取另一个进程的堆栈数据呢？<code>ptrace</code> 提供的就是这么一种可能性。通过 <code>PTRACE_ATTACH</code> 和 <code>PTRACE_DETACH</code>，A进程会使得目标进程B陷入Sleeping状态，而等待A继续通过其他命令来获取其数据。至于为什么会是陷入Sleeping呢？一旦B进程的在运行，数据等随时可能改变，显然不适合读取数据啊。</p>
+
+<p>如何读取？<code>PTRACE_PEEKTEXT</code> 就是这样一个实现进程间交互的好工具。</p>
+
+<pre><code class="language-c">void attach()
+{
+    if (ptrace(PTRACE_ATTACH, options.pid, NULL, NULL) == -1)
+    {
+        fprintf(stderr, &quot;ptract attach failed. %s(errno: %d)\n&quot;, strerror(errno), errno);
+        exit(0);
+    }
+    fprintf(stderr, &quot;attach to %d success!\n&quot;, options.pid);
+    wait(NULL);
+}
+
+void peek()
+{
+    char maps[17];
+    sprintf(maps, &quot;/proc/%d/maps&quot;, options.pid);
+    FILE *fd = fopen(maps, &quot;r&quot;);
+    if (fd == NULL)
+    {
+        fprintf(stderr, &quot;open /proc/%d/maps failed. %s(errno: %d)\n&quot;, strerror(errno), errno);
+        exit(0);
+    }
+
+    struct map *map = (struct map *) malloc(sizeof(struct map *));
+
+    long word;
+    while (fscanf(fd, &quot;%llx-%llx %s %lx %*s %*s%*[^\n]&quot;, &amp;map-&gt;start_addr, &amp;map-&gt;end_addr, map-&gt;op_flag, &amp;map-&gt;offset) != EOF)
+    {
+        if (map-&gt;op_flag[0] == '-')
+            continue;
+        fprintf(stderr, &quot;peek from [%llx-%llx]\n&quot;, map-&gt;start_addr, map-&gt;end_addr);
+        long mem_len = map-&gt;end_addr - map-&gt;start_addr;
+        char *data = malloc(mem_len + 1);
+        for (long cursor = map-&gt;start_addr;cursor &lt; map-&gt;end_addr;cursor += sizeof(long))
+        {
+            if ((word = ptrace(PTRACE_PEEKTEXT, options.pid, cursor, NULL)) == -1 &amp;&amp; errno)
+            {
+                fprintf(stderr, &quot;peek failed. %s(errno: %d)\n&quot;, strerror(errno), errno);
+                free(data);
+                exit(0);
+            }
+            memcpy(data+cursor-map-&gt;start_addr, &amp;word, sizeof(word));
+        }
+        dump(data, mem_len);
+
+        free(data);
+    }
+
+    free(map);
+}
+
+void detach()
+{
+    if (ptrace(PTRACE_DETACH, options.pid, NULL, NULL) == -1)
+    {
+        fprintf(&quot;ptract detach failed. %s(errno: %d)\n&quot;, strerror(errno), errno);
+        exit(0);
+    }
+    fprintf(stderr, &quot;detach from %d success!&quot;, options.pid);
+}
+
+int main(int argc, char **argv)
+{
+    // ...
+
+    attach();
+    peek();
+    detach();
+}
+</code></pre>
+
+<p>此处的代码片段就能完成dump堆栈的工作了（当然，由于没有对其它内容进行处理，同时会dump下ELF数据等）。<a href="https://github.com/DorMOUSE-None/ffDump">完整代码</a></p>
+
+<h2 id="小结">小结</h2>
+
+<p>当然，之后才发现 GDB 的实现借用的也正是这样一套机制。同时也意味着上面这段代码的实现在 GDB 中有现成的工具了:&lt;</p>
+
+<pre><code class="language-plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre>
+  </div>
+  
+  <div class="pagination">
+    <div class="pagination__title">
+      <span
+        class="pagination__title-h">Read other posts</span>
+      <hr />
+    </div>
+    <div class="pagination__buttons">
+      
+      <span class="button previous">
+        <a href="https://dormouse-none.github.io/posts/2019-04-10-understand-kernel-10/">
+          <span class="button__icon">←</span>
+          <span class="button__text">理解 Linux Kernel(10) - Context of Execution</span>
+        </a>
+      </span>
+      
+      
+      <span class="button next">
+        <a href="https://dormouse-none.github.io/posts/2019-03-19-janus/">
+          <span class="button__text">认证与授权·简述</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+      
+    </div>
+  </div>
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright copyright--user">
+        <span>2018-2019 © ffutop</span>
+        <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
+      </div>
+    
+  </div>
+</footer>
+
+<script src="https://dormouse-none.github.io/assets/main.js"></script>
+<script src="https://dormouse-none.github.io/assets/prism.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

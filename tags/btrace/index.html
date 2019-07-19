@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  
+    <title>BTrace :: Utop&#39;s Blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="description" content=""/>
+<meta name="keywords" content="BLOG"/>
+<meta name="robots" content="noodp"/>
+<link rel="canonical" href="https://dormouse-none.github.io/tags/btrace/" />
+
+
+<link rel="stylesheet" href="https://dormouse-none.github.io/assets/style.css">
+
+  <link rel="stylesheet" href="https://dormouse-none.github.io/assets/blue.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://dormouse-none.github.io/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://dormouse-none.github.io/favicon.ico">
+
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="BTrace :: Utop&#39;s Blog — " />
+<meta name="twitter:description" content="" />
+<meta name="twitter:site" content="https://dormouse-none.github.io/" />
+<meta name="twitter:creator" content="" />
+<meta name="twitter:image" content="">
+
+
+<meta property="og:locale" content="zh-cn" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="BTrace :: Utop&#39;s Blog — ">
+<meta property="og:description" content="" />
+<meta property="og:url" content="https://dormouse-none.github.io/tags/btrace/" />
+<meta property="og:site_name" content="BTrace" />
+<meta property="og:image" content="">
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+
+
+
+  <link href="/tags/btrace/index.xml" rel="alternate" type="application/rss+xml" title="Utop&#39;s Blog" />
+
+
+
+
+
+
+
+
+
+</head>
+<body class="">
+
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    ffutop
+  </div>
+</a>
+
+    </div>
+    <div class="menu-trigger">menu</div>
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">关于</a></li>
+        
+      
+        
+          <li><a href="/archives">归档</a></li>
+        
+      
+      
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">关于</a></li>
+      
+    
+      
+        <li><a href="/archives">归档</a></li>
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="posts">
+  
+  
+  
+
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-08-15-java-instrumentation/">Java Instrumentation</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-08-15
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/java/">Java</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/asm/">ASM</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/btrace/">BTrace</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <h2 id="start">Start</h2>
+
+<p>从现有的前置知识来说，我们能够认识到两个事实:</p>
+
+<ol>
+<li>Java Class 通过 ClassLoader 进行加载。
+通过<code>全限定名</code>进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。
+换句话说: Class 一经加载，就不会尝试重复加载 (至少按绝大多数人的认知来说，确实是的)</li>
+<li>有没有可能让被加载的 Class 与物理存储上的 .class 内容不同。
+当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧
+(虽然可能不了解细节。在此，欢迎学习前置技能 <a href="https://dormouse-none.github.io/2018-07-10-CGlib-Enhancer/">CGlib Enhancer 主流程源码解析</a> 和 <a href="https://dormouse-none.github.io/2018-07-20-Java-Proxy/">Java Proxy 源码解析</a>。不过不影响本文后续内容)</li>
+</ol>
+
+<p>另一个方面，也许绝大多数人都听说过所谓的<code>热部署</code>。但是究竟怎么才能做到 <code>热部署</code>(话题开得有点大哈。Y_Y 本文不讲这个)</p>
+
+<p>操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。</p>
+
+<p>如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚&hellip;</p>
+
+<p>Java 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的</p>
+
+<h2 id="instrumentation">Instrumentation</h2>
+
+<p><code>java.lang.instrument.Instrumentation</code> 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)</p>
+
+<p>相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。</p>
+
+<p>下列有两种方法可以达到目的</p>
+
+<ol>
+<li>当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。</li>
+<li>当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。</li>
+</ol>
+
+<p>话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了*检测*的目的)的使用</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-08-15-java-instrumentation/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="pagination">
+  <div class="pagination__buttons">
+    
+    
+  </div>
+</div>
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright copyright--user">
+        <span>2018-2019 © ffutop</span>
+        <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
+      </div>
+    
+  </div>
+</footer>
+
+<script src="https://dormouse-none.github.io/assets/main.js"></script>
+<script src="https://dormouse-none.github.io/assets/prism.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

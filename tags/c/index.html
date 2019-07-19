@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  
+    <title>C :: Utop&#39;s Blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="description" content=""/>
+<meta name="keywords" content="BLOG"/>
+<meta name="robots" content="noodp"/>
+<link rel="canonical" href="https://dormouse-none.github.io/tags/c/" />
+
+
+<link rel="stylesheet" href="https://dormouse-none.github.io/assets/style.css">
+
+  <link rel="stylesheet" href="https://dormouse-none.github.io/assets/blue.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://dormouse-none.github.io/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://dormouse-none.github.io/favicon.ico">
+
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="C :: Utop&#39;s Blog — " />
+<meta name="twitter:description" content="" />
+<meta name="twitter:site" content="https://dormouse-none.github.io/" />
+<meta name="twitter:creator" content="" />
+<meta name="twitter:image" content="">
+
+
+<meta property="og:locale" content="zh-cn" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="C :: Utop&#39;s Blog — ">
+<meta property="og:description" content="" />
+<meta property="og:url" content="https://dormouse-none.github.io/tags/c/" />
+<meta property="og:site_name" content="C" />
+<meta property="og:image" content="">
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+
+
+
+  <link href="/tags/c/index.xml" rel="alternate" type="application/rss+xml" title="Utop&#39;s Blog" />
+
+
+
+
+
+
+
+
+
+</head>
+<body class="">
+
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    ffutop
+  </div>
+</a>
+
+    </div>
+    <div class="menu-trigger">menu</div>
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">关于</a></li>
+        
+      
+        
+          <li><a href="/archives">归档</a></li>
+        
+      
+      
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">关于</a></li>
+      
+    
+      
+        <li><a href="/archives">归档</a></li>
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="posts">
+  
+  
+  
+
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-09-08-preprocessor-output/">Preprocessor Output</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-09-08
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/c/">C</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/cpp/">CPP</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/gcc/">GCC</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>最近重新开始回顾 C 语言以及其编译后的文件格式 ELF。
+暂时告别一步到位的命令 <code>gcc main.c</code>，如果从 <code>.c</code> 文件的编译来说，主要分为预编译(preprocess)、编译(Compilation)、汇编(Assembly)、链接(Linking) 四个步骤。
+但是，仅仅从第一个流程 <strong>预编译</strong> 而言，就已经遇到了一些麻烦。</p>
+
+<p><small>program.i</small></p>
+
+<pre><code class="language-c"># 1 &quot;program.c&quot;
+# 1 &quot;&lt;built-in&gt;&quot;
+# 1 &quot;&lt;command-line&gt;&quot;
+# 1 &quot;/usr/include/stdc-predef.h&quot; 1 3 4
+# 1 &quot;&lt;command-line&gt;&quot; 2
+# 1 &quot;program.c&quot;
+# 1 &quot;header.h&quot; 1
+char *test(void);
+# 2 &quot;program.c&quot; 2
+
+int main(void)
+{
+}
+</code></pre>
+
+<p>预编译后的问题出现了诸如 <code># 1 &quot;program.c&quot;</code> 的 <em>注释?</em></p>
+
+<p>这里简单记录预处理输出文件的基本格式，方便今后回顾。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-09-08-preprocessor-output/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="pagination">
+  <div class="pagination__buttons">
+    
+    
+  </div>
+</div>
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright copyright--user">
+        <span>2018-2019 © ffutop</span>
+        <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
+      </div>
+    
+  </div>
+</footer>
+
+<script src="https://dormouse-none.github.io/assets/main.js"></script>
+<script src="https://dormouse-none.github.io/assets/prism.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

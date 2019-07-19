@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux Kernel 学习者 on Utop&#39;s Blog</title>
+    <link>https://dormouse-none.github.io/tags/linux-kernel-%E5%AD%A6%E4%B9%A0%E8%80%85/</link>
+    <description>Recent content in Linux Kernel 学习者 on Utop&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>2018-2019 © ffutop</copyright>
+    
+	<atom:link href="https://dormouse-none.github.io/tags/linux-kernel-%E5%AD%A6%E4%B9%A0%E8%80%85/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About</title>
+      <link>https://dormouse-none.github.io/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/about/</guid>
+      <description>https://www.ffutop.com/
+dormousenone@gmail.com
+Hangzhou, China</description>
+    </item>
+    
+  </channel>
+</rss>

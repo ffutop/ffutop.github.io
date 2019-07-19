@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SQL on Utop&#39;s Blog</title>
+    <link>https://dormouse-none.github.io/tags/sql/</link>
+    <description>Recent content in SQL on Utop&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>2018-2019 © ffutop</copyright>
+    <lastBuildDate>Sat, 15 Dec 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://dormouse-none.github.io/tags/sql/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>SQL 注入</title>
+      <link>https://dormouse-none.github.io/posts/2018-12-15-sql-injection/</link>
+      <pubDate>Sat, 15 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2018-12-15-sql-injection/</guid>
+      <description>&lt;p&gt;说实话此前对 SQL 注入的理解仅仅只是皮毛。当然，目前也是，只是有了一定程度的理解。&lt;/p&gt;
+
+&lt;p&gt;最近好像工具用得有些过头了，需要停下来整理下工具的实现原理。&lt;/p&gt;
+
+&lt;p&gt;更好地理解了工具实现，才能更加心安理得地使用工具。毕竟等别人怼的时候，还能够比较安心地回道: &amp;ldquo;我用不用现成的工具只是取决于我想不想自己再写一套&amp;rdquo;&lt;/p&gt;
+
+&lt;p&gt;当然，毕竟成熟的工具有更多的优化，这就不是短时间内我想不想自己写的问题了，哈哈。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

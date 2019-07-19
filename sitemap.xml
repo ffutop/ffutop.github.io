@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/kernel/</loc>
+    <lastmod>2019-07-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/linux/</loc>
+    <lastmod>2019-07-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/</loc>
+    <lastmod>2019-07-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/</loc>
+    <lastmod>2019-07-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/</loc>
+    <lastmod>2019-07-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/mmap/</loc>
+    <lastmod>2019-07-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/vm/</loc>
+    <lastmod>2019-07-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-07-17-understand-kernel-13/</loc>
+    <lastmod>2019-07-17T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/jni/</loc>
+    <lastmod>2019-07-06T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-07-06-jni_problem/</loc>
+    <lastmod>2019-07-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/memory-leak/</loc>
+    <lastmod>2019-07-06T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/lxc/</loc>
+    <lastmod>2019-06-18T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-06-18-understand-kernel-12/</loc>
+    <lastmod>2019-06-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/ftrace/</loc>
+    <lastmod>2019-06-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-06-02-ftrace/</loc>
+    <lastmod>2019-06-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/ipc/</loc>
+    <lastmod>2019-05-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-05-27-understand-kernel-11/</loc>
+    <lastmod>2019-05-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/close_wait/</loc>
+    <lastmod>2019-05-20T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/pipe/</loc>
+    <lastmod>2019-05-20T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-05-20-close_wait_problem/</loc>
+    <lastmod>2019-05-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/file-format/</loc>
+    <lastmod>2019-05-10T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/png/</loc>
+    <lastmod>2019-05-10T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-05-10-png-structure/</loc>
+    <lastmod>2019-05-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/datetime/</loc>
+    <lastmod>2019-04-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/mysql/</loc>
+    <lastmod>2019-04-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-04-26-time-accuracy/</loc>
+    <lastmod>2019-04-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/timestamp/</loc>
+    <lastmod>2019-04-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/time-accuracy/</loc>
+    <lastmod>2019-04-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/lex/</loc>
+    <lastmod>2019-04-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-04-25-lex-and-yacc/</loc>
+    <lastmod>2019-04-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/yacc/</loc>
+    <lastmod>2019-04-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/coe/</loc>
+    <lastmod>2019-04-10T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-04-10-understand-kernel-10/</loc>
+    <lastmod>2019-04-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/dump/</loc>
+    <lastmod>2019-03-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-03-25-mem-dump/</loc>
+    <lastmod>2019-03-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/authenticate/</loc>
+    <lastmod>2019-03-19T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/authorize/</loc>
+    <lastmod>2019-03-19T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-03-19-janus/</loc>
+    <lastmod>2019-03-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/io-model/</loc>
+    <lastmod>2019-03-05T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-03-05-understand-kernel-9/</loc>
+    <lastmod>2019-03-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/api/</loc>
+    <lastmod>2019-02-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/java/</loc>
+    <lastmod>2019-02-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-02-27-java-fatal-api/</loc>
+    <lastmod>2019-02-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/character-encoding/</loc>
+    <lastmod>2019-02-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/unicode/</loc>
+    <lastmod>2019-02-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-02-02-unicode/</loc>
+    <lastmod>2019-02-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/network/</loc>
+    <lastmod>2019-01-15T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2019-01-15-understand-kernel-8/</loc>
+    <lastmod>2019-01-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/char-dev/</loc>
+    <lastmod>2018-12-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-12-28-understand-kernel-7/</loc>
+    <lastmod>2018-12-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/sql/</loc>
+    <lastmod>2018-12-15T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-12-15-sql-injection/</loc>
+    <lastmod>2018-12-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/security/</loc>
+    <lastmod>2018-12-15T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/regular-expression/</loc>
+    <lastmod>2018-11-16T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/%E6%8C%87%E6%95%B0%E7%88%86%E7%82%B8/</loc>
+    <lastmod>2018-11-16T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-11-16-regex-exponential-explosion/</loc>
+    <lastmod>2018-11-16T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/file-system/</loc>
+    <lastmod>2018-11-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/read-write/</loc>
+    <lastmod>2018-11-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-11-11-understand-kernel-6/</loc>
+    <lastmod>2018-11-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-10-14-understand-kernel-5/</loc>
+    <lastmod>2018-10-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/time-interrupt/</loc>
+    <lastmod>2018-10-12T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-10-12-understand-kernel-4/</loc>
+    <lastmod>2018-10-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/os/</loc>
+    <lastmod>2018-10-06T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-10-06-understand-kernel-3/</loc>
+    <lastmod>2018-10-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/smtp/</loc>
+    <lastmod>2018-09-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/tcp/</loc>
+    <lastmod>2018-09-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-09-27-mail/</loc>
+    <lastmod>2018-09-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/mail/</loc>
+    <lastmod>2018-09-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-09-18-tcp-syn/</loc>
+    <lastmod>2018-09-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/c/</loc>
+    <lastmod>2018-09-08T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/cpp/</loc>
+    <lastmod>2018-09-08T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/gcc/</loc>
+    <lastmod>2018-09-08T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-09-08-preprocessor-output/</loc>
+    <lastmod>2018-09-08T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/multi-task/</loc>
+    <lastmod>2018-08-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-08-26-understand-kernel-2/</loc>
+    <lastmod>2018-08-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/bios/</loc>
+    <lastmod>2018-08-19T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-08-19-understand-kernel-0/</loc>
+    <lastmod>2018-08-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-08-19-understand-kernel-1/</loc>
+    <lastmod>2018-08-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/asm/</loc>
+    <lastmod>2018-08-15T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/btrace/</loc>
+    <lastmod>2018-08-15T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-08-15-java-instrumentation/</loc>
+    <lastmod>2018-08-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/instruction/</loc>
+    <lastmod>2018-07-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/jvm/</loc>
+    <lastmod>2018-07-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-07-24-jvm-instruction/</loc>
+    <lastmod>2018-07-24T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-07-20-java-proxy/</loc>
+    <lastmod>2018-07-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/cglib/</loc>
+    <lastmod>2018-07-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/tools/</loc>
+    <lastmod>2018-07-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-07-13-how-to-easily-get-cglib-generated-code/</loc>
+    <lastmod>2018-07-13T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-07-10-cglib-enhancer/</loc>
+    <lastmod>2018-07-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-07-04-jdk-permission/</loc>
+    <lastmod>2018-07-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/permission/</loc>
+    <lastmod>2018-07-04T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-06-28-asm-verifyerror/</loc>
+    <lastmod>2018-06-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-06-25-asm-core/</loc>
+    <lastmod>2018-06-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/visitor-pattern/</loc>
+    <lastmod>2018-06-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/memory-model/</loc>
+    <lastmod>2018-06-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-06-21-java-memory-model/</loc>
+    <lastmod>2018-06-21T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-06-11-asm-classreader/</loc>
+    <lastmod>2018-06-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/blockchain/</loc>
+    <lastmod>2018-03-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/smart-contract/</loc>
+    <lastmod>2018-03-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-03-01-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/</loc>
+    <lastmod>2018-03-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/jdbc/</loc>
+    <lastmod>2018-01-15T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/spring/</loc>
+    <lastmod>2018-01-15T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/posts/2018-01-15-spring-jdbc-code-reading/</loc>
+    <lastmod>2018-01-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/about/</loc>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/java-%E7%A8%8B%E5%BA%8F%E7%8C%BF/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/linux-kernel-%E5%AD%A6%E4%B9%A0%E8%80%85/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/archives/</loc>
+  </url>
+  
+  <url>
+    <loc>https://dormouse-none.github.io/tags/%E5%89%8D%E7%AE%97%E6%B3%95%E7%88%B1%E5%A5%BD%E8%80%85/</loc>
+    <priority>0</priority>
+  </url>
+  
+</urlset>

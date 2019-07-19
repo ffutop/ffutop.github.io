@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  
+    <title>Kernel :: Utop&#39;s Blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="description" content=""/>
+<meta name="keywords" content="BLOG"/>
+<meta name="robots" content="noodp"/>
+<link rel="canonical" href="https://dormouse-none.github.io/tags/kernel/" />
+
+
+<link rel="stylesheet" href="https://dormouse-none.github.io/assets/style.css">
+
+  <link rel="stylesheet" href="https://dormouse-none.github.io/assets/blue.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://dormouse-none.github.io/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://dormouse-none.github.io/favicon.ico">
+
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Kernel :: Utop&#39;s Blog — " />
+<meta name="twitter:description" content="" />
+<meta name="twitter:site" content="https://dormouse-none.github.io/" />
+<meta name="twitter:creator" content="" />
+<meta name="twitter:image" content="">
+
+
+<meta property="og:locale" content="zh-cn" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Kernel :: Utop&#39;s Blog — ">
+<meta property="og:description" content="" />
+<meta property="og:url" content="https://dormouse-none.github.io/tags/kernel/" />
+<meta property="og:site_name" content="Kernel" />
+<meta property="og:image" content="">
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+
+
+
+  <link href="/tags/kernel/index.xml" rel="alternate" type="application/rss+xml" title="Utop&#39;s Blog" />
+
+
+
+
+
+
+
+
+
+</head>
+<body class="">
+
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    ffutop
+  </div>
+</a>
+
+    </div>
+    <div class="menu-trigger">menu</div>
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">关于</a></li>
+        
+      
+        
+          <li><a href="/archives">归档</a></li>
+        
+      
+      
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">关于</a></li>
+      
+    
+      
+        <li><a href="/archives">归档</a></li>
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="posts">
+  
+  
+  
+
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2019-07-17-understand-kernel-13/">理解 Linux Kernel (13) - 虚拟内存</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-07-17
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/vm/">vm</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/mmap/">mmap</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。
+本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。
+启动新进程 虚拟地址空间与进程挂钩，在进程数据结构 task_struct 中由一个重要的参数 mm_struct 来维护。
+struct mm_struct { struct vm_area_struct * mmap; /* list of VMAs <em>/ struct rb_root mm_rb; unsigned long mmap_base; /</em> base of mmap area <em>/ unsigned long task_size; /</em> size of task vm space */ pgd_t * pgd; atomic_t mm_count; /* How many references to &quot;struct mm_struct&quot; (users count as 1) <em>/ int map_count; /</em> number of VMAs */ unsigned long start_code, end_code, start_data, end_data; unsigned long start_brk, brk, start_stack; unsigned long arg_start, arg_end, env_start, env_end; struct file <em>exe_file; /</em> .
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-07-17-understand-kernel-13/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2019-06-18-understand-kernel-12/">理解 Linux Kernel (12) - Linux 容器化技术</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-06-18
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/lxc/">LXC</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。</p>
+
+<p><img src="http://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png" alt="Containerd VS VM" /></p>
+
+<p><small><center>Copied From docker.com</center></small></p>
+
+<p>如何实现容器化，显然需要从操作系统层面进行支撑。这其中涉及到的核心技术，就包括命名空间(namespace)和控制组(Control Group, cgroup)，前者用来对资源进行隔离，后者用来对资源加以限制。</p>
+
+<blockquote>
+<p>本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04</p>
+</blockquote>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-06-18-understand-kernel-12/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2019-06-02-ftrace/">跟踪内核函数的工具—— Ftrace</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-06-02
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/ftrace/">ftrace</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>前两天仿照 <code>strings</code> 工具写了个打印进程运行时堆栈可打印字符的工具 <a href="https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c">ffstrings</a> 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&lt;</p>
+
+<p>在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— <code>ftrace</code> 。</p>
+
+<blockquote>
+<p>Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。</p>
+
+<p>虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。</p>
+</blockquote>
+
+<p>当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 <code>ffstrings</code> 出现 <code>EPERM</code> 的原因。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-06-02-ftrace/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2019-05-27-understand-kernel-11/">理解 Linux Kernel (11) - 进程间通信</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-05-27
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/ipc/">IPC</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。</p>
+
+<p><em>本篇基于 Linux 4.9.87 版本源码</em></p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-05-27-understand-kernel-11/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2019-04-10-understand-kernel-10/">理解 Linux Kernel(10) - Context of Execution</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-04-10
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/coe/">COE</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      在进行<a href="https://www.ffutop.com/2018-10-12-understand-Kernel-4/">第四篇(任务调度)</a>行文描述时，就一直闹不清内核所谓的<code>task</code>的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：<strong>我们错误地将理论和实践不加区分地混淆了</strong>。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，<code>task</code> 也就是 <code>Context of Execution</code> 概念在实现上的表征。
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-04-10-understand-kernel-10/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2019-03-25-mem-dump/">如何获取运行时进程堆栈</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-03-25
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/dump/">dump</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>前些天看了关于在密码学应用中使用<code>java.lang.String</code>与<code>byte[]</code>的相关讨论，不推荐使用<code>java.lang.String</code>的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。</p>
+
+<h2 id="proc-pid-maps">/proc/${pid}/maps</h2>
+
+<p>首先当然是确定进程堆栈在物理内存的位置啦。很遗憾，没有找到相关的方案。毕竟进程记录的都是虚拟线性地址，而通过内核分段、分页机制最终映射到物理内存。不过，从<code>/proc</code>虚拟文件系统中，提供了进程虚拟地址映射。</p>
+
+<pre><code>address                   perm offset   dev   inode                      pathname
+556566cb5000-556566cb6000 r-xp 00000000 fc:01 2496598                    /root/ffTrace/run
+556566eb5000-556566eb6000 r--p 00000000 fc:01 2496598                    /root/ffTrace/run
+556566eb6000-556566eb7000 rw-p 00001000 fc:01 2496598                    /root/ffTrace/run
+55656814f000-556568170000 rw-p 00000000 00:00 0                          [heap]
+7f2a95f91000-7f2a96178000 r-xp 00000000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a96178000-7f2a96378000 ---p 001e7000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a96378000-7f2a9637c000 r--p 001e7000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a9637c000-7f2a9637e000 rw-p 001eb000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a9637e000-7f2a96382000 rw-p 00000000 00:00 0
+7f2a96382000-7f2a963a9000 r-xp 00000000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965a0000-7f2a965a2000 rw-p 00000000 00:00 0
+7f2a965a9000-7f2a965aa000 r--p 00027000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965aa000-7f2a965ab000 rw-p 00028000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965ab000-7f2a965ac000 rw-p 00000000 00:00 0
+7ffe2cf5e000-7ffe2cf7f000 rw-p 00000000 00:00 0                          [stack]
+7ffe2cfed000-7ffe2cff0000 r--p 00000000 00:00 0                          [vvar]
+7ffe2cff0000-7ffe2cff2000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+</code></pre>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-03-25-mem-dump/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2019-03-05-understand-kernel-9/">理解 Linux Kernel (9) - IO Multiplexing</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-03-05
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/io-model/">IO Model</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p><a href="./2019-01-15-understand-Kernel-8/">前一篇</a>已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 <code>struct sock</code> 对象，将其逐级从网络接口层逐级提升到网络层、传输层&hellip;最终添加到接收队列 <code>sk_receive_queue</code> 中；用户进程通过 <code>read</code>、<code>recv</code>、<code>recvfrom</code> 等命令检查并获取 <code>sk_receive_queue</code> 中的数据。</p>
+
+<p>整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。</p>
+
+<p>那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（<code>select</code>, <code>poll</code>, <code>epoll</code>）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 <code>select</code> 和 <code>epoll</code> 两类系统调用的实现进行探究。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-03-05-understand-kernel-9/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2019-01-15-understand-kernel-8/">理解 Linux Kernel (8) - 网络</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-01-15
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/network/">Network</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-01-15-understand-kernel-8/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-12-28-understand-kernel-7/">理解 Linux Kernel (7) - 字符设备</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-12-28
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/char-dev/">Char Dev</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>相比较于块设备，字符设备无论从物理认知上，抑或是理论理解上，都存在着相当大的入门门槛。特别是在将字符设备与控制台、命令行终端混淆的时候，就更加难以进行分辨了。</p>
+
+<p>回到字符设备本身，字符设备与块设备最主要的区别就在于块设备可以随机读写，而字符设备只能够顺序读，顺序写。</p>
+
+<p>那么，常见的字符设备有什么？显示器、键盘、鼠标。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-12-28-understand-kernel-7/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-11-11-understand-kernel-6/">理解 Linux Kernel (6) - read &amp; write</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-11-11
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/file-system/">File System</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/read-write/">read &amp; write</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p><a href="https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/">前一篇</a>已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。</p>
+
+<p>首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+
+int panic()
+{
+    fprintf(stderr, &quot;%s (errno=%d)\n&quot;, strerror(errno), errno);
+    return -1;
+}
+
+int main(int argc, char *argv[])
+{
+    /* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */
+    int fd = open(&quot;/root/frw.txt&quot;, O_RDWR | O_CREAT);
+    if (fd == -1)
+        return panic();
+
+    /* 向文件写入 Hello World! 共计 12 个字符 */
+    ssize_t wsize = write(fd, &quot;Hello World!&quot;, 12);
+    if (wsize == -1)
+        return panic();
+
+    /* 重定位文件读写指针 */
+    off_t off = lseek(fd, 0, SEEK_SET);
+    if (off == -1)
+        return panic();
+
+    char* buf = (char *) malloc(wsize);
+    /* 读取文件内容 */
+    ssize_t rsize = read(fd, buf, wsize);
+    if (rsize == -1)
+        return panic();
+
+    printf(&quot;%s\n&quot;, buf);
+    free(buf);
+    /* 关闭文件 */
+    int stat = close(fd);
+    if (stat == -1)
+        return panic();
+
+    return 0;
+}
+</code></pre>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-11-11-understand-kernel-6/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="pagination">
+  <div class="pagination__buttons">
+    
+    
+      <span class="button next">
+        <a href="/tags/kernel/page/2/">
+          <span class="button__text">Older posts</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+    
+  </div>
+</div>
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright copyright--user">
+        <span>2018-2019 © ffutop</span>
+        <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
+      </div>
+    
+  </div>
+</footer>
+
+<script src="https://dormouse-none.github.io/assets/main.js"></script>
+<script src="https://dormouse-none.github.io/assets/prism.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

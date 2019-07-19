@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>dump on Utop&#39;s Blog</title>
+    <link>https://dormouse-none.github.io/tags/dump/</link>
+    <description>Recent content in dump on Utop&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>2018-2019 © ffutop</copyright>
+    <lastBuildDate>Mon, 25 Mar 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://dormouse-none.github.io/tags/dump/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>如何获取运行时进程堆栈</title>
+      <link>https://dormouse-none.github.io/posts/2019-03-25-mem-dump/</link>
+      <pubDate>Mon, 25 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-03-25-mem-dump/</guid>
+      <description>&lt;p&gt;前些天看了关于在密码学应用中使用&lt;code&gt;java.lang.String&lt;/code&gt;与&lt;code&gt;byte[]&lt;/code&gt;的相关讨论，不推荐使用&lt;code&gt;java.lang.String&lt;/code&gt;的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。&lt;/p&gt;
+
+&lt;h2 id=&#34;proc-pid-maps&#34;&gt;/proc/${pid}/maps&lt;/h2&gt;
+
+&lt;p&gt;首先当然是确定进程堆栈在物理内存的位置啦。很遗憾，没有找到相关的方案。毕竟进程记录的都是虚拟线性地址，而通过内核分段、分页机制最终映射到物理内存。不过，从&lt;code&gt;/proc&lt;/code&gt;虚拟文件系统中，提供了进程虚拟地址映射。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;address                   perm offset   dev   inode                      pathname
+556566cb5000-556566cb6000 r-xp 00000000 fc:01 2496598                    /root/ffTrace/run
+556566eb5000-556566eb6000 r--p 00000000 fc:01 2496598                    /root/ffTrace/run
+556566eb6000-556566eb7000 rw-p 00001000 fc:01 2496598                    /root/ffTrace/run
+55656814f000-556568170000 rw-p 00000000 00:00 0                          [heap]
+7f2a95f91000-7f2a96178000 r-xp 00000000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a96178000-7f2a96378000 ---p 001e7000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a96378000-7f2a9637c000 r--p 001e7000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a9637c000-7f2a9637e000 rw-p 001eb000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a9637e000-7f2a96382000 rw-p 00000000 00:00 0
+7f2a96382000-7f2a963a9000 r-xp 00000000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965a0000-7f2a965a2000 rw-p 00000000 00:00 0
+7f2a965a9000-7f2a965aa000 r--p 00027000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965aa000-7f2a965ab000 rw-p 00028000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965ab000-7f2a965ac000 rw-p 00000000 00:00 0
+7ffe2cf5e000-7ffe2cf7f000 rw-p 00000000 00:00 0                          [stack]
+7ffe2cfed000-7ffe2cff0000 r--p 00000000 00:00 0                          [vvar]
+7ffe2cff0000-7ffe2cff2000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

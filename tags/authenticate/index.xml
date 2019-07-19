@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Authenticate on Utop&#39;s Blog</title>
+    <link>https://dormouse-none.github.io/tags/authenticate/</link>
+    <description>Recent content in Authenticate on Utop&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>2018-2019 © ffutop</copyright>
+    <lastBuildDate>Tue, 19 Mar 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://dormouse-none.github.io/tags/authenticate/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>认证与授权·简述</title>
+      <link>https://dormouse-none.github.io/posts/2019-03-19-janus/</link>
+      <pubDate>Tue, 19 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://dormouse-none.github.io/posts/2019-03-19-janus/</guid>
+      <description>&lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;在大多数系统中，都或多或少需要认证授权模型/系统的支持。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;认证/授权是什么？最简单的，我们的系统要求用户必须在“登录”之后才允许进行一些操作。“登录”的过程就是认证；而区别与未登录状态，只允许登录用户进行一些操作，这就是授权。认证与授权相互独立，有协同配合，共同支撑起系统对安全的基本要求。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

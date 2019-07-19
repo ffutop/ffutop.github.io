@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  
+    <title>Posts :: Utop&#39;s Blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="description" content=""/>
+<meta name="keywords" content="BLOG"/>
+<meta name="robots" content="noodp"/>
+<link rel="canonical" href="https://dormouse-none.github.io/posts/" />
+
+
+<link rel="stylesheet" href="https://dormouse-none.github.io/assets/style.css">
+
+  <link rel="stylesheet" href="https://dormouse-none.github.io/assets/blue.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://dormouse-none.github.io/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://dormouse-none.github.io/favicon.ico">
+
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Posts :: Utop&#39;s Blog — " />
+<meta name="twitter:description" content="" />
+<meta name="twitter:site" content="https://dormouse-none.github.io/" />
+<meta name="twitter:creator" content="" />
+<meta name="twitter:image" content="">
+
+
+<meta property="og:locale" content="zh-cn" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Posts :: Utop&#39;s Blog — ">
+<meta property="og:description" content="" />
+<meta property="og:url" content="https://dormouse-none.github.io/posts/" />
+<meta property="og:site_name" content="Posts" />
+<meta property="og:image" content="">
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+
+
+
+  <link href="/posts/index.xml" rel="alternate" type="application/rss+xml" title="Utop&#39;s Blog" />
+
+
+
+
+
+
+
+
+
+</head>
+<body class="">
+
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    ffutop
+  </div>
+</a>
+
+    </div>
+    <div class="menu-trigger">menu</div>
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">关于</a></li>
+        
+      
+        
+          <li><a href="/archives">归档</a></li>
+        
+      
+      
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">关于</a></li>
+      
+    
+      
+        <li><a href="/archives">归档</a></li>
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="posts">
+  
+  
+  
+
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-07-24-jvm-instruction/">JVM 指令简析</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-07-24
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/jvm/">JVM</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/instruction/">Instruction</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>在之前描述过包括 ASM, CGlib, Java Proxy 的基本内容之后，本文将就更为基础的 JVM 指令集进行简单而有效的介绍。</p>
+
+<p>当然，在开始正文前，读者需要了解到，JVM 指令集这种类似于汇编的规范性内容，包含一百多个指令，若要求一一介绍。
+那么，直接阅读 <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html">官方文档</a> 绝对是比本文的内容更为详实且准确。</p>
+
+<p>这篇文档的目的，只是为了使读者建立起关于 JVM 指令集基本的常识性观念。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-07-24-jvm-instruction/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-07-20-java-proxy/">Java Proxy 源码解析</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-07-20
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>在 Java 整个生态里面, 通用的有两类动态代理的应用: Java Proxy 与 CGlib 代理。</p>
+
+<p>从宽泛的区别来说，Java Proxy 只能对接口进行增强，而 CGlib 同时适用于类和接口的增强。
+而且，业内普遍的认知是，CGlib 动态代理较之于 Java Proxy 在生成字节码的速度上也更为高效。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-07-20-java-proxy/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-07-13-how-to-easily-get-cglib-generated-code/">如何方便地获取 CGlib 生成类</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-07-13
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/cglib/">CGlib</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/tools/">tools</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <h2 id="配置参数">配置参数</h2>
+
+<p><strong>命令行使用</strong></p>
+
+<p>在 java 启动命令中添加参数配置项 <code>-Dcglib.debugLocation=&lt;Custom Path&gt;</code></p>
+
+<p><strong>编码实现</strong></p>
+
+<p>在执行 CGlib 获取新生成类之前，调用 <code>System.setProperty(&quot;cglib.debugLocation&quot;, &lt;Custom Path&gt;)</code></p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-07-13-how-to-easily-get-cglib-generated-code/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-07-10-cglib-enhancer/">CGlib Enhancer 主流程源码解析</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-07-10
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/cglib/">CGlib</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/asm/">ASM</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <h2 id="前言">前言</h2>
+
+<p>此博文写作的目的:
+  - (Core) 通过了解 CGlib Enhancer 的整个调用链，了解其对于唯一依赖的 ASM 库的调用方式。
+  - 基于 Enhancer 对已有字节码进行增强的进一步理解与掌握。
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-07-10-cglib-enhancer/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-07-04-jdk-permission/">Java 安全访问与权限控制</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-07-04
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/java/">Java</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/security/">Security</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/permission/">Permission</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <h2 id="绪论">绪论</h2>
+
+<p><em>本文只是对 Java 安全访问与权限控制的基础性探究。</em></p>
+
+<p><strong>本节与全文内容无关，如无兴趣阅读，可以跳过</strong></p>
+
+<p>了解 Java 安全访问相关内容的初衷，是准备在项目中利用 Java 标准库提供的 ServiceLoader 对 SPI 实现类进行&rdquo;自动发现&rdquo;和加载。
+这对于将本项目作为二方库来依赖的上层项目将更为方便，只需要
+1. 在 <code>META-INF.services</code> 目录下配置被命名为 SPI 接口全限定名的文件及添加相关内容
+2. 由项目的注册管理器触发下列 Java 代码</p>
+
+<pre><code class="language-java">{
+    ServiceLoader&lt;XxxPolicy&gt; xxxPolicyServiceLoader = ServiceLoader.load(XxxPolicy.class);
+    for (Iterator&lt;XxxPolicy&gt; it = xxxPolicyServiceLoader.iterator(); it.hasNext(); ) {
+        XxxPolicy xxxPolicy = it.next();
+        // ... more code ...
+    }
+}
+</code></pre>
+
+<p>就可以完成一个新的 SPI 策略的注册工作。</p>
+
+<p>但是，在尝试实现，了解了 ServiceLoader 源码，以及 DriverManager 和 mysql-connection-java-<version>.jar 在注册 Driver 相关的代码。
+发现怎么也绕不开 Java 安全访问相关的内容。诸如下列这段来自 DriverManager.loadInitialDrivers() 的代码:</p>
+
+<pre><code class="language-java">AccessController.doPrivileged(new PrivilegedAction&lt;Void&gt;() {
+    public Void run() {
+
+        ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);
+        Iterator&lt;Driver&gt; driversIterator = loadedDrivers.iterator();
+
+        try{
+            while(driversIterator.hasNext()) {
+            driversIterator.next();
+            }
+        } catch(Throwable t) {
+                // Do nothing
+        }
+        return null;
+    }
+});
+</code></pre>
+
+<p>诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。</p>
+
+<p>为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-07-04-jdk-permission/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-06-28-asm-verifyerror/">ASM-VerifyError错误信息解决</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-06-28
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <h2 id="报错信息">报错信息</h2>
+
+<pre><code class="language-java">java.lang.VerifyError: class net.sf.cglib.core.DebuggingClassWriter overrides final method visit.(IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V
+</code></pre>
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-06-28-asm-verifyerror/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-06-25-asm-core/">ASM 核心包基本内容漫谈</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-06-25
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/java/">Java</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/asm/">ASM</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/visitor-pattern/">Visitor Pattern</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <blockquote>
+<p>本文描述的 ASM 指的是 OW2 ASM</p>
+</blockquote>
+
+<h2 id="asm-core-的结构">ASM-Core 的结构</h2>
+
+<p><em>首先是一些概述性的内容。</em></p>
+
+<p>由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。
+因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)</p>
+
+<p>从核心包声明的类来看，主要包括:</p>
+
+<ol>
+<li><p>ClassReader - 作为结构化对象，将接收(accept)访问者的访问</p></li>
+
+<li><p>几种访问者抽象类以及相应的实现类</p></li>
+
+<li><p>AnnotationVisitor -&gt; AnnotationWriter</p></li>
+
+<li><p>ClassVisitor -&gt; ClassWriter</p></li>
+
+<li><p>FieldVisitor -&gt; FieldWriter</p></li>
+
+<li><p>MethodVisitor -&gt; MethodWriter</p></li>
+
+<li><p>ModuleVisitor -&gt; ModuleWriter</p></li>
+
+<li><p>Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值</p></li>
+
+<li><p>其它一些辅助的类</p></li>
+
+<li><p>Attribute - 用于处理非标准化的属性(ClassFile 允许<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVMS</a> 中未定义的 Attribute)</p></li>
+
+<li><p>ByteArray - 动态可自适应的 byte[] (字节数组)</p></li>
+
+<li><p>Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象</p></li>
+
+<li><p>Symbol - 用于表示 ClassFile 中描述的 Constant 的基类</p></li>
+
+<li><p>SymbolTable - 用于存储常量池对象</p></li>
+
+<li><p>其它内容省略</p></li>
+</ol>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-06-25-asm-core/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-06-21-java-memory-model/">java-memory-model</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-06-21
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/java/">Java</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/jvm/">JVM</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/memory-model/">Memory Model</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <h2 id="jvm-运行时数据区">JVM 运行时数据区</h2>
+
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg" alt="" />
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-06-21-java-memory-model/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-06-11-asm-classreader/">ASM - ClassReader 与 Java ClassFile 文件格式</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-06-11
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <h2 id="java-classfile-文件格式">Java ClassFile 文件格式</h2>
+
+<p>读了将近一周的时间，勉强算是把 ClassFile 的文件格式给简单的梳理了个脉络。
+<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html">The class File Format(Java SE 8)</a></p>
+
+<blockquote>
+<p>u1, u2, u4 分别表示无符号的一字节、二字节、四字节数据(以大端存储)</p>
+</blockquote>
+
+<pre><code class="language-c++">ClassFile {
+    u4             magic;                                   // 魔数(magic) 固定为 0xCAFEBABE
+    u2             minor_version;                           // 次版本号
+    u2             major_version;                           // 主版本号
+    u2             constant_pool_count;                     // 常量池 constant_pool 的数量 + 1, 最大为 (2&lt;&lt;16 - 1) = 65535
+    cp_info        constant_pool[constant_pool_count-1];    // 常量池 取值下标为 [1, constant_pool_count)
+    u2             access_flags;                            // 对类 or 接口的访问权限和属性的标志的掩码
+    u2             this_class;                              // 值为 constant_pool 的有效下标(且 constant_pool[this_class] 的类型为 CONSTANT_Class_info)
+    u2             super_class;                             // 值为 0 或者 constant_pool 的有效下标(同上), 如果是 interface, 则该值一定为有效下标
+    u2             interfaces_count;                        // 直接父接口的数量
+    u2             interfaces[interfaces_count];            // 值必须是 constant_pool 的有效下标, 且 interfaces[i](0≤i&lt;interfaces_count), 指向的类型为 CONSTANT_Class_info)
+    u2             fields_count;                            // 字段数量, 统计所有字段, 包括 class variables(静态变量) 和 instance variables(实例变量)
+    field_info     fields[fields_count];                    // 字段的详细声明, 不包含继承来的字段
+    u2             methods_count;                           // 方法数量
+    method_info    methods[methods_count];                  // 方法的详细声明, 不包括继承来的方法
+    u2             attributes_count;                        // 属性数量
+    attribute_info attributes[attributes_count];            // 属性的详细声明
+}
+</code></pre>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-06-11-asm-classreader/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-03-01-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/">区块链技术概述</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-03-01
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/blockchain/">BlockChain</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/smart-contract/">Smart Contract</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fs8oc4ri7qj30mq055aap.jpg" alt="区块链简单结构" />
+<center><small>图1. 区块链简单结构</small></center></p>
+
+<p><img src="https://ws1.sinaimg.cn/large/006tNc79gy1foxcpmmpfhj31kw107n2e.jpg" alt="Merkle tree" /></p>
+
+<p><center><small>图2. 单个区块的抽象结构</small></center></p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-03-01-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="pagination">
+  <div class="pagination__buttons">
+    
+      <span class="button previous">
+        <a href="/posts/page/3/">
+          <span class="button__icon">←</span>
+          <span class="button__text">Newer posts</span>
+        </a>
+      </span>
+    
+    
+      <span class="button next">
+        <a href="/posts/page/5/">
+          <span class="button__text">Older posts</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+    
+  </div>
+</div>
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright copyright--user">
+        <span>2018-2019 © ffutop</span>
+        <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
+      </div>
+    
+  </div>
+</footer>
+
+<script src="https://dormouse-none.github.io/assets/main.js"></script>
+<script src="https://dormouse-none.github.io/assets/prism.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>
