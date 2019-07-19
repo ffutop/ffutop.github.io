@@ -8,8 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="description" content="几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。
 本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。
-启动新进程 虚拟地址空间与进程挂钩，在进程数据结构 task_struct 中由一个重要的参数 mm_struct 来维护。
-struct mm_struct { struct vm_area_struct * mmap; /* list of VMAs */ struct rb_root mm_rb; unsigned long mmap_base; /* base of mmap area */ unsigned long task_size; /* size of task vm space */ pgd_t * pgd; atomic_t mm_count; /* How many references to &amp;quot;struct mm_struct&amp;quot; (users count as 1) */ int map_count; /* number of VMAs */ unsigned long start_code, end_code, start_data, end_data; unsigned long start_brk, brk, start_stack; unsigned long arg_start, arg_end, env_start, env_end; struct file *exe_file; /* ."/>
+"/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
 <link rel="canonical" href="https://dormouse-none.github.io/posts/2019-07-17-understand-kernel-13/" />
@@ -34,8 +33,7 @@ struct mm_struct { struct vm_area_struct * mmap; /* list of VMAs */ struct rb_ro
 <meta name="twitter:title" content="理解 Linux Kernel (13) - 虚拟内存 :: Utop&#39;s Blog — " />
 <meta name="twitter:description" content="几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。
 本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。
-启动新进程 虚拟地址空间与进程挂钩，在进程数据结构 task_struct 中由一个重要的参数 mm_struct 来维护。
-struct mm_struct { struct vm_area_struct * mmap; /* list of VMAs */ struct rb_root mm_rb; unsigned long mmap_base; /* base of mmap area */ unsigned long task_size; /* size of task vm space */ pgd_t * pgd; atomic_t mm_count; /* How many references to &amp;quot;struct mm_struct&amp;quot; (users count as 1) */ int map_count; /* number of VMAs */ unsigned long start_code, end_code, start_data, end_data; unsigned long start_brk, brk, start_stack; unsigned long arg_start, arg_end, env_start, env_end; struct file *exe_file; /* ." />
+" />
 <meta name="twitter:site" content="https://dormouse-none.github.io/" />
 <meta name="twitter:creator" content="fangfeng" />
 <meta name="twitter:image" content="">
@@ -46,8 +44,7 @@ struct mm_struct { struct vm_area_struct * mmap; /* list of VMAs */ struct rb_ro
 <meta property="og:title" content="理解 Linux Kernel (13) - 虚拟内存 :: Utop&#39;s Blog — ">
 <meta property="og:description" content="几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。
 本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。
-启动新进程 虚拟地址空间与进程挂钩，在进程数据结构 task_struct 中由一个重要的参数 mm_struct 来维护。
-struct mm_struct { struct vm_area_struct * mmap; /* list of VMAs */ struct rb_root mm_rb; unsigned long mmap_base; /* base of mmap area */ unsigned long task_size; /* size of task vm space */ pgd_t * pgd; atomic_t mm_count; /* How many references to &amp;quot;struct mm_struct&amp;quot; (users count as 1) */ int map_count; /* number of VMAs */ unsigned long start_code, end_code, start_data, end_data; unsigned long start_brk, brk, start_stack; unsigned long arg_start, arg_end, env_start, env_end; struct file *exe_file; /* ." />
+" />
 <meta property="og:url" content="https://dormouse-none.github.io/posts/2019-07-17-understand-kernel-13/" />
 <meta property="og:site_name" content="理解 Linux Kernel (13) - 虚拟内存" />
 <meta property="og:image" content="">
@@ -153,13 +150,9 @@ struct mm_struct { struct vm_area_struct * mmap; /* list of VMAs */ struct rb_ro
   
 
   <div class="post-content">
-    
-
-<p>几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。</p>
+    <p>几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。</p>
 
 <p>本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。</p>
-
-<!-- more -->
 
 <h2 id="启动新进程">启动新进程</h2>
 
@@ -735,7 +728,6 @@ out:
 <p>关于虚拟内存，还有相当多的内容等待揭开。比如文件映射中如何保证内存中的文件与磁盘中的文件的高效同步；不同策略下内存超卖的表现；缺页场景下虚拟内存与物理内存的映射&hellip;</p>
 
 <p>浅尝，后续有时间再继续翻看。</p>
-
   </div>
   
   <div class="pagination">

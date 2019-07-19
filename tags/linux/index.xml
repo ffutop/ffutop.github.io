@@ -18,10 +18,9 @@
       <pubDate>Wed, 17 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>https://dormouse-none.github.io/posts/2019-07-17-understand-kernel-13/</guid>
-      <description>几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。
-本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。
-启动新进程 虚拟地址空间与进程挂钩，在进程数据结构 task_struct 中由一个重要的参数 mm_struct 来维护。
-struct mm_struct { struct vm_area_struct * mmap; /* list of VMAs */ struct rb_root mm_rb; unsigned long mmap_base; /* base of mmap area */ unsigned long task_size; /* size of task vm space */ pgd_t * pgd; atomic_t mm_count; /* How many references to &amp;quot;struct mm_struct&amp;quot; (users count as 1) */ int map_count; /* number of VMAs */ unsigned long start_code, end_code, start_data, end_data; unsigned long start_brk, brk, start_stack; unsigned long arg_start, arg_end, env_start, env_end; struct file *exe_file; /* .</description>
+      <description>&lt;p&gt;几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。&lt;/p&gt;
+
+&lt;p&gt;本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。&lt;/p&gt;</description>
     </item>
     
     <item>
