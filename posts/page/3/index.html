@@ -131,6 +131,101 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://dormouse-none.github.io/posts/2018-11-11-understand-kernel-6/">理解 Linux Kernel (6) - read &amp; write</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-11-11
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://dormouse-none.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/file-system/">File System</a>&nbsp;
+      
+      #<a href="https://dormouse-none.github.io/tags/read-write/">read &amp; write</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p><a href="https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/">前一篇</a>已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。</p>
+
+<p>首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+
+int panic()
+{
+    fprintf(stderr, &quot;%s (errno=%d)\n&quot;, strerror(errno), errno);
+    return -1;
+}
+
+int main(int argc, char *argv[])
+{
+    /* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */
+    int fd = open(&quot;/root/frw.txt&quot;, O_RDWR | O_CREAT);
+    if (fd == -1)
+        return panic();
+
+    /* 向文件写入 Hello World! 共计 12 个字符 */
+    ssize_t wsize = write(fd, &quot;Hello World!&quot;, 12);
+    if (wsize == -1)
+        return panic();
+
+    /* 重定位文件读写指针 */
+    off_t off = lseek(fd, 0, SEEK_SET);
+    if (off == -1)
+        return panic();
+
+    char* buf = (char *) malloc(wsize);
+    /* 读取文件内容 */
+    ssize_t rsize = read(fd, buf, wsize);
+    if (rsize == -1)
+        return panic();
+
+    printf(&quot;%s\n&quot;, buf);
+    free(buf);
+    /* 关闭文件 */
+    int stat = close(fd);
+    if (stat == -1)
+        return panic();
+
+    return 0;
+}
+</code></pre>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-11-11-understand-kernel-6/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://dormouse-none.github.io/posts/2018-10-14-understand-kernel-5/">理解 Linux Kernel (5) - 文件系统(宏观描述)</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -551,82 +646,6 @@ int main(void)
     <div>
       <a class="read-more button"
         href="/posts/2018-08-19-understand-kernel-1/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://dormouse-none.github.io/posts/2018-08-15-java-instrumentation/">Java Instrumentation</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2018-08-15
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://dormouse-none.github.io/tags/java/">Java</a>&nbsp;
-      
-      #<a href="https://dormouse-none.github.io/tags/asm/">ASM</a>&nbsp;
-      
-      #<a href="https://dormouse-none.github.io/tags/btrace/">BTrace</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <h2 id="start">Start</h2>
-
-<p>从现有的前置知识来说，我们能够认识到两个事实:</p>
-
-<ol>
-<li>Java Class 通过 ClassLoader 进行加载。
-通过<code>全限定名</code>进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。
-换句话说: Class 一经加载，就不会尝试重复加载 (至少按绝大多数人的认知来说，确实是的)</li>
-<li>有没有可能让被加载的 Class 与物理存储上的 .class 内容不同。
-当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧
-(虽然可能不了解细节。在此，欢迎学习前置技能 <a href="https://dormouse-none.github.io/2018-07-10-CGlib-Enhancer/">CGlib Enhancer 主流程源码解析</a> 和 <a href="https://dormouse-none.github.io/2018-07-20-Java-Proxy/">Java Proxy 源码解析</a>。不过不影响本文后续内容)</li>
-</ol>
-
-<p>另一个方面，也许绝大多数人都听说过所谓的<code>热部署</code>。但是究竟怎么才能做到 <code>热部署</code>(话题开得有点大哈。Y_Y 本文不讲这个)</p>
-
-<p>操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。</p>
-
-<p>如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚&hellip;</p>
-
-<p>Java 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的</p>
-
-<h2 id="instrumentation">Instrumentation</h2>
-
-<p><code>java.lang.instrument.Instrumentation</code> 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)</p>
-
-<p>相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。</p>
-
-<p>下列有两种方法可以达到目的</p>
-
-<ol>
-<li>当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。</li>
-<li>当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。</li>
-</ol>
-
-<p>话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了*检测*的目的)的使用</p>
-
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2018-08-15-java-instrumentation/">Read more →</a>
     </div>
     
   </div>
