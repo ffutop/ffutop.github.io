@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>OS on Utop&#39;s Blog</title>
-    <link>https://dormouse-none.github.io/tags/os/</link>
+    <link>https://ffutop.github.io/tags/os/</link>
     <description>Recent content in OS on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2018-2019 © ffutop</copyright>
     <lastBuildDate>Sat, 06 Oct 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://dormouse-none.github.io/tags/os/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://ffutop.github.io/tags/os/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>理解 Linux Kernel (3) - 操作系统启动</title>
-      <link>https://dormouse-none.github.io/posts/2018-10-06-understand-kernel-3/</link>
+      <link>https://ffutop.github.io/posts/2018-10-06-understand-kernel-3/</link>
       <pubDate>Sat, 06 Oct 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://dormouse-none.github.io/posts/2018-10-06-understand-kernel-3/</guid>
+      <guid>https://ffutop.github.io/posts/2018-10-06-understand-kernel-3/</guid>
       <description>&lt;p&gt;这次拖得有够久的，毕竟需要将知识串联起来并不是一件容易的事情。更何况很多内容可以说和常理(个人理解的常理)有了比较大的偏差。&lt;/p&gt;
 
 &lt;p&gt;不过确实比较有意思。从引导程序到操作系统启动，这中间究竟经历了多少流程呢？&lt;/p&gt;

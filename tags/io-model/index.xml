@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>IO Model on Utop&#39;s Blog</title>
-    <link>https://dormouse-none.github.io/tags/io-model/</link>
+    <link>https://ffutop.github.io/tags/io-model/</link>
     <description>Recent content in IO Model on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2018-2019 © ffutop</copyright>
     <lastBuildDate>Tue, 05 Mar 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://dormouse-none.github.io/tags/io-model/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://ffutop.github.io/tags/io-model/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>理解 Linux Kernel (9) - IO Multiplexing</title>
-      <link>https://dormouse-none.github.io/posts/2019-03-05-understand-kernel-9/</link>
+      <link>https://ffutop.github.io/posts/2019-03-05-understand-kernel-9/</link>
       <pubDate>Tue, 05 Mar 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://dormouse-none.github.io/posts/2019-03-05-understand-kernel-9/</guid>
+      <guid>https://ffutop.github.io/posts/2019-03-05-understand-kernel-9/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;./2019-01-15-understand-Kernel-8/&#34;&gt;前一篇&lt;/a&gt;已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 &lt;code&gt;struct sock&lt;/code&gt; 对象，将其逐级从网络接口层逐级提升到网络层、传输层&amp;hellip;最终添加到接收队列 &lt;code&gt;sk_receive_queue&lt;/code&gt; 中；用户进程通过 &lt;code&gt;read&lt;/code&gt;、&lt;code&gt;recv&lt;/code&gt;、&lt;code&gt;recvfrom&lt;/code&gt; 等命令检查并获取 &lt;code&gt;sk_receive_queue&lt;/code&gt; 中的数据。&lt;/p&gt;
 
 &lt;p&gt;整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。&lt;/p&gt;

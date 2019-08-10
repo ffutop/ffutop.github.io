@@ -12,21 +12,21 @@
 #include &amp;quot;Main.h&amp;quot; JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr) { const char *str = (*env)-&amp;gt;GetStringUTFChars(env, jstr, 0); int len = (*env)-&amp;gt;GetStringUTFLength(env, jstr); // ... some code omitted return ; } "/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
-<link rel="canonical" href="https://dormouse-none.github.io/posts/2019-07-06-jni_problem/" />
+<link rel="canonical" href="https://ffutop.github.io/posts/2019-07-06-jni_problem/" />
 
 
-<link rel="stylesheet" href="https://dormouse-none.github.io/assets/style.css">
+<link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
 
-  <link rel="stylesheet" href="https://dormouse-none.github.io/assets/blue.css">
-
-
-
+  <link rel="stylesheet" href="https://ffutop.github.io/assets/blue.css">
 
 
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://dormouse-none.github.io/img/apple-touch-icon-144-precomposed.png">
 
-<link rel="shortcut icon" href="https://dormouse-none.github.io/favicon.ico">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://ffutop.github.io/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://ffutop.github.io/favicon.ico">
 
 
 
@@ -36,7 +36,7 @@
 为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。
 问题代码类似于下列代码：
 #include &amp;quot;Main.h&amp;quot; JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr) { const char *str = (*env)-&amp;gt;GetStringUTFChars(env, jstr, 0); int len = (*env)-&amp;gt;GetStringUTFLength(env, jstr); // ... some code omitted return ; } " />
-<meta name="twitter:site" content="https://dormouse-none.github.io/" />
+<meta name="twitter:site" content="https://ffutop.github.io/" />
 <meta name="twitter:creator" content="fangfeng" />
 <meta name="twitter:image" content="">
 
@@ -48,7 +48,7 @@
 为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。
 问题代码类似于下列代码：
 #include &amp;quot;Main.h&amp;quot; JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr) { const char *str = (*env)-&amp;gt;GetStringUTFChars(env, jstr, 0); int len = (*env)-&amp;gt;GetStringUTFLength(env, jstr); // ... some code omitted return ; } " />
-<meta property="og:url" content="https://dormouse-none.github.io/posts/2019-07-06-jni_problem/" />
+<meta property="og:url" content="https://ffutop.github.io/posts/2019-07-06-jni_problem/" />
 <meta property="og:site_name" content="JNI 引发的堆外内存泄露" />
 <meta property="og:image" content="">
 <meta property="og:image:width" content="2048">
@@ -132,7 +132,7 @@
     
 <div class="post">
   <h1 class="post-title">
-    <a href="https://dormouse-none.github.io/posts/2019-07-06-jni_problem/">JNI 引发的堆外内存泄露</a></h1>
+    <a href="https://ffutop.github.io/posts/2019-07-06-jni_problem/">JNI 引发的堆外内存泄露</a></h1>
   <div class="post-meta">
       
     <span class="post-date">
@@ -149,9 +149,9 @@
   
   <span class="post-tags">
     
-    #<a href="https://dormouse-none.github.io/tags/jni/">JNI</a>&nbsp;
+    #<a href="https://ffutop.github.io/tags/jni/">JNI</a>&nbsp;
     
-    #<a href="https://dormouse-none.github.io/tags/memory-leak/">memory leak</a>&nbsp;
+    #<a href="https://ffutop.github.io/tags/memory-leak/">memory leak</a>&nbsp;
     
   </span>
   
@@ -381,7 +381,7 @@ AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBB
     <div class="pagination__buttons">
       
       <span class="button previous">
-        <a href="https://dormouse-none.github.io/posts/2019-07-17-understand-kernel-13/">
+        <a href="https://ffutop.github.io/posts/2019-07-17-understand-kernel-13/">
           <span class="button__icon">←</span>
           <span class="button__text">理解 Linux Kernel (13) - 虚拟内存</span>
         </a>
@@ -389,7 +389,7 @@ AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBB
       
       
       <span class="button next">
-        <a href="https://dormouse-none.github.io/posts/2019-06-18-understand-kernel-12/">
+        <a href="https://ffutop.github.io/posts/2019-06-18-understand-kernel-12/">
           <span class="button__text">理解 Linux Kernel (12) - Linux 容器化技术</span>
           <span class="button__icon">→</span>
         </a>
@@ -417,8 +417,8 @@ AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBB
   </div>
 </footer>
 
-<script src="https://dormouse-none.github.io/assets/main.js"></script>
-<script src="https://dormouse-none.github.io/assets/prism.js"></script>
+<script src="https://ffutop.github.io/assets/main.js"></script>
+<script src="https://ffutop.github.io/assets/prism.js"></script>
 
 
 <script type="text/x-mathjax-config">

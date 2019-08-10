@@ -16,21 +16,21 @@ AccessController.doPrivileged(new PrivilegedAction&amp;lt;Void&amp;gt;() { publi
 "/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
-<link rel="canonical" href="https://dormouse-none.github.io/posts/2018-07-04-jdk-permission/" />
+<link rel="canonical" href="https://ffutop.github.io/posts/2018-07-04-jdk-permission/" />
 
 
-<link rel="stylesheet" href="https://dormouse-none.github.io/assets/style.css">
+<link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
 
-  <link rel="stylesheet" href="https://dormouse-none.github.io/assets/blue.css">
-
-
-
+  <link rel="stylesheet" href="https://ffutop.github.io/assets/blue.css">
 
 
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://dormouse-none.github.io/img/apple-touch-icon-144-precomposed.png">
 
-<link rel="shortcut icon" href="https://dormouse-none.github.io/favicon.ico">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://ffutop.github.io/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://ffutop.github.io/favicon.ico">
 
 
 
@@ -44,7 +44,7 @@ AccessController.doPrivileged(new PrivilegedAction&amp;lt;Void&amp;gt;() { publi
 AccessController.doPrivileged(new PrivilegedAction&amp;lt;Void&amp;gt;() { public Void run() { ServiceLoader&amp;lt;Driver&amp;gt; loadedDrivers = ServiceLoader.load(Driver.class); Iterator&amp;lt;Driver&amp;gt; driversIterator = loadedDrivers.iterator(); try{ while(driversIterator.hasNext()) { driversIterator.next(); } } catch(Throwable t) { // Do nothing } return null; } });  诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。
 为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。
 " />
-<meta name="twitter:site" content="https://dormouse-none.github.io/" />
+<meta name="twitter:site" content="https://ffutop.github.io/" />
 <meta name="twitter:creator" content="fangfeng" />
 <meta name="twitter:image" content="">
 
@@ -60,7 +60,7 @@ AccessController.doPrivileged(new PrivilegedAction&amp;lt;Void&amp;gt;() { publi
 AccessController.doPrivileged(new PrivilegedAction&amp;lt;Void&amp;gt;() { public Void run() { ServiceLoader&amp;lt;Driver&amp;gt; loadedDrivers = ServiceLoader.load(Driver.class); Iterator&amp;lt;Driver&amp;gt; driversIterator = loadedDrivers.iterator(); try{ while(driversIterator.hasNext()) { driversIterator.next(); } } catch(Throwable t) { // Do nothing } return null; } });  诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。
 为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。
 " />
-<meta property="og:url" content="https://dormouse-none.github.io/posts/2018-07-04-jdk-permission/" />
+<meta property="og:url" content="https://ffutop.github.io/posts/2018-07-04-jdk-permission/" />
 <meta property="og:site_name" content="Java 安全访问与权限控制" />
 <meta property="og:image" content="">
 <meta property="og:image:width" content="2048">
@@ -144,7 +144,7 @@ AccessController.doPrivileged(new PrivilegedAction&amp;lt;Void&amp;gt;() { publi
     
 <div class="post">
   <h1 class="post-title">
-    <a href="https://dormouse-none.github.io/posts/2018-07-04-jdk-permission/">Java 安全访问与权限控制</a></h1>
+    <a href="https://ffutop.github.io/posts/2018-07-04-jdk-permission/">Java 安全访问与权限控制</a></h1>
   <div class="post-meta">
       
     <span class="post-date">
@@ -161,11 +161,11 @@ AccessController.doPrivileged(new PrivilegedAction&amp;lt;Void&amp;gt;() { publi
   
   <span class="post-tags">
     
-    #<a href="https://dormouse-none.github.io/tags/java/">Java</a>&nbsp;
+    #<a href="https://ffutop.github.io/tags/java/">Java</a>&nbsp;
     
-    #<a href="https://dormouse-none.github.io/tags/security/">Security</a>&nbsp;
+    #<a href="https://ffutop.github.io/tags/security/">Security</a>&nbsp;
     
-    #<a href="https://dormouse-none.github.io/tags/permission/">Permission</a>&nbsp;
+    #<a href="https://ffutop.github.io/tags/permission/">Permission</a>&nbsp;
     
   </span>
   
@@ -380,7 +380,7 @@ public void checkPermission(Permission perm) {
     <div class="pagination__buttons">
       
       <span class="button previous">
-        <a href="https://dormouse-none.github.io/posts/2018-07-10-cglib-enhancer/">
+        <a href="https://ffutop.github.io/posts/2018-07-10-cglib-enhancer/">
           <span class="button__icon">←</span>
           <span class="button__text">CGlib Enhancer 主流程源码解析</span>
         </a>
@@ -388,7 +388,7 @@ public void checkPermission(Permission perm) {
       
       
       <span class="button next">
-        <a href="https://dormouse-none.github.io/posts/2018-06-28-asm-verifyerror/">
+        <a href="https://ffutop.github.io/posts/2018-06-28-asm-verifyerror/">
           <span class="button__text">ASM-VerifyError错误信息解决</span>
           <span class="button__icon">→</span>
         </a>
@@ -416,8 +416,8 @@ public void checkPermission(Permission perm) {
   </div>
 </footer>
 
-<script src="https://dormouse-none.github.io/assets/main.js"></script>
-<script src="https://dormouse-none.github.io/assets/prism.js"></script>
+<script src="https://ffutop.github.io/assets/main.js"></script>
+<script src="https://ffutop.github.io/assets/prism.js"></script>
 
 
 <script type="text/x-mathjax-config">

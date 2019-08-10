@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>IPC on Utop&#39;s Blog</title>
-    <link>https://dormouse-none.github.io/tags/ipc/</link>
+    <link>https://ffutop.github.io/tags/ipc/</link>
     <description>Recent content in IPC on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2018-2019 © ffutop</copyright>
     <lastBuildDate>Mon, 27 May 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://dormouse-none.github.io/tags/ipc/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://ffutop.github.io/tags/ipc/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>理解 Linux Kernel (11) - 进程间通信</title>
-      <link>https://dormouse-none.github.io/posts/2019-05-27-understand-kernel-11/</link>
+      <link>https://ffutop.github.io/posts/2019-05-27-understand-kernel-11/</link>
       <pubDate>Mon, 27 May 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://dormouse-none.github.io/posts/2019-05-27-understand-kernel-11/</guid>
+      <guid>https://ffutop.github.io/posts/2019-05-27-understand-kernel-11/</guid>
       <description>&lt;p&gt;进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;本篇基于 Linux 4.9.87 版本源码&lt;/em&gt;&lt;/p&gt;</description>

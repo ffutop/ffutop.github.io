@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>ftrace on Utop&#39;s Blog</title>
-    <link>https://dormouse-none.github.io/tags/ftrace/</link>
+    <link>https://ffutop.github.io/tags/ftrace/</link>
     <description>Recent content in ftrace on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2018-2019 © ffutop</copyright>
     <lastBuildDate>Sun, 02 Jun 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://dormouse-none.github.io/tags/ftrace/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://ffutop.github.io/tags/ftrace/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>跟踪内核函数的工具—— Ftrace</title>
-      <link>https://dormouse-none.github.io/posts/2019-06-02-ftrace/</link>
+      <link>https://ffutop.github.io/posts/2019-06-02-ftrace/</link>
       <pubDate>Sun, 02 Jun 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://dormouse-none.github.io/posts/2019-06-02-ftrace/</guid>
+      <guid>https://ffutop.github.io/posts/2019-06-02-ftrace/</guid>
       <description>&lt;p&gt;前两天仿照 &lt;code&gt;strings&lt;/code&gt; 工具写了个打印进程运行时堆栈可打印字符的工具 &lt;a href=&#34;https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c&#34;&gt;ffstrings&lt;/a&gt; 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&amp;lt;&lt;/p&gt;
 
 &lt;p&gt;在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— &lt;code&gt;ftrace&lt;/code&gt; 。&lt;/p&gt;

@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>COE on Utop&#39;s Blog</title>
-    <link>https://dormouse-none.github.io/tags/coe/</link>
+    <link>https://ffutop.github.io/tags/coe/</link>
     <description>Recent content in COE on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2018-2019 © ffutop</copyright>
     <lastBuildDate>Wed, 10 Apr 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://dormouse-none.github.io/tags/coe/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://ffutop.github.io/tags/coe/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>理解 Linux Kernel(10) - Context of Execution</title>
-      <link>https://dormouse-none.github.io/posts/2019-04-10-understand-kernel-10/</link>
+      <link>https://ffutop.github.io/posts/2019-04-10-understand-kernel-10/</link>
       <pubDate>Wed, 10 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://dormouse-none.github.io/posts/2019-04-10-understand-kernel-10/</guid>
+      <guid>https://ffutop.github.io/posts/2019-04-10-understand-kernel-10/</guid>
       <description>&lt;p&gt;在进行&lt;a href=&#34;https://www.ffutop.com/2018-10-12-understand-Kernel-4/&#34;&gt;第四篇(任务调度)&lt;/a&gt;行文描述时，就一直闹不清内核所谓的&lt;code&gt;task&lt;/code&gt;的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：&lt;strong&gt;我们错误地将理论和实践不加区分地混淆了&lt;/strong&gt;。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，&lt;code&gt;task&lt;/code&gt; 也就是 &lt;code&gt;Context of Execution&lt;/code&gt; 概念在实现上的表征。&lt;/p&gt;</description>
     </item>
     

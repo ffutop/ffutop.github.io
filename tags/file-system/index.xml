@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>File System on Utop&#39;s Blog</title>
-    <link>https://dormouse-none.github.io/tags/file-system/</link>
+    <link>https://ffutop.github.io/tags/file-system/</link>
     <description>Recent content in File System on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2018-2019 © ffutop</copyright>
     <lastBuildDate>Sun, 11 Nov 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://dormouse-none.github.io/tags/file-system/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://ffutop.github.io/tags/file-system/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>理解 Linux Kernel (6) - read &amp; write</title>
-      <link>https://dormouse-none.github.io/posts/2018-11-11-understand-kernel-6/</link>
+      <link>https://ffutop.github.io/posts/2018-11-11-understand-kernel-6/</link>
       <pubDate>Sun, 11 Nov 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://dormouse-none.github.io/posts/2018-11-11-understand-kernel-6/</guid>
+      <guid>https://ffutop.github.io/posts/2018-11-11-understand-kernel-6/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/&#34;&gt;前一篇&lt;/a&gt;已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。&lt;/p&gt;
 
 &lt;p&gt;首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式&lt;/p&gt;
@@ -74,10 +74,10 @@ int main(int argc, char *argv[])
     
     <item>
       <title>理解 Linux Kernel (5) - 文件系统(宏观描述)</title>
-      <link>https://dormouse-none.github.io/posts/2018-10-14-understand-kernel-5/</link>
+      <link>https://ffutop.github.io/posts/2018-10-14-understand-kernel-5/</link>
       <pubDate>Sun, 14 Oct 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://dormouse-none.github.io/posts/2018-10-14-understand-kernel-5/</guid>
+      <guid>https://ffutop.github.io/posts/2018-10-14-understand-kernel-5/</guid>
       <description>&lt;p&gt;用惯了类 Unix 系统，应该说文件系统是日常最常接触的一个操作系统模块之一了。&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ ls

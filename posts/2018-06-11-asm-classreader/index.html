@@ -11,21 +11,21 @@
  ClassFile { u4 magic; // 魔数(magic) 固定为 0xCAFEBABE u2 minor_version; // 次版本号 u2 major_version; // 主版本号 u2 constant_pool_count; // 常量池 constant_pool 的数量 &#43; 1, 最大为 (2&amp;lt;&amp;lt;16 - 1) = 65535 cp_info constant_pool[constant_pool_count-1]; // 常量池 取值下标为 [1, constant_pool_count) u2 access_flags; // 对类 or 接口的访问权限和属性的标志的掩码 u2 this_class; // 值为 constant_pool 的有效下标(且 constant_pool[this_class] 的类型为 CONSTANT_Class_info) u2 super_class; // 值为 0 或者 constant_pool 的有效下标(同上), 如果是 interface, 则该值一定为有效下标 u2 interfaces_count; // 直接父接口的数量 u2 interfaces[interfaces_count]; // 值必须是 constant_pool 的有效下标, 且 interfaces[i](0≤i&amp;lt;interfaces_count), 指向的类型为 CONSTANT_Class_info) u2 fields_count; // 字段数量, 统计所有字段, 包括 class variables(静态变量) 和 instance variables(实例变量) field_info fields[fields_count]; // 字段的详细声明, 不包含继承来的字段 u2 methods_count; // 方法数量 method_info methods[methods_count]; // 方法的详细声明, 不包括继承来的方法 u2 attributes_count; // 属性数量 attribute_info attributes[attributes_count]; // 属性的详细声明 } "/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
-<link rel="canonical" href="https://dormouse-none.github.io/posts/2018-06-11-asm-classreader/" />
+<link rel="canonical" href="https://ffutop.github.io/posts/2018-06-11-asm-classreader/" />
 
 
-<link rel="stylesheet" href="https://dormouse-none.github.io/assets/style.css">
+<link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
 
-  <link rel="stylesheet" href="https://dormouse-none.github.io/assets/blue.css">
-
-
-
+  <link rel="stylesheet" href="https://ffutop.github.io/assets/blue.css">
 
 
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://dormouse-none.github.io/img/apple-touch-icon-144-precomposed.png">
 
-<link rel="shortcut icon" href="https://dormouse-none.github.io/favicon.ico">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://ffutop.github.io/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://ffutop.github.io/favicon.ico">
 
 
 
@@ -34,7 +34,7 @@
 <meta name="twitter:description" content="Java ClassFile 文件格式 读了将近一周的时间，勉强算是把 ClassFile 的文件格式给简单的梳理了个脉络。 The class File Format(Java SE 8)
  u1, u2, u4 分别表示无符号的一字节、二字节、四字节数据(以大端存储)
  ClassFile { u4 magic; // 魔数(magic) 固定为 0xCAFEBABE u2 minor_version; // 次版本号 u2 major_version; // 主版本号 u2 constant_pool_count; // 常量池 constant_pool 的数量 &#43; 1, 最大为 (2&amp;lt;&amp;lt;16 - 1) = 65535 cp_info constant_pool[constant_pool_count-1]; // 常量池 取值下标为 [1, constant_pool_count) u2 access_flags; // 对类 or 接口的访问权限和属性的标志的掩码 u2 this_class; // 值为 constant_pool 的有效下标(且 constant_pool[this_class] 的类型为 CONSTANT_Class_info) u2 super_class; // 值为 0 或者 constant_pool 的有效下标(同上), 如果是 interface, 则该值一定为有效下标 u2 interfaces_count; // 直接父接口的数量 u2 interfaces[interfaces_count]; // 值必须是 constant_pool 的有效下标, 且 interfaces[i](0≤i&amp;lt;interfaces_count), 指向的类型为 CONSTANT_Class_info) u2 fields_count; // 字段数量, 统计所有字段, 包括 class variables(静态变量) 和 instance variables(实例变量) field_info fields[fields_count]; // 字段的详细声明, 不包含继承来的字段 u2 methods_count; // 方法数量 method_info methods[methods_count]; // 方法的详细声明, 不包括继承来的方法 u2 attributes_count; // 属性数量 attribute_info attributes[attributes_count]; // 属性的详细声明 } " />
-<meta name="twitter:site" content="https://dormouse-none.github.io/" />
+<meta name="twitter:site" content="https://ffutop.github.io/" />
 <meta name="twitter:creator" content="fangfeng" />
 <meta name="twitter:image" content="">
 
@@ -45,7 +45,7 @@
 <meta property="og:description" content="Java ClassFile 文件格式 读了将近一周的时间，勉强算是把 ClassFile 的文件格式给简单的梳理了个脉络。 The class File Format(Java SE 8)
  u1, u2, u4 分别表示无符号的一字节、二字节、四字节数据(以大端存储)
  ClassFile { u4 magic; // 魔数(magic) 固定为 0xCAFEBABE u2 minor_version; // 次版本号 u2 major_version; // 主版本号 u2 constant_pool_count; // 常量池 constant_pool 的数量 &#43; 1, 最大为 (2&amp;lt;&amp;lt;16 - 1) = 65535 cp_info constant_pool[constant_pool_count-1]; // 常量池 取值下标为 [1, constant_pool_count) u2 access_flags; // 对类 or 接口的访问权限和属性的标志的掩码 u2 this_class; // 值为 constant_pool 的有效下标(且 constant_pool[this_class] 的类型为 CONSTANT_Class_info) u2 super_class; // 值为 0 或者 constant_pool 的有效下标(同上), 如果是 interface, 则该值一定为有效下标 u2 interfaces_count; // 直接父接口的数量 u2 interfaces[interfaces_count]; // 值必须是 constant_pool 的有效下标, 且 interfaces[i](0≤i&amp;lt;interfaces_count), 指向的类型为 CONSTANT_Class_info) u2 fields_count; // 字段数量, 统计所有字段, 包括 class variables(静态变量) 和 instance variables(实例变量) field_info fields[fields_count]; // 字段的详细声明, 不包含继承来的字段 u2 methods_count; // 方法数量 method_info methods[methods_count]; // 方法的详细声明, 不包括继承来的方法 u2 attributes_count; // 属性数量 attribute_info attributes[attributes_count]; // 属性的详细声明 } " />
-<meta property="og:url" content="https://dormouse-none.github.io/posts/2018-06-11-asm-classreader/" />
+<meta property="og:url" content="https://ffutop.github.io/posts/2018-06-11-asm-classreader/" />
 <meta property="og:site_name" content="ASM - ClassReader 与 Java ClassFile 文件格式" />
 <meta property="og:image" content="">
 <meta property="og:image:width" content="2048">
@@ -129,7 +129,7 @@
     
 <div class="post">
   <h1 class="post-title">
-    <a href="https://dormouse-none.github.io/posts/2018-06-11-asm-classreader/">ASM - ClassReader 与 Java ClassFile 文件格式</a></h1>
+    <a href="https://ffutop.github.io/posts/2018-06-11-asm-classreader/">ASM - ClassReader 与 Java ClassFile 文件格式</a></h1>
   <div class="post-meta">
       
     <span class="post-date">
@@ -755,7 +755,7 @@ public class Trie {
     <div class="pagination__buttons">
       
       <span class="button previous">
-        <a href="https://dormouse-none.github.io/posts/2018-06-21-java-memory-model/">
+        <a href="https://ffutop.github.io/posts/2018-06-21-java-memory-model/">
           <span class="button__icon">←</span>
           <span class="button__text">java-memory-model</span>
         </a>
@@ -763,7 +763,7 @@ public class Trie {
       
       
       <span class="button next">
-        <a href="https://dormouse-none.github.io/posts/2018-03-01-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/">
+        <a href="https://ffutop.github.io/posts/2018-03-01-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/">
           <span class="button__text">区块链技术概述</span>
           <span class="button__icon">→</span>
         </a>
@@ -791,8 +791,8 @@ public class Trie {
   </div>
 </footer>
 
-<script src="https://dormouse-none.github.io/assets/main.js"></script>
-<script src="https://dormouse-none.github.io/assets/prism.js"></script>
+<script src="https://ffutop.github.io/assets/main.js"></script>
+<script src="https://ffutop.github.io/assets/prism.js"></script>
 
 
 <script type="text/x-mathjax-config">

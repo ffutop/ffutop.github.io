@@ -11,21 +11,21 @@
 "/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
-<link rel="canonical" href="https://dormouse-none.github.io/posts/2019-04-26-time-accuracy/" />
+<link rel="canonical" href="https://ffutop.github.io/posts/2019-04-26-time-accuracy/" />
 
 
-<link rel="stylesheet" href="https://dormouse-none.github.io/assets/style.css">
+<link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
 
-  <link rel="stylesheet" href="https://dormouse-none.github.io/assets/blue.css">
-
-
-
+  <link rel="stylesheet" href="https://ffutop.github.io/assets/blue.css">
 
 
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://dormouse-none.github.io/img/apple-touch-icon-144-precomposed.png">
 
-<link rel="shortcut icon" href="https://dormouse-none.github.io/favicon.ico">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://ffutop.github.io/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://ffutop.github.io/favicon.ico">
 
 
 
@@ -34,7 +34,7 @@
 <meta name="twitter:description" content="最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:
 /** * 表结构 * CREATE TABLE `time_0` ( * `timeout` timestamp NOT NULL * ) */ // part 1 jdbcTemplate.execute(&amp;quot;UPDATE `time_0` SET `timeout`=now() WHERE `id` = xxx;&amp;quot;); // part 2 Date timeout = jdbcTemplate.queryForObject(&amp;quot;SELECT `timeout` FROM `time_0` WHERE `id` = xxx;&amp;quot;, Date.class); Assert.assertTrue(timeout.getTime() &amp;lt; System.currentTimeMillis());  在绝大多数模拟中，先执行 part 1，紧跟着执行 part 2 都能通过测试。但偶尔还是挂掉了。
 " />
-<meta name="twitter:site" content="https://dormouse-none.github.io/" />
+<meta name="twitter:site" content="https://ffutop.github.io/" />
 <meta name="twitter:creator" content="fangfeng" />
 <meta name="twitter:image" content="">
 
@@ -45,7 +45,7 @@
 <meta property="og:description" content="最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:
 /** * 表结构 * CREATE TABLE `time_0` ( * `timeout` timestamp NOT NULL * ) */ // part 1 jdbcTemplate.execute(&amp;quot;UPDATE `time_0` SET `timeout`=now() WHERE `id` = xxx;&amp;quot;); // part 2 Date timeout = jdbcTemplate.queryForObject(&amp;quot;SELECT `timeout` FROM `time_0` WHERE `id` = xxx;&amp;quot;, Date.class); Assert.assertTrue(timeout.getTime() &amp;lt; System.currentTimeMillis());  在绝大多数模拟中，先执行 part 1，紧跟着执行 part 2 都能通过测试。但偶尔还是挂掉了。
 " />
-<meta property="og:url" content="https://dormouse-none.github.io/posts/2019-04-26-time-accuracy/" />
+<meta property="og:url" content="https://ffutop.github.io/posts/2019-04-26-time-accuracy/" />
 <meta property="og:site_name" content="MySQL TIMESTAMP 时间精度问题" />
 <meta property="og:image" content="">
 <meta property="og:image:width" content="2048">
@@ -129,7 +129,7 @@
     
 <div class="post">
   <h1 class="post-title">
-    <a href="https://dormouse-none.github.io/posts/2019-04-26-time-accuracy/">MySQL TIMESTAMP 时间精度问题</a></h1>
+    <a href="https://ffutop.github.io/posts/2019-04-26-time-accuracy/">MySQL TIMESTAMP 时间精度问题</a></h1>
   <div class="post-meta">
       
     <span class="post-date">
@@ -146,13 +146,13 @@
   
   <span class="post-tags">
     
-    #<a href="https://dormouse-none.github.io/tags/mysql/">MySQL</a>&nbsp;
+    #<a href="https://ffutop.github.io/tags/mysql/">MySQL</a>&nbsp;
     
-    #<a href="https://dormouse-none.github.io/tags/datetime/">DateTime</a>&nbsp;
+    #<a href="https://ffutop.github.io/tags/datetime/">DateTime</a>&nbsp;
     
-    #<a href="https://dormouse-none.github.io/tags/timestamp/">TimeStamp</a>&nbsp;
+    #<a href="https://ffutop.github.io/tags/timestamp/">TimeStamp</a>&nbsp;
     
-    #<a href="https://dormouse-none.github.io/tags/time-accuracy/">time accuracy</a>&nbsp;
+    #<a href="https://ffutop.github.io/tags/time-accuracy/">time accuracy</a>&nbsp;
     
   </span>
   
@@ -374,7 +374,7 @@ mysql&gt; SELECT now(), sleep(1), now(3);
     <div class="pagination__buttons">
       
       <span class="button previous">
-        <a href="https://dormouse-none.github.io/posts/2019-05-10-png-structure/">
+        <a href="https://ffutop.github.io/posts/2019-05-10-png-structure/">
           <span class="button__icon">←</span>
           <span class="button__text">PNG 文件格式</span>
         </a>
@@ -382,7 +382,7 @@ mysql&gt; SELECT now(), sleep(1), now(3);
       
       
       <span class="button next">
-        <a href="https://dormouse-none.github.io/posts/2019-04-25-lex-and-yacc/">
+        <a href="https://ffutop.github.io/posts/2019-04-25-lex-and-yacc/">
           <span class="button__text">Lex &amp; Yacc 学习笔记</span>
           <span class="button__icon">→</span>
         </a>
@@ -410,8 +410,8 @@ mysql&gt; SELECT now(), sleep(1), now(3);
   </div>
 </footer>
 
-<script src="https://dormouse-none.github.io/assets/main.js"></script>
-<script src="https://dormouse-none.github.io/assets/prism.js"></script>
+<script src="https://ffutop.github.io/assets/main.js"></script>
+<script src="https://ffutop.github.io/assets/prism.js"></script>
 
 
 <script type="text/x-mathjax-config">

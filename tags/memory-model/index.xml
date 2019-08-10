@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Memory Model on Utop&#39;s Blog</title>
-    <link>https://dormouse-none.github.io/tags/memory-model/</link>
+    <link>https://ffutop.github.io/tags/memory-model/</link>
     <description>Recent content in Memory Model on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2018-2019 © ffutop</copyright>
     <lastBuildDate>Thu, 21 Jun 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://dormouse-none.github.io/tags/memory-model/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://ffutop.github.io/tags/memory-model/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>java-memory-model</title>
-      <link>https://dormouse-none.github.io/posts/2018-06-21-java-memory-model/</link>
+      <link>https://ffutop.github.io/posts/2018-06-21-java-memory-model/</link>
       <pubDate>Thu, 21 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://dormouse-none.github.io/posts/2018-06-21-java-memory-model/</guid>
+      <guid>https://ffutop.github.io/posts/2018-06-21-java-memory-model/</guid>
       <description>&lt;h2 id=&#34;jvm-运行时数据区&#34;&gt;JVM 运行时数据区&lt;/h2&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
