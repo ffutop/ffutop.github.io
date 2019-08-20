@@ -7,10 +7,24 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2018-2019 © ffutop</copyright>
-    <lastBuildDate>Tue, 06 Aug 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 19 Aug 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://ffutop.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Too many links problem</title>
+      <link>https://ffutop.github.io/posts/2019-08-19-too-many-links/</link>
+      <pubDate>Mon, 19 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://ffutop.github.io/posts/2019-08-19-too-many-links/</guid>
+      <description>&lt;p&gt;今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;Warning  Failed 4m  kubelet, 172.16.1.1 Failed to pull image &amp;quot;xxx.xxx.com/&amp;lt;image-name&amp;gt;:&amp;lt;version&amp;gt;&amp;quot;: rpc error: code = Unknown desc = failed to register layer: link /data/docker/storage/overlay/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a/root/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type /data/docker/storage/overlay/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da/tmproot525452492/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type: too many links
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 &lt;code&gt;172.16.1.1&lt;/code&gt;。而 Kubernetes 事件中提示的是 &lt;code&gt;too many links&lt;/code&gt;，对问题原因的怀疑开始转向文件系统。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Netfilter 导览 - based on iptables</title>
