@@ -131,6 +131,67 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-04-26-time-accuracy/">MySQL TIMESTAMP 时间精度问题</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-04-26
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/mysql/">MySQL</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/datetime/">DateTime</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/timestamp/">TimeStamp</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/time-accuracy/">time accuracy</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:</p>
+
+<pre><code class="language-java">/**
+  * 表结构
+  * CREATE TABLE `time_0` (
+  *     `timeout` timestamp NOT NULL
+  * )
+  */
+
+// part 1
+jdbcTemplate.execute(&quot;UPDATE `time_0` SET `timeout`=now() WHERE `id` = xxx;&quot;);
+
+// part 2
+Date timeout = jdbcTemplate.queryForObject(&quot;SELECT `timeout` FROM `time_0` WHERE `id` = xxx;&quot;, Date.class);
+Assert.assertTrue(timeout.getTime() &lt; System.currentTimeMillis());
+</code></pre>
+
+<p>在绝大多数模拟中，先执行 <code>part 1</code>，紧跟着执行 <code>part 2</code> 都能通过测试。但偶尔还是挂掉了。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-04-26-time-accuracy/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-04-25-lex-and-yacc/">Lex &amp; Yacc 学习笔记</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -539,52 +600,6 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
     <div>
       <a class="read-more button"
         href="/posts/2018-12-28-understand-kernel-7/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2018-12-15-sql-injection/">SQL 注入</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2018-12-15
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/security/">Security</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/sql/">SQL</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <p>说实话此前对 SQL 注入的理解仅仅只是皮毛。当然，目前也是，只是有了一定程度的理解。</p>
-
-<p>最近好像工具用得有些过头了，需要停下来整理下工具的实现原理。</p>
-
-<p>更好地理解了工具实现，才能更加心安理得地使用工具。毕竟等别人怼的时候，还能够比较安心地回道: &ldquo;我用不用现成的工具只是取决于我想不想自己再写一套&rdquo;</p>
-
-<p>当然，毕竟成熟的工具有更多的优化，这就不是短时间内我想不想自己写的问题了，哈哈。</p>
-
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2018-12-15-sql-injection/">Read more →</a>
     </div>
     
   </div>
