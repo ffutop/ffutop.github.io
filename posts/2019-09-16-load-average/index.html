@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  
+    <title>系统平均负载分析 :: Utop&#39;s Blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="description" content="Load Average 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。
+ffutop $ time ./a ./a 59.48s user 0.04s system 98% cpu 1:00.59 total ffutop $ uptime 09:58:56 up 165 days, 20:14, 2 users, load average: 0.63, 0.24, 0.09  是什么原因导致平均负载与预期值不符呢？
+"/>
+<meta name="keywords" content="BLOG"/>
+<meta name="robots" content="noodp"/>
+<link rel="canonical" href="https://ffutop.github.io/posts/2019-09-16-load-average/" />
+
+
+<link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
+
+  <link rel="stylesheet" href="https://ffutop.github.io/assets/blue.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://ffutop.github.io/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://ffutop.github.io/favicon.ico">
+
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="系统平均负载分析 :: Utop&#39;s Blog — " />
+<meta name="twitter:description" content="Load Average 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。
+ffutop $ time ./a ./a 59.48s user 0.04s system 98% cpu 1:00.59 total ffutop $ uptime 09:58:56 up 165 days, 20:14, 2 users, load average: 0.63, 0.24, 0.09  是什么原因导致平均负载与预期值不符呢？
+" />
+<meta name="twitter:site" content="https://ffutop.github.io/" />
+<meta name="twitter:creator" content="fangfeng" />
+<meta name="twitter:image" content="">
+
+
+<meta property="og:locale" content="zh-cn" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="系统平均负载分析 :: Utop&#39;s Blog — ">
+<meta property="og:description" content="Load Average 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。
+ffutop $ time ./a ./a 59.48s user 0.04s system 98% cpu 1:00.59 total ffutop $ uptime 09:58:56 up 165 days, 20:14, 2 users, load average: 0.63, 0.24, 0.09  是什么原因导致平均负载与预期值不符呢？
+" />
+<meta property="og:url" content="https://ffutop.github.io/posts/2019-09-16-load-average/" />
+<meta property="og:site_name" content="系统平均负载分析" />
+<meta property="og:image" content="">
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+<meta property="article:published_time" content="2019-09-15 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', "UA-92258941-1");
+</script>
+
+
+
+</head>
+<body class="">
+
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    ffutop
+  </div>
+</a>
+
+    </div>
+    <div class="menu-trigger">menu</div>
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">关于</a></li>
+        
+      
+        
+          <li><a href="/archives">归档</a></li>
+        
+      
+      
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">关于</a></li>
+      
+    
+      
+        <li><a href="/archives">归档</a></li>
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="https://ffutop.github.io/posts/2019-09-16-load-average/">系统平均负载分析</a></h1>
+  <div class="post-meta">
+      
+    <span class="post-date">
+      2019-09-15
+    </span>
+    
+    
+    <span class="post-author">::
+      fangfeng
+    </span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
+    
+    #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
+    
+    #<a href="https://ffutop.github.io/tags/load-average/">load average</a>&nbsp;
+    
+  </span>
+  
+
+  
+
+  <div class="post-content">
+    <p><code>Load Average</code> 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。</p>
+
+<pre><code class="language-sh">ffutop $ time ./a
+./a  59.48s user 0.04s system 98% cpu 1:00.59 total
+ffutop $ uptime
+09:58:56 up 165 days, 20:14,  2 users,  load average: 0.63, 0.24, 0.09
+</code></pre>
+
+<p>是什么原因导致平均负载与预期值不符呢？</p>
+
+<h2 id="proc-loadavg">/proc/loadavg</h2>
+
+<p>通过对 <code>strace</code> 的分析，系统平均负载的数据来源于 <code>/proc</code> 虚拟文件系统下的文件 <code>loadavg</code>。</p>
+
+<pre><code class="language-sh">ffutop $ strace uptime
+# ... some thing omitted ...
+openat(AT_FDCWD, &quot;/proc/loadavg&quot;, O_RDONLY) = 4
+lseek(4, 0, SEEK_SET)                   = 0
+read(4, &quot;0.00 0.01 0.00 3/245 32222\n&quot;, 8191) = 27
+fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(136, 0), ...}) = 0
+write(1, &quot; 10:24:25 up 165 days, 20:39,  2&quot;..., 72 10:24:25 up 165 days, 20:39,  2 users,  load average: 0.00, 0.01, 0.00
+# ... 
+</code></pre>
+
+<p>打印 loadavg 的内容，总共 5 项结果。</p>
+
+<pre><code class="language-sh">cat /proc/loadavg
+0.02 0.03 0.01 1/244 32408
+</code></pre>
+
+<ul>
+<li>前三个数代表 1/5/15 分钟内的系统平均负载，包含所有处于<strong>就绪</strong>(Running) 和<strong>不可中断睡眠</strong>(Uninterruptible Sleep) 状态的任务。</li>
+<li>&ldquo;<sup>1</sup>&frasl;<sub>244</sub>&rdquo; 代表当前 1 个任务处于就绪状态，总共有 244 个任务。</li>
+<li>&ldquo;32408&rdquo; 表示最近一次分配的任务 PID 编号。</li>
+</ul>
+
+<p>背后的内核函数是 <code>loadavg_proc_show</code></p>
+
+<h2 id="avenrun-统计值">avenrun 统计值</h2>
+
+<pre><code class="language-c">/* From fs/proc/loadavg.c */
+static int loadavg_proc_show(struct seq_file *m, void *v)
+{
+    unsigned long avnrun[3];
+
+    get_avenrun(avnrun, FIXED_1/200, 0);
+
+    seq_printf(m, &quot;%lu.%02lu %lu.%02lu %lu.%02lu %ld/%d %d\n&quot;,
+        LOAD_INT(avnrun[0]), LOAD_FRAC(avnrun[0]),
+        LOAD_INT(avnrun[1]), LOAD_FRAC(avnrun[1]),
+        LOAD_INT(avnrun[2]), LOAD_FRAC(avnrun[2]),
+        nr_running(), nr_threads,
+        task_active_pid_ns(current)-&gt;last_pid);
+    return 0;
+}
+
+/* From kernel/sched/core.c */
+unsigned long avenrun[3];
+void get_avenrun(unsigned long *loads, unsigned long offset, int shift)
+{
+	loads[0] = (avenrun[0] + offset) &lt;&lt; shift;
+	loads[1] = (avenrun[1] + offset) &lt;&lt; shift;
+	loads[2] = (avenrun[2] + offset) &lt;&lt; shift;
+}
+</code></pre>
+
+<p>事实上 <code>loadavg_proc_show</code> 也仅仅只是承担将数据按预定格式渲染的职责，真正的数据源是内核全局变量 <code>avenrun</code> 。后者由函数 <code>calc_global_load</code> 负责实时刷新。不过，确切地说是周期性刷新（默认的周期是 5 秒一次）。</p>
+
+<p>注意，全局变量 <code>avenrun</code> 是一个长整型的数组，分别用于维护 1 分钟、5 分钟、15 分钟的平均负载。但是，打印出来的结果分明是浮点数啊！这里内核使用了整数来避免浮点运算带来的性能问题。32 位整型的低 11 位用来表示小数部分，而高位作为整数部分。</p>
+
+<p>如何计算 <code>avenrun</code> ？这里使用了取样的方式，默认是每 5 秒种对各个 CPU 核上处于就绪和不可中断睡眠状态的任务做计数。然后以指数移动平均的方式累积到 <code>avenrun</code> 结果中。</p>
+
+<p>先简单介绍一下朴素的移动平均。假设计算 60 秒的系统平均负载，每 5 秒取样一次，则最近 1 分钟的平均负载：</p>
+
+<p>$$avenrun[0]<em>{t} = \frac{load</em>{t} + load<em>{t+5} + load</em>{t+10} + \dots + load_{t+55}}{60 / 5}$$</p>
+
+<p>对于下一个 5 秒的采样结果，使用下列计算公式：</p>
+
+<p>$$avenrun[0]<em>{t+5} = avenrun[0]</em>{t} - \frac{1}{60 / 5} \times load<em>{t} + \frac{1}{60 / 5} \times load</em>{t+60}$$</p>
+
+<p>依次类推。移动平均即以类似活动窗口的模式运行，移除最早的采样点对结果的影响，同时添加最新的采样点。</p>
+
+<p>不过，<code>avenrun</code> 使用的移动平均并不太朴素，指数移动平均的描述一般呈现为越早的采样数值对结果的影响越小，呈现指数式的曲线。</p>
+
+<p>$$avenrun<em>t = (1 - \beta) \times avenrun</em>{t-1} + \beta \times load_t$$</p>
+
+<p>至于此处的 $\beta$ ，内核分别使用了 $\frac{2^{11}}{e^{<sup>5</sup>&frasl;<sub>60</sub>}} \approx 1884$ 、$\frac{2^{11}}{e^{<sup>5</sup>&frasl;<sub>300</sub>}} \approx 2014$、$\frac{2^{11}}{e^{<sup>5</sup>&frasl;<sub>900</sub>}} \approx 2037$ 作为 1、5、15 分钟的比例系数。此处的 $2^{11}$ 是用整数计算代替浮点运算带来的倍数（低 11 位代表小数部分）。</p>
+
+<pre><code class="language-c">#define FSHIFT		11		/* nr of bits of precision */
+#define FIXED_1		(1&lt;&lt;FSHIFT)	/* 1.0 as fixed-point */
+#define LOAD_FREQ	(5*HZ+1)	/* 5 sec intervals */
+#define EXP_1		1884		/* 1/exp(5sec/1min) as fixed-point */
+#define EXP_5		2014		/* 1/exp(5sec/5min) */
+#define EXP_15		2037		/* 1/exp(5sec/15min) */
+</code></pre>
+
+<h2 id="end">End</h2>
+
+<p>回到最初的问题，几乎跑了 100% CPU 的任务，无法将系统平均负载打到 1.00 也就再正常不过了。虽然从名称上的描述为 1、5、15 分钟的系统平均负载，但事实上，若干分钟前的数据仍然对 1 分钟的平均负载有残留的影响，而这种影响差不多需要 4、5 分钟来消除。</p>
+
+<p><img src="http://www.brendangregg.com/blog/images/2017/loadavg.png" alt="load average" />
+<center><small>Copied From <a href="http://www.brendangregg.com">http://www.brendangregg.com</a></small></center></p>
+  </div>
+  
+  <div class="pagination">
+    <div class="pagination__title">
+      <span
+        class="pagination__title-h">Read other posts</span>
+      <hr />
+    </div>
+    <div class="pagination__buttons">
+      
+      
+      <span class="button next">
+        <a href="https://ffutop.github.io/posts/2019-08-23-traffic-control/">
+          <span class="button__text">Linux Traffic Control</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+      
+    </div>
+  </div>
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright copyright--user">
+        <span>2018-2019 © ffutop</span>
+        <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
+      </div>
+    
+  </div>
+</footer>
+
+<script src="https://ffutop.github.io/assets/main.js"></script>
+<script src="https://ffutop.github.io/assets/prism.js"></script>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

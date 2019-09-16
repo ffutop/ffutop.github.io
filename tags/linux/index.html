@@ -131,6 +131,56 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-09-16-load-average/">系统平均负载分析</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-09-15
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/load-average/">load average</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p><code>Load Average</code> 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。</p>
+
+<pre><code class="language-sh">ffutop $ time ./a
+./a  59.48s user 0.04s system 98% cpu 1:00.59 total
+ffutop $ uptime
+09:58:56 up 165 days, 20:14,  2 users,  load average: 0.63, 0.24, 0.09
+</code></pre>
+
+<p>是什么原因导致平均负载与预期值不符呢？</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-09-16-load-average/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-08-23-traffic-control/">Linux Traffic Control</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -564,45 +614,6 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
     <div>
       <a class="read-more button"
         href="/posts/2019-03-05-understand-kernel-9/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2019-01-15-understand-kernel-8/">理解 Linux Kernel (8) - 网络</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2019-01-15
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/network/">Network</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2019-01-15-understand-kernel-8/">Read more →</a>
     </div>
     
   </div>

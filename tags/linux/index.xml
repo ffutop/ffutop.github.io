@@ -7,10 +7,27 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2018-2019 © ffutop</copyright>
-    <lastBuildDate>Fri, 23 Aug 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 15 Sep 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://ffutop.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>系统平均负载分析</title>
+      <link>https://ffutop.github.io/posts/2019-09-16-load-average/</link>
+      <pubDate>Sun, 15 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://ffutop.github.io/posts/2019-09-16-load-average/</guid>
+      <description>&lt;p&gt;&lt;code&gt;Load Average&lt;/code&gt; 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;ffutop $ time ./a
+./a  59.48s user 0.04s system 98% cpu 1:00.59 total
+ffutop $ uptime
+09:58:56 up 165 days, 20:14,  2 users,  load average: 0.63, 0.24, 0.09
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;是什么原因导致平均负载与预期值不符呢？&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Linux Traffic Control</title>

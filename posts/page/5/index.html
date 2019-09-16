@@ -131,6 +131,91 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2018-06-25-asm-core/">ASM 核心包基本内容漫谈</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-06-25
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/java/">Java</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/asm/">ASM</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/visitor-pattern/">Visitor Pattern</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <blockquote>
+<p>本文描述的 ASM 指的是 OW2 ASM</p>
+</blockquote>
+
+<h2 id="asm-core-的结构">ASM-Core 的结构</h2>
+
+<p><em>首先是一些概述性的内容。</em></p>
+
+<p>由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。
+因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)</p>
+
+<p>从核心包声明的类来看，主要包括:</p>
+
+<ol>
+<li><p>ClassReader - 作为结构化对象，将接收(accept)访问者的访问</p></li>
+
+<li><p>几种访问者抽象类以及相应的实现类</p></li>
+
+<li><p>AnnotationVisitor -&gt; AnnotationWriter</p></li>
+
+<li><p>ClassVisitor -&gt; ClassWriter</p></li>
+
+<li><p>FieldVisitor -&gt; FieldWriter</p></li>
+
+<li><p>MethodVisitor -&gt; MethodWriter</p></li>
+
+<li><p>ModuleVisitor -&gt; ModuleWriter</p></li>
+
+<li><p>Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值</p></li>
+
+<li><p>其它一些辅助的类</p></li>
+
+<li><p>Attribute - 用于处理非标准化的属性(ClassFile 允许<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVMS</a> 中未定义的 Attribute)</p></li>
+
+<li><p>ByteArray - 动态可自适应的 byte[] (字节数组)</p></li>
+
+<li><p>Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象</p></li>
+
+<li><p>Symbol - 用于表示 ClassFile 中描述的 Constant 的基类</p></li>
+
+<li><p>SymbolTable - 用于存储常量池对象</p></li>
+
+<li><p>其它内容省略</p></li>
+</ol>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-06-25-asm-core/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2018-06-21-java-memory-model/">java-memory-model</a></h1>
     <div class="post-meta">
       <span class="post-date">
