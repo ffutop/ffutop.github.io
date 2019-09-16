@@ -51,7 +51,7 @@ ffutop $ time ./a ./a 59.48s user 0.04s system 98% cpu 1:00.59 total ffutop $ up
 <meta property="og:image:width" content="2048">
 <meta property="og:image:height" content="1024">
 
-<meta property="article:published_time" content="2019-09-15 00:00:00 &#43;0000 UTC" />
+<meta property="article:published_time" content="2019-09-16 00:00:00 &#43;0000 UTC" />
 
 
 
@@ -133,7 +133,7 @@ ffutop $ time ./a ./a 59.48s user 0.04s system 98% cpu 1:00.59 total ffutop $ up
   <div class="post-meta">
       
     <span class="post-date">
-      2019-09-15
+      2019-09-16
     </span>
     
     
@@ -232,19 +232,25 @@ void get_avenrun(unsigned long *loads, unsigned long offset, int shift)
 
 <p>先简单介绍一下朴素的移动平均。假设计算 60 秒的系统平均负载，每 5 秒取样一次，则最近 1 分钟的平均负载：</p>
 
-<p>$$avenrun[0]<em>{t} = \frac{load</em>{t} + load<em>{t+5} + load</em>{t+10} + \dots + load_{t+55}}{60 / 5}$$</p>
+<p>$$
+avenrun[0]_{t} = \frac{load_{t} + load_{t+5} + load_{t+10} + \dots + load_{t+55}}{60 / 5}
+$$</p>
 
 <p>对于下一个 5 秒的采样结果，使用下列计算公式：</p>
 
-<p>$$avenrun[0]<em>{t+5} = avenrun[0]</em>{t} - \frac{1}{60 / 5} \times load<em>{t} + \frac{1}{60 / 5} \times load</em>{t+60}$$</p>
+<p>$$
+avenrun[0]_{t+5} = avenrun[0]_{t} - \frac{1}{60 / 5} \times load_{t} + \frac{1}{60 / 5} \times load_{t+60}
+$$</p>
 
 <p>依次类推。移动平均即以类似活动窗口的模式运行，移除最早的采样点对结果的影响，同时添加最新的采样点。</p>
 
 <p>不过，<code>avenrun</code> 使用的移动平均并不太朴素，指数移动平均的描述一般呈现为越早的采样数值对结果的影响越小，呈现指数式的曲线。</p>
 
-<p>$$avenrun<em>t = (1 - \beta) \times avenrun</em>{t-1} + \beta \times load_t$$</p>
+<p>$$
+avenrun_t = (1 - \beta) \times avenrun_{t-1} + \beta \times load_t
+$$</p>
 
-<p>至于此处的 $\beta$ ，内核分别使用了 $\frac{2^{11}}{e^{<sup>5</sup>&frasl;<sub>60</sub>}} \approx 1884$ 、$\frac{2^{11}}{e^{<sup>5</sup>&frasl;<sub>300</sub>}} \approx 2014$、$\frac{2^{11}}{e^{<sup>5</sup>&frasl;<sub>900</sub>}} \approx 2037$ 作为 1、5、15 分钟的比例系数。此处的 $2^{11}$ 是用整数计算代替浮点运算带来的倍数（低 11 位代表小数部分）。</p>
+<p>至于此处的 $\beta$ ，内核分别使用了 $\frac{2^{11}}{e^{5 / 60}} \approx 1884$ 、$\frac{2^{11}}{e^{5 / 300}} \approx 2014$、$\frac{2^{11}}{e^{5 / 900}} \approx 2037$ 作为 1、5、15 分钟的比例系数。此处的 $2^{11}$ 是用整数计算代替浮点运算带来的倍数（低 11 位代表小数部分）。</p>
 
 <pre><code class="language-c">#define FSHIFT		11		/* nr of bits of precision */
 #define FIXED_1		(1&lt;&lt;FSHIFT)	/* 1.0 as fixed-point */
@@ -306,7 +312,11 @@ void get_avenrun(unsigned long *loads, unsigned long offset, int shift)
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
-  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+    processEscapes: true
+  }
 });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
