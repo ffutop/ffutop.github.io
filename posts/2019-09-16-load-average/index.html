@@ -276,6 +276,13 @@ $$</p>
     </div>
     <div class="pagination__buttons">
       
+      <span class="button previous">
+        <a href="https://ffutop.github.io/posts/2019-10-12-bpf/">
+          <span class="button__icon">←</span>
+          <span class="button__text">理解 Linux Kernel (14) - cBPF</span>
+        </a>
+      </span>
+      
       
       <span class="button next">
         <a href="https://ffutop.github.io/posts/2019-08-23-traffic-control/">
@@ -312,7 +319,11 @@ $$</p>
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
-  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+    processEscapes: true
+  }
 });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>

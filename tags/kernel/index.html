@@ -131,6 +131,54 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-10-12-bpf/">理解 Linux Kernel (14) - cBPF</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-10-12
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/bpf/">BPF</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/cbpf/">cBPF</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>BPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控/过滤网络数据包的任务，必然地会涉及到内核空间/用户空间的拷贝。而众所周知的，内核空间/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。</p>
+
+<p>BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。</p>
+
+<p>本篇只着眼于传统的 BPF 技术，探求 BPF 如何在内核埋入包过滤相关的钩子以实现其功能。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-10-12-bpf/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-09-16-load-average/">系统平均负载分析</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -572,52 +620,6 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
     
   </div>
   
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2019-03-05-understand-kernel-9/">理解 Linux Kernel (9) - IO Multiplexing</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2019-03-05
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/io-model/">IO Model</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <p><a href="./2019-01-15-understand-Kernel-8/">前一篇</a>已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 <code>struct sock</code> 对象，将其逐级从网络接口层逐级提升到网络层、传输层&hellip;最终添加到接收队列 <code>sk_receive_queue</code> 中；用户进程通过 <code>read</code>、<code>recv</code>、<code>recvfrom</code> 等命令检查并获取 <code>sk_receive_queue</code> 中的数据。</p>
-
-<p>整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。</p>
-
-<p>那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（<code>select</code>, <code>poll</code>, <code>epoll</code>）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 <code>select</code> 和 <code>epoll</code> 两类系统调用的实现进行探究。</p>
-
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2019-03-05-understand-kernel-9/">Read more →</a>
-    </div>
-    
-  </div>
-  
   <div class="pagination">
   <div class="pagination__buttons">
     
@@ -654,7 +656,11 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
-  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+    processEscapes: true
+  }
 });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>

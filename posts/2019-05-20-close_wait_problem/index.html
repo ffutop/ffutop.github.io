@@ -240,54 +240,51 @@ void tcp_fin(struct sock *sk)
 
 <p>可怕的是，之前竟然一直没有意识到信号值在不同的 CPU 架构下是不同的。USR1 在 x86 平台下是 10，在 平台下是 30 。而 BSD 又与 Linux 的编号方案不同。</p>
 
-<blockquote>
-<p>Linux  supports  the standard signals listed below.  Several signal numbers are architecture-dependent, as indicated in the &ldquo;Value&rdquo; column.  (Where three values are given, the first one is usually valid for alpha and sparc, the middle one for x86, arm, and most other architectures, and the last one for mips.  (Values for parisc are not shown; see the Linux kernel source for signal numbering on that architecture.)  A dash (-) denotes that a signal is absent on the corresponding architecture.
-Linux 支持的标准信号如下。一些信号值是平台相关的（Value 列，第一个值用于 alpha 和 sparc 平台，中间的值用于 x86、arm 和大量其他架构，最后一个值用于 mips 平台）</p>
+<p>Linux  supports  the standard signals listed below.  Several signal numbers are architecture-dependent, as indicated in the &ldquo;Value&rdquo; column.  (Where three values are given, the first one is usually valid for alpha and sparc, the middle one for x86, arm, and most other architectures, and the last one for mips.  (Values for parisc are not shown; see the Linux kernel source for signal numbering on that architecture.)  A dash (-) denotes that a signal is absent on the corresponding architecture.</p>
 
-<pre><code class="language-sh">&gt; Signal     Value     Action   Comment
-&gt; ----------------------------------------------------------------------
-&gt; SIGHUP        1       Term    Hangup detected on controlling terminal or death of controlling process
-&gt; SIGINT        2       Term    Interrupt from keyboard
-&gt; SIGQUIT       3       Core    Quit from keyboard
-&gt; SIGKILL       9       Term    Kill signal
-&gt; SIGUSR1   30,10,16    Term    User-defined signal 1
-&gt; SIGUSR2   31,12,17    Term    User-defined signal 2
-&gt; ```
+<p>Linux 支持的标准信号如下。一些信号值是平台相关的（Value 列，第一个值用于 alpha 和 sparc 平台，中间的值用于 x86、arm 和大量其他架构，最后一个值用于 mips 平台）</p>
 
-总结下，最靠谱的写法就是直接用信号的字符描述啦。`kill -s USR1 &lt;PID&gt;`
-
----
-
-### 打印线程调用栈
-
-19 日下午再次重现，等到 20 日周一上班，总是成功地拿到了线程的调用栈。
-
+<pre><code class="language-sh"> Signal     Value     Action   Comment
+ ----------------------------------------------------------------------
+ SIGHUP        1       Term    Hangup detected on controlling terminal or death of controlling process
+ SIGINT        2       Term    Interrupt from keyboard
+ SIGQUIT       3       Core    Quit from keyboard
+ SIGKILL       9       Term    Kill signal
+ SIGUSR1   30,10,16    Term    User-defined signal 1
+ SIGUSR2   31,12,17    Term    User-defined signal 2
 </code></pre>
 
-<p>&ldquo;CP Server Thread-10&rdquo; tid=139694658537216
+<p>总结下，最靠谱的写法就是直接用信号的字符描述啦。<code>kill -s USR1 &lt;PID&gt;</code></p>
+
+<hr />
+
+<h3 id="打印线程调用栈">打印线程调用栈</h3>
+
+<p>19 日下午再次重现，等到 20 日周一上班，总是成功地拿到了线程的调用栈。</p>
+
+<pre><code class="language-sh">&quot;CP Server Thread-10&quot; tid=139694658537216
     at self.__bootstrap_inner()(threading.py:785)
     at self.run()(threading.py:812)
     at conn.communicate()(wsgiserver2.py:1532)
-    &hellip; more omitted
-    at instances = list(db.select(&lsquo;instance&rsquo;, vars, where=&lsquo;app_name=$app_name and host=$host and port=$port&rsquo;))(xxx.py:233)
+    ... more omitted
+    at instances = list(db.select('instance', vars, where='app_name=$app_name and host=$host and port=$port'))(xxx.py:233)
     at return self.query(qout, processed=True)(db.py:720)
     at self._db_execute(db_cursor, sql_query)(db.py:680)
-    at print(&lsquo;%s (%s): %s&rsquo; % (round(b-a, 2), self.ctx.dbq_count, str(sql_query)), file=debug)(db.py:623)
-    at out.write(x)(webapi.py:512)</p>
-</blockquote>
+    at print('%s (%s): %s' % (round(b-a, 2), self.ctx.dbq_count, str(sql_query)), file=debug)(db.py:623)
+    at out.write(x)(webapi.py:512)
 
-<p>&ldquo;CP Server Thread-9&rdquo; tid=139694666929920
+&quot;CP Server Thread-9&quot; tid=139694666929920
     at self.__bootstrap_inner()(threading.py:785)
     at self.run()(threading.py:812)
     at conn.communicate()(wsgiserver2.py:1532)
-    &hellip; more omitted
-    at apps = list(db.select(&lsquo;application&rsquo;, vars, where=&lsquo;name=$name&rsquo;))(xxx.py:149)
+    ... more omitted 
+    at apps = list(db.select('application', vars, where='name=$name'))(xxx.py:149)
     at return self.query(qout, processed=True)(db.py:720)
     at self._db_execute(db_cursor, sql_query)(db.py:680)
-    at print(&lsquo;%s (%s): %s&rsquo; % (round(b-a, 2), self.ctx.dbq_count, str(sql_query)), file=debug)(db.py:623)
-    at out.write(x)(webapi.py:512)</p>
+    at print('%s (%s): %s' % (round(b-a, 2), self.ctx.dbq_count, str(sql_query)), file=debug)(db.py:623)
+    at out.write(x)(webapi.py:512)
 
-<p>&ldquo;MainThread&rdquo; tid=139695478638400
+&quot;MainThread&quot; tid=139695478638400
     at app.run()(xxx.py:326)
     at return wsgi.runwsgi(self.wsgifunc(*middleware))(application.py:341)
     at return httpserver.runsimple(func, server_addr)(wsgi.py:59)
@@ -296,59 +293,58 @@ Linux 支持的标准信号如下。一些信号值是平台相关的（Value �
     at s, addr = self.socket.accept()(wsgiserver2.py:2008)
     at sock, addr = self._sock.accept()(socket.py:202)
     at pystack()(pdbx.py:181)
-    at for filename, lineno, _, line in traceback.extract_stack(stack):(pdbx.py:169)</p>
+    at for filename, lineno, _, line in traceback.extract_stack(stack):(pdbx.py:169)
 
-<p>&hellip; omit CP Server Thread-1 / Thread-2 / Thread-6 / Thread-7 / Thread-8
-&hellip; same as other thread</p>
+... omit CP Server Thread-1 / Thread-2 / Thread-6 / Thread-7 / Thread-8
+... same as other thread
 
-<p>&ldquo;CP Server Thread-4&rdquo; tid=139695180908288
+&quot;CP Server Thread-4&quot; tid=139695180908288
     at self.__bootstrap_inner()(threading.py:785)
     at self.run()(threading.py:812)
     at conn.communicate()(wsgiserver2.py:1532)
-    &hellip; more omitted
-    at instances = list(db.select(&lsquo;instance&rsquo;, vars, where=&lsquo;app_name=$app_name and host=$host and port=$port&rsquo;))(xxx.py:233)
+    ... more omitted 
+    at instances = list(db.select('instance', vars, where='app_name=$app_name and host=$host and port=$port'))(xxx.py:233)
     at return self.query(qout, processed=True)(db.py:720)
     at self._db_execute(db_cursor, sql_query)(db.py:680)
-    at print(&lsquo;%s (%s): %s&rsquo; % (round(b-a, 2), self.ctx.dbq_count, str(sql_query)), file=debug)(db.py:623)
-    at out.write(x)(webapi.py:512)</p>
+    at print('%s (%s): %s' % (round(b-a, 2), self.ctx.dbq_count, str(sql_query)), file=debug)(db.py:623)
+    at out.write(x)(webapi.py:512)
 
-<p>&ldquo;APScheduler&rdquo; tid=139695219828480
-    at self.<strong>bootstrap_inner()(threading.py:785)
+&quot;APScheduler&quot; tid=139695219828480
+    at self.__bootstrap_inner()(threading.py:785)
     at self.run()(threading.py:812)
-    at self.</strong>target(*self.<strong>args, **self.</strong>kwargs)(threading.py:765)
+    at self.__target(*self.__args, **self.__kwargs)(threading.py:765)
     at self._event.wait(wait_seconds)(blocking.py:28)
     at self.__cond.wait(timeout, balancing)(threading.py:622)
-    at waiter.acquire()(threading.py:339)</p>
+    at waiter.acquire()(threading.py:339)
 
-<p>&ldquo;CP Server Thread-3&rdquo; tid=139695189300992
+&quot;CP Server Thread-3&quot; tid=139695189300992
     at self.__bootstrap_inner()(threading.py:785)
     at self.run()(threading.py:812)
     at conn.communicate()(wsgiserver2.py:1532)
-    &hellip; more omitted
-    at instances = list(db.select(&lsquo;instance&rsquo;, vars, where=&lsquo;app_name=$app_name and host=$host and port=$port&rsquo;))(xxx.py:233)
+    ... more omitted 
+    at instances = list(db.select('instance', vars, where='app_name=$app_name and host=$host and port=$port'))(xxx.py:233)
     at return self.query(qout, processed=True)(db.py:720)
     at self._db_execute(db_cursor, sql_query)(db.py:680)
-    at print(&lsquo;%s (%s): %s&rsquo; % (round(b-a, 2), self.ctx.dbq_count, str(sql_query)), file=debug)(db.py:623)
-    at out.write(x)(webapi.py:512)</p>
+    at print('%s (%s): %s' % (round(b-a, 2), self.ctx.dbq_count, str(sql_query)), file=debug)(db.py:623)
+    at out.write(x)(webapi.py:512)
 
-<p>&ldquo;CP Server Thread-5&rdquo; tid=139695172515584
+&quot;CP Server Thread-5&quot; tid=139695172515584
     at self.__bootstrap_inner()(threading.py:785)
     at self.run()(threading.py:812)
     at conn.communicate()(wsgiserver2.py:1532)
-    &hellip; more omitted
-    at instances = list(db.select(&lsquo;instance&rsquo;, vars, where=&lsquo;app_name=$app_name and host=$host and port=$port&rsquo;))(xxx.py:233)
+    ... more omitted 
+    at instances = list(db.select('instance', vars, where='app_name=$app_name and host=$host and port=$port'))(xxx.py:233)
     at return self.query(qout, processed=True)(db.py:720)
     at self._db_execute(db_cursor, sql_query)(db.py:680)
-    at print(&lsquo;%s (%s): %s&rsquo; % (round(b-a, 2), self.ctx.dbq_count, str(sql_query)), file=debug)(db.py:623)
-    at out.write(x)(webapi.py:512)</p>
+    at print('%s (%s): %s' % (round(b-a, 2), self.ctx.dbq_count, str(sql_query)), file=debug)(db.py:623)
+    at out.write(x)(webapi.py:512)
+</code></pre>
 
-<pre><code>
-OK，总计 10 个工作线程，全都阻塞在 `out.write(x)` ，多次打印调用栈结果相同。基本可以断定是 `write` 方法出了问题了。不过直到这个时候，都还是深陷在死锁原因中无法自拔（还是接触得太少了）。
+<p>OK，总计 10 个工作线程，全都阻塞在 <code>out.write(x)</code> ，多次打印调用栈结果相同。基本可以断定是 <code>write</code> 方法出了问题了。不过直到这个时候，都还是深陷在死锁原因中无法自拔（还是接触得太少了）。</p>
 
-虚度半个多钟... 后看代码了解到，其准备将 SQL 执行结果打印到标准错误。
+<p>虚度半个多钟&hellip; 后看代码了解到，其准备将 SQL 执行结果打印到标准错误。</p>
 
-```python
-def _debugwrite(x):
+<pre><code class="language-python">def _debugwrite(x):
     try:
         out = ctx.environ['wsgi.errors']
     except:
@@ -488,7 +484,11 @@ python    139756 139764   sysop    2w     FIFO                0,9       0t0    5
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
-  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+    processEscapes: true
+  }
 });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>

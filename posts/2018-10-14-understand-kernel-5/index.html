@@ -549,7 +549,11 @@ Maxsize=268966912           # 单一文件的最大大小
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
-  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+    processEscapes: true
+  }
 });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>

@@ -132,6 +132,40 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2018-06-28-asm-verifyerror/">ASM-VerifyError错误信息解决</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-06-28
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <h2 id="报错信息">报错信息</h2>
+
+<pre><code class="language-java">java.lang.VerifyError: class net.sf.cglib.core.DebuggingClassWriter overrides final method visit.(IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V
+</code></pre>
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-06-28-asm-verifyerror/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2018-06-25-asm-core/">ASM 核心包基本内容漫谈</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -439,7 +473,11 @@
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
-  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+    processEscapes: true
+  }
 });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>

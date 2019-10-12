@@ -131,6 +131,45 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-01-15-understand-kernel-8/">理解 Linux Kernel (8) - 网络</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-01-15
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/network/">Network</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-01-15-understand-kernel-8/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2018-12-28-understand-kernel-7/">理解 Linux Kernel (7) - 字符设备</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -598,71 +637,6 @@ Library      System       Volumes      cores        dev          home         pr
     
   </div>
   
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2018-09-08-preprocessor-output/">Preprocessor Output</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2018-09-08
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/c/">C</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/cpp/">CPP</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/gcc/">GCC</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <p>最近重新开始回顾 C 语言以及其编译后的文件格式 ELF。
-暂时告别一步到位的命令 <code>gcc main.c</code>，如果从 <code>.c</code> 文件的编译来说，主要分为预编译(preprocess)、编译(Compilation)、汇编(Assembly)、链接(Linking) 四个步骤。
-但是，仅仅从第一个流程 <strong>预编译</strong> 而言，就已经遇到了一些麻烦。</p>
-
-<p><small>program.i</small></p>
-
-<pre><code class="language-c"># 1 &quot;program.c&quot;
-# 1 &quot;&lt;built-in&gt;&quot;
-# 1 &quot;&lt;command-line&gt;&quot;
-# 1 &quot;/usr/include/stdc-predef.h&quot; 1 3 4
-# 1 &quot;&lt;command-line&gt;&quot; 2
-# 1 &quot;program.c&quot;
-# 1 &quot;header.h&quot; 1
-char *test(void);
-# 2 &quot;program.c&quot; 2
-
-int main(void)
-{
-}
-</code></pre>
-
-<p>预编译后的问题出现了诸如 <code># 1 &quot;program.c&quot;</code> 的 <em>注释?</em></p>
-
-<p>这里简单记录预处理输出文件的基本格式，方便今后回顾。</p>
-
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2018-09-08-preprocessor-output/">Read more →</a>
-    </div>
-    
-  </div>
-  
   <div class="pagination">
   <div class="pagination__buttons">
     
@@ -706,7 +680,11 @@ int main(void)
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
-  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+    processEscapes: true
+  }
 });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
