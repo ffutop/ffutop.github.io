@@ -3,6 +3,47 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://ffutop.github.io/tags/java/</loc>
+    <lastmod>2019-10-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/posts/</loc>
+    <lastmod>2019-10-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/tags/</loc>
+    <lastmod>2019-10-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/</loc>
+    <lastmod>2019-10-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/tags/random/</loc>
+    <lastmod>2019-10-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/tags/urandom/</loc>
+    <lastmod>2019-10-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/posts/2019-10-17-random/</loc>
+    <lastmod>2019-10-17T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://ffutop.github.io/tags/bpf/</loc>
     <lastmod>2019-10-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -16,24 +57,6 @@
   
   <url>
     <loc>https://ffutop.github.io/tags/linux/</loc>
-    <lastmod>2019-10-12T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://ffutop.github.io/posts/</loc>
-    <lastmod>2019-10-12T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://ffutop.github.io/tags/</loc>
-    <lastmod>2019-10-12T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://ffutop.github.io/</loc>
     <lastmod>2019-10-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
@@ -316,12 +339,6 @@
   
   <url>
     <loc>https://ffutop.github.io/tags/api/</loc>
-    <lastmod>2019-02-27T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://ffutop.github.io/tags/java/</loc>
     <lastmod>2019-02-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>

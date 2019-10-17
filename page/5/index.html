@@ -132,6 +132,93 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2018-07-04-jdk-permission/">Java 安全访问与权限控制</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2018-07-04
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/java/">Java</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/security/">Security</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/permission/">Permission</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <h2 id="绪论">绪论</h2>
+
+<p><em>本文只是对 Java 安全访问与权限控制的基础性探究。</em></p>
+
+<p><strong>本节与全文内容无关，如无兴趣阅读，可以跳过</strong></p>
+
+<p>了解 Java 安全访问相关内容的初衷，是准备在项目中利用 Java 标准库提供的 ServiceLoader 对 SPI 实现类进行&rdquo;自动发现&rdquo;和加载。
+这对于将本项目作为二方库来依赖的上层项目将更为方便，只需要
+1. 在 <code>META-INF.services</code> 目录下配置被命名为 SPI 接口全限定名的文件及添加相关内容
+2. 由项目的注册管理器触发下列 Java 代码</p>
+
+<pre><code class="language-java">{
+    ServiceLoader&lt;XxxPolicy&gt; xxxPolicyServiceLoader = ServiceLoader.load(XxxPolicy.class);
+    for (Iterator&lt;XxxPolicy&gt; it = xxxPolicyServiceLoader.iterator(); it.hasNext(); ) {
+        XxxPolicy xxxPolicy = it.next();
+        // ... more code ...
+    }
+}
+</code></pre>
+
+<p>就可以完成一个新的 SPI 策略的注册工作。</p>
+
+<p>但是，在尝试实现，了解了 ServiceLoader 源码，以及 DriverManager 和 mysql-connection-java-<version>.jar 在注册 Driver 相关的代码。
+发现怎么也绕不开 Java 安全访问相关的内容。诸如下列这段来自 DriverManager.loadInitialDrivers() 的代码:</p>
+
+<pre><code class="language-java">AccessController.doPrivileged(new PrivilegedAction&lt;Void&gt;() {
+    public Void run() {
+
+        ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);
+        Iterator&lt;Driver&gt; driversIterator = loadedDrivers.iterator();
+
+        try{
+            while(driversIterator.hasNext()) {
+            driversIterator.next();
+            }
+        } catch(Throwable t) {
+                // Do nothing
+        }
+        return null;
+    }
+});
+</code></pre>
+
+<p>诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。</p>
+
+<p>为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2018-07-04-jdk-permission/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2018-06-28-asm-verifyerror/">ASM-VerifyError错误信息解决</a></h1>
     <div class="post-meta">
       <span class="post-date">

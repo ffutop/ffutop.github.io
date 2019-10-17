@@ -7,10 +7,26 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2018-2019 © ffutop</copyright>
-    <lastBuildDate>Sat, 12 Oct 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 17 Oct 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://ffutop.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>随机数生成器拖慢 Tomcat 启动速度</title>
+      <link>https://ffutop.github.io/posts/2019-10-17-random/</link>
+      <pubDate>Thu, 17 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://ffutop.github.io/posts/2019-10-17-random/</guid>
+      <description>&lt;p&gt;最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-plain&#34;&gt;16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
+...
+16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;创建 &lt;code&gt;SecureRandom&lt;/code&gt; 竟然花了 6 分多钟，占了整个启动时间的 94% 。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>理解 Linux Kernel (14) - cBPF</title>

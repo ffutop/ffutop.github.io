@@ -132,6 +132,55 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-10-17-random/">随机数生成器拖慢 Tomcat 启动速度</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-10-17
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/java/">Java</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/random/">random</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/urandom/">urandom</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。</p>
+
+<pre><code class="language-plain">16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
+...
+16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
+</code></pre>
+
+<p>创建 <code>SecureRandom</code> 竟然花了 6 分多钟，占了整个启动时间的 94% 。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-10-17-random/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-10-12-bpf/">理解 Linux Kernel (14) - cBPF</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -569,50 +618,6 @@ JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
     <div>
       <a class="read-more button"
         href="/posts/2019-06-02-ftrace/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2019-05-27-understand-kernel-11/">理解 Linux Kernel (11) - 进程间通信</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2019-05-27
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/ipc/">IPC</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <p>进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。</p>
-
-<p><em>本篇基于 Linux 4.9.87 版本源码</em></p>
-
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2019-05-27-understand-kernel-11/">Read more →</a>
     </div>
     
   </div>

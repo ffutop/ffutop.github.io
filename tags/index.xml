@@ -7,10 +7,37 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2018-2019 © ffutop</copyright>
-    <lastBuildDate>Sat, 12 Oct 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 17 Oct 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://ffutop.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Java</title>
+      <link>https://ffutop.github.io/tags/java/</link>
+      <pubDate>Thu, 17 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://ffutop.github.io/tags/java/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>random</title>
+      <link>https://ffutop.github.io/tags/random/</link>
+      <pubDate>Thu, 17 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://ffutop.github.io/tags/random/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>urandom</title>
+      <link>https://ffutop.github.io/tags/urandom/</link>
+      <pubDate>Thu, 17 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://ffutop.github.io/tags/urandom/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>BPF</title>
@@ -324,15 +351,6 @@
       <pubDate>Wed, 27 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>https://ffutop.github.io/tags/api/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Java</title>
-      <link>https://ffutop.github.io/tags/java/</link>
-      <pubDate>Wed, 27 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://ffutop.github.io/tags/java/</guid>
       <description></description>
     </item>
     
