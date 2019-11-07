@@ -132,6 +132,63 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-11-07-groovyclassloader-fullgc/">GroovyClassLoader 引发的 FullGC</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-11-06
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/groovy/">Groovy</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/java/">Java</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/fullgc/">FullGC</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/gc/">GC</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/metaspace/">Metaspace</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <h2 id="背景">背景</h2>
+
+<p>近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，<strong>stop the world</strong> :&lt; 从 <code>gc.log</code> 中，看到的原因是触及了 <code>Metaspace</code> 的阈值，进而引发了 FGC。</p>
+
+<pre><code class="language-plain">2019-11-05T14:31:38.880+0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880+0800: 504600.716: [CMS2019-11-05T14:31:39.364+0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs]
+ (concurrent mode failure): 266828K-&gt;266865K(873856K), 1.3752377 secs] 267430K-&gt;266865K(1267072K), [Metaspace: 204152K-&gt;204152K(1267712K)], 1.3757441 secs] [Times: user=1.36 sys=0.00, real=1.38 secs]
+2019-11-05T14:31:40.256+0800: 504602.092: [Full GC (Last ditch collection) 2019-11-05T14:31:40.256+0800: 504602.092: [CMS: 266865K-&gt;266841K(873856K), 0.8590901 secs] 266865K-&gt;266841K(1267072K), [Metaspace: 204152K-&gt;204152K(1267712K)], 0.8595047 secs] [Times: user=0.86 sys=0.00, real=0.86 secs]
+2019-11-05T14:31:41.117+0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117+0800: 504602.953: [CMS: 266841K-&gt;266816K(873856K), 0.9109948 secs] 267218K-&gt;266816K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]
+2019-11-05T14:31:42.028+0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028+0800: 504603.865: [CMS: 266816K-&gt;266769K(873856K), 1.0351283 secs] 266816K-&gt;266769K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]
+</code></pre>
+
+<p>FGC 前后，<code>Metaspace</code> 占用的内存没有得到任何释放。<em>[Metaspace: 204153K-&gt;204153K(1267712K)]</em> 。这也就是反复 FGC 的原因。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-11-07-groovyclassloader-fullgc/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-10-17-random/">随机数生成器拖慢 Tomcat 启动速度</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -566,58 +623,6 @@ JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
     <div>
       <a class="read-more button"
         href="/posts/2019-06-18-understand-kernel-12/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2019-06-02-ftrace/">跟踪内核函数的工具—— Ftrace</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2019-06-02
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/ftrace/">ftrace</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <p>前两天仿照 <code>strings</code> 工具写了个打印进程运行时堆栈可打印字符的工具 <a href="https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c">ffstrings</a> 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&lt;</p>
-
-<p>在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— <code>ftrace</code> 。</p>
-
-<blockquote>
-<p>Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。</p>
-
-<p>虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。</p>
-</blockquote>
-
-<p>当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 <code>ffstrings</code> 出现 <code>EPERM</code> 的原因。</p>
-
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2019-06-02-ftrace/">Read more →</a>
     </div>
     
   </div>

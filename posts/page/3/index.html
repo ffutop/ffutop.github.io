@@ -131,6 +131,50 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-02-27-java-fatal-api/">【Java】API 参数误定义的后果</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-02-27
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/java/">Java</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/api/">API</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。</p>
+
+<p>想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！</p>
+
+<p>想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把<code>void add(int)</code> API 改写成 <code>int add(int)</code>，可能得到的大多数回答都是可以。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-02-27-java-fatal-api/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-02-02-unicode/">字符集与字符编码</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -590,48 +634,6 @@ Library      System       Volumes      cores        dev          home         pr
     <div>
       <a class="read-more button"
         href="/posts/2018-10-06-understand-kernel-3/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2018-09-27-mail/">Understand MAIL</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2018-09-27
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/mail/">mail</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/smtp/">SMTP</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/tcp/">TCP</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      在网络协议上，高层协议确实比底层协议更容易理解，也更加的人性化。
-传输层的 TCP, UDP 都还停留在各种字节内容的整合和校验上，而更上层的应用层协议就已经能够直观到通过直接解读就能理解其每条消息的含义了。
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2018-09-27-mail/">Read more →</a>
     </div>
     
   </div>
