@@ -132,6 +132,49 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-12-14-https/">HTTPS 安全通讯如何上演？</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-12-14
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/ssl/">SSL</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/tls/">TLS</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/https/">HTTPS</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/protocol/">Protocol</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      最初的 HTTP 以明文传输方式运行在 Internet 上。随着越来越多安全敏感型应用的出现，HTTP over TCP 无法提供足够的安全性保障。SSL 及其继任者 TLS 在这样的背景下产生，提供面向信道的安全性。本文着力于展现 HTTP over TLS (即 HTTPS)的工作方式，以及与此密切相关的数字证书、对称/非对称加密等，但不涉及密码学相关实现及 SSL/TLS 的安全性证明。
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-12-14-https/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-11-07-groovyclassloader-fullgc/">GroovyClassLoader 引发的 FullGC</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -571,58 +614,6 @@ JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
     <div>
       <a class="read-more button"
         href="/posts/2019-07-06-jni_problem/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2019-06-18-understand-kernel-12/">理解 Linux Kernel (12) - Linux 容器化技术</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2019-06-18
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/lxc/">LXC</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <p>由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。</p>
-
-<p><img src="http://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png" alt="Containerd VS VM" /></p>
-
-<p><small><center>Copied From docker.com</center></small></p>
-
-<p>如何实现容器化，显然需要从操作系统层面进行支撑。这其中涉及到的核心技术，就包括命名空间(namespace)和控制组(Control Group, cgroup)，前者用来对资源进行隔离，后者用来对资源加以限制。</p>
-
-<blockquote>
-<p>本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04</p>
-</blockquote>
-
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2019-06-18-understand-kernel-12/">Read more →</a>
     </div>
     
   </div>

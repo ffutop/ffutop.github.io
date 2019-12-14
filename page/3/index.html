@@ -132,6 +132,52 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-03-05-understand-kernel-9/">理解 Linux Kernel (9) - IO Multiplexing</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-03-05
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/io-model/">IO Model</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p><a href="./2019-01-15-understand-Kernel-8/">前一篇</a>已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 <code>struct sock</code> 对象，将其逐级从网络接口层逐级提升到网络层、传输层&hellip;最终添加到接收队列 <code>sk_receive_queue</code> 中；用户进程通过 <code>read</code>、<code>recv</code>、<code>recvfrom</code> 等命令检查并获取 <code>sk_receive_queue</code> 中的数据。</p>
+
+<p>整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。</p>
+
+<p>那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（<code>select</code>, <code>poll</code>, <code>epoll</code>）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 <code>select</code> 和 <code>epoll</code> 两类系统调用的实现进行探究。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-03-05-understand-kernel-9/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-02-27-java-fatal-api/">【Java】API 参数误定义的后果</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -589,52 +635,6 @@ Library      System       Volumes      cores        dev          home         pr
     <div>
       <a class="read-more button"
         href="/posts/2018-10-12-understand-kernel-4/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2018-10-06-understand-kernel-3/">理解 Linux Kernel (3) - 操作系统启动</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2018-10-06
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/os/">OS</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <p>这次拖得有够久的，毕竟需要将知识串联起来并不是一件容易的事情。更何况很多内容可以说和常理(个人理解的常理)有了比较大的偏差。</p>
-
-<p>不过确实比较有意思。从引导程序到操作系统启动，这中间究竟经历了多少流程呢？</p>
-
-<p>由于前几篇已经有过介绍，这里不会再对引导程序及汇编语法做过多的介绍。而着重描述整个操作系统的启动流程。</p>
-
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2018-10-06-understand-kernel-3/">Read more →</a>
     </div>
     
   </div>
