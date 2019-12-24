@@ -132,6 +132,52 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-03-19-janus/">认证与授权·简述</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-03-19
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/authenticate/">Authenticate</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/authorize/">Authorize</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <h2 id="概述">概述</h2>
+
+<blockquote>
+<p>在大多数系统中，都或多或少需要认证授权模型/系统的支持。</p>
+</blockquote>
+
+<p>认证/授权是什么？最简单的，我们的系统要求用户必须在“登录”之后才允许进行一些操作。“登录”的过程就是认证；而区别与未登录状态，只允许登录用户进行一些操作，这就是授权。认证与授权相互独立，有协同配合，共同支撑起系统对安全的基本要求。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-03-19-janus/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-03-05-understand-kernel-9/">理解 Linux Kernel (9) - IO Multiplexing</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -589,52 +635,6 @@ Library      System       Volumes      cores        dev          home         pr
     <div>
       <a class="read-more button"
         href="/posts/2018-10-14-understand-kernel-5/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2018-10-12-understand-kernel-4/">理解 Linux Kernel (4) - 任务调度</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2018-10-12
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/time-interrupt/">time interrupt</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <p>前面几节已经描述过，对于单核 CPU 来说。CPU 就处于不断地执行指令的过程(或者通过 <code>hlt</code> 指令直接停止工作)。</p>
-
-<p>针对于每一个程序来说，这个程序执行流程是通过 CPU 中几组寄存器(通用寄存器、段寄存器、控制寄存器等) 和存储在内存中的代码和数据协作完成的。</p>
-
-<p>如果要达到单核多任务的目的，首先要做的就是完成对几组寄存器中当前值的保存(我称之为保存现场)。而对于内存来说，多个任务的代码、数据同时存在内存是完全合理且可行的。毕竟相较于有限的寄存器，内存实在是太大了(相对而言)。</p>
-
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2018-10-12-understand-kernel-4/">Read more →</a>
     </div>
     
   </div>

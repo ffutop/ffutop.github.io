@@ -132,6 +132,63 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-07-06-jni_problem/">JNI 引发的堆外内存泄露</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-07-06
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/jni/">JNI</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/memory-leak/">memory leak</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <p>本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。</p>
+
+<p>为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。</p>
+
+<p>问题代码类似于下列代码：</p>
+
+<pre><code class="language-c">#include &quot;Main.h&quot;
+
+JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
+{
+    const char *str = (*env)-&gt;GetStringUTFChars(env, jstr, 0);
+    int len = (*env)-&gt;GetStringUTFLength(env, jstr);
+
+    // ... some code omitted 
+
+    return ;
+}
+</code></pre>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-07-06-jni_problem/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-06-18-understand-kernel-12/">理解 Linux Kernel (12) - Linux 容器化技术</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -594,52 +651,6 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
     <div>
       <a class="read-more button"
         href="/posts/2019-03-25-mem-dump/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2019-03-19-janus/">认证与授权·简述</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2019-03-19
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/authenticate/">Authenticate</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/authorize/">Authorize</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <h2 id="概述">概述</h2>
-
-<blockquote>
-<p>在大多数系统中，都或多或少需要认证授权模型/系统的支持。</p>
-</blockquote>
-
-<p>认证/授权是什么？最简单的，我们的系统要求用户必须在“登录”之后才允许进行一些操作。“登录”的过程就是认证；而区别与未登录状态，只允许登录用户进行一些操作，这就是授权。认证与授权相互独立，有协同配合，共同支撑起系统对安全的基本要求。</p>
-
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2019-03-19-janus/">Read more →</a>
     </div>
     
   </div>

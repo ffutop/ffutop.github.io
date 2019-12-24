@@ -131,6 +131,45 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-12-24-how-calico-works/">Calico 网络通信解析</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-12-24
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/kubernetes/">Kubernetes</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/calico/">Calico</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      在 Kubernetes 集群中，Calico 区别于 Flannel 的最显著特征，就是其宣称可以不借助隧道技术，是建立在纯三层协议上的解决方案。也就是说，Calico 通过建立一些路由信息，就构建了单节点/多节点网络命名空间隔离下的通信网络。
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-12-24-how-calico-works/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-12-14-https/">HTTPS 安全通讯如何上演？</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -556,63 +595,6 @@ ffutop $ uptime
     <div>
       <a class="read-more button"
         href="/posts/2019-07-17-understand-kernel-13/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2019-07-06-jni_problem/">JNI 引发的堆外内存泄露</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2019-07-06
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/jni/">JNI</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/memory-leak/">memory leak</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <p>本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。</p>
-
-<p>为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。</p>
-
-<p>问题代码类似于下列代码：</p>
-
-<pre><code class="language-c">#include &quot;Main.h&quot;
-
-JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
-{
-    const char *str = (*env)-&gt;GetStringUTFChars(env, jstr, 0);
-    int len = (*env)-&gt;GetStringUTFLength(env, jstr);
-
-    // ... some code omitted 
-
-    return ;
-}
-</code></pre>
-
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2019-07-06-jni_problem/">Read more →</a>
     </div>
     
   </div>
