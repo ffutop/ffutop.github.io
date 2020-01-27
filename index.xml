@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>2018-2019 © ffutop</copyright>
-    <lastBuildDate>Tue, 24 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 27 Jan 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://ffutop.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Goroutine 与调度</title>
+      <link>https://ffutop.github.io/posts/2020-01-27-go-routine/</link>
+      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ffutop.github.io/posts/2020-01-27-go-routine/</guid>
+      <description>&lt;p&gt;虽然我们在日常沟通中把 Goroutine 和线程、协程之类的执行流概念混杂着沟通，但 Go 语言一直坚持 &amp;ldquo;Goroutine&amp;rdquo;。 宣称这一名词的产生是由于线程、协程、进程等无法准确表达其概念。本篇将就这一声明进行探究，Goroutine 与线程、协程究竟有何不同。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Calico 网络通信解析</title>
