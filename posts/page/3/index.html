@@ -131,6 +131,47 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-04-10-understand-kernel-10/">理解 Linux Kernel(10) - Context of Execution</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-04-10
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/coe/">COE</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      在进行<a href="https://www.ffutop.com/2018-10-12-understand-Kernel-4/">第四篇(任务调度)</a>行文描述时，就一直闹不清内核所谓的<code>task</code>的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：<strong>我们错误地将理论和实践不加区分地混淆了</strong>。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，<code>task</code> 也就是 <code>Context of Execution</code> 概念在实现上的表征。
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-04-10-understand-kernel-10/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-03-25-mem-dump/">如何获取运行时进程堆栈</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -557,101 +598,6 @@ System.out.println(val.matches(regex));
     <div>
       <a class="read-more button"
         href="/posts/2018-11-16-regex-exponential-explosion/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2018-11-11-understand-kernel-6/">理解 Linux Kernel (6) - read &amp; write</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2018-11-11
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/file-system/">File System</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/read-write/">read &amp; write</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <p><a href="https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/">前一篇</a>已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。</p>
-
-<p>首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式</p>
-
-<pre><code class="language-c">#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;string.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;fcntl.h&gt;
-#include &lt;errno.h&gt;
-#include &lt;sys/types.h&gt;
-#include &lt;sys/stat.h&gt;
-
-int panic()
-{
-    fprintf(stderr, &quot;%s (errno=%d)\n&quot;, strerror(errno), errno);
-    return -1;
-}
-
-int main(int argc, char *argv[])
-{
-    /* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */
-    int fd = open(&quot;/root/frw.txt&quot;, O_RDWR | O_CREAT);
-    if (fd == -1)
-        return panic();
-
-    /* 向文件写入 Hello World! 共计 12 个字符 */
-    ssize_t wsize = write(fd, &quot;Hello World!&quot;, 12);
-    if (wsize == -1)
-        return panic();
-
-    /* 重定位文件读写指针 */
-    off_t off = lseek(fd, 0, SEEK_SET);
-    if (off == -1)
-        return panic();
-
-    char* buf = (char *) malloc(wsize);
-    /* 读取文件内容 */
-    ssize_t rsize = read(fd, buf, wsize);
-    if (rsize == -1)
-        return panic();
-
-    printf(&quot;%s\n&quot;, buf);
-    free(buf);
-    /* 关闭文件 */
-    int stat = close(fd);
-    if (stat == -1)
-        return panic();
-
-    return 0;
-}
-</code></pre>
-
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2018-11-11-understand-kernel-6/">Read more →</a>
     </div>
     
   </div>

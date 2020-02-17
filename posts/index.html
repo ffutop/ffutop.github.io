@@ -131,6 +131,68 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2020-02-17-raft/">分布式共识·Raft Algorithm</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2020-02-17
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/raft/">Raft</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/consensus/">Consensus</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/distributed/">Distributed</a>&nbsp;
+      
+    </span>
+    
+
+    
+
+    <div class="post-content">
+      
+      
+      <h2 id="分布式系统与共识">分布式系统与共识</h2>
+
+<p>分布式系统是一组透过网络相互连接通信与传递信息的计算机，协同来完成一件任务的系统。任务可能是大规模计算，可能是冗余存储。按此分类，又有分布式计算系统和分布式存储系统。</p>
+
+<p>典型的分布式计算系统/框架有 MapReduce、Spark；分布式存储系统有 GFS 等。虽然有此划分，但分布式计算几乎必然地涉及到存储的需求。存储为计算提供支持，计算促进存储的发展。</p>
+
+<p><img src="https://cdn.nlark.com/yuque/0/2020/png/926494/1581829533281-13d2120d-02ea-40c3-ae13-e0919125f58a.png#align=left&amp;display=inline&amp;height=340&amp;name=%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%88%86%E7%B1%BB&amp;originHeight=340&amp;originWidth=984&amp;size=0&amp;status=done&amp;style=none&amp;width=984" alt="分布式系统分类" /></p>
+
+<p>计算是无状态的，存储是有状态的。在分布式的存储下，为了让计算机各自维护的状态协商达成一致，就必然地需要共识算法的支持。Wait a minute. 计算机间的协商需要共识算法？</p>
+
+<p>计算机间的协作可以划分为中心化与去中心化两大类。中心化的方案自然是有一个权威的 Master 来协调所有的计算机的任务，但前提是这个 Master 必须可靠，即依赖一个单点就必须要对它的可用性进行担保；去中心化的方案，计算机间都是平等的，如何就一个问题达成共识，就是面对的核心问题。</p>
+
+<blockquote>
+<h3 id="共识与一致性">共识与一致性</h3>
+
+<p>共识(Consensus)：机器之间就一个值/命令等达成共同的认识，一般是面向输入，处理并维护这个值（状态）</p>
+
+<p>一致性(Consistency)：一致性表述为机器对外提供服务时的表现。向机器 A 或机器 B 读取同一数据，两者的返回值是相同的。当然，也有不同的弱化版本，允许一些特定条件下的不一致</p>
+</blockquote>
+
+<p>在 2014 年之前，Paxos [1] 几乎是解决共识问题的唯一选择。但难懂是一个致命的问题，并且难以工程化也是重大的缺陷。Raft 的出现无疑是一道曙光，熟读，实践，豁然开朗。</p>
+
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2020-02-17-raft/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2020-01-27-go-routine/">Goroutine 与调度</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -541,53 +603,6 @@ ffutop $ uptime
     <div>
       <a class="read-more button"
         href="/posts/2019-08-20-too-many-links/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2019-08-06-netfilter/">Netfilter 导览 - based on iptables</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2019-08-06
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/netfilter/">netfilter</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/iptables/">iptables</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/nat/">nat</a>&nbsp;
-      
-    </span>
-    
-
-    
-    <img src="http://img.ffutop.com/C3EC0615-1B86-4452-8B68-7D78B63967F1.png" class="post-cover" />
-    
-
-    <div class="post-content">
-      
-      
-      <code>Netfilter</code>，内核中用于管理网络数据包的重要网络模块；<code>iptables</code>，运行在用户空间，用于控制 <code>Netfilter</code> 模块的一种软件。需要注意的，<code>iptables</code> 只能控制 IPv4 数据包，对于 IPv6 数据包，需要使用 <code>ip6tables</code> 。
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2019-08-06-netfilter/">Read more →</a>
     </div>
     
   </div>

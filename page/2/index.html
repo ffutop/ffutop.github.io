@@ -132,6 +132,53 @@
   
   <div class="post on-list">
     <h1 class="post-title">
+      <a href="https://ffutop.github.io/posts/2019-08-06-netfilter/">Netfilter 导览 - based on iptables</a></h1>
+    <div class="post-meta">
+      <span class="post-date">
+        2019-08-06
+      </span>
+      <span class="post-author">::
+        fangfeng</span>
+    </div>
+
+    
+    <span class="post-tags">
+      
+      #<a href="https://ffutop.github.io/tags/netfilter/">netfilter</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/iptables/">iptables</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/nat/">nat</a>&nbsp;
+      
+    </span>
+    
+
+    
+    <img src="http://img.ffutop.com/C3EC0615-1B86-4452-8B68-7D78B63967F1.png" class="post-cover" />
+    
+
+    <div class="post-content">
+      
+      
+      <code>Netfilter</code>，内核中用于管理网络数据包的重要网络模块；<code>iptables</code>，运行在用户空间，用于控制 <code>Netfilter</code> 模块的一种软件。需要注意的，<code>iptables</code> 只能控制 IPv4 数据包，对于 IPv6 数据包，需要使用 <code>ip6tables</code> 。
+      
+      
+    </div>
+
+    
+    <div>
+      <a class="read-more button"
+        href="/posts/2019-08-06-netfilter/">Read more →</a>
+    </div>
+    
+  </div>
+  
+  <div class="post on-list">
+    <h1 class="post-title">
       <a href="https://ffutop.github.io/posts/2019-07-17-understand-kernel-13/">理解 Linux Kernel (13) - 虚拟内存</a></h1>
     <div class="post-meta">
       <span class="post-date">
@@ -589,47 +636,6 @@ Assert.assertTrue(timeout.getTime() &lt; System.currentTimeMillis());
     <div>
       <a class="read-more button"
         href="/posts/2019-04-25-lex-and-yacc/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2019-04-10-understand-kernel-10/">理解 Linux Kernel(10) - Context of Execution</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2019-04-10
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/coe/">COE</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      在进行<a href="https://www.ffutop.com/2018-10-12-understand-Kernel-4/">第四篇(任务调度)</a>行文描述时，就一直闹不清内核所谓的<code>task</code>的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：<strong>我们错误地将理论和实践不加区分地混淆了</strong>。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，<code>task</code> 也就是 <code>Context of Execution</code> 概念在实现上的表征。
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2019-04-10-understand-kernel-10/">Read more →</a>
     </div>
     
   </div>

@@ -2,14 +2,14 @@
 <html lang="zh-cn">
 <head>
   
-    <title>Posts :: Utop&#39;s Blog</title>
+    <title>Consensus :: Utop&#39;s Blog</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="description" content=""/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
-<link rel="canonical" href="https://ffutop.github.io/posts/" />
+<link rel="canonical" href="https://ffutop.github.io/tags/consensus/" />
 
 
 <link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
@@ -28,7 +28,7 @@
 
 
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Posts :: Utop&#39;s Blog — " />
+<meta name="twitter:title" content="Consensus :: Utop&#39;s Blog — " />
 <meta name="twitter:description" content="" />
 <meta name="twitter:site" content="https://ffutop.github.io/" />
 <meta name="twitter:creator" content="" />
@@ -37,10 +37,10 @@
 
 <meta property="og:locale" content="zh-cn" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Posts :: Utop&#39;s Blog — ">
+<meta property="og:title" content="Consensus :: Utop&#39;s Blog — ">
 <meta property="og:description" content="" />
-<meta property="og:url" content="https://ffutop.github.io/posts/" />
-<meta property="og:site_name" content="Posts" />
+<meta property="og:url" content="https://ffutop.github.io/tags/consensus/" />
+<meta property="og:site_name" content="Consensus" />
 <meta property="og:image" content="">
 <meta property="og:image:width" content="2048">
 <meta property="og:image:height" content="1024">
@@ -49,7 +49,7 @@
 
 
 
-  <link href="/posts/index.xml" rel="alternate" type="application/rss+xml" title="Utop&#39;s Blog" />
+  <link href="/tags/consensus/index.xml" rel="alternate" type="application/rss+xml" title="Utop&#39;s Blog" />
 
 
 
@@ -131,10 +131,10 @@
   
   <div class="post on-list">
     <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2018-03-01-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/">区块链技术概述</a></h1>
+      <a href="https://ffutop.github.io/posts/2020-02-17-raft/">分布式共识·Raft Algorithm</a></h1>
     <div class="post-meta">
       <span class="post-date">
-        2018-03-01
+        2020-02-17
       </span>
       <span class="post-author">::
         fangfeng</span>
@@ -143,9 +143,11 @@
     
     <span class="post-tags">
       
-      #<a href="https://ffutop.github.io/tags/blockchain/">BlockChain</a>&nbsp;
+      #<a href="https://ffutop.github.io/tags/raft/">Raft</a>&nbsp;
       
-      #<a href="https://ffutop.github.io/tags/smart-contract/">Smart Contract</a>&nbsp;
+      #<a href="https://ffutop.github.io/tags/consensus/">Consensus</a>&nbsp;
+      
+      #<a href="https://ffutop.github.io/tags/distributed/">Distributed</a>&nbsp;
       
     </span>
     
@@ -155,12 +157,27 @@
     <div class="post-content">
       
       
-      <p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fs8oc4ri7qj30mq055aap.jpg" alt="区块链简单结构" />
-<center><small>图1. 区块链简单结构</small></center></p>
+      <h2 id="分布式系统与共识">分布式系统与共识</h2>
 
-<p><img src="https://ws1.sinaimg.cn/large/006tNc79gy1foxcpmmpfhj31kw107n2e.jpg" alt="Merkle tree" /></p>
+<p>分布式系统是一组透过网络相互连接通信与传递信息的计算机，协同来完成一件任务的系统。任务可能是大规模计算，可能是冗余存储。按此分类，又有分布式计算系统和分布式存储系统。</p>
 
-<p><center><small>图2. 单个区块的抽象结构</small></center></p>
+<p>典型的分布式计算系统/框架有 MapReduce、Spark；分布式存储系统有 GFS 等。虽然有此划分，但分布式计算几乎必然地涉及到存储的需求。存储为计算提供支持，计算促进存储的发展。</p>
+
+<p><img src="https://cdn.nlark.com/yuque/0/2020/png/926494/1581829533281-13d2120d-02ea-40c3-ae13-e0919125f58a.png#align=left&amp;display=inline&amp;height=340&amp;name=%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%88%86%E7%B1%BB&amp;originHeight=340&amp;originWidth=984&amp;size=0&amp;status=done&amp;style=none&amp;width=984" alt="分布式系统分类" /></p>
+
+<p>计算是无状态的，存储是有状态的。在分布式的存储下，为了让计算机各自维护的状态协商达成一致，就必然地需要共识算法的支持。Wait a minute. 计算机间的协商需要共识算法？</p>
+
+<p>计算机间的协作可以划分为中心化与去中心化两大类。中心化的方案自然是有一个权威的 Master 来协调所有的计算机的任务，但前提是这个 Master 必须可靠，即依赖一个单点就必须要对它的可用性进行担保；去中心化的方案，计算机间都是平等的，如何就一个问题达成共识，就是面对的核心问题。</p>
+
+<blockquote>
+<h3 id="共识与一致性">共识与一致性</h3>
+
+<p>共识(Consensus)：机器之间就一个值/命令等达成共同的认识，一般是面向输入，处理并维护这个值（状态）</p>
+
+<p>一致性(Consistency)：一致性表述为机器对外提供服务时的表现。向机器 A 或机器 B 读取同一数据，两者的返回值是相同的。当然，也有不同的弱化版本，允许一些特定条件下的不一致</p>
+</blockquote>
+
+<p>在 2014 年之前，Paxos [1] 几乎是解决共识问题的唯一选择。但难懂是一个致命的问题，并且难以工程化也是重大的缺陷。Raft 的出现无疑是一道曙光，熟读，实践，豁然开朗。</p>
 
       
       
@@ -169,61 +186,13 @@
     
     <div>
       <a class="read-more button"
-        href="/posts/2018-03-01-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/">Read more →</a>
-    </div>
-    
-  </div>
-  
-  <div class="post on-list">
-    <h1 class="post-title">
-      <a href="https://ffutop.github.io/posts/2018-01-15-spring-jdbc-code-reading/">Spring JDBC 源码学习</a></h1>
-    <div class="post-meta">
-      <span class="post-date">
-        2018-01-15
-      </span>
-      <span class="post-author">::
-        fangfeng</span>
-    </div>
-
-    
-    <span class="post-tags">
-      
-      #<a href="https://ffutop.github.io/tags/spring/">Spring</a>&nbsp;
-      
-      #<a href="https://ffutop.github.io/tags/jdbc/">JDBC</a>&nbsp;
-      
-    </span>
-    
-
-    
-
-    <div class="post-content">
-      
-      
-      <h2 id="概览">概览</h2>
-
-<p>在学习 Spring-JDBC 之前，我们有必要从 Java 原生提供的 JDBC 开始，对 JDBC 操作的一整套完整的流程有一个清晰的概念。
-      
-      
-    </div>
-
-    
-    <div>
-      <a class="read-more button"
-        href="/posts/2018-01-15-spring-jdbc-code-reading/">Read more →</a>
+        href="/posts/2020-02-17-raft/">Read more →</a>
     </div>
     
   </div>
   
   <div class="pagination">
   <div class="pagination__buttons">
-    
-      <span class="button previous">
-        <a href="/posts/page/5/">
-          <span class="button__icon">←</span>
-          <span class="button__text">Newer posts</span>
-        </a>
-      </span>
     
     
   </div>

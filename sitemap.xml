@@ -3,6 +3,47 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://ffutop.github.io/tags/consensus/</loc>
+    <lastmod>2020-02-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/tags/distributed/</loc>
+    <lastmod>2020-02-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/posts/</loc>
+    <lastmod>2020-02-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/tags/raft/</loc>
+    <lastmod>2020-02-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/tags/</loc>
+    <lastmod>2020-02-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/</loc>
+    <lastmod>2020-02-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/posts/2020-02-17-raft/</loc>
+    <lastmod>2020-02-17T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://ffutop.github.io/tags/go/</loc>
     <lastmod>2020-01-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -17,24 +58,6 @@
   <url>
     <loc>https://ffutop.github.io/posts/2020-01-27-go-routine/</loc>
     <lastmod>2020-01-27T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ffutop.github.io/posts/</loc>
-    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://ffutop.github.io/tags/</loc>
-    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://ffutop.github.io/</loc>
-    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
