@@ -11,21 +11,21 @@ Warning Failed 4m kubelet, 172.16.1.1 Failed to pull image &amp;quot;xxx.xxx.com
 "/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
-<link rel="canonical" href="https://ffutop.github.io/posts/2019-08-20-too-many-links/" />
+<link rel="canonical" href="https://www.ffutop.com/posts/2019-08-20-too-many-links/" />
 
 
-<link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
+<link rel="stylesheet" href="https://www.ffutop.com/assets/style.css">
 
-  <link rel="stylesheet" href="https://ffutop.github.io/assets/blue.css">
-
-
-
+  <link rel="stylesheet" href="https://www.ffutop.com/assets/blue.css">
 
 
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://ffutop.github.io/img/apple-touch-icon-144-precomposed.png">
 
-<link rel="shortcut icon" href="https://ffutop.github.io/favicon.ico">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://www.ffutop.com/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://www.ffutop.com/favicon.ico">
 
 
 
@@ -34,7 +34,7 @@ Warning Failed 4m kubelet, 172.16.1.1 Failed to pull image &amp;quot;xxx.xxx.com
 <meta name="twitter:description" content="今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：
 Warning Failed 4m kubelet, 172.16.1.1 Failed to pull image &amp;quot;xxx.xxx.com/&amp;lt;image-name&amp;gt;:&amp;lt;version&amp;gt;&amp;quot;: rpc error: code = Unknown desc = failed to register layer: link /data/docker/storage/overlay/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a/root/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type /data/docker/storage/overlay/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da/tmproot525452492/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type: too many links  最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 172.16.1.1。而 Kubernetes 事件中提示的是 too many links，对问题原因的怀疑开始转向文件系统。
 " />
-<meta name="twitter:site" content="https://ffutop.github.io/" />
+<meta name="twitter:site" content="https://www.ffutop.com/" />
 <meta name="twitter:creator" content="fangfeng" />
 <meta name="twitter:image" content="">
 
@@ -45,7 +45,7 @@ Warning Failed 4m kubelet, 172.16.1.1 Failed to pull image &amp;quot;xxx.xxx.com
 <meta property="og:description" content="今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：
 Warning Failed 4m kubelet, 172.16.1.1 Failed to pull image &amp;quot;xxx.xxx.com/&amp;lt;image-name&amp;gt;:&amp;lt;version&amp;gt;&amp;quot;: rpc error: code = Unknown desc = failed to register layer: link /data/docker/storage/overlay/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a/root/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type /data/docker/storage/overlay/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da/tmproot525452492/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type: too many links  最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 172.16.1.1。而 Kubernetes 事件中提示的是 too many links，对问题原因的怀疑开始转向文件系统。
 " />
-<meta property="og:url" content="https://ffutop.github.io/posts/2019-08-20-too-many-links/" />
+<meta property="og:url" content="https://www.ffutop.com/posts/2019-08-20-too-many-links/" />
 <meta property="og:site_name" content="Too many links problem" />
 <meta property="og:image" content="">
 <meta property="og:image:width" content="2048">
@@ -129,7 +129,7 @@ Warning Failed 4m kubelet, 172.16.1.1 Failed to pull image &amp;quot;xxx.xxx.com
     
 <div class="post">
   <h1 class="post-title">
-    <a href="https://ffutop.github.io/posts/2019-08-20-too-many-links/">Too many links problem</a></h1>
+    <a href="https://www.ffutop.com/posts/2019-08-20-too-many-links/">Too many links problem</a></h1>
   <div class="post-meta">
       
     <span class="post-date">
@@ -146,11 +146,11 @@ Warning Failed 4m kubelet, 172.16.1.1 Failed to pull image &amp;quot;xxx.xxx.com
   
   <span class="post-tags">
     
-    #<a href="https://ffutop.github.io/tags/docker/">docker</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/docker/">docker</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/fs/">fs</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/fs/">fs</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/ext4/">ext4</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/ext4/">ext4</a>&nbsp;
     
   </span>
   
@@ -271,7 +271,7 @@ Storage Driver: overlay
     <div class="pagination__buttons">
       
       <span class="button previous">
-        <a href="https://ffutop.github.io/posts/2019-08-23-traffic-control/">
+        <a href="https://www.ffutop.com/posts/2019-08-23-traffic-control/">
           <span class="button__icon">←</span>
           <span class="button__text">Linux Traffic Control</span>
         </a>
@@ -279,7 +279,7 @@ Storage Driver: overlay
       
       
       <span class="button next">
-        <a href="https://ffutop.github.io/posts/2019-08-06-netfilter/">
+        <a href="https://www.ffutop.com/posts/2019-08-06-netfilter/">
           <span class="button__text">Netfilter 导览 - based on iptables</span>
           <span class="button__icon">→</span>
         </a>
@@ -300,15 +300,15 @@ Storage Driver: overlay
   <div class="footer__inner">
     
       <div class="copyright copyright--user">
-        <span>2018-2019 © ffutop</span>
+        <span>2018-2020 © ffutop</span>
         <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
       </div>
     
   </div>
 </footer>
 
-<script src="https://ffutop.github.io/assets/main.js"></script>
-<script src="https://ffutop.github.io/assets/prism.js"></script>
+<script src="https://www.ffutop.com/assets/main.js"></script>
+<script src="https://www.ffutop.com/assets/prism.js"></script>
 
 
 <script type="text/x-mathjax-config">

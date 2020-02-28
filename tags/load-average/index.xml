@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>load average on Utop&#39;s Blog</title>
-    <link>https://ffutop.github.io/tags/load-average/</link>
+    <link>https://www.ffutop.com/tags/load-average/</link>
     <description>Recent content in load average on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <copyright>2018-2019 © ffutop</copyright>
+    <copyright>2018-2020 © ffutop</copyright>
     <lastBuildDate>Mon, 16 Sep 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://ffutop.github.io/tags/load-average/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.ffutop.com/tags/load-average/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>系统平均负载分析</title>
-      <link>https://ffutop.github.io/posts/2019-09-16-load-average/</link>
+      <link>https://www.ffutop.com/posts/2019-09-16-load-average/</link>
       <pubDate>Mon, 16 Sep 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2019-09-16-load-average/</guid>
+      <guid>https://www.ffutop.com/posts/2019-09-16-load-average/</guid>
       <description>&lt;p&gt;&lt;code&gt;Load Average&lt;/code&gt; 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;ffutop $ time ./a

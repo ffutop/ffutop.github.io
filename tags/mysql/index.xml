@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>MySQL on Utop&#39;s Blog</title>
-    <link>https://ffutop.github.io/tags/mysql/</link>
+    <link>https://www.ffutop.com/tags/mysql/</link>
     <description>Recent content in MySQL on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <copyright>2018-2019 © ffutop</copyright>
+    <copyright>2018-2020 © ffutop</copyright>
     <lastBuildDate>Fri, 26 Apr 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://ffutop.github.io/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.ffutop.com/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>MySQL TIMESTAMP 时间精度问题</title>
-      <link>https://ffutop.github.io/posts/2019-04-26-time-accuracy/</link>
+      <link>https://www.ffutop.com/posts/2019-04-26-time-accuracy/</link>
       <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2019-04-26-time-accuracy/</guid>
+      <guid>https://www.ffutop.com/posts/2019-04-26-time-accuracy/</guid>
       <description>&lt;p&gt;最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**

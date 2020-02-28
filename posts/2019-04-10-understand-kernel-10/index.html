@@ -10,21 +10,21 @@
 "/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
-<link rel="canonical" href="https://ffutop.github.io/posts/2019-04-10-understand-kernel-10/" />
+<link rel="canonical" href="https://www.ffutop.com/posts/2019-04-10-understand-kernel-10/" />
 
 
-<link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
+<link rel="stylesheet" href="https://www.ffutop.com/assets/style.css">
 
-  <link rel="stylesheet" href="https://ffutop.github.io/assets/blue.css">
-
-
-
+  <link rel="stylesheet" href="https://www.ffutop.com/assets/blue.css">
 
 
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://ffutop.github.io/img/apple-touch-icon-144-precomposed.png">
 
-<link rel="shortcut icon" href="https://ffutop.github.io/favicon.ico">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://www.ffutop.com/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://www.ffutop.com/favicon.ico">
 
 
 
@@ -32,7 +32,7 @@
 <meta name="twitter:title" content="理解 Linux Kernel(10) - Context of Execution :: Utop&#39;s Blog — " />
 <meta name="twitter:description" content="在进行第四篇(任务调度)行文描述时，就一直闹不清内核所谓的task的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：我们错误地将理论和实践不加区分地混淆了。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，task 也就是 Context of Execution 概念在实现上的表征。
 " />
-<meta name="twitter:site" content="https://ffutop.github.io/" />
+<meta name="twitter:site" content="https://www.ffutop.com/" />
 <meta name="twitter:creator" content="fangfeng" />
 <meta name="twitter:image" content="">
 
@@ -42,7 +42,7 @@
 <meta property="og:title" content="理解 Linux Kernel(10) - Context of Execution :: Utop&#39;s Blog — ">
 <meta property="og:description" content="在进行第四篇(任务调度)行文描述时，就一直闹不清内核所谓的task的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：我们错误地将理论和实践不加区分地混淆了。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，task 也就是 Context of Execution 概念在实现上的表征。
 " />
-<meta property="og:url" content="https://ffutop.github.io/posts/2019-04-10-understand-kernel-10/" />
+<meta property="og:url" content="https://www.ffutop.com/posts/2019-04-10-understand-kernel-10/" />
 <meta property="og:site_name" content="理解 Linux Kernel(10) - Context of Execution" />
 <meta property="og:image" content="">
 <meta property="og:image:width" content="2048">
@@ -126,7 +126,7 @@
     
 <div class="post">
   <h1 class="post-title">
-    <a href="https://ffutop.github.io/posts/2019-04-10-understand-kernel-10/">理解 Linux Kernel(10) - Context of Execution</a></h1>
+    <a href="https://www.ffutop.com/posts/2019-04-10-understand-kernel-10/">理解 Linux Kernel(10) - Context of Execution</a></h1>
   <div class="post-meta">
       
     <span class="post-date">
@@ -143,11 +143,11 @@
   
   <span class="post-tags">
     
-    #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/linux/">Linux</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/kernel/">Kernel</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/coe/">COE</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/coe/">COE</a>&nbsp;
     
   </span>
   
@@ -585,7 +585,7 @@ asmlinkage long sys_gettid(void)
     <div class="pagination__buttons">
       
       <span class="button previous">
-        <a href="https://ffutop.github.io/posts/2019-04-25-lex-and-yacc/">
+        <a href="https://www.ffutop.com/posts/2019-04-25-lex-and-yacc/">
           <span class="button__icon">←</span>
           <span class="button__text">Lex &amp; Yacc 学习笔记</span>
         </a>
@@ -593,7 +593,7 @@ asmlinkage long sys_gettid(void)
       
       
       <span class="button next">
-        <a href="https://ffutop.github.io/posts/2019-03-25-mem-dump/">
+        <a href="https://www.ffutop.com/posts/2019-03-25-mem-dump/">
           <span class="button__text">如何获取运行时进程堆栈</span>
           <span class="button__icon">→</span>
         </a>
@@ -614,15 +614,15 @@ asmlinkage long sys_gettid(void)
   <div class="footer__inner">
     
       <div class="copyright copyright--user">
-        <span>2018-2019 © ffutop</span>
+        <span>2018-2020 © ffutop</span>
         <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
       </div>
     
   </div>
 </footer>
 
-<script src="https://ffutop.github.io/assets/main.js"></script>
-<script src="https://ffutop.github.io/assets/prism.js"></script>
+<script src="https://www.ffutop.com/assets/main.js"></script>
+<script src="https://www.ffutop.com/assets/prism.js"></script>
 
 
 <script type="text/x-mathjax-config">

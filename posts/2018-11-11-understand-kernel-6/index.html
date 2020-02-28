@@ -11,21 +11,21 @@
 #include &amp;lt;stdio.h&amp;gt; #include &amp;lt;stdlib.h&amp;gt; #include &amp;lt;string.h&amp;gt; #include &amp;lt;unistd.h&amp;gt; #include &amp;lt;fcntl.h&amp;gt; #include &amp;lt;errno.h&amp;gt; #include &amp;lt;sys/types.h&amp;gt; #include &amp;lt;sys/stat.h&amp;gt; int panic() { fprintf(stderr, &amp;quot;%s (errno=%d)\n&amp;quot;, strerror(errno), errno); return -1; } int main(int argc, char *argv[]) { /* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */ int fd = open(&amp;quot;/root/frw.txt&amp;quot;, O_RDWR | O_CREAT); if (fd == -1) return panic(); /* 向文件写入 Hello World! 共计 12 个字符 */ ssize_t wsize = write(fd, &amp;quot;Hello World!&amp;quot;, 12); if (wsize == -1) return panic(); /* 重定位文件读写指针 */ off_t off = lseek(fd, 0, SEEK_SET); if (off == -1) return panic(); char* buf = (char *) malloc(wsize); /* 读取文件内容 */ ssize_t rsize = read(fd, buf, wsize); if (rsize == -1) return panic(); printf(&amp;quot;%s\n&amp;quot;, buf); free(buf); /* 关闭文件 */ int stat = close(fd); if (stat == -1) return panic(); return 0; } "/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
-<link rel="canonical" href="https://ffutop.github.io/posts/2018-11-11-understand-kernel-6/" />
+<link rel="canonical" href="https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/" />
 
 
-<link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
+<link rel="stylesheet" href="https://www.ffutop.com/assets/style.css">
 
-  <link rel="stylesheet" href="https://ffutop.github.io/assets/blue.css">
-
-
-
+  <link rel="stylesheet" href="https://www.ffutop.com/assets/blue.css">
 
 
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://ffutop.github.io/img/apple-touch-icon-144-precomposed.png">
 
-<link rel="shortcut icon" href="https://ffutop.github.io/favicon.ico">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://www.ffutop.com/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://www.ffutop.com/favicon.ico">
 
 
 
@@ -34,7 +34,7 @@
 <meta name="twitter:description" content="前一篇已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。
 首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式
 #include &amp;lt;stdio.h&amp;gt; #include &amp;lt;stdlib.h&amp;gt; #include &amp;lt;string.h&amp;gt; #include &amp;lt;unistd.h&amp;gt; #include &amp;lt;fcntl.h&amp;gt; #include &amp;lt;errno.h&amp;gt; #include &amp;lt;sys/types.h&amp;gt; #include &amp;lt;sys/stat.h&amp;gt; int panic() { fprintf(stderr, &amp;quot;%s (errno=%d)\n&amp;quot;, strerror(errno), errno); return -1; } int main(int argc, char *argv[]) { /* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */ int fd = open(&amp;quot;/root/frw.txt&amp;quot;, O_RDWR | O_CREAT); if (fd == -1) return panic(); /* 向文件写入 Hello World! 共计 12 个字符 */ ssize_t wsize = write(fd, &amp;quot;Hello World!&amp;quot;, 12); if (wsize == -1) return panic(); /* 重定位文件读写指针 */ off_t off = lseek(fd, 0, SEEK_SET); if (off == -1) return panic(); char* buf = (char *) malloc(wsize); /* 读取文件内容 */ ssize_t rsize = read(fd, buf, wsize); if (rsize == -1) return panic(); printf(&amp;quot;%s\n&amp;quot;, buf); free(buf); /* 关闭文件 */ int stat = close(fd); if (stat == -1) return panic(); return 0; } " />
-<meta name="twitter:site" content="https://ffutop.github.io/" />
+<meta name="twitter:site" content="https://www.ffutop.com/" />
 <meta name="twitter:creator" content="fangfeng" />
 <meta name="twitter:image" content="">
 
@@ -45,7 +45,7 @@
 <meta property="og:description" content="前一篇已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。
 首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式
 #include &amp;lt;stdio.h&amp;gt; #include &amp;lt;stdlib.h&amp;gt; #include &amp;lt;string.h&amp;gt; #include &amp;lt;unistd.h&amp;gt; #include &amp;lt;fcntl.h&amp;gt; #include &amp;lt;errno.h&amp;gt; #include &amp;lt;sys/types.h&amp;gt; #include &amp;lt;sys/stat.h&amp;gt; int panic() { fprintf(stderr, &amp;quot;%s (errno=%d)\n&amp;quot;, strerror(errno), errno); return -1; } int main(int argc, char *argv[]) { /* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */ int fd = open(&amp;quot;/root/frw.txt&amp;quot;, O_RDWR | O_CREAT); if (fd == -1) return panic(); /* 向文件写入 Hello World! 共计 12 个字符 */ ssize_t wsize = write(fd, &amp;quot;Hello World!&amp;quot;, 12); if (wsize == -1) return panic(); /* 重定位文件读写指针 */ off_t off = lseek(fd, 0, SEEK_SET); if (off == -1) return panic(); char* buf = (char *) malloc(wsize); /* 读取文件内容 */ ssize_t rsize = read(fd, buf, wsize); if (rsize == -1) return panic(); printf(&amp;quot;%s\n&amp;quot;, buf); free(buf); /* 关闭文件 */ int stat = close(fd); if (stat == -1) return panic(); return 0; } " />
-<meta property="og:url" content="https://ffutop.github.io/posts/2018-11-11-understand-kernel-6/" />
+<meta property="og:url" content="https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/" />
 <meta property="og:site_name" content="理解 Linux Kernel (6) - read &amp; write" />
 <meta property="og:image" content="">
 <meta property="og:image:width" content="2048">
@@ -129,7 +129,7 @@
     
 <div class="post">
   <h1 class="post-title">
-    <a href="https://ffutop.github.io/posts/2018-11-11-understand-kernel-6/">理解 Linux Kernel (6) - read &amp; write</a></h1>
+    <a href="https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/">理解 Linux Kernel (6) - read &amp; write</a></h1>
   <div class="post-meta">
       
     <span class="post-date">
@@ -146,13 +146,13 @@
   
   <span class="post-tags">
     
-    #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/linux/">Linux</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/kernel/">Kernel</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/file-system/">File System</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/file-system/">File System</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/read-write/">read &amp; write</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/read-write/">read &amp; write</a>&nbsp;
     
   </span>
   
@@ -1064,7 +1064,7 @@ int open_namei(const char * pathname, int flag, int mode,
     <div class="pagination__buttons">
       
       <span class="button previous">
-        <a href="https://ffutop.github.io/posts/2018-11-16-regex-exponential-explosion/">
+        <a href="https://www.ffutop.com/posts/2018-11-16-regex-exponential-explosion/">
           <span class="button__icon">←</span>
           <span class="button__text">正则表达式指数爆炸</span>
         </a>
@@ -1072,7 +1072,7 @@ int open_namei(const char * pathname, int flag, int mode,
       
       
       <span class="button next">
-        <a href="https://ffutop.github.io/posts/2018-10-14-understand-kernel-5/">
+        <a href="https://www.ffutop.com/posts/2018-10-14-understand-kernel-5/">
           <span class="button__text">理解 Linux Kernel (5) - 文件系统(宏观描述)</span>
           <span class="button__icon">→</span>
         </a>
@@ -1093,15 +1093,15 @@ int open_namei(const char * pathname, int flag, int mode,
   <div class="footer__inner">
     
       <div class="copyright copyright--user">
-        <span>2018-2019 © ffutop</span>
+        <span>2018-2020 © ffutop</span>
         <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
       </div>
     
   </div>
 </footer>
 
-<script src="https://ffutop.github.io/assets/main.js"></script>
-<script src="https://ffutop.github.io/assets/prism.js"></script>
+<script src="https://www.ffutop.com/assets/main.js"></script>
+<script src="https://www.ffutop.com/assets/prism.js"></script>
 
 
 <script type="text/x-mathjax-config">

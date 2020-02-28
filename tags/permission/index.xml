@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Permission on Utop&#39;s Blog</title>
-    <link>https://ffutop.github.io/tags/permission/</link>
+    <link>https://www.ffutop.com/tags/permission/</link>
     <description>Recent content in Permission on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <copyright>2018-2019 © ffutop</copyright>
+    <copyright>2018-2020 © ffutop</copyright>
     <lastBuildDate>Wed, 04 Jul 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://ffutop.github.io/tags/permission/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.ffutop.com/tags/permission/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Java 安全访问与权限控制</title>
-      <link>https://ffutop.github.io/posts/2018-07-04-jdk-permission/</link>
+      <link>https://www.ffutop.com/posts/2018-07-04-jdk-permission/</link>
       <pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2018-07-04-jdk-permission/</guid>
+      <guid>https://www.ffutop.com/posts/2018-07-04-jdk-permission/</guid>
       <description>&lt;h2 id=&#34;绪论&#34;&gt;绪论&lt;/h2&gt;
 
 &lt;p&gt;&lt;em&gt;本文只是对 Java 安全访问与权限控制的基础性探究。&lt;/em&gt;&lt;/p&gt;

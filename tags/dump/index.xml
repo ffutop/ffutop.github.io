@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>dump on Utop&#39;s Blog</title>
-    <link>https://ffutop.github.io/tags/dump/</link>
+    <link>https://www.ffutop.com/tags/dump/</link>
     <description>Recent content in dump on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <copyright>2018-2019 © ffutop</copyright>
+    <copyright>2018-2020 © ffutop</copyright>
     <lastBuildDate>Mon, 25 Mar 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://ffutop.github.io/tags/dump/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.ffutop.com/tags/dump/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>如何获取运行时进程堆栈</title>
-      <link>https://ffutop.github.io/posts/2019-03-25-mem-dump/</link>
+      <link>https://www.ffutop.com/posts/2019-03-25-mem-dump/</link>
       <pubDate>Mon, 25 Mar 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2019-03-25-mem-dump/</guid>
+      <guid>https://www.ffutop.com/posts/2019-03-25-mem-dump/</guid>
       <description>&lt;p&gt;前些天看了关于在密码学应用中使用&lt;code&gt;java.lang.String&lt;/code&gt;与&lt;code&gt;byte[]&lt;/code&gt;的相关讨论，不推荐使用&lt;code&gt;java.lang.String&lt;/code&gt;的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。&lt;/p&gt;
 
 &lt;h2 id=&#34;proc-pid-maps&#34;&gt;/proc/${pid}/maps&lt;/h2&gt;

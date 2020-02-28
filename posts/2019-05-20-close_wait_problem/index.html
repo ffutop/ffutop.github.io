@@ -12,21 +12,21 @@
 "/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
-<link rel="canonical" href="https://ffutop.github.io/posts/2019-05-20-close_wait_problem/" />
+<link rel="canonical" href="https://www.ffutop.com/posts/2019-05-20-close_wait_problem/" />
 
 
-<link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
+<link rel="stylesheet" href="https://www.ffutop.com/assets/style.css">
 
-  <link rel="stylesheet" href="https://ffutop.github.io/assets/blue.css">
-
-
-
+  <link rel="stylesheet" href="https://www.ffutop.com/assets/blue.css">
 
 
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://ffutop.github.io/img/apple-touch-icon-144-precomposed.png">
 
-<link rel="shortcut icon" href="https://ffutop.github.io/favicon.ico">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://www.ffutop.com/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://www.ffutop.com/favicon.ico">
 
 
 
@@ -36,7 +36,7 @@
 问题描述 Python 服务 A，用于接收心跳包确认其他服务是否存活。其他服务每 5 分钟向 A 发送一次心跳包；总计 &amp;lt; 100 个其他服务。
  05-11 19:30 ，首次出现 Python 服务大量 CLOSE_WAIT，至 13 日发现，总计 10k 左右 CLOSE_WAIT 的 TCP 连接。05-13 15:30 通过运维平台重新部署&amp;hellip; 05-14 16:30 ，再次出现。19:30 手动重启。 其间给 Python 服务 A 添加了打印调用栈的模块 pdbx，通过运维平台重新部署 05-17 19:00 ，再次出现。等待打印调用栈，不小心杀掉了服务&amp;hellip; 05-19 14:30 ，重现。 05-20 08:30 ，查找原因，解决问题。  由于不是本人负责的服务，于 16 日凭兴趣开始有限介入，协助排查。现将排查流程一一记述，给自己和大家未来排查问题提供一个借鉴。
 " />
-<meta name="twitter:site" content="https://ffutop.github.io/" />
+<meta name="twitter:site" content="https://www.ffutop.com/" />
 <meta name="twitter:creator" content="fangfeng" />
 <meta name="twitter:image" content="">
 
@@ -48,7 +48,7 @@
 问题描述 Python 服务 A，用于接收心跳包确认其他服务是否存活。其他服务每 5 分钟向 A 发送一次心跳包；总计 &amp;lt; 100 个其他服务。
  05-11 19:30 ，首次出现 Python 服务大量 CLOSE_WAIT，至 13 日发现，总计 10k 左右 CLOSE_WAIT 的 TCP 连接。05-13 15:30 通过运维平台重新部署&amp;hellip; 05-14 16:30 ，再次出现。19:30 手动重启。 其间给 Python 服务 A 添加了打印调用栈的模块 pdbx，通过运维平台重新部署 05-17 19:00 ，再次出现。等待打印调用栈，不小心杀掉了服务&amp;hellip; 05-19 14:30 ，重现。 05-20 08:30 ，查找原因，解决问题。  由于不是本人负责的服务，于 16 日凭兴趣开始有限介入，协助排查。现将排查流程一一记述，给自己和大家未来排查问题提供一个借鉴。
 " />
-<meta property="og:url" content="https://ffutop.github.io/posts/2019-05-20-close_wait_problem/" />
+<meta property="og:url" content="https://www.ffutop.com/posts/2019-05-20-close_wait_problem/" />
 <meta property="og:site_name" content="pipe 导致的 CLOSE_WAIT" />
 <meta property="og:image" content="">
 <meta property="og:image:width" content="2048">
@@ -132,7 +132,7 @@
     
 <div class="post">
   <h1 class="post-title">
-    <a href="https://ffutop.github.io/posts/2019-05-20-close_wait_problem/">pipe 导致的 CLOSE_WAIT</a></h1>
+    <a href="https://www.ffutop.com/posts/2019-05-20-close_wait_problem/">pipe 导致的 CLOSE_WAIT</a></h1>
   <div class="post-meta">
       
     <span class="post-date">
@@ -149,9 +149,9 @@
   
   <span class="post-tags">
     
-    #<a href="https://ffutop.github.io/tags/pipe/">pipe</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/pipe/">pipe</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/close_wait/">CLOSE_WAIT</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/close_wait/">CLOSE_WAIT</a>&nbsp;
     
   </span>
   
@@ -442,7 +442,7 @@ python    139756 139764   sysop    2w     FIFO                0,9       0t0    5
     <div class="pagination__buttons">
       
       <span class="button previous">
-        <a href="https://ffutop.github.io/posts/2019-05-27-understand-kernel-11/">
+        <a href="https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/">
           <span class="button__icon">←</span>
           <span class="button__text">理解 Linux Kernel (11) - 进程间通信</span>
         </a>
@@ -450,7 +450,7 @@ python    139756 139764   sysop    2w     FIFO                0,9       0t0    5
       
       
       <span class="button next">
-        <a href="https://ffutop.github.io/posts/2019-05-10-png-structure/">
+        <a href="https://www.ffutop.com/posts/2019-05-10-png-structure/">
           <span class="button__text">PNG 文件格式</span>
           <span class="button__icon">→</span>
         </a>
@@ -471,15 +471,15 @@ python    139756 139764   sysop    2w     FIFO                0,9       0t0    5
   <div class="footer__inner">
     
       <div class="copyright copyright--user">
-        <span>2018-2019 © ffutop</span>
+        <span>2018-2020 © ffutop</span>
         <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
       </div>
     
   </div>
 </footer>
 
-<script src="https://ffutop.github.io/assets/main.js"></script>
-<script src="https://ffutop.github.io/assets/prism.js"></script>
+<script src="https://www.ffutop.com/assets/main.js"></script>
+<script src="https://www.ffutop.com/assets/prism.js"></script>
 
 
 <script type="text/x-mathjax-config">

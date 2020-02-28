@@ -2,31 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Java on Utop&#39;s Blog</title>
-    <link>https://ffutop.github.io/tags/java/</link>
+    <link>https://www.ffutop.com/tags/java/</link>
     <description>Recent content in Java on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <copyright>2018-2019 © ffutop</copyright>
+    <copyright>2018-2020 © ffutop</copyright>
     <lastBuildDate>Fri, 28 Feb 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://ffutop.github.io/tags/java/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.ffutop.com/tags/java/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>基于DNS的数据库切换·事故</title>
-      <link>https://ffutop.github.io/posts/2020-02-28-db-transfer-based-on-dns/</link>
+      <link>https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/</link>
       <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2020-02-28-db-transfer-based-on-dns/</guid>
+      <guid>https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/</guid>
       <description>&lt;p&gt;我们生产环境上所有的应用都是通过域名来访问 MySQL、Redis 等基础服务。按说域名相较于 IP，凭空多了个 DNS 解析动作，是一个劣化的方案。但好处在于，一旦需要切换基础服务，将带来巨大的利好。可是，任何忽视DNS Record TTL的切换方案，都将伴随着巨大的风险。甚至，成为否定该利好的佐证。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>GroovyClassLoader 引发的 FullGC</title>
-      <link>https://ffutop.github.io/posts/2019-11-07-groovyclassloader-fullgc/</link>
+      <link>https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/</link>
       <pubDate>Wed, 06 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2019-11-07-groovyclassloader-fullgc/</guid>
+      <guid>https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/</guid>
       <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
 
 &lt;p&gt;近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，&lt;strong&gt;stop the world&lt;/strong&gt; :&amp;lt; 从 &lt;code&gt;gc.log&lt;/code&gt; 中，看到的原因是触及了 &lt;code&gt;Metaspace&lt;/code&gt; 的阈值，进而引发了 FGC。&lt;/p&gt;
@@ -43,10 +43,10 @@
     
     <item>
       <title>随机数生成器拖慢 Tomcat 启动速度</title>
-      <link>https://ffutop.github.io/posts/2019-10-17-random/</link>
+      <link>https://www.ffutop.com/posts/2019-10-17-random/</link>
       <pubDate>Thu, 17 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2019-10-17-random/</guid>
+      <guid>https://www.ffutop.com/posts/2019-10-17-random/</guid>
       <description>&lt;p&gt;最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-plain&#34;&gt;16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
@@ -59,10 +59,10 @@
     
     <item>
       <title>【Java】API 参数误定义的后果</title>
-      <link>https://ffutop.github.io/posts/2019-02-27-java-fatal-api/</link>
+      <link>https://www.ffutop.com/posts/2019-02-27-java-fatal-api/</link>
       <pubDate>Wed, 27 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2019-02-27-java-fatal-api/</guid>
+      <guid>https://www.ffutop.com/posts/2019-02-27-java-fatal-api/</guid>
       <description>&lt;p&gt;工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。&lt;/p&gt;
 
 &lt;p&gt;想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！&lt;/p&gt;
@@ -72,10 +72,10 @@
     
     <item>
       <title>Java Instrumentation</title>
-      <link>https://ffutop.github.io/posts/2018-08-15-java-instrumentation/</link>
+      <link>https://www.ffutop.com/posts/2018-08-15-java-instrumentation/</link>
       <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2018-08-15-java-instrumentation/</guid>
+      <guid>https://www.ffutop.com/posts/2018-08-15-java-instrumentation/</guid>
       <description>&lt;h2 id=&#34;start&#34;&gt;Start&lt;/h2&gt;
 
 &lt;p&gt;从现有的前置知识来说，我们能够认识到两个事实:&lt;/p&gt;
@@ -115,10 +115,10 @@
     
     <item>
       <title>Java 安全访问与权限控制</title>
-      <link>https://ffutop.github.io/posts/2018-07-04-jdk-permission/</link>
+      <link>https://www.ffutop.com/posts/2018-07-04-jdk-permission/</link>
       <pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2018-07-04-jdk-permission/</guid>
+      <guid>https://www.ffutop.com/posts/2018-07-04-jdk-permission/</guid>
       <description>&lt;h2 id=&#34;绪论&#34;&gt;绪论&lt;/h2&gt;
 
 &lt;p&gt;&lt;em&gt;本文只是对 Java 安全访问与权限控制的基础性探究。&lt;/em&gt;&lt;/p&gt;
@@ -169,10 +169,10 @@
     
     <item>
       <title>ASM 核心包基本内容漫谈</title>
-      <link>https://ffutop.github.io/posts/2018-06-25-asm-core/</link>
+      <link>https://www.ffutop.com/posts/2018-06-25-asm-core/</link>
       <pubDate>Mon, 25 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2018-06-25-asm-core/</guid>
+      <guid>https://www.ffutop.com/posts/2018-06-25-asm-core/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;本文描述的 ASM 指的是 OW2 ASM&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -221,10 +221,10 @@
     
     <item>
       <title>java-memory-model</title>
-      <link>https://ffutop.github.io/posts/2018-06-21-java-memory-model/</link>
+      <link>https://www.ffutop.com/posts/2018-06-21-java-memory-model/</link>
       <pubDate>Thu, 21 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2018-06-21-java-memory-model/</guid>
+      <guid>https://www.ffutop.com/posts/2018-06-21-java-memory-model/</guid>
       <description>&lt;h2 id=&#34;jvm-运行时数据区&#34;&gt;JVM 运行时数据区&lt;/h2&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>

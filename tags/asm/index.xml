@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>ASM on Utop&#39;s Blog</title>
-    <link>https://ffutop.github.io/tags/asm/</link>
+    <link>https://www.ffutop.com/tags/asm/</link>
     <description>Recent content in ASM on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <copyright>2018-2019 © ffutop</copyright>
+    <copyright>2018-2020 © ffutop</copyright>
     <lastBuildDate>Wed, 15 Aug 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://ffutop.github.io/tags/asm/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.ffutop.com/tags/asm/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Java Instrumentation</title>
-      <link>https://ffutop.github.io/posts/2018-08-15-java-instrumentation/</link>
+      <link>https://www.ffutop.com/posts/2018-08-15-java-instrumentation/</link>
       <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2018-08-15-java-instrumentation/</guid>
+      <guid>https://www.ffutop.com/posts/2018-08-15-java-instrumentation/</guid>
       <description>&lt;h2 id=&#34;start&#34;&gt;Start&lt;/h2&gt;
 
 &lt;p&gt;从现有的前置知识来说，我们能够认识到两个事实:&lt;/p&gt;
@@ -57,10 +57,10 @@
     
     <item>
       <title>CGlib Enhancer 主流程源码解析</title>
-      <link>https://ffutop.github.io/posts/2018-07-10-cglib-enhancer/</link>
+      <link>https://www.ffutop.com/posts/2018-07-10-cglib-enhancer/</link>
       <pubDate>Tue, 10 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2018-07-10-cglib-enhancer/</guid>
+      <guid>https://www.ffutop.com/posts/2018-07-10-cglib-enhancer/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 
 &lt;p&gt;此博文写作的目的:
@@ -70,10 +70,10 @@
     
     <item>
       <title>ASM 核心包基本内容漫谈</title>
-      <link>https://ffutop.github.io/posts/2018-06-25-asm-core/</link>
+      <link>https://www.ffutop.com/posts/2018-06-25-asm-core/</link>
       <pubDate>Mon, 25 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2018-06-25-asm-core/</guid>
+      <guid>https://www.ffutop.com/posts/2018-06-25-asm-core/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;本文描述的 ASM 指的是 OW2 ASM&lt;/p&gt;
 &lt;/blockquote&gt;

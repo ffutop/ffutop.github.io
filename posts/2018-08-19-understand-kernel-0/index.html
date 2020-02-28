@@ -13,21 +13,21 @@
 "/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
-<link rel="canonical" href="https://ffutop.github.io/posts/2018-08-19-understand-kernel-0/" />
+<link rel="canonical" href="https://www.ffutop.com/posts/2018-08-19-understand-kernel-0/" />
 
 
-<link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
+<link rel="stylesheet" href="https://www.ffutop.com/assets/style.css">
 
-  <link rel="stylesheet" href="https://ffutop.github.io/assets/blue.css">
-
-
-
+  <link rel="stylesheet" href="https://www.ffutop.com/assets/blue.css">
 
 
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://ffutop.github.io/img/apple-touch-icon-144-precomposed.png">
 
-<link rel="shortcut icon" href="https://ffutop.github.io/favicon.ico">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://www.ffutop.com/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://www.ffutop.com/favicon.ico">
 
 
 
@@ -38,7 +38,7 @@
 《理解 Linux Kernel》系列最早发布于我的博客 (Utop&amp;rsquo;s Blog)。由于这些文章的完成完全出于个人兴趣，对每个内核子系统的学习往往浅尝辄止，但我依旧认为这个系列对初学者来说是大有裨益的。
 本系列对内核的学习完全建立在 0.11、2.6.24 两个版本源码的基础上。从 0.11 版本入门，学习硬件启动阶段进行的主要操作、任务调度、文件系统等早期版本已初现雏形的子系统；从 2.6.24 版本进阶，学习网络、内存管理等子系统的实现。在此强烈推荐，直接阅读源码对理解的帮助最为深远。请随时备上两个版本的源码，以备深入理解。
 " />
-<meta name="twitter:site" content="https://ffutop.github.io/" />
+<meta name="twitter:site" content="https://www.ffutop.com/" />
 <meta name="twitter:creator" content="fangfeng" />
 <meta name="twitter:image" content="">
 
@@ -51,7 +51,7 @@
 《理解 Linux Kernel》系列最早发布于我的博客 (Utop&amp;rsquo;s Blog)。由于这些文章的完成完全出于个人兴趣，对每个内核子系统的学习往往浅尝辄止，但我依旧认为这个系列对初学者来说是大有裨益的。
 本系列对内核的学习完全建立在 0.11、2.6.24 两个版本源码的基础上。从 0.11 版本入门，学习硬件启动阶段进行的主要操作、任务调度、文件系统等早期版本已初现雏形的子系统；从 2.6.24 版本进阶，学习网络、内存管理等子系统的实现。在此强烈推荐，直接阅读源码对理解的帮助最为深远。请随时备上两个版本的源码，以备深入理解。
 " />
-<meta property="og:url" content="https://ffutop.github.io/posts/2018-08-19-understand-kernel-0/" />
+<meta property="og:url" content="https://www.ffutop.com/posts/2018-08-19-understand-kernel-0/" />
 <meta property="og:site_name" content="理解 Linux Kernel (0) - 概述" />
 <meta property="og:image" content="">
 <meta property="og:image:width" content="2048">
@@ -135,7 +135,7 @@
     
 <div class="post">
   <h1 class="post-title">
-    <a href="https://ffutop.github.io/posts/2018-08-19-understand-kernel-0/">理解 Linux Kernel (0) - 概述</a></h1>
+    <a href="https://www.ffutop.com/posts/2018-08-19-understand-kernel-0/">理解 Linux Kernel (0) - 概述</a></h1>
   <div class="post-meta">
       
     <span class="post-date">
@@ -152,9 +152,9 @@
   
   <span class="post-tags">
     
-    #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/linux/">Linux</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/kernel/">Kernel</a>&nbsp;
     
   </span>
   
@@ -257,7 +257,7 @@
     <div class="pagination__buttons">
       
       <span class="button previous">
-        <a href="https://ffutop.github.io/posts/2018-08-26-understand-kernel-2/">
+        <a href="https://www.ffutop.com/posts/2018-08-26-understand-kernel-2/">
           <span class="button__icon">←</span>
           <span class="button__text">理解 Linux Kernel (2) - 多任务切换</span>
         </a>
@@ -265,7 +265,7 @@
       
       
       <span class="button next">
-        <a href="https://ffutop.github.io/posts/2018-08-19-understand-kernel-1/">
+        <a href="https://www.ffutop.com/posts/2018-08-19-understand-kernel-1/">
           <span class="button__text">理解 Linux Kernel (1) - BIOS</span>
           <span class="button__icon">→</span>
         </a>
@@ -286,15 +286,15 @@
   <div class="footer__inner">
     
       <div class="copyright copyright--user">
-        <span>2018-2019 © ffutop</span>
+        <span>2018-2020 © ffutop</span>
         <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
       </div>
     
   </div>
 </footer>
 
-<script src="https://ffutop.github.io/assets/main.js"></script>
-<script src="https://ffutop.github.io/assets/prism.js"></script>
+<script src="https://www.ffutop.com/assets/main.js"></script>
+<script src="https://www.ffutop.com/assets/prism.js"></script>
 
 
 <script type="text/x-mathjax-config">

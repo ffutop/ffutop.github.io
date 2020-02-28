@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Multi-Task on Utop&#39;s Blog</title>
-    <link>https://ffutop.github.io/tags/multi-task/</link>
+    <link>https://www.ffutop.com/tags/multi-task/</link>
     <description>Recent content in Multi-Task on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <copyright>2018-2019 © ffutop</copyright>
+    <copyright>2018-2020 © ffutop</copyright>
     <lastBuildDate>Sun, 26 Aug 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://ffutop.github.io/tags/multi-task/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.ffutop.com/tags/multi-task/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>理解 Linux Kernel (2) - 多任务切换</title>
-      <link>https://ffutop.github.io/posts/2018-08-26-understand-kernel-2/</link>
+      <link>https://www.ffutop.com/posts/2018-08-26-understand-kernel-2/</link>
       <pubDate>Sun, 26 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2018-08-26-understand-kernel-2/</guid>
+      <guid>https://www.ffutop.com/posts/2018-08-26-understand-kernel-2/</guid>
       <description>&lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
 
 &lt;p&gt;《只是为了好玩》书中，林纳斯描述过他最早的试验性程序就是执行两个不同的任务（一个不断输出A，另一个输出B），同时不断地让 CPU 在两个任务间做切换。结合《Linux 内核完全注释》提供的一个多任务切换示例程序，本篇将就多任务切换程序的执行流程进行详述，并提供当下汇编工具下的适配。&lt;/p&gt;

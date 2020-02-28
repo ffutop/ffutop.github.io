@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Unicode on Utop&#39;s Blog</title>
-    <link>https://ffutop.github.io/tags/unicode/</link>
+    <link>https://www.ffutop.com/tags/unicode/</link>
     <description>Recent content in Unicode on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <copyright>2018-2019 © ffutop</copyright>
+    <copyright>2018-2020 © ffutop</copyright>
     <lastBuildDate>Sat, 02 Feb 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://ffutop.github.io/tags/unicode/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.ffutop.com/tags/unicode/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>字符集与字符编码</title>
-      <link>https://ffutop.github.io/posts/2019-02-02-unicode/</link>
+      <link>https://www.ffutop.com/posts/2019-02-02-unicode/</link>
       <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2019-02-02-unicode/</guid>
+      <guid>https://www.ffutop.com/posts/2019-02-02-unicode/</guid>
       <description>{% pdf https://drive.google.com/file/d/1MuBNtZPMWCt9kGlpqiAtG3i3Al2MaknY/preview %}</description>
     </item>
     

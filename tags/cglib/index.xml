@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>CGlib on Utop&#39;s Blog</title>
-    <link>https://ffutop.github.io/tags/cglib/</link>
+    <link>https://www.ffutop.com/tags/cglib/</link>
     <description>Recent content in CGlib on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <copyright>2018-2019 © ffutop</copyright>
+    <copyright>2018-2020 © ffutop</copyright>
     <lastBuildDate>Fri, 13 Jul 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://ffutop.github.io/tags/cglib/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.ffutop.com/tags/cglib/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>如何方便地获取 CGlib 生成类</title>
-      <link>https://ffutop.github.io/posts/2018-07-13-how-to-easily-get-cglib-generated-code/</link>
+      <link>https://www.ffutop.com/posts/2018-07-13-how-to-easily-get-cglib-generated-code/</link>
       <pubDate>Fri, 13 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2018-07-13-how-to-easily-get-cglib-generated-code/</guid>
+      <guid>https://www.ffutop.com/posts/2018-07-13-how-to-easily-get-cglib-generated-code/</guid>
       <description>&lt;h2 id=&#34;配置参数&#34;&gt;配置参数&lt;/h2&gt;
 
 &lt;p&gt;&lt;strong&gt;命令行使用&lt;/strong&gt;&lt;/p&gt;
@@ -31,10 +31,10 @@
     
     <item>
       <title>CGlib Enhancer 主流程源码解析</title>
-      <link>https://ffutop.github.io/posts/2018-07-10-cglib-enhancer/</link>
+      <link>https://www.ffutop.com/posts/2018-07-10-cglib-enhancer/</link>
       <pubDate>Tue, 10 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2018-07-10-cglib-enhancer/</guid>
+      <guid>https://www.ffutop.com/posts/2018-07-10-cglib-enhancer/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 
 &lt;p&gt;此博文写作的目的:

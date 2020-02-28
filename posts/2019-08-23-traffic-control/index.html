@@ -11,21 +11,21 @@
 "/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
-<link rel="canonical" href="https://ffutop.github.io/posts/2019-08-23-traffic-control/" />
+<link rel="canonical" href="https://www.ffutop.com/posts/2019-08-23-traffic-control/" />
 
 
-<link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
+<link rel="stylesheet" href="https://www.ffutop.com/assets/style.css">
 
-  <link rel="stylesheet" href="https://ffutop.github.io/assets/blue.css">
-
-
-
+  <link rel="stylesheet" href="https://www.ffutop.com/assets/blue.css">
 
 
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://ffutop.github.io/img/apple-touch-icon-144-precomposed.png">
 
-<link rel="shortcut icon" href="https://ffutop.github.io/favicon.ico">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://www.ffutop.com/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://www.ffutop.com/favicon.ico">
 
 
 
@@ -34,7 +34,7 @@
 <meta name="twitter:description" content="最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。
 流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(sk_buff 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 enqueue, dequeue 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。
 " />
-<meta name="twitter:site" content="https://ffutop.github.io/" />
+<meta name="twitter:site" content="https://www.ffutop.com/" />
 <meta name="twitter:creator" content="fangfeng" />
 <meta name="twitter:image" content="">
 
@@ -45,7 +45,7 @@
 <meta property="og:description" content="最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。
 流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(sk_buff 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 enqueue, dequeue 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。
 " />
-<meta property="og:url" content="https://ffutop.github.io/posts/2019-08-23-traffic-control/" />
+<meta property="og:url" content="https://www.ffutop.com/posts/2019-08-23-traffic-control/" />
 <meta property="og:site_name" content="Linux Traffic Control" />
 <meta property="og:image" content="">
 <meta property="og:image:width" content="2048">
@@ -129,7 +129,7 @@
     
 <div class="post">
   <h1 class="post-title">
-    <a href="https://ffutop.github.io/posts/2019-08-23-traffic-control/">Linux Traffic Control</a></h1>
+    <a href="https://www.ffutop.com/posts/2019-08-23-traffic-control/">Linux Traffic Control</a></h1>
   <div class="post-meta">
       
     <span class="post-date">
@@ -146,11 +146,11 @@
   
   <span class="post-tags">
     
-    #<a href="https://ffutop.github.io/tags/linux/">Linux</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/linux/">Linux</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/kernel/">Kernel</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/kernel/">Kernel</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/tc/">TC</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/tc/">TC</a>&nbsp;
     
   </span>
   
@@ -497,7 +497,7 @@ static const struct Qdisc_class_ops htb_class_ops = {
     <div class="pagination__buttons">
       
       <span class="button previous">
-        <a href="https://ffutop.github.io/posts/2019-09-16-load-average/">
+        <a href="https://www.ffutop.com/posts/2019-09-16-load-average/">
           <span class="button__icon">←</span>
           <span class="button__text">系统平均负载分析</span>
         </a>
@@ -505,7 +505,7 @@ static const struct Qdisc_class_ops htb_class_ops = {
       
       
       <span class="button next">
-        <a href="https://ffutop.github.io/posts/2019-08-20-too-many-links/">
+        <a href="https://www.ffutop.com/posts/2019-08-20-too-many-links/">
           <span class="button__text">Too many links problem</span>
           <span class="button__icon">→</span>
         </a>
@@ -526,15 +526,15 @@ static const struct Qdisc_class_ops htb_class_ops = {
   <div class="footer__inner">
     
       <div class="copyright copyright--user">
-        <span>2018-2019 © ffutop</span>
+        <span>2018-2020 © ffutop</span>
         <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
       </div>
     
   </div>
 </footer>
 
-<script src="https://ffutop.github.io/assets/main.js"></script>
-<script src="https://ffutop.github.io/assets/prism.js"></script>
+<script src="https://www.ffutop.com/assets/main.js"></script>
+<script src="https://www.ffutop.com/assets/prism.js"></script>
 
 
 <script type="text/x-mathjax-config">

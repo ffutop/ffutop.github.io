@@ -11,21 +11,21 @@
 "/>
 <meta name="keywords" content="BLOG"/>
 <meta name="robots" content="noodp"/>
-<link rel="canonical" href="https://ffutop.github.io/posts/2019-11-07-groovyclassloader-fullgc/" />
+<link rel="canonical" href="https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/" />
 
 
-<link rel="stylesheet" href="https://ffutop.github.io/assets/style.css">
+<link rel="stylesheet" href="https://www.ffutop.com/assets/style.css">
 
-  <link rel="stylesheet" href="https://ffutop.github.io/assets/blue.css">
-
-
-
+  <link rel="stylesheet" href="https://www.ffutop.com/assets/blue.css">
 
 
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://ffutop.github.io/img/apple-touch-icon-144-precomposed.png">
 
-<link rel="shortcut icon" href="https://ffutop.github.io/favicon.ico">
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://www.ffutop.com/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="https://www.ffutop.com/favicon.ico">
 
 
 
@@ -34,7 +34,7 @@
 <meta name="twitter:description" content="背景 近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，stop the world :&amp;lt; 从 gc.log 中，看到的原因是触及了 Metaspace 的阈值，进而引发了 FGC。
 2019-11-05T14:31:38.880&#43;0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880&#43;0800: 504600.716: [CMS2019-11-05T14:31:39.364&#43;0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs] (concurrent mode failure): 266828K-&amp;gt;266865K(873856K), 1.3752377 secs] 267430K-&amp;gt;266865K(1267072K), [Metaspace: 204152K-&amp;gt;204152K(1267712K)], 1.3757441 secs] [Times: user=1.36 sys=0.00, real=1.38 secs] 2019-11-05T14:31:40.256&#43;0800: 504602.092: [Full GC (Last ditch collection) 2019-11-05T14:31:40.256&#43;0800: 504602.092: [CMS: 266865K-&amp;gt;266841K(873856K), 0.8590901 secs] 266865K-&amp;gt;266841K(1267072K), [Metaspace: 204152K-&amp;gt;204152K(1267712K)], 0.8595047 secs] [Times: user=0.86 sys=0.00, real=0.86 secs] 2019-11-05T14:31:41.117&#43;0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117&#43;0800: 504602.953: [CMS: 266841K-&amp;gt;266816K(873856K), 0.9109948 secs] 267218K-&amp;gt;266816K(1267072K), [Metaspace: 204153K-&amp;gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs] 2019-11-05T14:31:42.028&#43;0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028&#43;0800: 504603.865: [CMS: 266816K-&amp;gt;266769K(873856K), 1.0351283 secs] 266816K-&amp;gt;266769K(1267072K), [Metaspace: 204153K-&amp;gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]  FGC 前后，Metaspace 占用的内存没有得到任何释放。[Metaspace: 204153K-&amp;gt;204153K(1267712K)] 。这也就是反复 FGC 的原因。
 " />
-<meta name="twitter:site" content="https://ffutop.github.io/" />
+<meta name="twitter:site" content="https://www.ffutop.com/" />
 <meta name="twitter:creator" content="fangfeng" />
 <meta name="twitter:image" content="">
 
@@ -45,7 +45,7 @@
 <meta property="og:description" content="背景 近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，stop the world :&amp;lt; 从 gc.log 中，看到的原因是触及了 Metaspace 的阈值，进而引发了 FGC。
 2019-11-05T14:31:38.880&#43;0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880&#43;0800: 504600.716: [CMS2019-11-05T14:31:39.364&#43;0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs] (concurrent mode failure): 266828K-&amp;gt;266865K(873856K), 1.3752377 secs] 267430K-&amp;gt;266865K(1267072K), [Metaspace: 204152K-&amp;gt;204152K(1267712K)], 1.3757441 secs] [Times: user=1.36 sys=0.00, real=1.38 secs] 2019-11-05T14:31:40.256&#43;0800: 504602.092: [Full GC (Last ditch collection) 2019-11-05T14:31:40.256&#43;0800: 504602.092: [CMS: 266865K-&amp;gt;266841K(873856K), 0.8590901 secs] 266865K-&amp;gt;266841K(1267072K), [Metaspace: 204152K-&amp;gt;204152K(1267712K)], 0.8595047 secs] [Times: user=0.86 sys=0.00, real=0.86 secs] 2019-11-05T14:31:41.117&#43;0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117&#43;0800: 504602.953: [CMS: 266841K-&amp;gt;266816K(873856K), 0.9109948 secs] 267218K-&amp;gt;266816K(1267072K), [Metaspace: 204153K-&amp;gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs] 2019-11-05T14:31:42.028&#43;0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028&#43;0800: 504603.865: [CMS: 266816K-&amp;gt;266769K(873856K), 1.0351283 secs] 266816K-&amp;gt;266769K(1267072K), [Metaspace: 204153K-&amp;gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]  FGC 前后，Metaspace 占用的内存没有得到任何释放。[Metaspace: 204153K-&amp;gt;204153K(1267712K)] 。这也就是反复 FGC 的原因。
 " />
-<meta property="og:url" content="https://ffutop.github.io/posts/2019-11-07-groovyclassloader-fullgc/" />
+<meta property="og:url" content="https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/" />
 <meta property="og:site_name" content="GroovyClassLoader 引发的 FullGC" />
 <meta property="og:image" content="">
 <meta property="og:image:width" content="2048">
@@ -129,7 +129,7 @@
     
 <div class="post">
   <h1 class="post-title">
-    <a href="https://ffutop.github.io/posts/2019-11-07-groovyclassloader-fullgc/">GroovyClassLoader 引发的 FullGC</a></h1>
+    <a href="https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/">GroovyClassLoader 引发的 FullGC</a></h1>
   <div class="post-meta">
       
     <span class="post-date">
@@ -146,15 +146,15 @@
   
   <span class="post-tags">
     
-    #<a href="https://ffutop.github.io/tags/groovy/">Groovy</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/groovy/">Groovy</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/java/">Java</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/java/">Java</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/fullgc/">FullGC</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/fullgc/">FullGC</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/gc/">GC</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/gc/">GC</a>&nbsp;
     
-    #<a href="https://ffutop.github.io/tags/metaspace/">Metaspace</a>&nbsp;
+    #<a href="https://www.ffutop.com/tags/metaspace/">Metaspace</a>&nbsp;
     
   </span>
   
@@ -305,7 +305,7 @@ public class Main {
     <div class="pagination__buttons">
       
       <span class="button previous">
-        <a href="https://ffutop.github.io/posts/2019-12-14-https/">
+        <a href="https://www.ffutop.com/posts/2019-12-14-https/">
           <span class="button__icon">←</span>
           <span class="button__text">HTTPS 安全通讯如何上演？</span>
         </a>
@@ -313,7 +313,7 @@ public class Main {
       
       
       <span class="button next">
-        <a href="https://ffutop.github.io/posts/2019-10-17-random/">
+        <a href="https://www.ffutop.com/posts/2019-10-17-random/">
           <span class="button__text">随机数生成器拖慢 Tomcat 启动速度</span>
           <span class="button__icon">→</span>
         </a>
@@ -334,15 +334,15 @@ public class Main {
   <div class="footer__inner">
     
       <div class="copyright copyright--user">
-        <span>2018-2019 © ffutop</span>
+        <span>2018-2020 © ffutop</span>
         <span>:: Powered by <a href="http://gohugo.io">Hugo</a></span>
       </div>
     
   </div>
 </footer>
 
-<script src="https://ffutop.github.io/assets/main.js"></script>
-<script src="https://ffutop.github.io/assets/prism.js"></script>
+<script src="https://www.ffutop.com/assets/main.js"></script>
+<script src="https://www.ffutop.com/assets/prism.js"></script>
 
 
 <script type="text/x-mathjax-config">

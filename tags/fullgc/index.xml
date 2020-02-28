@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>FullGC on Utop&#39;s Blog</title>
-    <link>https://ffutop.github.io/tags/fullgc/</link>
+    <link>https://www.ffutop.com/tags/fullgc/</link>
     <description>Recent content in FullGC on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <copyright>2018-2019 © ffutop</copyright>
+    <copyright>2018-2020 © ffutop</copyright>
     <lastBuildDate>Wed, 06 Nov 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://ffutop.github.io/tags/fullgc/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.ffutop.com/tags/fullgc/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>GroovyClassLoader 引发的 FullGC</title>
-      <link>https://ffutop.github.io/posts/2019-11-07-groovyclassloader-fullgc/</link>
+      <link>https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/</link>
       <pubDate>Wed, 06 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://ffutop.github.io/posts/2019-11-07-groovyclassloader-fullgc/</guid>
+      <guid>https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/</guid>
       <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
 
 &lt;p&gt;近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，&lt;strong&gt;stop the world&lt;/strong&gt; :&amp;lt; 从 &lt;code&gt;gc.log&lt;/code&gt; 中，看到的原因是触及了 &lt;code&gt;Metaspace&lt;/code&gt; 的阈值，进而引发了 FGC。&lt;/p&gt;
