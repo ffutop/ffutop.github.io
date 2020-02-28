@@ -3,6 +3,41 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://ffutop.github.io/tags/dns/</loc>
+    <lastmod>2020-02-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/tags/java/</loc>
+    <lastmod>2020-02-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/posts/</loc>
+    <lastmod>2020-02-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/tags/</loc>
+    <lastmod>2020-02-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/</loc>
+    <lastmod>2020-02-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ffutop.github.io/posts/2020-02-28-db-transfer-based-on-dns/</loc>
+    <lastmod>2020-02-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://ffutop.github.io/tags/consensus/</loc>
     <lastmod>2020-02-17T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -15,25 +50,7 @@
   </url>
   
   <url>
-    <loc>https://ffutop.github.io/posts/</loc>
-    <lastmod>2020-02-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://ffutop.github.io/tags/raft/</loc>
-    <lastmod>2020-02-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://ffutop.github.io/tags/</loc>
-    <lastmod>2020-02-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://ffutop.github.io/</loc>
     <lastmod>2020-02-17T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
@@ -127,12 +144,6 @@
   <url>
     <loc>https://ffutop.github.io/posts/2019-11-07-groovyclassloader-fullgc/</loc>
     <lastmod>2019-11-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ffutop.github.io/tags/java/</loc>
-    <lastmod>2019-11-06T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
