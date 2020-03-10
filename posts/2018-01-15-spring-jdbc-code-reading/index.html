@@ -248,11 +248,11 @@ public class Example {
 <p>本节提供对《Spring-JDBC 源码学习》完整学习过程的一个梳理：</p>
 
 <ol>
-<li><a href="http://blog.csdn.net/dormousenone/article/details/79035440">JdbcTemplate</a> 一节作为学习 Spring-jdbc 的切入点，是 org.springframework.jdbc.core 包中的核心类，是一个提供不同场景下数据库操作的模板类。主要描述其持有的属性 DataSource 等以及其实现的方法。</li>
-<li><a href="http://blog.csdn.net/dormousenone/article/details/79037012">DataSource</a> 一节承接 JdbcTemplate 一节，提供 Spring-jdbc 对数据源的一个包装与应用。同时描述其核心方法 getConnection(…) 的实现。</li>
-<li><a href="http://blog.csdn.net/dormousenone/article/details/79042212">DriverManager</a> 描述其对不同数据库供应商提供的驱动的管理与使用方法。同时简单描述通过具体驱动获得一个连接的实现。</li>
-<li><a href="http://blog.csdn.net/dormousenone/article/details/79046865">PreparedStatement &amp; CallableStatement</a> 一节主要表述 Spring-jdbc 如何对执行查询的流程进行了封装。特别是对于 PreparedStatement 与 CallableStatement 这类预置可变 SQL 语句，在执行前必须对其中可变参数进行补全的 Statement 。</li>
-<li><a href="http://blog.csdn.net/dormousenone/article/details/79062275">ResultSet</a> 描述 Spring-jdbc 如何对结果集进行处理，提供了多种不同的接口实现不同的处理逻辑。这种封装后的操作可以极大地简化直接使用 Java 原生 JDBC 所必须的硬编码提取数据的问题。</li>
+<li><a href="https://blog.csdn.net/dormousenone/article/details/79035440">JdbcTemplate</a> 一节作为学习 Spring-jdbc 的切入点，是 org.springframework.jdbc.core 包中的核心类，是一个提供不同场景下数据库操作的模板类。主要描述其持有的属性 DataSource 等以及其实现的方法。</li>
+<li><a href="https://blog.csdn.net/dormousenone/article/details/79037012">DataSource</a> 一节承接 JdbcTemplate 一节，提供 Spring-jdbc 对数据源的一个包装与应用。同时描述其核心方法 getConnection(…) 的实现。</li>
+<li><a href="https://blog.csdn.net/dormousenone/article/details/79042212">DriverManager</a> 描述其对不同数据库供应商提供的驱动的管理与使用方法。同时简单描述通过具体驱动获得一个连接的实现。</li>
+<li><a href="https://blog.csdn.net/dormousenone/article/details/79046865">PreparedStatement &amp; CallableStatement</a> 一节主要表述 Spring-jdbc 如何对执行查询的流程进行了封装。特别是对于 PreparedStatement 与 CallableStatement 这类预置可变 SQL 语句，在执行前必须对其中可变参数进行补全的 Statement 。</li>
+<li><a href="https://blog.csdn.net/dormousenone/article/details/79062275">ResultSet</a> 描述 Spring-jdbc 如何对结果集进行处理，提供了多种不同的接口实现不同的处理逻辑。这种封装后的操作可以极大地简化直接使用 Java 原生 JDBC 所必须的硬编码提取数据的问题。</li>
 </ol>
 
 <h2 id="jdbctemplate">JdbcTemplate</h2>

@@ -236,7 +236,7 @@
 
 <p>遵循 TC Qdisc 的生命周期，首先要介绍的是 Qdisc 的创建流程。不过在此之前，看了解下相关的数据结构。</p>
 
-<p><img src="http://img.ffutop.com/D4466735-ED98-4A94-9C7A-FD59F7791988.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/D4466735-ED98-4A94-9C7A-FD59F7791988.png" alt="" /></p>
 
 <pre><code class="language-c">struct net_device
 {
@@ -307,7 +307,7 @@ struct Qdisc {
 
 <p>TC 的实施与网络设备密切相关。跳过设备的注册和创建流程，设备状态由 <code>state DOWN</code> 切换到 <code>state UP</code> 标志着设备正式启用</p>
 
-<p><img src="http://img.ffutop.com/BF9E5268-8C81-499D-82B6-20DA7DF57473.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/BF9E5268-8C81-499D-82B6-20DA7DF57473.png" alt="" /></p>
 
 <p>对应到内核流程，调用栈类似：</p>
 

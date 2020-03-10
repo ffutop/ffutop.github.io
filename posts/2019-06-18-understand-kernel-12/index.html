@@ -166,7 +166,7 @@ Copied From docker.com
   <div class="post-content">
     <p>由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。</p>
 
-<p><img src="http://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png" alt="Containerd VS VM" /></p>
+<p><img src="https://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png" alt="Containerd VS VM" /></p>
 
 <p><small><center>Copied From docker.com</center></small></p>
 
@@ -325,7 +325,7 @@ static struct nsproxy *create_new_namespaces(unsigned long flags,
 }
 </code></pre>
 
-<p><img src="http://img.ffutop.com/B5647B7D-4928-448F-88CA-D07A4039107A.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/B5647B7D-4928-448F-88CA-D07A4039107A.png" alt="" /></p>
 
 <p>其它命名空间的操作类似，都是依据相关的 clone flag 决定是拷贝一份新的命名空间，或者是继续使用老的命名空间。而通过拷贝新的命名空间，相关的资源维护也就变得独立于原有的命名空间，从而达到资源隔离的目的。</p>
 
@@ -335,7 +335,7 @@ static struct nsproxy *create_new_namespaces(unsigned long flags,
 
 <p>以 PID 命名空间为例，现在需要为新的任务分配一个新的任务id，调用链开始于 <code>clone -&gt; do_fork -&gt; copy_process -&gt; alloc_pid</code>。</p>
 
-<p><img src="http://img.ffutop.com/748138AC-65B2-489B-86F2-94FFD7A64592.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/748138AC-65B2-489B-86F2-94FFD7A64592.png" alt="" /></p>
 
 <pre><code class="language-c">static struct task_struct *copy_process(...)
 {
@@ -484,23 +484,23 @@ int main(int argc, char **argv)
 <li><p><strong>hierarchy</strong>，层级树，每个子系统下，会有多个不同的控制组，它们共同维护起来树形的结构。在没有特别配置的情况下，每个子控制组将继承父控制组的限制。</p></li>
 </ol>
 
-<p><img src="http://img.ffutop.com/3527AE73-94CD-4F49-8ECD-2EB7163A545D.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/3527AE73-94CD-4F49-8ECD-2EB7163A545D.png" alt="" /></p>
 
 <h3 id="cgroup-组织结构">Cgroup 组织结构</h3>
 
-<p><img src="http://img.ffutop.com/6344FE65-3A6D-42DF-9A42-046D38EA3F69.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/6344FE65-3A6D-42DF-9A42-046D38EA3F69.png" alt="" /></p>
 
 <p>一个任务从属于一个控制组集合中(例如属于<code>cpu</code>子系统控制组-1，<code>mem</code>子系统控制组-3…)。将不同子系统控制组整合起来的数据结构就是 <code>css_set</code>(cgroup subsys state set)。一个控制组集合可以维护多个任务(通过列表的形式链接)。</p>
 
-<p><img src="http://img.ffutop.com/7C9A5B57-8A2A-47DF-B7CA-EA9BEAAFCF86.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/7C9A5B57-8A2A-47DF-B7CA-EA9BEAAFCF86.png" alt="" /></p>
 
 <p><code>css_set</code> 控制组集合中维护了一个 css 列表，每个 <code>cgroup_subsys_state</code> 执行一个 <code>cgroup</code> 结构（包含某一子系统控制组的所有信息）。通过这样的方式，任务就和一系列的子系统控制组联系起来了。</p>
 
-<p><img src="http://img.ffutop.com/B454475C-D06A-4B48-B273-66AB96091CE9.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/B454475C-D06A-4B48-B273-66AB96091CE9.png" alt="" /></p>
 
 <p>反向的，通过 cgroup 结构查找所有处于其控制下的任务。这里的 <code>cgroup</code> 与 <code>css_set</code> 是一个多对多的关系。一个 <code>css_set</code> 整合了多个 <code>cgroup</code> ，一个 <code>cgroup</code> 可以被多个 <code>css_set</code> 利用。<code>cg_cgroup_link</code> 就是一个处于中间的关联结构。（多对多的关系可以参考数据库建表，两个实体表 A, B 间需要通过第三张表 C 来描述 (A-id, B-id) 的关系）。</p>
 
-<p><img src="http://img.ffutop.com/F97AEA47-8FBF-4D0D-A16F-D421816CF889.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/F97AEA47-8FBF-4D0D-A16F-D421816CF889.png" alt="" /></p>
 
 <p>最后来看看 <code>cgroup_subsys_state</code> 结构，各个子系统结构的第一个参数都是 <code>cgroup_subsys_state_css</code>，通过内核的 <code>container_of</code> 函数，<code>subsys[]</code> 的每个元素都可以分别被认知为 <code>cpuset</code> , <code>mem_cgroup</code> 等。</p>
 

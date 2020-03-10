@@ -171,11 +171,11 @@
 
 <p>从 TCP/IP 协议栈上看，SSL/TLS 工作在应用层，作为基础性的安全协议向上服务其它应用层协议(FTP, HTTP, SSH 等)。普遍的，应用层协议使用两个不同的常用端口来区分服务是否建立在 SSL/TLS 之上。比如 HTTP 协议的 80, 443、FTP 协议的 21, 990。</p>
 
-<p><img src="http://img.ffutop.com/EEDB4BEE-235D-4272-A504-4D19A7EB4C5D.png" alt="TCP/IP Stack" /></p>
+<p><img src="https://img.ffutop.com/EEDB4BEE-235D-4272-A504-4D19A7EB4C5D.png" alt="TCP/IP Stack" /></p>
 
 <h2 id="ssl-tls-运行过程">SSL/TLS 运行过程</h2>
 
-<p><img src="http://img.ffutop.com/8BF32274-570C-4B9D-92B5-8344990CB339.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/8BF32274-570C-4B9D-92B5-8344990CB339.png" alt="" /></p>
 
 <p>SSL/TLS 的核心是为上层协议(本文特指HTTP协议)提供安全性保障，即对信息进行加密。</p>
 
@@ -195,7 +195,7 @@
 
 <p>其中对称加密算法和压缩算法的协商比较容易实现，毕竟算法实现都是公开的。难点在于如何保证在不安全的网络环境下协商密钥。</p>
 
-<p><img src="http://img.ffutop.com/D7213240-534E-4D87-9FA8-2E5F59542BE3.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/D7213240-534E-4D87-9FA8-2E5F59542BE3.png" alt="" /></p>
 
 <p>握手过程采用非对称加密来确保通信双方对密钥的协商。涉及几个阶段：</p>
 
@@ -209,7 +209,7 @@
 <li><p>加密方案列表的每项方案均是密钥交换算法、批量加密算法、摘要算法的组合。密钥交换使用非对称加密算法实施，提供的选项包括 RSA、Diffie-Hellman 算法（包括临时公钥的变种）。</p></li>
 </ul>
 
-<p><img src="http://img.ffutop.com/CF2561B6-1819-4844-B9C4-F130511271B3.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/CF2561B6-1819-4844-B9C4-F130511271B3.png" alt="" /></p>
 
 <h3 id="server-hello-阶段">Server Hello 阶段</h3>
 
@@ -219,7 +219,7 @@
 <li>会话ID: Server 端收到 Client 的会话ID 后，将优先从服务器的会话缓存中查找匹配项；如果发现匹配，服务器一般会恢复原有会话，此时回复的会话ID必须与 Client 发送的会话ID一致。如果没有匹配，或服务端不同意恢复会话，则响应一个不同的会话ID，或返回为空。</li>
 </ul>
 
-<p><img src="http://img.ffutop.com/900B4A32-A47A-4439-AA1C-055C8FD1C825.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/900B4A32-A47A-4439-AA1C-055C8FD1C825.png" alt="" /></p>
 
 <h3 id="server-certificate-阶段">Server Certificate 阶段</h3>
 

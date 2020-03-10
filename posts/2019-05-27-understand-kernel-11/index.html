@@ -294,7 +294,7 @@ struct ipc_namespace init_ipc_ns = {
 
 <h2 id="信号量">信号量</h2>
 
-<p><img src="http://img.ffutop.com/7A24F185-3480-4C29-A006-C66BB54E046F.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/7A24F185-3480-4C29-A006-C66BB54E046F.png" alt="" /></p>
 
 <p>上图给出了各个结构间的关系，通过当前任务指向的 IPC 命名空间，找到 <code>struct ipc_ids</code> ，内核通过 <code>ipcs_idr</code> 找到 ID 到指针的映射关系，从而得到所需的 <code>kern_ipc_perm</code> 实例。同时 <code>kern_ipc_perm</code> 作为结构 <code>sem_array</code> 的第一个元素，使用技巧就可以直接定位到 <code>struct sem_array</code> 。</p>
 
@@ -339,7 +339,7 @@ int ipcget(struct ipc_namespace *ns, struct ipc_ids *ids,
 }
 </code></pre>
 
-<p><img src="http://img.ffutop.com/DED2216C-127B-4036-84D8-33A2E44C5B33.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/DED2216C-127B-4036-84D8-33A2E44C5B33.png" alt="" /></p>
 
 <p>这里额外展示了 <code>msgget</code>, <code>shmget</code>，分别意味着消息队列、共享内存。获取 IPC 对象的流程都是相同的，有所区别的只是获取、写入和存储数据的方式。</p>
 
@@ -698,11 +698,11 @@ out_free:
 
 <p>至于消息队列和共享内存，都利用了类似的技术，通过在 IPC 命名空间下，使用 <code>struct idr</code> 做 KEY, VALUE 的管理，从而维护起了一系列互不干扰的消息队列、共享内存。</p>
 
-<p><img src="http://img.ffutop.com/409ECF12-A0E5-4B0F-AD96-FE9EA73FD972.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/409ECF12-A0E5-4B0F-AD96-FE9EA73FD972.png" alt="" /></p>
 
 <h2 id="共享内存">共享内存</h2>
 
-<p><img src="http://img.ffutop.com/85BB67B8-0EE1-4657-8242-760645A06ED1.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/85BB67B8-0EE1-4657-8242-760645A06ED1.png" alt="" /></p>
 
 <h2 id="结束">结束</h2>
 

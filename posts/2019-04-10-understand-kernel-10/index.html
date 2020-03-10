@@ -551,12 +551,12 @@ asmlinkage long sys_gettid(void)
 <li>协作式，只有当任务主动放弃对CPU的占用，才能轮到下一个任务。</li>
 </ol>
 
-<p>对于用户级线程来说，内核无法意识到这些线程的存在，硬件发起的所有中断又都被内核捕获。因此，想要实现抢占式是不可能完成的任务（至少以本人目前所知是不可能的）。故协作式线程调度是用户级线程的唯一选择。而协作式就意味着是由线程硬编码主动放弃任务执行（<code>yield</code> / <code>schedule</code> / etc.）。如此这般，与事件驱动下，不同代码片之间的调度又是何其相似。当然，只是开个玩笑，如果都一样了，直接用事件驱动不就OK了。线程之所以是线程，有其独特的定义在。不过不再细说，可以参考 <a href="http://courses.cs.vt.edu/cs5204/fall09-kafura/Presentations/Threads-VS-Events.pdf">Threads vs Events</a></p>
+<p>对于用户级线程来说，内核无法意识到这些线程的存在，硬件发起的所有中断又都被内核捕获。因此，想要实现抢占式是不可能完成的任务（至少以本人目前所知是不可能的）。故协作式线程调度是用户级线程的唯一选择。而协作式就意味着是由线程硬编码主动放弃任务执行（<code>yield</code> / <code>schedule</code> / etc.）。如此这般，与事件驱动下，不同代码片之间的调度又是何其相似。当然，只是开个玩笑，如果都一样了，直接用事件驱动不就OK了。线程之所以是线程，有其独特的定义在。不过不再细说，可以参考 <a href="https://courses.cs.vt.edu/cs5204/fall09-kafura/Presentations/Threads-VS-Events.pdf">Threads vs Events</a></p>
 
 <h2 id="参考">参考</h2>
 
 <p>[1]. Mauerer W. Professional Linux kernel architecture[M]. John Wiley &amp; Sons, 2010.
-[2]. <a href="http://lkml.iu.edu/hypermail/linux/kernel/9608/0191.html">Linus Torvalds. Re: proc fs and shared pids</a>[EL/OL]. Aug 6th, 1996.
+[2]. <a href="https://lkml.iu.edu/hypermail/linux/kernel/9608/0191.html">Linus Torvalds. Re: proc fs and shared pids</a>[EL/OL]. Aug 6th, 1996.
 [3]. <a href="https://randu.org/tutorials/threads/">Multithreaded Programming (POSIX pthreads Tutorial)</a>[EL/OL].
 [4]. <a href="https://blog.csdn.net/u012432778/article/details/47378321">线程模型</a>[EL/OL].
 [5]. <a href="https://www.evanjones.ca/software/threading.html">Implementing a Thread Library on Linux</a>[EL/OL]. Dec 10th, 2003.</p>

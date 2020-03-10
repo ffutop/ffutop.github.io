@@ -260,15 +260,15 @@ public class Main {
 
 <p>回过头来再审视了一遍 dump 下来的 Java 堆。从 <em>duplicate_classes</em> 也进一步证实了上面猜测的原因。</p>
 
-<p><img src="http://img.ffutop.com/11FB209B-8635-4ACC-8812-A0BA6133376F.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/11FB209B-8635-4ACC-8812-A0BA6133376F.png" alt="" /></p>
 
 <p>每次加载的脚本都被认为是各不相同的类，并在加载的同时被 Groovy 全局的 ClassInfo 做了缓存。</p>
 
-<p><img src="http://img.ffutop.com/FB6CA0BF-992E-4199-BF57-35C31D6D3C51.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/FB6CA0BF-992E-4199-BF57-35C31D6D3C51.png" alt="" /></p>
 
 <p>至于为何 &gt;= 2.4.8 版本的 groovy 没有问题，代码出现了重要变更。<code>klass</code> 由 <code>StrongReference</code> 变成了 <code>WeakReference</code> 。因此，也就能够保证在 GC 时回收这个引用。</p>
 
-<p><img src="http://img.ffutop.com/9F91AA9F-BAB4-47C3-B8CE-DC8AFEE5480A.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/9F91AA9F-BAB4-47C3-B8CE-DC8AFEE5480A.png" alt="" /></p>
 
 <p>进一步的，Metaspace 存储的类的元数据信息，从收集到的信息来说，需要满足下列三个条件，才会被回收（未经考证）：</p>
 
@@ -288,11 +288,11 @@ public class Main {
 
 <p>附上升级版本后的 Metaspace 使用情况。</p>
 
-<p><img src="http://img.ffutop.com/944505AE-582A-4D25-80CC-F008E5DD1ECF.png" alt="optimized" /></p>
+<p><img src="https://img.ffutop.com/944505AE-582A-4D25-80CC-F008E5DD1ECF.png" alt="optimized" /></p>
 
 <h2 id="参考">参考</h2>
 
-<p>[1]. <a href="http://lovestblog.cn/blog/2016/10/29/metaspace/">JVM源码分析之Metaspace解密</a>
+<p>[1]. <a href="https://lovestblog.cn/blog/2016/10/29/metaspace/">JVM源码分析之Metaspace解密</a>
 [2]. <a href="https://issues.apache.org/jira/browse/GROOVY-7683?focusedCommentId=15066871&amp;page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-15066871">GROOVY-7683</a></p>
   </div>
   

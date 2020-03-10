@@ -193,7 +193,7 @@
 
 <p><code>arg_start</code>, <code>arg_end</code>, <code>env_start</code>, <code>env_end</code> 分别描述命令参数和环境变量在虚拟内存地址中所处的位置。</p>
 
-<p><img src="http://img.ffutop.com/EEF5961B-F971-4329-A7DB-B531B329397B.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/EEF5961B-F971-4329-A7DB-B531B329397B.png" alt="" /></p>
 
 <p>新任务的启动，通常是通过 <code>fork</code>, <code>clone</code> 等系统调用拷贝父任务几乎所有的状态和资源指针，然后通过 <code>execve</code> 系统调用替换可执行文件，重置虚拟内存等其他相关资源。</p>
 

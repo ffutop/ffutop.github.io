@@ -334,7 +334,7 @@ CONSTANT_Methodref_info {
 <code>cp_info[1].name_and_type_index = 0x004b = 75</code>。表示指向的是常量池第 75 个元素表示的 NameAndType 结构</p>
 
 <p>对于这部分内容的理解，如果觉得有能够阅读英文文档，可以参考 <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html">The Java® Virtual Machine Specification Chap 4.</a>
-否则，可以选择 <a href="http://icyfenix.iteye.com/blog/1256329">Java 虚拟机规范(Java SE 7 版) 第四章</a>
+否则，可以选择 <a href="https://icyfenix.iteye.com/blog/1256329">Java 虚拟机规范(Java SE 7 版) 第四章</a>
 并尝试根据经编译后.class文件的二进制码进行人工解析，以加深对此的理解。</p>
 
 <h3 id="more">more&hellip;</h3>
@@ -359,7 +359,7 @@ CONSTANT_Methodref_info {
 
 <h3 id="代码组织形式">代码组织形式</h3>
 
-<p><img src="http://asm.ow2.io/asm-package-dependencies.svg" alt="Code Organization" /></p>
+<p><img src="https://asm.ow2.io/asm-package-dependencies.svg" alt="Code Organization" /></p>
 
 <ul>
 <li>org.objectweb.asm 作为核心包，定义了 ASM 访问者 API 以及两个核心类 ClassReader &amp; ClassWriter 来读写编译后的 Java 类。该包不依赖于其他包，且可单独使用</li>
@@ -377,7 +377,7 @@ CONSTANT_Methodref_info {
 
 <p>核心包由 28 个类(接口) 组成。如果不考虑 Opcodes 接口, 5 个抽象访问者类(AnnotationVistitor, ClassVisitor, FieldVisitor, MethodVisitor and ModuleVisitor), 6 个工具类(ConstantDynamic, Contants, Handle, Type, TypePath and TypeReference), 剩下 16 个类的由下图提供一个粗略的展示。</p>
 
-<p><img src="http://asm.ow2.io/asm-package-overview.svg" alt="" /></p>
+<p><img src="https://asm.ow2.io/asm-package-overview.svg" alt="" /></p>
 
 <p>编译类到访问事件的转换只由一个类 ClassReader 以及辅助类 Context 完成。其逆过程由以 ClassWriter 为核心的其它 14 个类完成。</p>
 
@@ -735,7 +735,7 @@ public class Trie {
 <h2 id="参考">参考</h2>
 
 <p>[1]: <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html">https://docs.oracle.com/javase/specs/jvms/se8/html/index.html</a> &ldquo;Java Virtual Machine Specification&rdquo;
-[2]: <a href="http://icyfenix.iteye.com/blog/1256329">http://icyfenix.iteye.com/blog/1256329</a> &ldquo;Java虚拟机规范（Java SE 7 中文版）&rdquo;</p>
+[2]: <a href="https://icyfenix.iteye.com/blog/1256329">https://icyfenix.iteye.com/blog/1256329</a> &ldquo;Java虚拟机规范（Java SE 7 中文版）&rdquo;</p>
 
 <pre><code class="language-plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 

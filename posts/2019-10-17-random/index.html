@@ -251,7 +251,7 @@ stop run()
 
 <p>当需要随机数时，从熵池中提取随机因子，经过SHA-1算法加工后就成了随机数。当熵值计数器低于预设的阈值（确保有足够的因子能够生成安全的随机数）时，此时随机数生成器将陷入阻塞。</p>
 
-<p><img src="http://img.ffutop.com/F97E08F1-ADAB-42BF-AB3F-6AF3FD013958.png" alt="" /></p>
+<p><img src="https://img.ffutop.com/F97E08F1-ADAB-42BF-AB3F-6AF3FD013958.png" alt="" /></p>
 
 <p><code>/dev/random</code> 和 <code>/dev/urandom</code> 作为 Linux 系统内核向用户层提供的两个随机数生成接口，工作形式分别是阻塞式与非阻塞式。当熵池收集的噪音不足时，<code>/dev/random</code> 的策略是让当前任务主动陷入 Sleeping 状态。而 <code>/dev/urandom</code> 则通过牺牲一定程度的随机性来保证随机数的生成效率。</p>
 

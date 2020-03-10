@@ -161,7 +161,7 @@
 
 <p>新生的 DNS 带来了全新的域名-IP映射维护方案。树形结构的名称空间将权威服务器的工作进一步细分。13台根服务器不提供所有域名的解析服务，而只是提供顶级域名（顶级名称空间，Like COM. CN. etc.）的解析。进一步的，顶级域名com的权威服务器负责提供 xxx.com 的二级域名解析工作。以此类推&hellip;</p>
 
-<p><img src="http://img.ffutop.com/69AFC70B-55E5-4976-B2BD-4093D1168CCD.png" alt="DNS树形结构" /></p>
+<p><img src="https://img.ffutop.com/69AFC70B-55E5-4976-B2BD-4093D1168CCD.png" alt="DNS树形结构" /></p>
 
 <p><small>树形结构的域名</small></p>
 
@@ -215,13 +215,13 @@ m.gtld-servers.net.	172800	IN	A	192.55.83.30
 
 <p>我们每次请求对一个域名进行解析，真的有这么多个查询请求吗？早期集中式的服务器服务能力有限，但现在的服务器依然无法逃脱服务上限，上述的解析必然地有一个对根域名服务器的请求，也就意味着，并没有改变集中式的不足？自然不是。撇开权威域名服务器，与我们上网关系更密切的，是代理 DNS 服务器。诸如 Google 的 <code>8.8.8.8</code> ，114dns 的 <code>114.114.114.114</code>，还有更多的运营商的 DNS 服务，局域网内的路由器的 DNS 服务，都是这类代理域名服务器。域名解析的请求被它们接收，并代替我们执行上述递归查询的动作。而这类服务器对查询得到的结果，会按照记录所配置的 TTL (Time to Live）进行缓存，在缓存生效期间，不再重复向权威服务器进行查询。</p>
 
-<p><img src="http://img.ffutop.com/EFA8A42E-5C4D-4153-9303-517D2429416F.png" alt="工作流程" /></p>
+<p><img src="https://img.ffutop.com/EFA8A42E-5C4D-4153-9303-517D2429416F.png" alt="工作流程" /></p>
 
 <p><small>域名解析流程</small></p>
 
 <p>在通常情况下，代理服务器也不是单级的，代理服务器也存在上游代理服务器，对于本级代理服务器没缓存的记录，优先向上级代理服务器询问。这种代理的方案极大地降低了对权威服务器的压力。但即使如此，权威服务器每天仍然承受着大量的请求。下图展示了根域名服务器A每日的请求量，对于 IPv4 UDP 请求，平均每日有 60 亿请求量。</p>
 
-<p><img src="http://img.ffutop.com/0B3FDDEF-5A11-4DBE-9D11-FF4D085B8AC1.png" alt="A-root Query Volume" /></p>
+<p><img src="https://img.ffutop.com/0B3FDDEF-5A11-4DBE-9D11-FF4D085B8AC1.png" alt="A-root Query Volume" /></p>
 
 <p><small>根域名服务器A每日请求量</small></p>
 
@@ -368,7 +368,7 @@ public InetAddress[] get() throws UnknownHostException {
 
 <p>我们计划将服务 A 的主从数据库 MDB/RDB 从老实例集群迁移到新实例集群。MDB/RBD 的实例域名不变，但背后绑定的两个 IP 将发生变化。为了规避 Java DNS 缓存的影响，我们选择了最简单的停机重启。至于 DNS 记录更新，使用云服务商的内网 DNS 服务，在方案中，它被认为是与自建内网 DNS 服务器同等的服务。虽然 TTL = 3600，但新记录将完全覆盖老记录（毕竟中间没有代理服务器的存在，可以简单地看做是集中式的服务，新老记录做替换。T_T 这恰恰是方案中一个致命的问题）</p>
 
-<p><img src="http://img.ffutop.com/C8DB7DA6-0207-42CC-B112-3B77FF2CD6E7.png" alt="切换方案" /></p>
+<p><img src="https://img.ffutop.com/C8DB7DA6-0207-42CC-B112-3B77FF2CD6E7.png" alt="切换方案" /></p>
 
 <p><small>数据库切换方案</small></p>
 
@@ -378,7 +378,7 @@ public InetAddress[] get() throws UnknownHostException {
 
 <p>从表现上来看，这个内网 DNS 服务更像是代理 DNS 服务器的存在，有限的区别在于，额外承担了内网域名解析的功能，通过控制台新增/修改的域名记录将主动下发给这个服务器，但它不会覆盖原有的记录（原记录将基于 TTL 自动过期，但不会被主动删除）。</p>
 
-<p><img src="http://img.ffutop.com/DFFB607F-C3C8-40DC-834D-9A33D29B1E86.png" alt="" />
+<p><img src="https://img.ffutop.com/DFFB607F-C3C8-40DC-834D-9A33D29B1E86.png" alt="" />
 <small>DNS 记录状态</small></p>
 
 <p>记录将保持上图的状态，同时存在新老记录，并表现为轮询的方式对 DNS 解析请求进行响应。</p>
@@ -417,7 +417,7 @@ public InetAddress[] get() throws UnknownHostException {
 
 <p>[3]. IANA, Domain Name Services <a href="https://www.iana.org/domains">https://www.iana.org/domains</a></p>
 
-<p>[4]. Versign, Root name servers <strong>A</strong>. <a href="http://a.root-servers.org/index.html">http://a.root-servers.org/index.html</a></p>
+<p>[4]. Versign, Root name servers <strong>A</strong>. <a href="https://a.root-servers.org/index.html">https://a.root-servers.org/index.html</a></p>
   </div>
   
   <div class="pagination">

