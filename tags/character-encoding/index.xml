@@ -5,8 +5,7 @@
     <link>https://www.ffutop.com/tags/character-encoding/</link>
     <description>Recent content in Character Encoding on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <copyright>2018-2020 © ffutop</copyright>
+    <language>zh-cmn-Hans-CN</language>
     <lastBuildDate>Sat, 02 Feb 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/character-encoding/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>字符集与字符编码</title>
-      <link>https://www.ffutop.com/posts/2019-02-02-unicode/</link>
+      <link>https://www.ffutop.com/2019/02/02/%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/</link>
       <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-02-02-unicode/</guid>
+      <guid>https://www.ffutop.com/2019/02/02/%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/</guid>
       <description>{% pdf https://drive.google.com/file/d/1MuBNtZPMWCt9kGlpqiAtG3i3Al2MaknY/preview %}</description>
     </item>
     

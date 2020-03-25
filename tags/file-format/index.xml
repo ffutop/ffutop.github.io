@@ -5,8 +5,7 @@
     <link>https://www.ffutop.com/tags/file-format/</link>
     <description>Recent content in File Format on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <copyright>2018-2020 © ffutop</copyright>
+    <language>zh-cmn-Hans-CN</language>
     <lastBuildDate>Fri, 10 May 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/file-format/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>PNG 文件格式</title>
-      <link>https://www.ffutop.com/posts/2019-05-10-png-structure/</link>
+      <link>https://www.ffutop.com/2019/05/10/png-%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/</link>
       <pubDate>Fri, 10 May 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-05-10-png-structure/</guid>
+      <guid>https://www.ffutop.com/2019/05/10/png-%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/</guid>
       <description>&lt;p&gt;PNG (Portable Network Graphics) 文件格式(第二版)。PNG 文件格式由两类结构——&lt;code&gt;PNG 签名(PNG Signature)&lt;/code&gt;和若干&lt;code&gt;数据块(chunk)&lt;/code&gt;组成。&lt;/p&gt;
 
 &lt;p&gt;PNG 签名相当于其他文件格式中的魔数，用于声明二进制数据所代表的格式。类似的有 &lt;code&gt;JAVA&lt;/code&gt; class 文件的 &lt;code&gt;ca fe ba be&lt;/code&gt;、&lt;code&gt;ELF&lt;/code&gt; 文件的 &lt;code&gt;7f 45 4c 46&lt;/code&gt; (.ELF) 。PNG 签名使用 &lt;code&gt;89 50 4e 47 0d 0a 1a 0a&lt;/code&gt; (.PNG&amp;hellip;.) 作为魔数。&lt;/p&gt;

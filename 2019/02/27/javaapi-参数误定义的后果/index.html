@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.55.6" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/2019/02/27/javaapi-%E5%8F%82%E6%95%B0%E8%AF%AF%E5%AE%9A%E4%B9%89%E7%9A%84%E5%90%8E%E6%9E%9C/" />
+  <link rel="canonical" href="https://www.ffutop.com/2019/02/27/javaapi-%E5%8F%82%E6%95%B0%E8%AF%AF%E5%AE%9A%E4%B9%89%E7%9A%84%E5%90%8E%E6%9E%9C/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/www.ffutop.com\/"
+      },
+      "articleSection" : "posts",
+      "name" : "【Java】API 参数误定义的后果",
+      "headline" : "【Java】API 参数误定义的后果",
+      "description" : "\x3cp\x3e工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参\/出参）的情况。\x3c\/p\x3e\n\n\x3cp\x3e想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！\x3c\/p\x3e\n\n\x3cp\x3e想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把\x3ccode\x3evoid add(int)\x3c\/code\x3e API 改写成 \x3ccode\x3eint add(int)\x3c\/code\x3e，可能得到的大多数回答都是可以。\x3c\/p\x3e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "27270",
+      "datePublished": "2019-02-27 00:00:00 \x2b0000 UTC",
+      "dateModified" : "2019-02-27 00:00:00 \x2b0000 UTC",
+      "url" : "https:\/\/www.ffutop.com\/2019\/02\/27\/javaapi-%E5%8F%82%E6%95%B0%E8%AF%AF%E5%AE%9A%E4%B9%89%E7%9A%84%E5%90%8E%E6%9E%9C\/",
+      "keywords" : [ "Java","API", ]
+  }
+</script>
+<title>【Java】API 参数误定义的后果 - Utop&#39;s Blog</title>
+  <meta property="og:title" content="【Java】API 参数误定义的后果 - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。
+
+想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！
+
+想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把void add(int) API 改写成 int add(int)，可能得到的大多数回答都是可以。" />
+  <meta name="description" content="工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。
+
+想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！
+
+想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把void add(int) API 改写成 int add(int)，可能得到的大多数回答都是可以。" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+
+<body>
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">【Java】API 参数误定义的后果</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2019-02-27 00:00:00 UTC">
+                27 Feb 2019
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。</p>
+
+<p>想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！</p>
+
+<p>想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把<code>void add(int)</code> API 改写成 <code>int add(int)</code>，可能得到的大多数回答都是可以。</p>
+
+<h2 id="看山是山">看山是山</h2>
+
+<p>首先举一个具体点的例子来描述（为了方便，就不定义<code>CountService</code>的接口类了）</p>
+
+<pre><code class="language-java">package com.ffutop.signature;
+
+/**
+ * 主类
+ * @author fangfeng
+ * @since 2019-02-26
+ */
+public class Main {
+
+    public static void main(String[] args) {
+        CountService countService = new CountService();
+        countService.add(1);
+        System.out.println(String.format(&quot;currentValue = %d&quot;, countService.getCurrentValue()));
+    }
+}
+</code></pre>
+
+<pre><code class="language-java">package com.ffutop.signature;
+
+/**
+ * @author fangfeng
+ * @since 2019-02-26
+ */
+public class CountService {
+
+    private int currentValue = 0;
+
+    /**
+     * 请把 add(int) 理解成 API
+     * 虽然已经做了实现
+     */
+    public void add(int addend) {
+        currentValue += addend;
+    }
+
+    public int getCurrentValue() {
+        return currentValue;
+    }
+}
+</code></pre>
+
+<p>现在已经有 <code>void add(int)</code> 方法，完成的工作是累加。现在要把 API 改成 <code>int add(int)</code>，是否可以呢？看似本来没有返回值，现在只是加上一个返回值，对于原来的代码没有任何问题，而新代码又能拿到int类型的返回值，皆大欢喜啊。</p>
+
+<h2 id="看山不是山">看山不是山</h2>
+
+<p>先给大家执行下代码吧！（请严格按照顺序，且避免使用IDE，否则将得不到预想的结果）</p>
+
+<pre><code class="language-shell">$ # 准备好两个类的代码（CountService的API是 `void add(int)`）
+$ # 编译Main类
+$ javac com/ffutop/signature/Main.java
+$  
+$ # 修改CountService的API为`int add(int)`
+$ # 编译 CountService 类
+$ javac com/ffutop/signature/CountService.java
+$ 
+$ # 执行主程序
+$ java com.ffutop.signature.Main
+Exception in thread &quot;main&quot; java.lang.NoSuchMethodError: com.ffutop.signature.CountService.add(I)V
+	at com.ffutop.signature.Main.main(Main.java:11)
+</code></pre>
+
+<p>很遗憾，执行失败了，报了个Error（没有这样的方法）。方法写的是 <code>com.ffutop.signature.CountService.add(I)V</code> 。简单的翻译一下就是需要<code>类名+方法名=x.y.CountService.add</code>，且入参为int，出参为void的方法（想了解更多请优先学习<a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.4">Java ClassFile Format</a>）。</p>
+
+<p>那么，现在得到的结论是不行。</p>
+
+<h2 id="看山还是山">看山还是山</h2>
+
+<p>那么，就一定不行吗？都是同名方法，不同参数。凭什么改个入参是可以的，改个出参就不行了。</p>
+
+<p>从 Java 的角度来说，一定不行。“同一类中不能存在两个名字及描述符完全相同的方法”</p>
+
+<p>但是，如果从 JVM 的角度来说，完全是可行的。“在class文件中，两个方法可以拥有完全相同的特征签名，前提是返回值不能相同”</p>
+
+<p>什么意思呢？我们都知道建立在 JVM 之上的语言不只有 Java。像 Groovy、Kotlin 等语言都实现了各自的区别于 Java 独有的特征。这些特征的实现都是依赖于 JVM，但为什么 Java 没有呢？只能说 Java 语言的规范是 JVM 的子集（好像这话有点不严谨啊）</p>
+
+<p>通过直接操作字节码，就能够达到在同一个类中建立两个同名、相同入参，但返回值不同的方法。
+先通过<code>javap</code>命令看看最终提供的<code>CountService.class</code></p>
+
+<pre><code class="language-shell">$ javap com.ffutop.signature.CountService
+public class com.ffutop.signature.CountService {
+  public int add(int);
+  public com.ffutop.signature.CountService();
+  public void add(int);
+  public int getCurrentValue();
+}
+</code></pre>
+
+<p>有两个同名的方法<code>add(int)</code>，至于执行，也会相当顺利。</p>
+
+<p>还是写个程序来说明，在原有 <code>Main.java</code> 的基础上，再创建一个全限定名为 <code>com.ffutop.signature.other.Main2</code> 的类</p>
+
+<pre><code class="language-java">package com.ffutop.signature.other;
+import com.ffutop.signature.CountService;
+
+/**
+ * @author fangfeng
+ * @since 2019-02-27
+ */
+public class Main2 {
+
+    public static void main(String[] args) {
+        CountService countService = new CountService();
+        System.out.println(String.format(&quot;currentValue = %d&quot;, countService.add(1)));
+    }
+}
+</code></pre>
+
+<p>与 Main.java 比较，很明显的就是一个调用了 <code>CountService</code> 的 <code>int add(int)</code> 方法，而另一个调用 <code>void add(int)</code> 方法。</p>
+
+<p>那么是否有效呢？先来验证一下（这里要模拟的一个场景是，CountService 类(只有 <code>void add(int)</code> 方法)作为二方库C.jar version 1.0 的主要服务类。CountService 类(同时有 <code>void add(int)</code> 和 <code>int add(int)</code> 方法)作为二方库C.jar version 2.0 的主要服务类。Main 类根据 C.jar version 1.0 做的编译，而 Main2 类根据 C.jar version 2.0 做的编译。在 Main 和 Main2 类运行时只提供 C.jar version 2.0）</p>
+
+<pre><code class="language-shell">$ # 编译 Main 类和 CountService 类
+$ javac com/ffutop/signature/Main.java
+$
+$ # 操作 CountService.class 字节码，增加方法 `int add(int)` 
+$ # 通过 ASM 实现，详见附录源码 com/ffutop/signature/support/Generator.java
+$ 
+$ # 编译 Main2 类 (提供 classpath，即根据 CountService.class 编译)
+$ javac com/ffutop/signature/other/Main2.java -classpath .
+$
+$ # 验证
+$ java com.ffutop.signature.Main
+currentValue = 1
+$ java com.ffutop.signature.other.Main2
+currentValue = 1
+$ # OK，验证通过
+</code></pre>
+
+<h2 id="总结">总结</h2>
+
+<p>一旦 API 定义错误，并已经作为二方库提供给调用方。后果必然是灾难性的。至少，只能重新定义 API 。如果对于入参定义错误，Java 语言级别也能够支持。但如果是返回值，如果非要保持方法名一致，那就不得不下沉到 JVM 级别来进行处理了。当然，在工程项目中是否应该直接操作字节码？至少个人还没直接接触过。</p>
+
+<p>做个记录，未来可以翻一翻，至少是一种可行的解决方案。</p>
+
+<p>Update: 如果直接操作字节码为添加了不同返回值的同名同参数方法，可能引起调用方静态编译失败。此操作需慎之又慎。也许提供类加载器加载时的字节码操作能更加完美地解决这个问题。</p>
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://raw.githubusercontent.com/DorMOUSE-None/Repo/master/signature.zip">源码.zip</a></p>
+
+<pre><code class="language-plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/2018/08/15/java-instrumentation/">Java Instrumentation</a></li>
+    
+    <li><a href="/2018/07/04/java-%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE%E4%B8%8E%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/">Java 安全访问与权限控制</a></li>
+    
+    <li><a href="/2018/06/25/asm-%E6%A0%B8%E5%BF%83%E5%8C%85%E5%9F%BA%E6%9C%AC%E5%86%85%E5%AE%B9%E6%BC%AB%E8%B0%88/">ASM 核心包基本内容漫谈</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About Me</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>

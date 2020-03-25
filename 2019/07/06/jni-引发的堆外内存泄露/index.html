@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.55.6" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/2019/07/06/jni-%E5%BC%95%E5%8F%91%E7%9A%84%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/" />
+  <link rel="canonical" href="https://www.ffutop.com/2019/07/06/jni-%E5%BC%95%E5%8F%91%E7%9A%84%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/www.ffutop.com\/"
+      },
+      "articleSection" : "posts",
+      "name" : "JNI 引发的堆外内存泄露",
+      "headline" : "JNI 引发的堆外内存泄露",
+      "description" : "\x3cp\x3e本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。\x3c\/p\x3e\n\n\x3cp\x3e为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。\x3c\/p\x3e\n\n\x3cp\x3e问题代码类似于下列代码：\x3c\/p\x3e\n\n\x3cpre\x3e\x3ccode class=\x22language-c\x22\x3e#include \x26quot;Main.h\x26quot;\n\nJNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)\n{\n    const char *str = (*env)-\x26gt;GetStringUTFChars(env, jstr, 0);\n    int len = (*env)-\x26gt;GetStringUTFLength(env, jstr);\n\n    \/\/ ... some code omitted \n\n    return ;\n}\n\x3c\/code\x3e\x3c\/pre\x3e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "6060",
+      "datePublished": "2019-07-06 00:00:00 \x2b0000 UTC",
+      "dateModified" : "2019-07-06 00:00:00 \x2b0000 UTC",
+      "url" : "https:\/\/www.ffutop.com\/2019\/07\/06\/jni-%E5%BC%95%E5%8F%91%E7%9A%84%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2\/",
+      "keywords" : [ "JNI","memory leak", ]
+  }
+</script>
+<title>JNI 引发的堆外内存泄露 - Utop&#39;s Blog</title>
+  <meta property="og:title" content="JNI 引发的堆外内存泄露 - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。
+
+为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。
+
+问题代码类似于下列代码：
+
+#include &quot;Main.h&quot;
+
+JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
+{
+    const char *str = (*env)-&gt;GetStringUTFChars(env, jstr, 0);
+    int len = (*env)-&gt;GetStringUTFLength(env, jstr);
+
+    // ... some code omitted 
+
+    return ;
+}
+" />
+  <meta name="description" content="本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。
+
+为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。
+
+问题代码类似于下列代码：
+
+#include &quot;Main.h&quot;
+
+JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
+{
+    const char *str = (*env)-&gt;GetStringUTFChars(env, jstr, 0);
+    int len = (*env)-&gt;GetStringUTFLength(env, jstr);
+
+    // ... some code omitted 
+
+    return ;
+}
+" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+
+<body>
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">JNI 引发的堆外内存泄露</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2019-07-06 00:00:00 UTC">
+                06 Jul 2019
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。</p>
+
+<p>为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。</p>
+
+<p>问题代码类似于下列代码：</p>
+
+<pre><code class="language-c">#include &quot;Main.h&quot;
+
+JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
+{
+    const char *str = (*env)-&gt;GetStringUTFChars(env, jstr, 0);
+    int len = (*env)-&gt;GetStringUTFLength(env, jstr);
+
+    // ... some code omitted 
+
+    return ;
+}
+</code></pre>
+
+<h2 id="问题表现">问题表现</h2>
+
+<p>最初的表现很明显，2核4G的机器，2GB的 Java 堆，最终物理内存不够用，导致 Java 进程被强制杀掉。几乎毫无疑问，就是 Java 堆外内存引发的问题。不过遗憾的是，物理内存不够用，没有留下足够多的堆栈详情。另外找了一台快要把内存打满的机器，打印信息。</p>
+
+<pre><code class="language-sh">$ pmap -x 27765 | sort -n -k3 | tail -n 50
+00007f460c9ac000   55632   23896   23896 rw---   [ anon ]
+00007f45d0000000   38980   38980   38980 rw---   [ anon ]
+00007f45dc000000   45980   39512   39512 rw---   [ anon ]
+00007f45e0000000   46120   39652   39652 rw---   [ anon ]
+00007f45d4000000   42160   41744   41744 rw---   [ anon ]
+00007f45c8000000   45992   45992   45992 rw---   [ anon ]
+00007f4610000000   48896   48872   48872 rwx--   [ anon ]
+00007f45f8000000   51084   51084   51084 rw---   [ anon ]
+00007f4600000000   52328   52328   52328 rw---   [ anon ]
+00007f4608000000   58332   55452   55452 rw---   [ anon ]
+00000000014f8000   57036   56908   56908 rw---   [ anon ]
+00007f45d8000000   63760   57292   57292 rw---   [ anon ]
+00007f45e8000000   58488   58488   58488 rw---   [ anon ]
+00007f4604000000   59912   59912   59912 rw---   [ anon ]
+00007f45fc000000   60080   60080   60080 rw---   [ anon ]
+00007f45e4000000   64460   64452   64452 rw---   [ anon ]
+00007f45f4000000   65072   65072   65072 rw---   [ anon ]
+00007f4620000000   65536   65536   65536 rw---   [ anon ]
+0000000080000000 2105600 2008240 2008240 rw---   [ anon ]   # 2GB 的 Java 堆
+total kB         4885820 3040036 3030476
+</code></pre>
+
+<p>比较多的内存块都在 64M 左右大小。确实也很明显，就是申请的内存没有得到释放。</p>
+
+<h2 id="问题排查">问题排查</h2>
+
+<p>C 不似 Java，没有 Garbage Collection 。所有申请的内存都必须主动进行释放。唯一的问题就是 <code>GetStringUTFChars</code> 得到的内存是否会被 JVM 统一管理。</p>
+
+<p>结果当然是不会，虽然是 Java 与 C 衔接的胶水代码，但这部分得到的内存需要自行管理。不过，JNI 也提供了函数来进行释放。</p>
+
+<pre><code class="language-c">/* from src/share/vm/prims/jni.cpp */
+JNI_ENTRY(const char*, jni_GetStringUTFChars(JNIEnv *env, jstring string, jboolean *isCopy))
+  JNIWrapper(&quot;GetStringUTFChars&quot;);
+  char* result = NULL;
+  oop java_string = JNIHandles::resolve_non_null(string);
+  if (java_lang_String::value(java_string) != NULL) {
+    size_t length = java_lang_String::utf8_length(java_string);
+    /* 申请堆内存 */
+    result = AllocateHeap(length + 1, mtInternal, 0, AllocFailStrategy::RETURN_NULL);
+    if (result != NULL) {
+      java_lang_String::as_utf8_string(java_string, result, (int) length + 1);
+      if (isCopy != NULL) {
+        *isCopy = JNI_TRUE;
+      }
+    }
+  }
+  return result;
+JNI_END
+
+/* from src/share/vm/memory/allocation.inline.hpp */
+inline char* AllocateHeap(size_t size, MEMFLAGS flags,
+    const NativeCallStack&amp; stack,
+    AllocFailType alloc_failmode = AllocFailStrategy::EXIT_OOM) {
+    // 申请内存
+    char* p = (char*) os::malloc(size, flags, stack);
+#ifdef ASSERT
+    if (PrintMallocFree) trace_heap_malloc(size, &quot;AllocateHeap&quot;, p);
+#endif
+    if (p == NULL &amp;&amp; alloc_failmode == AllocFailStrategy::EXIT_OOM) {
+        vm_exit_out_of_memory(size, OOM_MALLOC_ERROR, &quot;AllocateHeap&quot;);
+    }
+    return p;
+}
+
+/* from src/share/vm/prims/jni.cpp */
+JNI_LEAF(void, jni_ReleaseStringUTFChars(JNIEnv *env, jstring str, const char *chars))
+  JNIWrapper(&quot;ReleaseStringUTFChars&quot;);
+  if (chars != NULL) {
+    // 释放内存
+    FreeHeap((char*) chars);
+  }
+);
+JNI_END
+
+/* from src/share/vm/memory/allocation.inline.hpp */
+inline void FreeHeap(void* p, MEMFLAGS memflags = mtInternal) {
+#ifdef ASSERT
+    if (PrintMallocFree) trace_heap_free(p);
+#endif
+    os::free(p, memflags);
+}
+</code></pre>
+
+<p>从名称就可以看出来，<code>GetStringUTFChars</code> 和 <code>ReleaseStringUTFChars</code> 是相对的方法。而且默认走的都是 Glibc 的 <code>malloc</code> 和 <code>free</code> 。</p>
+
+<h2 id="问题验证">问题验证</h2>
+
+<p>为了验证问题的原因和最终的现象，整了一段代码来测试效果。</p>
+
+<pre><code class="language-java">import java.io.IOException;
+
+public class Main {
+
+    static {
+        System.load(&quot;/root/jni/Main.so&quot;);
+    }
+
+    private static final String value = &quot;AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHH&quot;;
+
+    public native void sayHi(String value);
+
+    public static void main(String[] args) throws IOException {
+        Main main = new Main();
+        while (true)
+        {
+            for (int i=0;i&lt;100000;i++) {
+                char c1 = (char) ('A' + Math.random() * 26);
+                char c2 = (char) ('a' + Math.random() * 26);
+                main.sayHi(value + c1 + c2);
+            }
+            System.gc();
+            int val = System.in.read();
+            if (val == '1')
+                break;
+        }
+    }
+}
+</code></pre>
+
+<pre><code class="language-c">#include &quot;Main.h&quot;
+
+JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
+{
+    const char *str = (*env)-&gt;GetStringUTFChars(env, jstr, 0);
+    int len = (*env)-&gt;GetStringUTFLength(env, jstr);
+    printf(&quot;%p\n&quot;, str);
+#ifdef SUCCESS
+    (*env)-&gt;ReleaseStringUTFChars(env, jstr, str);
+#endif
+    return ;
+}
+</code></pre>
+
+<p><a href="https://raw.githubusercontent.com/DorMOUSE-None/Repo/master/jni-memory-leak.zip">测试用的源代码</a></p>
+
+<pre><code class="language-sh">$ java Main
+$ pmap -x 22690 | sort -n -k3
+# ...
+00007f0d44000000   65536   65500   65500 rw---   [ anon ]
+00007f0d04000000  131072  131068  131068 rw---   [ anon ]
+00007f0cc4000000  131072  131072  131072 rw---   [ anon ]
+00007f0ccc000000  131072  131072  131072 rw---   [ anon ]
+00007f0cd4000000  131072  131072  131072 rw---   [ anon ]
+00007f0cdc000000  131072  131072  131072 rw---   [ anon ]
+00007f0ce4000000  131072  131072  131072 rw---   [ anon ]
+00007f0cec000000  131072  131072  131072 rw---   [ anon ]
+00007f0cf4000000  131072  131072  131072 rw---   [ anon ]
+00007f0cfc000000  131072  131072  131072 rw---   [ anon ]
+total kB         3822700 1293952 1276900 
+</code></pre>
+
+<p>确实引起了内存的增长，而将内存 dump 下了之后，也看到了大量字符串。</p>
+
+<pre><code class="language-sh">$ PID=23756; grep rw-p /proc/${PID}/maps | sed -n 's/^\([0-9a-f]*\)-\([0-9a-f]*\) .*$/\1 \2/p' | while read start stop;  \
+do \
+    gdb --batch --pid ${PID} -ex &quot;dump memory ${PID}-$start-$stop.dump 0x$start 0x$stop&quot;;  \
+done 
+$ strings 23756-7f6f6c000000-7f6f70000000.dump| grep 'AAAA'
+# ...
+AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHVn
+AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHXp
+AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHFn
+</code></pre>
+
+<p>待到添加上 <code>ReleaseStringUTFChars</code> ，申请到内存得到释放，确实解决了这个问题。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>定位问题确实看起来不难，但这种异构代码，真正难点在于定位问题。这期间走了不少的弯路，也无法确定究竟是对是错。毕竟问题的原因多种多样：</p>
+
+<ol>
+<li>可能是 Java 代码用了诸如 Zip 等容易出现堆外内存泄露的方法</li>
+<li>不当使用 JNI （就像是上文描述的问题）</li>
+<li>再有就是第三方 C 库使用不当，或者其本身存在 BUG。</li>
+</ol>
+
+<p>这是第一次排查异构代码的问题，颇多难以分辨，无法做定论之事。</p>
+
+<p>再就是 C 的平台相关性实在是太过于严重了，加之本就不太熟悉，搞个编译新的库文件就好一番折腾。</p>
+
+<pre><code class="language-plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About Me</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.55.6" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/2018/09/27/understand-mail/" />
+  <link rel="canonical" href="https://www.ffutop.com/2018/09/27/understand-mail/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/www.ffutop.com\/"
+      },
+      "articleSection" : "posts",
+      "name" : "Understand MAIL",
+      "headline" : "Understand MAIL",
+      "description" : "\x3cp\x3e在网络协议上，高层协议确实比底层协议更容易理解，也更加的人性化。\n传输层的 TCP, UDP 都还停留在各种字节内容的整合和校验上，而更上层的应用层协议就已经能够直观到通过直接解读就能理解其每条消息的含义了。\x3c\/p\x3e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "27270",
+      "datePublished": "2018-09-27 00:00:00 \x2b0000 UTC",
+      "dateModified" : "2018-09-27 00:00:00 \x2b0000 UTC",
+      "url" : "https:\/\/www.ffutop.com\/2018\/09\/27\/understand-mail\/",
+      "keywords" : [ "mail","SMTP","TCP", ]
+  }
+</script>
+<title>Understand MAIL - Utop&#39;s Blog</title>
+  <meta property="og:title" content="Understand MAIL - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="在网络协议上，高层协议确实比底层协议更容易理解，也更加的人性化。
+传输层的 TCP, UDP 都还停留在各种字节内容的整合和校验上，而更上层的应用层协议就已经能够直观到通过直接解读就能理解其每条消息的含义了。" />
+  <meta name="description" content="在网络协议上，高层协议确实比底层协议更容易理解，也更加的人性化。
+传输层的 TCP, UDP 都还停留在各种字节内容的整合和校验上，而更上层的应用层协议就已经能够直观到通过直接解读就能理解其每条消息的含义了。" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+
+<body>
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">Understand MAIL</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2018-09-27 00:00:00 UTC">
+                27 Sep 2018
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>在网络协议上，高层协议确实比底层协议更容易理解，也更加的人性化。
+传输层的 TCP, UDP 都还停留在各种字节内容的整合和校验上，而更上层的应用层协议就已经能够直观到通过直接解读就能理解其每条消息的含义了。</p>
+
+<h2 id="smtp-协议">SMTP 协议</h2>
+
+<p>SMTP，简单邮件传输协议。单从协议内容上来说确实没有太多的学习难度。但是，扭转“常识”恰恰是巨大的绊脚石。
+直接就进入了网页邮件系统 or 客户端邮件系统的时代。图形化的界面配合上一些关键字的内容 (比如收件人，主题等)。
+点击发送就觉得一封邮件已经发出去了。</p>
+
+<p>但是，究竟这中间做了什么呢？
+163，GMAIL, QQ 等邮箱究竟又在其中扮演着怎样的一个角色？</p>
+
+<p>首先，SMTP 是为了高效、可靠地传递邮件而存在的。</p>
+
+<p>下面先给一段演示。通过 telnet 连接到 183.57.48.34 (这个是腾讯企业邮其中一台机器的 IP) 25 (SMTP 服务端口) ，以本机作为 SMTP 的客户端，而将 183.XXX 作为 SMTP 的服务端，来完成邮件信息的一次交互。 (当然，最后失败了。被企业邮识别为垃圾邮件了&hellip;)</p>
+
+<p>下列每行 <code>#</code> 开始及之后的内容是个人添加的注释，其它内容是 telnet 交互的内容。
+同时，<code>--</code> 标志该行内容由</p>
+
+<pre><code>$ telnet 183.57.48.34 25
+Trying 183.57.48.34...
+Connected to 183.57.48.34.
+Escape character is '^]'.
+220 bizmx17.qq.com MX QQ Mail Server
+HELO test                               -- # MEANS HELLO &lt;domain&gt; 在每次建立连接通道后，发送的第一条消息
+250 bizmx17.qq.com                         # 服务器的回复值 Code 250 
+MAIL FROM: &lt;from@test.net&gt;              -- # MAIL 表示邮件的发起方，用于退信等其他邮件反向事件
+250 Ok                                   
+RCPT TO: &lt;to@xxx.xxx&gt;                   -- # RCPT 表示邮件的接收方，用于投递邮件等正向事件
+250 Ok
+DATA                                    -- # DATA 表示之后的内容将作为邮件正文 (正文这个描述可能不太恰当，更应该是等同于信封内的所有内容)
+354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;
+                                        --
+It's a fake mail.                       -- # 邮件正文，其实还可以写上诸如 'Subject: XXX' 'Cc: XXX' 的内容
+.                                       -- # 正文内容结束的标志，&lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;
+550 Mail content denied. https://service.exmail.qq.com/cgi-bin/help?subtype=1&amp;&amp;id=20022&amp;&amp;no=1000726 # 这里很无奈，没腾讯给拦了，没发出去。不过反正是假的，邮件信息不全。
+</code></pre>
+
+<h3 id="几个主要的-smtp-交互指令">几个主要的 SMTP 交互指令</h3>
+
+<ul>
+<li>HELO: (HELLO)
+主要用于让 SMTP 服务器对当前连接的 SMTP 客户端(上例是 telnet 模拟的) 建立一个身份标志 (一般是当前的主机名)</li>
+<li>MAIL:
+用法 MAIL FROM: <a href="mailto:xx@xx.xx">xx@xx.xx</a> (不区分大小写)
+可以将其与普通信件的信封等同。毕竟都是要写上发信人，如果没人收信，也就可以根据这个声明将信件退回。</li>
+<li>RCPT: (RECIPIENT)
+用法 RCPT TO: <a href="mailto:xx@xx.xx">xx@xx.xx</a> (可多次重复声明，即将一封信件复制多次投送给每次声明的对象)
+相当于普通信件的收信人。不过也有点区别，毕竟普通信件没法一件多发嘛。</li>
+<li>DATA:
+<code>DATA</code> 之后到 <code>&lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;</code> 之前的所有内容都作为邮件的正文内容。等同于普通信件信封内的信纸(当然了，信纸上在写上 <code>To XXX:</code> <code>Yours XXX</code> 也是很正常的嘛)，类似的也就是 DATA 数据中也可以包括 <code>Subject:</code> (主题), <code>From:</code> (写信人), <code>Date:</code> (日期), <code>To:</code>(收件人)等内容。</li>
+</ul>
+
+<hr />
+
+<h3 id="几个次要的-smtp-交互指令">几个次要的 SMTP 交互指令</h3>
+
+<ul>
+<li><p>RSET: (Reset)
+重置，丢弃之前针对邮件所描述的所有内容，重新开始。</p></li>
+
+<li><p>VRFY: (VERIFY)
+用于确认收件人是否存在，以及收件人的完整地址</p></li>
+
+<li><p>NOOP:
+强制服务器做出一个回应，没有实际意义。</p></li>
+
+<li><p>QUIT:
+要求收信服务器返回一个邮件接收成功的信号，之后释放连接通道。</p></li>
+</ul>
+
+<h2 id="smtp-扩展">SMTP 扩展</h2>
+
+<p>前面描述了这么多，应该来说找一些支持 TCP (或者其他稳定的传输层连接也是可以的) 连接的命令就完全可以支持一次邮件发送的需求。</p>
+
+<p>但是，如果想要发送一些中文字符之类的，马上就出现了问题。</p>
+
+<p>这里有几种方式，但本人还没有理解透彻。仅列出知道的可行方案。</p>
+
+<ul>
+<li>通过 IMF (Internet Message Format) 进行发件</li>
+<li>通过 ESMTP</li>
+</ul>
+
+<h2 id="smtp-安全">SMTP 安全</h2>
+
+<p>出于 SMTP 本身协议的设计，没有一个有效的身份认证机制。</p>
+
+<p>纵使通过 <code>MAIL FROM: &lt;A@test.net&gt;</code> 在信封上写明了是由 A 发出的信件。
+但是，装在信封内的信纸却可以属上另一个人的名字。</p>
+
+<p>利用这种规则，也就出现了伪装发信人这样的操作。当然，现在的大量邮箱服务提供商都会对这种情况进行标记。</p>
+
+<p><img src="https://ws1.sinaimg.cn/large/006tNc79gy1fvpbzedf67j315e01q0sp.jpg" alt="“代发”标记" /></p>
+
+<h2 id="参考">参考</h2>
+
+<ol>
+<li><a href="https://tools.ietf.org/html/rfc821">SIMPLE MAIL TRANSFER PROTOCOL</a></li>
+<li><a href="https://www.ruanyifeng.com/blog/2008/06/mime.html">MIME</a></li>
+</ol>
+
+<pre><code class="language-plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/2018/09/18/tcp-syn-%E5%8C%85%E6%A8%A1%E6%8B%9F/">TCP SYN 包模拟</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About Me</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>

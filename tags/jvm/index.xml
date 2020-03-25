@@ -5,8 +5,7 @@
     <link>https://www.ffutop.com/tags/jvm/</link>
     <description>Recent content in JVM on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <copyright>2018-2020 © ffutop</copyright>
+    <language>zh-cmn-Hans-CN</language>
     <lastBuildDate>Tue, 24 Jul 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/jvm/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>JVM 指令简析</title>
-      <link>https://www.ffutop.com/posts/2018-07-24-jvm-instruction/</link>
+      <link>https://www.ffutop.com/2018/07/24/jvm-%E6%8C%87%E4%BB%A4%E7%AE%80%E6%9E%90/</link>
       <pubDate>Tue, 24 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-07-24-jvm-instruction/</guid>
+      <guid>https://www.ffutop.com/2018/07/24/jvm-%E6%8C%87%E4%BB%A4%E7%AE%80%E6%9E%90/</guid>
       <description>&lt;p&gt;在之前描述过包括 ASM, CGlib, Java Proxy 的基本内容之后，本文将就更为基础的 JVM 指令集进行简单而有效的介绍。&lt;/p&gt;
 
 &lt;p&gt;当然，在开始正文前，读者需要了解到，JVM 指令集这种类似于汇编的规范性内容，包含一百多个指令，若要求一一介绍。
@@ -28,10 +27,10 @@
     
     <item>
       <title>java-memory-model</title>
-      <link>https://www.ffutop.com/posts/2018-06-21-java-memory-model/</link>
+      <link>https://www.ffutop.com/2018/06/21/java-memory-model/</link>
       <pubDate>Thu, 21 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-06-21-java-memory-model/</guid>
+      <guid>https://www.ffutop.com/2018/06/21/java-memory-model/</guid>
       <description>&lt;h2 id=&#34;jvm-运行时数据区&#34;&gt;JVM 运行时数据区&lt;/h2&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>

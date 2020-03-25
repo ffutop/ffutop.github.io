@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.55.6" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/2018/07/20/java-proxy-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" />
+  <link rel="canonical" href="https://www.ffutop.com/2018/07/20/java-proxy-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/www.ffutop.com\/"
+      },
+      "articleSection" : "posts",
+      "name" : "Java Proxy 源码解析",
+      "headline" : "Java Proxy 源码解析",
+      "description" : "\x3cp\x3e在 Java 整个生态里面, 通用的有两类动态代理的应用: Java Proxy 与 CGlib 代理。\x3c\/p\x3e\n\n\x3cp\x3e从宽泛的区别来说，Java Proxy 只能对接口进行增强，而 CGlib 同时适用于类和接口的增强。\n而且，业内普遍的认知是，CGlib 动态代理较之于 Java Proxy 在生成字节码的速度上也更为高效。\x3c\/p\x3e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "20200",
+      "datePublished": "2018-07-20 00:00:00 \x2b0000 UTC",
+      "dateModified" : "2018-07-20 00:00:00 \x2b0000 UTC",
+      "url" : "https:\/\/www.ffutop.com\/2018\/07\/20\/java-proxy-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90\/",
+      "keywords" : [  ]
+  }
+</script>
+<title>Java Proxy 源码解析 - Utop&#39;s Blog</title>
+  <meta property="og:title" content="Java Proxy 源码解析 - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="在 Java 整个生态里面, 通用的有两类动态代理的应用: Java Proxy 与 CGlib 代理。
+
+从宽泛的区别来说，Java Proxy 只能对接口进行增强，而 CGlib 同时适用于类和接口的增强。
+而且，业内普遍的认知是，CGlib 动态代理较之于 Java Proxy 在生成字节码的速度上也更为高效。" />
+  <meta name="description" content="在 Java 整个生态里面, 通用的有两类动态代理的应用: Java Proxy 与 CGlib 代理。
+
+从宽泛的区别来说，Java Proxy 只能对接口进行增强，而 CGlib 同时适用于类和接口的增强。
+而且，业内普遍的认知是，CGlib 动态代理较之于 Java Proxy 在生成字节码的速度上也更为高效。" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+
+<body>
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">Java Proxy 源码解析</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2018-07-20 00:00:00 UTC">
+                20 Jul 2018
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>在 Java 整个生态里面, 通用的有两类动态代理的应用: Java Proxy 与 CGlib 代理。</p>
+
+<p>从宽泛的区别来说，Java Proxy 只能对接口进行增强，而 CGlib 同时适用于类和接口的增强。
+而且，业内普遍的认知是，CGlib 动态代理较之于 Java Proxy 在生成字节码的速度上也更为高效。</p>
+
+<h2 id="从实例开始">从实例开始&hellip;</h2>
+
+<p>下面，首先来了解一下 Java Proxy 的使用编码:</p>
+
+<p>ICodeFactory 接口, 作为将被 Java 动态代理增强的基本接口</p>
+
+<pre><code class="language-java">public interface ICodeFactory {
+
+    Code getCode();
+
+    void setCode(Code code);
+
+}
+</code></pre>
+
+<p>CodeFactory 类, 作为 ICodeFactory 接口的实现类。被视为是真正被动态代理增强的内容，:) 因为接口方法并不存在方法体(当然，Java 8 及以上的 default 请容我忽视)</p>
+
+<pre><code class="language-java">public class CodeFactory implements ICodeFactory {
+
+    private Code code;
+
+    public Code getCode() {
+        return new Code();
+    }
+
+    @Override
+    public void setCode(Code code) {
+        this.code = code;
+    }
+}
+</code></pre>
+
+<p>辅助类 Code 的内容(简单写，请忽略不符合实际编程规范的一些内容):</p>
+
+<pre><code class="language-java">public class Code {
+
+    public int codeA;
+
+    public String codeB;
+
+}
+</code></pre>
+
+<p>构建增强的代码逻辑:</p>
+
+<pre><code class="language-java">// main(String[]) 方法
+public static void main(String[] args) throws Exception {
+
+    // 内部匿名类，用于动态代理生成类的构造方法及其它内容，后面讲。
+    InvocationHandler handler = new InvocationHandler() {
+
+        Object obj = new CodeFactory();
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+            if (method.getName() == &quot;getCode&quot;) {
+                Code code = (Code) method.invoke(obj, args);
+                code.codeA = code.codeA + 100;
+                code.codeB = &quot;Proxied: &quot; + code.codeB;
+                return code;
+            } else {
+                return method.invoke(obj, args);
+            }
+        }
+    };
+
+    // 构建生成类实例
+    Class&lt;?&gt; clazz = Proxy.getProxyClass(ICodeFactory.class.getClassLoader(), ICodeFactory.class);
+    // 获取生成类对象
+    ICodeFactory factory = (ICodeFactory) clazz.getConstructor(new Class[] { InvocationHandler.class }).newInstance(new Object[] { handler });
+
+    // 调用 getCode() 方法
+    Code code = factory.getCode();
+    // 打印参数
+    System.out.println(code.codeA);
+    System.out.println(code.codeB);
+}
+</code></pre>
+
+<p>从默认预期来讲，我们是对接口进行增强。接口方法不存在方法体，也许将在 <code>factory.getCode()</code> 时执行失败？
+或者结合已有的认知，成功调用 <code>CodeFactory.getCode()</code> 方法，并获得 <code>new Code()</code> 。</p>
+
+<p>那么，<code>code.codeA</code> <code>code.codeB</code> 的具体值将是什么？</p>
+
+<p>执行结果将是:</p>
+
+<pre><code class="language-plain">100
+Proxied: null
+</code></pre>
+
+<h2 id="了解-proxy-的内容逻辑">了解 Proxy 的内容逻辑</h2>
+
+<p>从 <code>Proxy.getProxyClass(ClassLoader, Class&lt;?&gt;...)</code> 入手，下面将展开对 <code>Proxy</code> 具体执行逻辑的探究。</p>
+
+<pre><code class="language-java">public static Class&lt;?&gt; getProxyClass(ClassLoader loader, Class&lt;?&gt;... interfaces) throws IllegalArgumentException {
+    // 对 interfaces 数组的浅拷贝
+    final Class&lt;?&gt;[] intfs = interfaces.clone();
+    final SecurityManager sm = System.getSecurityManager();
+    if (sm != null) {
+        // 如果配置了安全管理器，那么需要确认 Proxy 有创建新的代理类的许可
+        checkProxyAccess(Reflection.getCallerClass(), loader, intfs);
+    }
+
+    // 调用 
+    return getProxyClass0(loader, intfs);
+}
+</code></pre>
+
+<pre><code class="language-java">private static Class&lt;?&gt; getProxyClass0(ClassLoader loader, Class&lt;?&gt;... interfaces) {
+    // 确认需要进行增强的接口数量少于等于 65535，详细原因请去了解 ClassFile 规范(规范中的接口上限)
+    if (interfaces.length &gt; 65535) {
+        throw new IllegalArgumentException(&quot;interface limit exceeded&quot;);
+    }
+
+    // 如果需要由指定 ClassLoader 加载, 实现给定 interfaces 的代理类已经存在, 
+    // 将直接返回已经缓存过的拷贝
+    // 否则，通过 ProxyClassFactory 创建新的代理类
+    return proxyClassCache.get(loader, interfaces);
+}
+</code></pre>
+
+<p>现在需要额外来考察一下 proxyClassCache 的具体类型。</p>
+
+<pre><code class="language-java">private static final WeakCache&lt;ClassLoader, Class&lt;?&gt;[], Class&lt;?&gt;&gt;
+        proxyClassCache = new WeakCache&lt;&gt;(new KeyFactory(), new ProxyClassFactory());
+</code></pre>
+
+<p><code>WeakCache</code>, 从名称来将，是一个缓存，同时应该使用了 WeakReference 技术</p>
+
+<p>进入 <code>WeakCache.get(...)</code> 方法体</p>
+
+<pre><code class="language-java">public V get(K key, P parameter) {
+    // parameter 传入的是接口数组，要求不能为空
+    Objects.requireNonNull(parameter);
+
+    // 删除过期元素
+    expungeStaleEntries();
+
+    // 构建一个 WeakReference 对象(key 表示 ClassLoader)
+    Object cacheKey = CacheKey.valueOf(key, refQueue);
+
+    // lazily install the 2nd level valuesMap for the particular cacheKey
+    ConcurrentMap&lt;Object, Supplier&lt;V&gt;&gt; valuesMap = map.get(cacheKey);
+    if (valuesMap == null) {
+        ConcurrentMap&lt;Object, Supplier&lt;V&gt;&gt; oldValuesMap
+                = map.putIfAbsent(cacheKey,
+                valuesMap = new ConcurrentHashMap&lt;&gt;());
+        if (oldValuesMap != null) {
+            valuesMap = oldValuesMap;
+        }
+    }
+
+    // 创建次级 Key
+    // 同时检索是否存在过去有同一个 ClassLoader 加载的表示 Supplier&lt;V&gt;
+    Object subKey = Objects.requireNonNull(subKeyFactory.apply(key, parameter));
+    Supplier&lt;V&gt; supplier = valuesMap.get(subKey);
+    Factory factory = null;
+
+    while (true) {
+        if (supplier != null) {
+            // supplier might be a Factory or a CacheValue&lt;V&gt; instance
+            // 最终 supplier 将非空，同时调用 .get() 方法获取 Class 类
+            V value = supplier.get();
+            if (value != null) {
+                return value;
+            }
+        }
+        // else no supplier in cache
+        // or a supplier that returned null (could be a cleared CacheValue
+        // or a Factory that wasn't successful in installing the CacheValue)
+        // 未找到过去加载的记录
+
+        // 懒加载一个 Factory 
+        if (factory == null) {
+            factory = new Factory(key, parameter, subKey, valuesMap);
+        }
+
+        if (supplier == null) {
+            supplier = valuesMap.putIfAbsent(subKey, factory);
+            if (supplier == null) {
+                // successfully installed Factory
+                supplier = factory;
+            }
+            // else retry with winning supplier
+        } else {
+            if (valuesMap.replace(subKey, supplier, factory)) {
+                // successfully replaced
+                // cleared CacheEntry / unsuccessful Factory
+                // with our Factory
+                supplier = factory;
+            } else {
+                // retry with current supplier
+                supplier = valuesMap.get(subKey);
+            }
+        }
+    }
+}
+</code></pre>
+
+<pre><code class="language-java">@Override
+public synchronized V get() { // serialize access
+    // re-check
+    Supplier&lt;V&gt; supplier = valuesMap.get(subKey);
+    if (supplier != this) {
+        // something changed while we were waiting:
+        // might be that we were replaced by a CacheValue
+        // or were removed because of failure -&gt;
+        // return null to signal WeakCache.get() to retry
+        // the loop
+        return null;
+    }
+    // else still us (supplier == this)
+
+    // create new value
+    V value = null;
+    try {
+        // 触发 valueFactory.apply() 真正的构建
+        value = Objects.requireNonNull(valueFactory.apply(key, parameter));
+    } finally {
+        if (value == null) { // remove us on failure
+            valuesMap.remove(subKey, this);
+        }
+    }
+    // the only path to reach here is with non-null value
+    assert value != null;
+
+    // wrap value with CacheValue (WeakReference)
+    CacheValue&lt;V&gt; cacheValue = new CacheValue&lt;&gt;(value);
+
+    // put into reverseMap
+    reverseMap.put(cacheValue, Boolean.TRUE);
+
+    // try replacing us with CacheValue (this should always succeed)
+    if (!valuesMap.replace(subKey, this, cacheValue)) {
+        throw new AssertionError(&quot;Should not reach here&quot;);
+    }
+
+    // successfully replaced us with new CacheValue -&gt; return the value
+    // wrapped by it
+    return value;
+}
+</code></pre>
+
+<p>上面两段代码的内容，都是在反复确认将要构建的生成类是否在过去曾经创建过，如果是，则直接返回过去构建的类实例;
+否则才会尝试创建，并最终将这个构建的类也进行缓存。</p>
+
+<p>下面这段代码来自于 <code>Proxy</code> 的内部类 <code>ProxyClassFactory</code>
+这部分，也终于开始了对代理类字节码的统筹性构造的内容。</p>
+
+<pre><code class="language-java">public Class&lt;?&gt; apply(ClassLoader loader, Class&lt;?&gt;[] interfaces) {
+
+    Map&lt;Class&lt;?&gt;, Boolean&gt; interfaceSet = new IdentityHashMap&lt;&gt;(interfaces.length);
+    for (Class&lt;?&gt; intf : interfaces) {
+        /*
+         * 校验当前接口是由同一个 ClassLoader (将要用来加载新的代理类)加载的
+         */
+        Class&lt;?&gt; interfaceClass = null;
+        try {
+            interfaceClass = Class.forName(intf.getName(), false, loader);
+        } catch (ClassNotFoundException e) {
+        }
+        if (interfaceClass != intf) {
+            throw new IllegalArgumentException(
+                    intf + &quot; is not visible from class loader&quot;);
+        }
+        /*
+         * 校验当前 Class 对象确实是一个接口
+         */
+        if (!interfaceClass.isInterface()) {
+            throw new IllegalArgumentException(
+                    interfaceClass.getName() + &quot; is not an interface&quot;);
+        }
+        /*
+         * 校验当前接口没有被要求重复进行代理增强
+         */
+        if (interfaceSet.put(interfaceClass, Boolean.TRUE) != null) {
+            throw new IllegalArgumentException(
+                    &quot;repeated interface: &quot; + interfaceClass.getName());
+        }
+    }
+
+    String proxyPkg = null;     // 生成的代理类所属的 package
+    int accessFlags = Modifier.PUBLIC | Modifier.FINAL;
+
+    /*
+     * 如果代理的接口是非 PUBLIC ，那么生成的代理类的接口将与这个非 PUBLIC 接口
+     * 在同一个包下。
+     * 如果代理的接口有多个非 PUBLIC ，且分别位于不同的包下，那么抛出异常
+     */
+    for (Class&lt;?&gt; intf : interfaces) {
+        int flags = intf.getModifiers();
+        if (!Modifier.isPublic(flags)) {
+            accessFlags = Modifier.FINAL;
+            String name = intf.getName();
+            int n = name.lastIndexOf('.');
+            String pkg = ((n == -1) ? &quot;&quot; : name.substring(0, n + 1));
+            if (proxyPkg == null) {
+                proxyPkg = pkg;
+            } else if (!pkg.equals(proxyPkg)) {
+                throw new IllegalArgumentException(
+                        &quot;non-public interfaces from different packages&quot;);
+            }
+        }
+    }
+
+    // 如果代理的接口全是 PUBLIC 的，那么使用默认的包 com.sun.proxy
+    if (proxyPkg == null) {
+        // if no non-public proxy interfaces, use com.sun.proxy package
+        proxyPkg = ReflectUtil.PROXY_PACKAGE + &quot;.&quot;;
+    }
+
+    /*
+     * 为将要生成的代理类选择一个全限定名
+     * 规则是 包名 + &quot;$Proxy&quot; + &lt;唯一递增的id, 从0开始编号&gt;
+     */
+    long num = nextUniqueNumber.getAndIncrement();
+    String proxyName = proxyPkg + proxyClassNamePrefix + num;
+
+    /*
+     * 生成一个特殊的代理类的字节码
+     * byte[] proxyClassFile 就等同于 .class 文件的全部二进制内容。
+     * 与 .class 文件的区别就在于一个写在了外存上，另一个完全在内存中创建
+     */
+    byte[] proxyClassFile = ProxyGenerator.generateProxyClass(
+            proxyName, interfaces, accessFlags);
+    try {
+        /**
+          * 调用 ClassLoader 的 defineClass0(...) 方法加载字节码内容，构造 Class 对象
+          * 本来 defineClass0(...) 方法是定义在 ClassLoader 中，但这里额外声明了一个本地方法 defineClass0(...)
+          * 想来实现也是类似的，最终的目的也是加载 Class 
+          */
+        return defineClass0(loader, proxyName,
+                proxyClassFile, 0, proxyClassFile.length);
+    } catch (ClassFormatError e) {
+        /*
+         * A ClassFormatError here means that (barring bugs in the
+         * proxy class generation code) there was some other
+         * invalid aspect of the arguments supplied to the proxy
+         * class creation (such as virtual machine limitations
+         * exceeded).
+         */
+        throw new IllegalArgumentException(e.toString());
+    }
+}
+</code></pre>
+
+<p>在完成基础性的校验，并构造了生成类的类名等内容后，
+<code>ProxyGenerator.generateProxyClass</code> 将开始构造 <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html">ClassFile</a> 的具体内容。</p>
+
+<p>关于这部分生成字节码的内容，请在了解了 ClassFile 的基础性内容之后，在自行学习，内容全部在 ProxyGenerator 类中。</p>
+
+<p>这部分的规则是(在构建新的代理生成类时):</p>
+
+<ul>
+<li>额外添加三个 Object 的方法 (<code>hashCode</code>, <code>equals</code>, <code>toString</code>)</li>
+<li>逐一读取所有需要增强的接口的方法，并对重复方法进行判断; 如果方法名相同，入参数量与类型相同，但返回参数不同，则抛出异常</li>
+<li>在遍历所有接口的方法的时候，同时也将为新的生成类构造新的字段(内容就是通过反射获取该方法)</li>
+<li>最后将新的生成类将要包含的所有字段与方法进行构造，同时维护一个常量池内容</li>
+<li>输出这些内容的二进制表示 byte[];</li>
+</ul>
+
+<h2 id="如何对方法增强">如何对方法增强</h2>
+
+<p>想必上了上一节，虽然对 Java 动态代理的调用链有了一定的了解。</p>
+
+<p>但是，究竟 Proxy 是如何完成对实现类方法的增强呢？</p>
+
+<p>也许我们需要先看一下生成类 .class 文件的一些内容来对这个命题形成基础性的影响。</p>
+
+<pre><code class="language-java">public final Code getCode() throws  {
+    try {
+        return (Code)super.h.invoke(this, m4, (Object[])null);
+    } catch (RuntimeException | Error var2) {
+        throw var2;
+    } catch (Throwable var3) {
+        throw new UndeclaredThrowableException(var3);
+    }
+}
+</code></pre>
+
+<p>可以看到，生成类的 <code>getCode()</code> 方法几乎没有什么实质性的内容, 只是 <code>super.h.invoke(...)</code> 。</p>
+
+<p><code>h</code> 实例变量是什么？<code>InvocationHandler</code> 的一个实例对象。</p>
+
+<p>事实上，Java Proxy 生成类的每个方法结构几乎都是类似的。方法体的内容就是通过实例持有的 <code>h</code> 变量分发实际的操作指令</p>
+
+<p>至于 h 的具体内容。:) 有编程者自定义，并在 Proxy 生成字节码，并被 ClassLoader 加载后，在准备实例化的时候作为构造参数进行传入。</p>
+
+<pre><code class="language-java">ICodeFactory factory = (ICodeFactory) clazz.getConstructor(new Class[] { InvocationHandler.class }).newInstance(new Object[] { handler });
+</code></pre>
+
+<p>至于具体将做哪些增强，调用例如上例的 <code>ICodeFactory</code> 的那个实现类的方法，全部有使用者自定义。</p>
+
+<h2 id="生成类的反编译结果">生成类的反编译结果</h2>
+
+<p>仍然以本文开始的 ICodeFactory 的增强为例，看一下究竟通过 Java Proxy 动态代理生成的字节码的反编译结果究竟是什么？
+并以此来对这种动态代理机制形成更为直观的印象</p>
+
+<p>在 Java 源代码中，虽然默认不会输出生成类的二进制内容，但是，仍然预留了打印 .class 文件的可选项。</p>
+
+<p>有兴趣的同学可以看一下 <code>ProxyGenerator.saveGeneratedFiles</code> 字段的内容，这就决定是在构造代理类后是否存储到外存中。</p>
+
+<p>想要看到代理类的字节码，直接通过在 Java 执行程序中添加一行代码</p>
+
+<pre><code class="language-java">System.setProperty(&quot;sun.misc.ProxyGenerator.saveGeneratedFiles&quot;, &quot;true&quot;);
+</code></pre>
+
+<p>或者在启动程序的 <code>java</code> 命令下添加参数</p>
+
+<pre><code class="language-sh">-Dsun.misc.ProxyGenerator.saveGeneratedFiles=true`
+</code></pre>
+
+<p>至于生成类将打印在哪，首先必然是在项目所属的目录下。有上一节中构造生成类全限定名的内容，根据包名的规则去寻找即可。(具体不再详述)</p>
+
+<p>直接通过 IDEA, Eclipse 或者其它工具，对生成类 .class 文件进行反编译可以查看到整个生成类的内容。</p>
+
+<pre><code class="language-java">package com.sun.proxy;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.UndeclaredThrowableException;
+import me.fangfeng.jdk.proxy.Code;
+import me.fangfeng.jdk.proxy.ICodeFactory;
+
+public final class $Proxy0 extends Proxy implements ICodeFactory {
+    private static Method m1;
+    private static Method m2;
+    private static Method m4;
+    private static Method m3;
+    private static Method m0;
+
+    public $Proxy0(InvocationHandler var1) throws  {
+        super(var1);
+    }
+
+    public final boolean equals(Object var1) throws  {
+        try {
+            return (Boolean)super.h.invoke(this, m1, new Object[]{var1});
+        } catch (RuntimeException | Error var3) {
+            throw var3;
+        } catch (Throwable var4) {
+            throw new UndeclaredThrowableException(var4);
+        }
+    }
+
+    public final String toString() throws  {
+        try {
+            return (String)super.h.invoke(this, m2, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final Code getCode() throws  {
+        try {
+            return (Code)super.h.invoke(this, m4, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final void setCode(Code var1) throws  {
+        try {
+            super.h.invoke(this, m3, new Object[]{var1});
+        } catch (RuntimeException | Error var3) {
+            throw var3;
+        } catch (Throwable var4) {
+            throw new UndeclaredThrowableException(var4);
+        }
+    }
+
+    public final int hashCode() throws  {
+        try {
+            return (Integer)super.h.invoke(this, m0, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    static {
+        try {
+            m1 = Class.forName(&quot;java.lang.Object&quot;).getMethod(&quot;equals&quot;, Class.forName(&quot;java.lang.Object&quot;));
+            m2 = Class.forName(&quot;java.lang.Object&quot;).getMethod(&quot;toString&quot;);
+            m4 = Class.forName(&quot;me.fangfeng.jdk.proxy.ICodeFactory&quot;).getMethod(&quot;getCode&quot;);
+            m3 = Class.forName(&quot;me.fangfeng.jdk.proxy.ICodeFactory&quot;).getMethod(&quot;setCode&quot;, Class.forName(&quot;me.fangfeng.jdk.proxy.Code&quot;));
+            m0 = Class.forName(&quot;java.lang.Object&quot;).getMethod(&quot;hashCode&quot;);
+        } catch (NoSuchMethodException var2) {
+            throw new NoSuchMethodError(var2.getMessage());
+        } catch (ClassNotFoundException var3) {
+            throw new NoClassDefFoundError(var3.getMessage());
+        }
+    }
+}
+</code></pre>
+
+<pre><code class="language-plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About Me</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>

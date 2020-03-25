@@ -5,8 +5,7 @@
     <link>https://www.ffutop.com/tags/c/</link>
     <description>Recent content in C on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <copyright>2018-2020 © ffutop</copyright>
+    <language>zh-cmn-Hans-CN</language>
     <lastBuildDate>Sat, 08 Sep 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/c/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>Preprocessor Output</title>
-      <link>https://www.ffutop.com/posts/2018-09-08-preprocessor-output/</link>
+      <link>https://www.ffutop.com/2018/09/08/preprocessor-output/</link>
       <pubDate>Sat, 08 Sep 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-09-08-preprocessor-output/</guid>
+      <guid>https://www.ffutop.com/2018/09/08/preprocessor-output/</guid>
       <description>&lt;p&gt;最近重新开始回顾 C 语言以及其编译后的文件格式 ELF。
 暂时告别一步到位的命令 &lt;code&gt;gcc main.c&lt;/code&gt;，如果从 &lt;code&gt;.c&lt;/code&gt; 文件的编译来说，主要分为预编译(preprocess)、编译(Compilation)、汇编(Assembly)、链接(Linking) 四个步骤。
 但是，仅仅从第一个流程 &lt;strong&gt;预编译&lt;/strong&gt; 而言，就已经遇到了一些麻烦。&lt;/p&gt;

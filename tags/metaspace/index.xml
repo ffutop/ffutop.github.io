@@ -5,8 +5,7 @@
     <link>https://www.ffutop.com/tags/metaspace/</link>
     <description>Recent content in Metaspace on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <copyright>2018-2020 © ffutop</copyright>
+    <language>zh-cmn-Hans-CN</language>
     <lastBuildDate>Wed, 06 Nov 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/metaspace/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>GroovyClassLoader 引发的 FullGC</title>
-      <link>https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/</link>
+      <link>https://www.ffutop.com/2019/11/06/groovyclassloader-%E5%BC%95%E5%8F%91%E7%9A%84-fullgc/</link>
       <pubDate>Wed, 06 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/</guid>
+      <guid>https://www.ffutop.com/2019/11/06/groovyclassloader-%E5%BC%95%E5%8F%91%E7%9A%84-fullgc/</guid>
       <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
 
 &lt;p&gt;近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，&lt;strong&gt;stop the world&lt;/strong&gt; :&amp;lt; 从 &lt;code&gt;gc.log&lt;/code&gt; 中，看到的原因是触及了 &lt;code&gt;Metaspace&lt;/code&gt; 的阈值，进而引发了 FGC。&lt;/p&gt;

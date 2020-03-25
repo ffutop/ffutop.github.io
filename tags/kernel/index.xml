@@ -5,8 +5,7 @@
     <link>https://www.ffutop.com/tags/kernel/</link>
     <description>Recent content in Kernel on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <copyright>2018-2020 © ffutop</copyright>
+    <language>zh-cmn-Hans-CN</language>
     <lastBuildDate>Sat, 12 Oct 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/kernel/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>理解 Linux Kernel (14) - cBPF</title>
-      <link>https://www.ffutop.com/posts/2019-10-12-bpf/</link>
+      <link>https://www.ffutop.com/2019/10/12/%E7%90%86%E8%A7%A3-linux-kernel-14-cbpf/</link>
       <pubDate>Sat, 12 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-10-12-bpf/</guid>
+      <guid>https://www.ffutop.com/2019/10/12/%E7%90%86%E8%A7%A3-linux-kernel-14-cbpf/</guid>
       <description>&lt;p&gt;BPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控/过滤网络数据包的任务，必然地会涉及到内核空间/用户空间的拷贝。而众所周知的，内核空间/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。&lt;/p&gt;
 
 &lt;p&gt;BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。&lt;/p&gt;
@@ -27,10 +26,10 @@
     
     <item>
       <title>系统平均负载分析</title>
-      <link>https://www.ffutop.com/posts/2019-09-16-load-average/</link>
+      <link>https://www.ffutop.com/2019/09/16/%E7%B3%BB%E7%BB%9F%E5%B9%B3%E5%9D%87%E8%B4%9F%E8%BD%BD%E5%88%86%E6%9E%90/</link>
       <pubDate>Mon, 16 Sep 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-09-16-load-average/</guid>
+      <guid>https://www.ffutop.com/2019/09/16/%E7%B3%BB%E7%BB%9F%E5%B9%B3%E5%9D%87%E8%B4%9F%E8%BD%BD%E5%88%86%E6%9E%90/</guid>
       <description>&lt;p&gt;&lt;code&gt;Load Average&lt;/code&gt; 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;ffutop $ time ./a
@@ -44,10 +43,10 @@ ffutop $ uptime
     
     <item>
       <title>Linux Traffic Control</title>
-      <link>https://www.ffutop.com/posts/2019-08-23-traffic-control/</link>
+      <link>https://www.ffutop.com/2019/08/23/linux-traffic-control/</link>
       <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-08-23-traffic-control/</guid>
+      <guid>https://www.ffutop.com/2019/08/23/linux-traffic-control/</guid>
       <description>&lt;p&gt;最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。&lt;/p&gt;
 
 &lt;p&gt;流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(&lt;code&gt;sk_buff&lt;/code&gt; 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 &lt;code&gt;enqueue&lt;/code&gt;, &lt;code&gt;dequeue&lt;/code&gt; 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。&lt;/p&gt;</description>
@@ -55,19 +54,19 @@ ffutop $ uptime
     
     <item>
       <title>Netfilter 导览 - based on iptables</title>
-      <link>https://www.ffutop.com/posts/2019-08-06-netfilter/</link>
+      <link>https://www.ffutop.com/2019/08/06/netfilter-%E5%AF%BC%E8%A7%88-based-on-iptables/</link>
       <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-08-06-netfilter/</guid>
+      <guid>https://www.ffutop.com/2019/08/06/netfilter-%E5%AF%BC%E8%A7%88-based-on-iptables/</guid>
       <description>&lt;p&gt;&lt;code&gt;Netfilter&lt;/code&gt;，内核中用于管理网络数据包的重要网络模块；&lt;code&gt;iptables&lt;/code&gt;，运行在用户空间，用于控制 &lt;code&gt;Netfilter&lt;/code&gt; 模块的一种软件。需要注意的，&lt;code&gt;iptables&lt;/code&gt; 只能控制 IPv4 数据包，对于 IPv6 数据包，需要使用 &lt;code&gt;ip6tables&lt;/code&gt; 。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>理解 Linux Kernel (13) - 虚拟内存</title>
-      <link>https://www.ffutop.com/posts/2019-07-17-understand-kernel-13/</link>
+      <link>https://www.ffutop.com/2019/07/17/%E7%90%86%E8%A7%A3-linux-kernel-13-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98/</link>
       <pubDate>Wed, 17 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-07-17-understand-kernel-13/</guid>
+      <guid>https://www.ffutop.com/2019/07/17/%E7%90%86%E8%A7%A3-linux-kernel-13-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98/</guid>
       <description>&lt;p&gt;几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。&lt;/p&gt;
 
 &lt;p&gt;本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。&lt;/p&gt;</description>
@@ -75,10 +74,10 @@ ffutop $ uptime
     
     <item>
       <title>理解 Linux Kernel (12) - Linux 容器化技术</title>
-      <link>https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/</link>
+      <link>https://www.ffutop.com/2019/06/18/%E7%90%86%E8%A7%A3-linux-kernel-12-linux-%E5%AE%B9%E5%99%A8%E5%8C%96%E6%8A%80%E6%9C%AF/</link>
       <pubDate>Tue, 18 Jun 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/</guid>
+      <guid>https://www.ffutop.com/2019/06/18/%E7%90%86%E8%A7%A3-linux-kernel-12-linux-%E5%AE%B9%E5%99%A8%E5%8C%96%E6%8A%80%E6%9C%AF/</guid>
       <description>&lt;p&gt;由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png&#34; alt=&#34;Containerd VS VM&#34; /&gt;&lt;/p&gt;
@@ -94,10 +93,10 @@ ffutop $ uptime
     
     <item>
       <title>跟踪内核函数的工具—— Ftrace</title>
-      <link>https://www.ffutop.com/posts/2019-06-02-ftrace/</link>
+      <link>https://www.ffutop.com/2019/06/02/%E8%B7%9F%E8%B8%AA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E7%9A%84%E5%B7%A5%E5%85%B7-ftrace/</link>
       <pubDate>Sun, 02 Jun 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-06-02-ftrace/</guid>
+      <guid>https://www.ffutop.com/2019/06/02/%E8%B7%9F%E8%B8%AA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E7%9A%84%E5%B7%A5%E5%85%B7-ftrace/</guid>
       <description>&lt;p&gt;前两天仿照 &lt;code&gt;strings&lt;/code&gt; 工具写了个打印进程运行时堆栈可打印字符的工具 &lt;a href=&#34;https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c&#34;&gt;ffstrings&lt;/a&gt; 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&amp;lt;&lt;/p&gt;
 
 &lt;p&gt;在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— &lt;code&gt;ftrace&lt;/code&gt; 。&lt;/p&gt;
@@ -113,10 +112,10 @@ ffutop $ uptime
     
     <item>
       <title>理解 Linux Kernel (11) - 进程间通信</title>
-      <link>https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/</link>
+      <link>https://www.ffutop.com/2019/05/27/%E7%90%86%E8%A7%A3-linux-kernel-11-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/</link>
       <pubDate>Mon, 27 May 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/</guid>
+      <guid>https://www.ffutop.com/2019/05/27/%E7%90%86%E8%A7%A3-linux-kernel-11-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/</guid>
       <description>&lt;p&gt;进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;本篇基于 Linux 4.9.87 版本源码&lt;/em&gt;&lt;/p&gt;</description>
@@ -124,19 +123,19 @@ ffutop $ uptime
     
     <item>
       <title>理解 Linux Kernel(10) - Context of Execution</title>
-      <link>https://www.ffutop.com/posts/2019-04-10-understand-kernel-10/</link>
+      <link>https://www.ffutop.com/2019/04/10/%E7%90%86%E8%A7%A3-linux-kernel10-context-of-execution/</link>
       <pubDate>Wed, 10 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-04-10-understand-kernel-10/</guid>
+      <guid>https://www.ffutop.com/2019/04/10/%E7%90%86%E8%A7%A3-linux-kernel10-context-of-execution/</guid>
       <description>&lt;p&gt;在进行&lt;a href=&#34;https://www.ffutop.com/2018-10-12-understand-Kernel-4/&#34;&gt;第四篇(任务调度)&lt;/a&gt;行文描述时，就一直闹不清内核所谓的&lt;code&gt;task&lt;/code&gt;的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：&lt;strong&gt;我们错误地将理论和实践不加区分地混淆了&lt;/strong&gt;。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，&lt;code&gt;task&lt;/code&gt; 也就是 &lt;code&gt;Context of Execution&lt;/code&gt; 概念在实现上的表征。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>如何获取运行时进程堆栈</title>
-      <link>https://www.ffutop.com/posts/2019-03-25-mem-dump/</link>
+      <link>https://www.ffutop.com/2019/03/25/%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E8%BF%90%E8%A1%8C%E6%97%B6%E8%BF%9B%E7%A8%8B%E5%A0%86%E6%A0%88/</link>
       <pubDate>Mon, 25 Mar 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-03-25-mem-dump/</guid>
+      <guid>https://www.ffutop.com/2019/03/25/%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E8%BF%90%E8%A1%8C%E6%97%B6%E8%BF%9B%E7%A8%8B%E5%A0%86%E6%A0%88/</guid>
       <description>&lt;p&gt;前些天看了关于在密码学应用中使用&lt;code&gt;java.lang.String&lt;/code&gt;与&lt;code&gt;byte[]&lt;/code&gt;的相关讨论，不推荐使用&lt;code&gt;java.lang.String&lt;/code&gt;的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。&lt;/p&gt;
 
 &lt;h2 id=&#34;proc-pid-maps&#34;&gt;/proc/${pid}/maps&lt;/h2&gt;
@@ -167,10 +166,10 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
     
     <item>
       <title>理解 Linux Kernel (9) - IO Multiplexing</title>
-      <link>https://www.ffutop.com/posts/2019-03-05-understand-kernel-9/</link>
+      <link>https://www.ffutop.com/2019/03/05/%E7%90%86%E8%A7%A3-linux-kernel-9-io-multiplexing/</link>
       <pubDate>Tue, 05 Mar 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-03-05-understand-kernel-9/</guid>
+      <guid>https://www.ffutop.com/2019/03/05/%E7%90%86%E8%A7%A3-linux-kernel-9-io-multiplexing/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;./2019-01-15-understand-Kernel-8/&#34;&gt;前一篇&lt;/a&gt;已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 &lt;code&gt;struct sock&lt;/code&gt; 对象，将其逐级从网络接口层逐级提升到网络层、传输层&amp;hellip;最终添加到接收队列 &lt;code&gt;sk_receive_queue&lt;/code&gt; 中；用户进程通过 &lt;code&gt;read&lt;/code&gt;、&lt;code&gt;recv&lt;/code&gt;、&lt;code&gt;recvfrom&lt;/code&gt; 等命令检查并获取 &lt;code&gt;sk_receive_queue&lt;/code&gt; 中的数据。&lt;/p&gt;
 
 &lt;p&gt;整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。&lt;/p&gt;
@@ -180,19 +179,19 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
     
     <item>
       <title>理解 Linux Kernel (8) - 网络</title>
-      <link>https://www.ffutop.com/posts/2019-01-15-understand-kernel-8/</link>
+      <link>https://www.ffutop.com/2019/01/15/%E7%90%86%E8%A7%A3-linux-kernel-8-%E7%BD%91%E7%BB%9C/</link>
       <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-01-15-understand-kernel-8/</guid>
+      <guid>https://www.ffutop.com/2019/01/15/%E7%90%86%E8%A7%A3-linux-kernel-8-%E7%BD%91%E7%BB%9C/</guid>
       <description>PDF</description>
     </item>
     
     <item>
       <title>理解 Linux Kernel (7) - 字符设备</title>
-      <link>https://www.ffutop.com/posts/2018-12-28-understand-kernel-7/</link>
+      <link>https://www.ffutop.com/2018/12/28/%E7%90%86%E8%A7%A3-linux-kernel-7-%E5%AD%97%E7%AC%A6%E8%AE%BE%E5%A4%87/</link>
       <pubDate>Fri, 28 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-12-28-understand-kernel-7/</guid>
+      <guid>https://www.ffutop.com/2018/12/28/%E7%90%86%E8%A7%A3-linux-kernel-7-%E5%AD%97%E7%AC%A6%E8%AE%BE%E5%A4%87/</guid>
       <description>&lt;p&gt;相比较于块设备，字符设备无论从物理认知上，抑或是理论理解上，都存在着相当大的入门门槛。特别是在将字符设备与控制台、命令行终端混淆的时候，就更加难以进行分辨了。&lt;/p&gt;
 
 &lt;p&gt;回到字符设备本身，字符设备与块设备最主要的区别就在于块设备可以随机读写，而字符设备只能够顺序读，顺序写。&lt;/p&gt;
@@ -202,10 +201,10 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
     
     <item>
       <title>理解 Linux Kernel (6) - read &amp; write</title>
-      <link>https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/</link>
+      <link>https://www.ffutop.com/2018/11/11/%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/</link>
       <pubDate>Sun, 11 Nov 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/</guid>
+      <guid>https://www.ffutop.com/2018/11/11/%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/&#34;&gt;前一篇&lt;/a&gt;已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。&lt;/p&gt;
 
 &lt;p&gt;首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式&lt;/p&gt;
@@ -262,10 +261,10 @@ int main(int argc, char *argv[])
     
     <item>
       <title>理解 Linux Kernel (5) - 文件系统(宏观描述)</title>
-      <link>https://www.ffutop.com/posts/2018-10-14-understand-kernel-5/</link>
+      <link>https://www.ffutop.com/2018/10/14/%E7%90%86%E8%A7%A3-linux-kernel-5-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AE%8F%E8%A7%82%E6%8F%8F%E8%BF%B0/</link>
       <pubDate>Sun, 14 Oct 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-10-14-understand-kernel-5/</guid>
+      <guid>https://www.ffutop.com/2018/10/14/%E7%90%86%E8%A7%A3-linux-kernel-5-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AE%8F%E8%A7%82%E6%8F%8F%E8%BF%B0/</guid>
       <description>&lt;p&gt;用惯了类 Unix 系统，应该说文件系统是日常最常接触的一个操作系统模块之一了。&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ ls
@@ -278,10 +277,10 @@ Library      System       Volumes      cores        dev          home         pr
     
     <item>
       <title>理解 Linux Kernel (4) - 任务调度</title>
-      <link>https://www.ffutop.com/posts/2018-10-12-understand-kernel-4/</link>
+      <link>https://www.ffutop.com/2018/10/12/%E7%90%86%E8%A7%A3-linux-kernel-4-%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/</link>
       <pubDate>Fri, 12 Oct 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-10-12-understand-kernel-4/</guid>
+      <guid>https://www.ffutop.com/2018/10/12/%E7%90%86%E8%A7%A3-linux-kernel-4-%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/</guid>
       <description>&lt;p&gt;前面几节已经描述过，对于单核 CPU 来说。CPU 就处于不断地执行指令的过程(或者通过 &lt;code&gt;hlt&lt;/code&gt; 指令直接停止工作)。&lt;/p&gt;
 
 &lt;p&gt;针对于每一个程序来说，这个程序执行流程是通过 CPU 中几组寄存器(通用寄存器、段寄存器、控制寄存器等) 和存储在内存中的代码和数据协作完成的。&lt;/p&gt;
@@ -291,10 +290,10 @@ Library      System       Volumes      cores        dev          home         pr
     
     <item>
       <title>理解 Linux Kernel (3) - 操作系统启动</title>
-      <link>https://www.ffutop.com/posts/2018-10-06-understand-kernel-3/</link>
+      <link>https://www.ffutop.com/2018/10/06/%E7%90%86%E8%A7%A3-linux-kernel-3-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8/</link>
       <pubDate>Sat, 06 Oct 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-10-06-understand-kernel-3/</guid>
+      <guid>https://www.ffutop.com/2018/10/06/%E7%90%86%E8%A7%A3-linux-kernel-3-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8/</guid>
       <description>&lt;p&gt;这次拖得有够久的，毕竟需要将知识串联起来并不是一件容易的事情。更何况很多内容可以说和常理(个人理解的常理)有了比较大的偏差。&lt;/p&gt;
 
 &lt;p&gt;不过确实比较有意思。从引导程序到操作系统启动，这中间究竟经历了多少流程呢？&lt;/p&gt;
@@ -304,10 +303,10 @@ Library      System       Volumes      cores        dev          home         pr
     
     <item>
       <title>理解 Linux Kernel (2) - 多任务切换</title>
-      <link>https://www.ffutop.com/posts/2018-08-26-understand-kernel-2/</link>
+      <link>https://www.ffutop.com/2018/08/26/%E7%90%86%E8%A7%A3-linux-kernel-2-%E5%A4%9A%E4%BB%BB%E5%8A%A1%E5%88%87%E6%8D%A2/</link>
       <pubDate>Sun, 26 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-08-26-understand-kernel-2/</guid>
+      <guid>https://www.ffutop.com/2018/08/26/%E7%90%86%E8%A7%A3-linux-kernel-2-%E5%A4%9A%E4%BB%BB%E5%8A%A1%E5%88%87%E6%8D%A2/</guid>
       <description>&lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
 
 &lt;p&gt;《只是为了好玩》书中，林纳斯描述过他最早的试验性程序就是执行两个不同的任务（一个不断输出A，另一个输出B），同时不断地让 CPU 在两个任务间做切换。结合《Linux 内核完全注释》提供的一个多任务切换示例程序，本篇将就多任务切换程序的执行流程进行详述，并提供当下汇编工具下的适配。&lt;/p&gt;
@@ -317,10 +316,10 @@ Library      System       Volumes      cores        dev          home         pr
     
     <item>
       <title>理解 Linux Kernel (0) - 概述</title>
-      <link>https://www.ffutop.com/posts/2018-08-19-understand-kernel-0/</link>
+      <link>https://www.ffutop.com/2018/08/19/%E7%90%86%E8%A7%A3-linux-kernel-0-%E6%A6%82%E8%BF%B0/</link>
       <pubDate>Sun, 19 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-08-19-understand-kernel-0/</guid>
+      <guid>https://www.ffutop.com/2018/08/19/%E7%90%86%E8%A7%A3-linux-kernel-0-%E6%A6%82%E8%BF%B0/</guid>
       <description>&lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
 
 &lt;p&gt;《理解Linux Kernel》系列最早开始于 2018 年中，当时我刚刚结束对 JVM (Java Virtual Machine, Java 虚拟机) &lt;a href=&#34;https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html&#34;&gt;ClassFile 文件格式&lt;/a&gt;的学习。彼时，在*实现新编程语言*、*学习 Linux 内核实现*、*继续深入 JVM 源码*三个下一阶段的命题中，我选择了拥抱 Linux 源码。&lt;/p&gt;
@@ -334,10 +333,10 @@ Library      System       Volumes      cores        dev          home         pr
     
     <item>
       <title>理解 Linux Kernel (1) - BIOS</title>
-      <link>https://www.ffutop.com/posts/2018-08-19-understand-kernel-1/</link>
+      <link>https://www.ffutop.com/2018/08/19/%E7%90%86%E8%A7%A3-linux-kernel-1-bios/</link>
       <pubDate>Sun, 19 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-08-19-understand-kernel-1/</guid>
+      <guid>https://www.ffutop.com/2018/08/19/%E7%90%86%E8%A7%A3-linux-kernel-1-bios/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 
 &lt;p&gt;在&lt;a href=&#34;https://www.ffutop.com/2018-08-19-understand-Kernel-0/&#34;&gt;概述&lt;/a&gt;，我已经介绍过《理解 Linux Kernel》系列文章的写作原因。我不能担保我所进行的所有试验性操作都是对的，但至少操作我的环境下成功地运行了，并帮助我触及我始终敬畏的&lt;strong&gt;硬件&amp;amp;OS&lt;/strong&gt;&lt;/p&gt;

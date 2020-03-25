@@ -5,8 +5,7 @@
     <link>https://www.ffutop.com/tags/pipe/</link>
     <description>Recent content in pipe on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <copyright>2018-2020 © ffutop</copyright>
+    <language>zh-cmn-Hans-CN</language>
     <lastBuildDate>Mon, 20 May 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/pipe/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>pipe 导致的 CLOSE_WAIT</title>
-      <link>https://www.ffutop.com/posts/2019-05-20-close_wait_problem/</link>
+      <link>https://www.ffutop.com/2019/05/20/pipe-%E5%AF%BC%E8%87%B4%E7%9A%84-close_wait/</link>
       <pubDate>Mon, 20 May 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-05-20-close_wait_problem/</guid>
+      <guid>https://www.ffutop.com/2019/05/20/pipe-%E5%AF%BC%E8%87%B4%E7%9A%84-close_wait/</guid>
       <description>&lt;p&gt;历时一周总算把导致服务大量 &lt;code&gt;CLOSE_WAIT&lt;/code&gt; 的原因给找到了。打印任务调用栈果然的必备手段啊！&lt;/p&gt;
 
 &lt;h2 id=&#34;问题描述&#34;&gt;问题描述&lt;/h2&gt;

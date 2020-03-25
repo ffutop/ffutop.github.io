@@ -5,8 +5,7 @@
     <link>https://www.ffutop.com/tags/lxc/</link>
     <description>Recent content in LXC on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <copyright>2018-2020 © ffutop</copyright>
+    <language>zh-cmn-Hans-CN</language>
     <lastBuildDate>Tue, 18 Jun 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/lxc/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>理解 Linux Kernel (12) - Linux 容器化技术</title>
-      <link>https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/</link>
+      <link>https://www.ffutop.com/2019/06/18/%E7%90%86%E8%A7%A3-linux-kernel-12-linux-%E5%AE%B9%E5%99%A8%E5%8C%96%E6%8A%80%E6%9C%AF/</link>
       <pubDate>Tue, 18 Jun 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/</guid>
+      <guid>https://www.ffutop.com/2019/06/18/%E7%90%86%E8%A7%A3-linux-kernel-12-linux-%E5%AE%B9%E5%99%A8%E5%8C%96%E6%8A%80%E6%9C%AF/</guid>
       <description>&lt;p&gt;由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png&#34; alt=&#34;Containerd VS VM&#34; /&gt;&lt;/p&gt;

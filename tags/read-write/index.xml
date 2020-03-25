@@ -5,8 +5,7 @@
     <link>https://www.ffutop.com/tags/read-write/</link>
     <description>Recent content in read &amp; write on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <copyright>2018-2020 © ffutop</copyright>
+    <language>zh-cmn-Hans-CN</language>
     <lastBuildDate>Sun, 11 Nov 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/read-write/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>理解 Linux Kernel (6) - read &amp; write</title>
-      <link>https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/</link>
+      <link>https://www.ffutop.com/2018/11/11/%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/</link>
       <pubDate>Sun, 11 Nov 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/</guid>
+      <guid>https://www.ffutop.com/2018/11/11/%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/&#34;&gt;前一篇&lt;/a&gt;已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。&lt;/p&gt;
 
 &lt;p&gt;首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式&lt;/p&gt;

@@ -5,8 +5,7 @@
     <link>https://www.ffutop.com/tags/jdbc/</link>
     <description>Recent content in JDBC on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <copyright>2018-2020 © ffutop</copyright>
+    <language>zh-cmn-Hans-CN</language>
     <lastBuildDate>Mon, 15 Jan 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/jdbc/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>Spring JDBC 源码学习</title>
-      <link>https://www.ffutop.com/posts/2018-01-15-spring-jdbc-code-reading/</link>
+      <link>https://www.ffutop.com/2018/01/15/spring-jdbc-%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link>
       <pubDate>Mon, 15 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-01-15-spring-jdbc-code-reading/</guid>
+      <guid>https://www.ffutop.com/2018/01/15/spring-jdbc-%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid>
       <description>&lt;h2 id=&#34;概览&#34;&gt;概览&lt;/h2&gt;
 
 &lt;p&gt;在学习 Spring-JDBC 之前，我们有必要从 Java 原生提供的 JDBC 开始，对 JDBC 操作的一整套完整的流程有一个清晰的概念。&lt;/p&gt;</description>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.55.6" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/2019/10/17/%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8%E6%8B%96%E6%85%A2-tomcat-%E5%90%AF%E5%8A%A8%E9%80%9F%E5%BA%A6/" />
+  <link rel="canonical" href="https://www.ffutop.com/2019/10/17/%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8%E6%8B%96%E6%85%A2-tomcat-%E5%90%AF%E5%8A%A8%E9%80%9F%E5%BA%A6/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/www.ffutop.com\/"
+      },
+      "articleSection" : "posts",
+      "name" : "随机数生成器拖慢 Tomcat 启动速度",
+      "headline" : "随机数生成器拖慢 Tomcat 启动速度",
+      "description" : "\x3cp\x3e最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。\x3c\/p\x3e\n\n\x3cpre\x3e\x3ccode class=\x22language-plain\x22\x3e16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.\n...\n16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms\n\x3c\/code\x3e\x3c\/pre\x3e\n\n\x3cp\x3e创建 \x3ccode\x3eSecureRandom\x3c\/code\x3e 竟然花了 6 分多钟，占了整个启动时间的 94% 。\x3c\/p\x3e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "17170",
+      "datePublished": "2019-10-17 00:00:00 \x2b0000 UTC",
+      "dateModified" : "2019-10-17 00:00:00 \x2b0000 UTC",
+      "url" : "https:\/\/www.ffutop.com\/2019\/10\/17\/%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8%E6%8B%96%E6%85%A2-tomcat-%E5%90%AF%E5%8A%A8%E9%80%9F%E5%BA%A6\/",
+      "keywords" : [ "Java","random","urandom", ]
+  }
+</script>
+<title>随机数生成器拖慢 Tomcat 启动速度 - Utop&#39;s Blog</title>
+  <meta property="og:title" content="随机数生成器拖慢 Tomcat 启动速度 - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。
+
+16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
+...
+16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
+
+
+创建 SecureRandom 竟然花了 6 分多钟，占了整个启动时间的 94% 。" />
+  <meta name="description" content="最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。
+
+16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
+...
+16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
+
+
+创建 SecureRandom 竟然花了 6 分多钟，占了整个启动时间的 94% 。" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+
+<body>
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">随机数生成器拖慢 Tomcat 启动速度</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2019-10-17 00:00:00 UTC">
+                17 Oct 2019
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。</p>
+
+<pre><code class="language-plain">16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
+...
+16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
+</code></pre>
+
+<p>创建 <code>SecureRandom</code> 竟然花了 6 分多钟，占了整个启动时间的 94% 。</p>
+
+<h2 id="securerandom">SecureRandom</h2>
+
+<p><code>SessionIdGeneratorBase</code> 创建 SecureRandom 的核心代码可以归结为：</p>
+
+<pre><code class="language-java">import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
+/**
+ * @author ffutop
+ * @since 2019/10/17
+ */
+public class Random {
+    public void run() {
+        SecureRandom result = null;
+            
+        long t1 = System.currentTimeMillis();
+        try {
+            result = SecureRandom.getInstance(&quot;SHA1PRNG&quot;);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        // Force seeding to take place
+        result.nextInt();
+
+        long t2 = System.currentTimeMillis();
+        System.out.println(Long.valueOf(t2 - t1) + &quot; ms&quot;);
+        for (int i=0;i&lt;10000;i++)
+            System.out.println(result.nextInt());
+        long t3 = System.currentTimeMillis();
+        System.out.println(Long.valueOf(t3 - t2) + &quot; ms&quot;);
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(&quot;start run()&quot;);
+        new Random().run();
+        System.out.println(&quot;stop run()&quot;);
+    }
+}
+</code></pre>
+
+<p>执行结果直接表明了首次 <code>result.nextInt()</code> 花费的时间绝大于之后 10000 次 <code>nextInt()</code> 的时间。</p>
+
+<pre><code class="language-plain">$ javac Random.java
+$ java Random
+start run()
+210635 ms
+81 ms
+stop run()
+</code></pre>
+
+<p>利用 jstack 与 strace 发现，<code>main</code> 线程应该是阻塞在生成随机数种子的过程。监控系统调用的结果是读操作阻塞在读取 <code>/dev/random</code> 数据。</p>
+
+<pre><code class="language-plain">// jstack result (part)
+&quot;main&quot; #1 prio=5 os_prio=0 tid=0x00007f3b94010800 nid=0xda0 runnable  [0x00007f3b9ca57000]
+   java.lang.Thread.State: RUNNABLE
+	at java.io.FileInputStream.readBytes(java.base@10.0.2/Native Method)
+	at java.io.FileInputStream.read(java.base@10.0.2/FileInputStream.java:280)
+	at java.io.FilterInputStream.read(java.base@10.0.2/FilterInputStream.java:133)
+	at sun.security.provider.SeedGenerator$URLSeedGenerator.getSeedBytes(java.base@10.0.2/SeedGenerator.java:541)
+	at sun.security.provider.SeedGenerator.generateSeed(java.base@10.0.2/SeedGenerator.java:144)
+	at sun.security.provider.SecureRandom$SeederHolder.&lt;clinit&gt;(java.base@10.0.2/SecureRandom.java:204)
+	at sun.security.provider.SecureRandom.engineNextBytes(java.base@10.0.2/SecureRandom.java:222)
+	- locked &lt;0x00000000e0d02e20&gt; (a sun.security.provider.SecureRandom)
+	at java.security.SecureRandom.nextBytes(java.base@10.0.2/SecureRandom.java:741)
+	at java.security.SecureRandom.next(java.base@10.0.2/SecureRandom.java:798)
+	at java.util.Random.nextInt(java.base@10.0.2/Random.java:329)
+	at Ran.run(Ran.java:20)
+	at Ran.main(Ran.java:32)
+
+// strace result (part)
+[pid  3645] openat(AT_FDCWD, &quot;/dev/random&quot;, O_RDONLY) = 4
+...
+[pid  3645] read(4,  &lt;unfinished ...&gt;
+</code></pre>
+
+<h2 id="linux-随机数生成器工作原理">Linux 随机数生成器工作原理</h2>
+
+<p>计算机作为高度可预测的设备，很难真正意义上生成随机数，但这可以通过伪随机数算法来解决。不过伪随机数有相当致命的缺陷——对攻击者而言，可以通过各种手段猜测伪随机数序列。这对于一些应用而言，是完全无法接受的。</p>
+
+<p>为了解决这些问题，随机数生成器通过收集攻击者难以观测到的计算机“环境噪音”，并基于这些因素来确保生成的随机数的不可预测性。这些“噪音”包括键盘、鼠标、某些中断的中断计时以及其它拥有不确定性和难以被观测的因素。这些因素被利用类似CRC校验机制的方式加入到“熵池”中。虽然CRC的方案从密码学的角度看并不足够安全，但重在难以预测，并且速度足够快。这些收集到的“环境噪音”将被添加到熵池中，并通过熵值计数器来维护基于现状能够生成多少位随机数。</p>
+
+<p>当需要随机数时，从熵池中提取随机因子，经过SHA-1算法加工后就成了随机数。当熵值计数器低于预设的阈值（确保有足够的因子能够生成安全的随机数）时，此时随机数生成器将陷入阻塞。</p>
+
+<p><img src="https://img.ffutop.com/F97E08F1-ADAB-42BF-AB3F-6AF3FD013958.png" alt="" /></p>
+
+<p><code>/dev/random</code> 和 <code>/dev/urandom</code> 作为 Linux 系统内核向用户层提供的两个随机数生成接口，工作形式分别是阻塞式与非阻塞式。当熵池收集的噪音不足时，<code>/dev/random</code> 的策略是让当前任务主动陷入 Sleeping 状态。而 <code>/dev/urandom</code> 则通过牺牲一定程度的随机性来保证随机数的生成效率。</p>
+
+<p>从源代码来看，<code>random_read</code> 和 <code>urandom_read</code> 调用了相同的函数 <code>extract_entropy_user</code> 来从熵池中提取随机数。不过 <code>random</code> 通过循环从 <code>blocking_pool</code> 分多次提取，每次最多提取 <code>SEC_XFER_SIZE</code> (=512) 字节，而 <code>urandom</code> 则一次性从 <code>nonblocking_pool</code> 全量提取随机数。数据的流向见上图所示。</p>
+
+<pre><code class="language-c">static ssize_t
+random_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+{
+    ssize_t n, retval = 0, count = 0;
+
+    if (nbytes == 0)
+        return 0;
+
+    while (nbytes &gt; 0) {
+        n = nbytes;
+        /* 需求的字节数大于安全提取的阈值，则分多次提取。保证每次不超限 */
+        if (n &gt; SEC_XFER_SIZE)
+            n = SEC_XFER_SIZE;
+
+        DEBUG_ENT(&quot;reading %zu bits\n&quot;, n*8);
+
+        /* 提取熵，并拷贝到用户空间 */
+        n = extract_entropy_user(&amp;blocking_pool, buf, n);
+
+        if (n &lt; 0) {
+            retval = n;
+            break;
+        }
+
+        DEBUG_ENT(&quot;read got %zd bits (%zd still needed)\n&quot;,
+              n*8, (nbytes-n)*8);
+
+        if (n == 0) {
+            /* 不支持非阻塞的文件标识 */
+            if (file-&gt;f_flags &amp; O_NONBLOCK) {
+                retval = -EAGAIN;
+                break;
+            }
+
+            DEBUG_ENT(&quot;sleeping?\n&quot;);
+
+            /* 主动 Sleeping，等待事件（熵池被填充达到一定的阈值）*/
+            wait_event_interruptible(random_read_wait,
+                input_pool.entropy_count &gt;=
+                         random_read_wakeup_thresh);
+
+            DEBUG_ENT(&quot;awake\n&quot;);
+
+            if (signal_pending(current)) {
+                retval = -ERESTARTSYS;
+                break;
+            }
+
+            continue;
+        }
+
+        count += n;
+        buf += n;
+        nbytes -= n;
+        break;        /* This break makes the device work */
+                /* like a named pipe */
+    }
+
+    return (count ? count : retval);
+}
+
+static ssize_t
+urandom_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+{
+    /* 提取熵，并拷贝到用户空间 */
+    return extract_entropy_user(&amp;nonblocking_pool, buf, nbytes);
+}
+</code></pre>
+
+<p>从全流程来说，<code>random</code> 和 <code>urandom</code> 几乎都是一样的，最重要的区别在于 <code>random</code> 通过比较熵值计时器与预设阈值，来决定是否需要等待熵池收集到足够的随机因子后再进行随机数生成工作。而 <code>urandom</code> 的工作形式就是不设定阈值，非阻塞式直接生成随机数。从使用的角度来说，如果保持熵池充足，并且每次要求的随机数小于 512 字节，那么 <code>random</code> 和 <code>urandom</code> 的执行将是一致的（当然，这个一致是指执行的逻辑一致，不代表结果一致）。<em>大雾，熵池真的充足的话，又何必考虑 urandom 呢？</em></p>
+
+<h2 id="解决方案">解决方案</h2>
+
+<p><a href="https://cwiki.apache.org/confluence/display/TOMCAT/HowTo+FasterStartUp">Tomcat Wiki</a> 从两个角度提供了解决方案：</p>
+
+<ol>
+<li>放弃使用 <code>/dev/random</code> ，改用非阻塞式的 <code>/dev/urandom</code> 。添加启动参数 <code>-Djava.security.egd=file:/dev/./urandom</code></li>
+<li>增加熵池的来源，提供熵的产量。通过购买外设 <code>EntropyKey</code> 来解决；或者使用软件来模拟一些环境噪音，比如 rngd 。</li>
+</ol>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/2019/02/27/javaapi-%E5%8F%82%E6%95%B0%E8%AF%AF%E5%AE%9A%E4%B9%89%E7%9A%84%E5%90%8E%E6%9E%9C/">【Java】API 参数误定义的后果</a></li>
+    
+    <li><a href="/2018/08/15/java-instrumentation/">Java Instrumentation</a></li>
+    
+    <li><a href="/2018/07/04/java-%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE%E4%B8%8E%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/">Java 安全访问与权限控制</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About Me</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>

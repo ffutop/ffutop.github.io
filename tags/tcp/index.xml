@@ -5,8 +5,7 @@
     <link>https://www.ffutop.com/tags/tcp/</link>
     <description>Recent content in TCP on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <copyright>2018-2020 © ffutop</copyright>
+    <language>zh-cmn-Hans-CN</language>
     <lastBuildDate>Thu, 27 Sep 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/tcp/index.xml" rel="self" type="application/rss+xml" />
@@ -14,20 +13,20 @@
     
     <item>
       <title>Understand MAIL</title>
-      <link>https://www.ffutop.com/posts/2018-09-27-mail/</link>
+      <link>https://www.ffutop.com/2018/09/27/understand-mail/</link>
       <pubDate>Thu, 27 Sep 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-09-27-mail/</guid>
+      <guid>https://www.ffutop.com/2018/09/27/understand-mail/</guid>
       <description>&lt;p&gt;在网络协议上，高层协议确实比底层协议更容易理解，也更加的人性化。
 传输层的 TCP, UDP 都还停留在各种字节内容的整合和校验上，而更上层的应用层协议就已经能够直观到通过直接解读就能理解其每条消息的含义了。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>TCP SYN 包模拟</title>
-      <link>https://www.ffutop.com/posts/2018-09-18-tcp-syn/</link>
+      <link>https://www.ffutop.com/2018/09/18/tcp-syn-%E5%8C%85%E6%A8%A1%E6%8B%9F/</link>
       <pubDate>Tue, 18 Sep 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-09-18-tcp-syn/</guid>
+      <guid>https://www.ffutop.com/2018/09/18/tcp-syn-%E5%8C%85%E6%A8%A1%E6%8B%9F/</guid>
       <description>&lt;p&gt;写了两天，几乎是从零开始，C 语言搞了一个发 TCP SYN 包的小程序。
 从协议到程序代码的转换，确实没有花费太多的时间，但是为了字节序(byteorder)的问题简直折腾得&amp;hellip;&lt;/p&gt;</description>
     </item>
