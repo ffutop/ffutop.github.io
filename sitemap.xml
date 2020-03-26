@@ -3,6 +3,47 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://www.ffutop.com/2020/03/26/idempotent-pattern/</loc>
+    <lastmod>2020-03-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://www.ffutop.com/posts/</loc>
+    <lastmod>2020-03-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.ffutop.com/tags/</loc>
+    <lastmod>2020-03-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.ffutop.com/</loc>
+    <lastmod>2020-03-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.ffutop.com/tags/idempotent/</loc>
+    <lastmod>2020-03-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.ffutop.com/tags/raft/</loc>
+    <lastmod>2020-03-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.ffutop.com/tags/redis/</loc>
+    <lastmod>2020-03-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://www.ffutop.com/tags/dns/</loc>
     <lastmod>2020-02-28T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -10,24 +51,6 @@
   
   <url>
     <loc>https://www.ffutop.com/tags/java/</loc>
-    <lastmod>2020-02-28T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.ffutop.com/posts/</loc>
-    <lastmod>2020-02-28T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.ffutop.com/tags/</loc>
-    <lastmod>2020-02-28T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.ffutop.com/</loc>
     <lastmod>2020-02-28T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
@@ -45,12 +68,6 @@
   
   <url>
     <loc>https://www.ffutop.com/tags/distributed/</loc>
-    <lastmod>2020-02-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.ffutop.com/tags/raft/</loc>
     <lastmod>2020-02-17T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
