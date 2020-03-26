@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>ftrace on Utop&#39;s Blog</title>
@@ -18,15 +18,11 @@
       
       <guid>https://www.ffutop.com/posts/2019-06-02-%E8%B7%9F%E8%B8%AA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E7%9A%84%E5%B7%A5%E5%85%B7-ftrace/</guid>
       <description>&lt;p&gt;前两天仿照 &lt;code&gt;strings&lt;/code&gt; 工具写了个打印进程运行时堆栈可打印字符的工具 &lt;a href=&#34;https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c&#34;&gt;ffstrings&lt;/a&gt; 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&amp;lt;&lt;/p&gt;
-
 &lt;p&gt;在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— &lt;code&gt;ftrace&lt;/code&gt; 。&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。&lt;/p&gt;
-
 &lt;p&gt;虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;p&gt;当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 &lt;code&gt;ffstrings&lt;/code&gt; 出现 &lt;code&gt;EPERM&lt;/code&gt; 的原因。&lt;/p&gt;</description>
     </item>
     

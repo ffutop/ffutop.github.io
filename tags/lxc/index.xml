@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>LXC on Utop&#39;s Blog</title>
@@ -18,13 +18,9 @@
       
       <guid>https://www.ffutop.com/posts/2019-06-18-%E7%90%86%E8%A7%A3-linux-kernel-12-linux-%E5%AE%B9%E5%99%A8%E5%8C%96%E6%8A%80%E6%9C%AF/</guid>
       <description>&lt;p&gt;由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png&#34; alt=&#34;Containerd VS VM&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;small&gt;&lt;center&gt;Copied From docker.com&lt;/center&gt;&lt;/small&gt;&lt;/p&gt;
-
+&lt;p&gt;&lt;img src=&#34;https://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png&#34; alt=&#34;Containerd VS VM&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;Copied From docker.com&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
 &lt;p&gt;如何实现容器化，显然需要从操作系统层面进行支撑。这其中涉及到的核心技术，就包括命名空间(namespace)和控制组(Control Group, cgroup)，前者用来对资源进行隔离，后者用来对资源加以限制。&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04&lt;/p&gt;
 &lt;/blockquote&gt;</description>

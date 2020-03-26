@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>redis on Utop&#39;s Blog</title>
@@ -17,8 +17,7 @@
       <pubDate>Thu, 26 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>https://www.ffutop.com/posts/2020-03-26-idempotent-pattern/</guid>
-      <description>&lt;p&gt;&lt;a name=&#34;initProblem&#34; /&gt;“同样是 KV-Server ，为什么基于 Raft Algorithm 的 KV-Server 需要对客户端操作实现幂等，而 Redis 却不需要？” 此前在实现基于 Raft 的容错 Key/Value Service 时，为了能够实现幂等的 &lt;code&gt;Put(key, value)&lt;/code&gt;、&lt;code&gt;Append(key, arg)&lt;/code&gt; 操作，可谓是费尽心思。但同为提供键值服务的 Redis ，怎么从来没见被要求幂等呢？&lt;/p&gt;
-
+      <description>&lt;p&gt;&lt;!-- raw HTML omitted --&gt;“同样是 KV-Server ，为什么基于 Raft Algorithm 的 KV-Server 需要对客户端操作实现幂等，而 Redis 却不需要？” 此前在实现基于 Raft 的容错 Key/Value Service 时，为了能够实现幂等的 &lt;code&gt;Put(key, value)&lt;/code&gt;、&lt;code&gt;Append(key, arg)&lt;/code&gt; 操作，可谓是费尽心思。但同为提供键值服务的 Redis ，怎么从来没见被要求幂等呢？&lt;/p&gt;
 &lt;p&gt;基于这个问题，本篇将整理并总结个人的结论。&lt;/p&gt;</description>
     </item>
     

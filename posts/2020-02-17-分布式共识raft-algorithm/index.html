@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.55.6" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "分布式共识·Raft Algorithm",
       "headline" : "分布式共识·Raft Algorithm",
-      "description" : "\x3ch2 id=\x22分布式系统与共识\x22\x3e分布式系统与共识\x3c\/h2\x3e\n\n\x3cp\x3e分布式系统是一组透过网络相互连接通信与传递信息的计算机，协同来完成一件任务的系统。任务可能是大规模计算，可能是冗余存储。按此分类，又有分布式计算系统和分布式存储系统。\x3c\/p\x3e\n\n\x3cp\x3e典型的分布式计算系统\/框架有 MapReduce、Spark；分布式存储系统有 GFS 等。虽然有此划分，但分布式计算几乎必然地涉及到存储的需求。存储为计算提供支持，计算促进存储的发展。\x3c\/p\x3e\n\n\x3cp\x3e\x3cimg src=\x22https:\/\/img.ffutop.com\/3885C079-B4ED-4B0E-AD86-60AB8D4D4792.png\x22 alt=\x22分布式系统分类\x22 \/\x3e\x3c\/p\x3e\n\n\x3cp\x3e计算是无状态的，存储是有状态的。在分布式的存储下，为了让计算机各自维护的状态协商达成一致，就必然地需要共识算法的支持。Wait a minute. 计算机间的协商需要共识算法？\x3c\/p\x3e\n\n\x3cp\x3e计算机间的协作可以划分为中心化与去中心化两大类。中心化的方案自然是有一个权威的 Master 来协调所有的计算机的任务，但前提是这个 Master 必须可靠，即依赖一个单点就必须要对它的可用性进行担保；去中心化的方案，计算机间都是平等的，如何就一个问题达成共识，就是面对的核心问题。\x3c\/p\x3e\n\n\x3cblockquote\x3e\n\x3ch3 id=\x22共识与一致性\x22\x3e共识与一致性\x3c\/h3\x3e\n\n\x3cp\x3e共识(Consensus)：机器之间就一个值\/命令等达成共同的认识，一般是面向输入，处理并维护这个值（状态）\x3c\/p\x3e\n\n\x3cp\x3e一致性(Consistency)：一致性表述为机器对外提供服务时的表现。向机器 A 或机器 B 读取同一数据，两者的返回值是相同的。当然，也有不同的弱化版本，允许一些特定条件下的不一致\x3c\/p\x3e\n\x3c\/blockquote\x3e\n\n\x3cp\x3e在 2014 年之前，Paxos [1] 几乎是解决共识问题的唯一选择。但难懂是一个致命的问题，并且难以工程化也是重大的缺陷。Raft 的出现无疑是一道曙光，熟读，实践，豁然开朗。\x3c\/p\x3e",
+      "description" : "\x3ch2 id=\x22分布式系统与共识\x22\x3e分布式系统与共识\x3c\/h2\x3e\n\x3cp\x3e分布式系统是一组透过网络相互连接通信与传递信息的计算机，协同来完成一件任务的系统。任务可能是大规模计算，可能是冗余存储。按此分类，又有分布式计算系统和分布式存储系统。\x3c\/p\x3e\n\x3cp\x3e典型的分布式计算系统\/框架有 MapReduce、Spark；分布式存储系统有 GFS 等。虽然有此划分，但分布式计算几乎必然地涉及到存储的需求。存储为计算提供支持，计算促进存储的发展。\x3c\/p\x3e\n\x3cp\x3e\x3cimg src=\x22https:\/\/img.ffutop.com\/3885C079-B4ED-4B0E-AD86-60AB8D4D4792.png\x22 alt=\x22分布式系统分类\x22\x3e\x3c\/p\x3e\n\x3cp\x3e计算是无状态的，存储是有状态的。在分布式的存储下，为了让计算机各自维护的状态协商达成一致，就必然地需要共识算法的支持。Wait a minute. 计算机间的协商需要共识算法？\x3c\/p\x3e\n\x3cp\x3e计算机间的协作可以划分为中心化与去中心化两大类。中心化的方案自然是有一个权威的 Master 来协调所有的计算机的任务，但前提是这个 Master 必须可靠，即依赖一个单点就必须要对它的可用性进行担保；去中心化的方案，计算机间都是平等的，如何就一个问题达成共识，就是面对的核心问题。\x3c\/p\x3e\n\x3cblockquote\x3e\n\x3ch3 id=\x22共识与一致性\x22\x3e共识与一致性\x3c\/h3\x3e\n\x3cp\x3e共识(Consensus)：机器之间就一个值\/命令等达成共同的认识，一般是面向输入，处理并维护这个值（状态）\x3c\/p\x3e\n\x3cp\x3e一致性(Consistency)：一致性表述为机器对外提供服务时的表现。向机器 A 或机器 B 读取同一数据，两者的返回值是相同的。当然，也有不同的弱化版本，允许一些特定条件下的不一致\x3c\/p\x3e\n\x3c\/blockquote\x3e\n\x3cp\x3e在 2014 年之前，Paxos [1] 几乎是解决共识问题的唯一选择。但难懂是一个致命的问题，并且难以工程化也是重大的缺陷。Raft 的出现无疑是一道曙光，熟读，实践，豁然开朗。\x3c\/p\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -41,45 +41,27 @@
   <meta property="og:title" content="分布式共识·Raft Algorithm - Utop&#39;s Blog" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="分布式系统与共识
-
 分布式系统是一组透过网络相互连接通信与传递信息的计算机，协同来完成一件任务的系统。任务可能是大规模计算，可能是冗余存储。按此分类，又有分布式计算系统和分布式存储系统。
-
 典型的分布式计算系统/框架有 MapReduce、Spark；分布式存储系统有 GFS 等。虽然有此划分，但分布式计算几乎必然地涉及到存储的需求。存储为计算提供支持，计算促进存储的发展。
 
-
-
 计算是无状态的，存储是有状态的。在分布式的存储下，为了让计算机各自维护的状态协商达成一致，就必然地需要共识算法的支持。Wait a minute. 计算机间的协商需要共识算法？
-
 计算机间的协作可以划分为中心化与去中心化两大类。中心化的方案自然是有一个权威的 Master 来协调所有的计算机的任务，但前提是这个 Master 必须可靠，即依赖一个单点就必须要对它的可用性进行担保；去中心化的方案，计算机间都是平等的，如何就一个问题达成共识，就是面对的核心问题。
 
-
 共识与一致性
-
 共识(Consensus)：机器之间就一个值/命令等达成共同的认识，一般是面向输入，处理并维护这个值（状态）
-
 一致性(Consistency)：一致性表述为机器对外提供服务时的表现。向机器 A 或机器 B 读取同一数据，两者的返回值是相同的。当然，也有不同的弱化版本，允许一些特定条件下的不一致
-
 
 在 2014 年之前，Paxos [1] 几乎是解决共识问题的唯一选择。但难懂是一个致命的问题，并且难以工程化也是重大的缺陷。Raft 的出现无疑是一道曙光，熟读，实践，豁然开朗。" />
   <meta name="description" content="分布式系统与共识
-
 分布式系统是一组透过网络相互连接通信与传递信息的计算机，协同来完成一件任务的系统。任务可能是大规模计算，可能是冗余存储。按此分类，又有分布式计算系统和分布式存储系统。
-
 典型的分布式计算系统/框架有 MapReduce、Spark；分布式存储系统有 GFS 等。虽然有此划分，但分布式计算几乎必然地涉及到存储的需求。存储为计算提供支持，计算促进存储的发展。
 
-
-
 计算是无状态的，存储是有状态的。在分布式的存储下，为了让计算机各自维护的状态协商达成一致，就必然地需要共识算法的支持。Wait a minute. 计算机间的协商需要共识算法？
-
 计算机间的协作可以划分为中心化与去中心化两大类。中心化的方案自然是有一个权威的 Master 来协调所有的计算机的任务，但前提是这个 Master 必须可靠，即依赖一个单点就必须要对它的可用性进行担保；去中心化的方案，计算机间都是平等的，如何就一个问题达成共识，就是面对的核心问题。
 
-
 共识与一致性
-
 共识(Consensus)：机器之间就一个值/命令等达成共同的认识，一般是面向输入，处理并维护这个值（状态）
-
 一致性(Consistency)：一致性表述为机器对外提供服务时的表现。向机器 A 或机器 B 读取同一数据，两者的返回值是相同的。当然，也有不同的弱化版本，允许一些特定条件下的不一致
-
 
 在 2014 年之前，Paxos [1] 几乎是解决共识问题的唯一选择。但难懂是一个致命的问题，并且难以工程化也是重大的缺陷。Raft 的出现无疑是一道曙光，熟读，实践，豁然开朗。" />
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
@@ -142,81 +124,54 @@
         <div class="post-content markdown-body">
           
           <h2 id="分布式系统与共识">分布式系统与共识</h2>
-
 <p>分布式系统是一组透过网络相互连接通信与传递信息的计算机，协同来完成一件任务的系统。任务可能是大规模计算，可能是冗余存储。按此分类，又有分布式计算系统和分布式存储系统。</p>
-
 <p>典型的分布式计算系统/框架有 MapReduce、Spark；分布式存储系统有 GFS 等。虽然有此划分，但分布式计算几乎必然地涉及到存储的需求。存储为计算提供支持，计算促进存储的发展。</p>
-
-<p><img src="https://img.ffutop.com/3885C079-B4ED-4B0E-AD86-60AB8D4D4792.png" alt="分布式系统分类" /></p>
-
+<p><img src="https://img.ffutop.com/3885C079-B4ED-4B0E-AD86-60AB8D4D4792.png" alt="分布式系统分类"></p>
 <p>计算是无状态的，存储是有状态的。在分布式的存储下，为了让计算机各自维护的状态协商达成一致，就必然地需要共识算法的支持。Wait a minute. 计算机间的协商需要共识算法？</p>
-
 <p>计算机间的协作可以划分为中心化与去中心化两大类。中心化的方案自然是有一个权威的 Master 来协调所有的计算机的任务，但前提是这个 Master 必须可靠，即依赖一个单点就必须要对它的可用性进行担保；去中心化的方案，计算机间都是平等的，如何就一个问题达成共识，就是面对的核心问题。</p>
-
 <blockquote>
 <h3 id="共识与一致性">共识与一致性</h3>
-
 <p>共识(Consensus)：机器之间就一个值/命令等达成共同的认识，一般是面向输入，处理并维护这个值（状态）</p>
-
 <p>一致性(Consistency)：一致性表述为机器对外提供服务时的表现。向机器 A 或机器 B 读取同一数据，两者的返回值是相同的。当然，也有不同的弱化版本，允许一些特定条件下的不一致</p>
 </blockquote>
-
 <p>在 2014 年之前，Paxos [1] 几乎是解决共识问题的唯一选择。但难懂是一个致命的问题，并且难以工程化也是重大的缺陷。Raft 的出现无疑是一道曙光，熟读，实践，豁然开朗。</p>
-
 <h2 id="raft">Raft</h2>
-
 <p>零零总总，花了差不多3周半的时间，基于 MIT 6.824 Lab 2 [4] 造了个勉强能够转得起来的轮子。期间反复琢磨的，甚至两度推到重写的，源于单个 Server 的并发问题。最终总算是依靠事件驱动模式解决了。</p>
-
-<p><img src="https://img.ffutop.com/11B77156-DE5B-4AF8-AFBB-02593E129E5F.png" alt="Raft three sub problems" /></p>
-
+<p><img src="https://img.ffutop.com/11B77156-DE5B-4AF8-AFBB-02593E129E5F.png" alt="Raft three sub problems"></p>
 <p>Raft 将解决共识问题，划分成三个子问题，以领导选举(Leader Election)为基础，日志复制(Log Replication)作为需要达成共识的数据的载体，围绕安全形成了完整的解决方案。</p>
-
-<p><img src="https://img.ffutop.com/607B346D-CFF9-4C79-9892-6482F58D7E98.png" alt="summary of raft algorithm" />
-<small>Copy From Raft[3] Figure. 2</small></p>
-
+<p><img src="https://img.ffutop.com/607B346D-CFF9-4C79-9892-6482F58D7E98.png" alt="summary of raft algorithm">
+<!-- raw HTML omitted -->Copy From Raft[3] Figure. 2<!-- raw HTML omitted --></p>
 <h3 id="领导选举">领导选举</h3>
-
 <p>先抛开所有的前置问题。一个人做决策比一群人做决策要容易得多。领导选举，要做的就是将一群决策者变成一个决策者，其它的人只需要跟从即可。Raft 解决的第一个子问题，就是把一群变成了一个。通过领导选举，保证同一个任期只会有一个权威的声音。同时，当领导出现故障时，重新进行选举，产生新的领导。</p>
-
 <p>先解释一下“任期”，在分布式系统里，由于网络及对其它节点的不确定性，消息的传递可能丢失、延迟、重复。Raft 使用任期充当逻辑时钟，任期号大的节点 A 收到任期号小的节点 B 的请求，响应时需要告知自己的任期号，并要求 B 及时更新。任期号小的节点 C 收到任期号大的节点 D 的请求，则 C 需要主动更新自己的任期号。</p>
-
 <p>在 Raft 中，只有三种状态：</p>
-
 <ul>
 <li>跟随者（Follower）</li>
 <li>候选人（Candidate）</li>
 <li>领导者（Leader）</li>
 </ul>
-
-<p><img src="https://img.ffutop.com/2516E6EA-F565-4AF5-8D83-EE314C1519B4.png" alt="states" />
-<small>Copy From Raft[3] Figure. 4</small></p>
-
+<p><img src="https://img.ffutop.com/2516E6EA-F565-4AF5-8D83-EE314C1519B4.png" alt="states">
+<!-- raw HTML omitted -->Copy From Raft[3] Figure. 4<!-- raw HTML omitted --></p>
 <p>由于分布式下的不可靠，丢包、延迟、单点故障等都可能出现，领导选举能够保证的，是：</p>
-
 <ol>
-<li><p>同一个任期号最多只有一个领导者（可能没有），因为跟随者总是响应最新的任期号，候选者需要得到大多数（指大于1/2的节点，包括自己，下同）的投票</p></li>
-
-<li><p>由随机数支持的选举超时时间，让多个候选人同时存在时，冲突总能够有化解的余地</p></li>
+<li>
+<p>同一个任期号最多只有一个领导者（可能没有），因为跟随者总是响应最新的任期号，候选者需要得到大多数（指大于1/2的节点，包括自己，下同）的投票</p>
+</li>
+<li>
+<p>由随机数支持的选举超时时间，让多个候选人同时存在时，冲突总能够有化解的余地</p>
+</li>
 </ol>
-
 <h3 id="日志复制">日志复制</h3>
-
 <p>常态下的日志复制最简单不过，领导者接受新的日志，并保证日志永远只能依次附加在最后，而不能删除之前的任何日志；跟随者通过接受领导者发送的 AppendEntries RPC 来得到新的日志，跟随者需要保持日志与领导者完全一致，有不一致的，需要删除老的日志，并依次附加新的日志。</p>
-
 <p>如此这般，就不得不怀疑日志丢失的问题了？不过，没有大问题。</p>
-
 <p>Raft 的日志附加也是分为两阶段的。第一阶段，只有领导者能够接收日志，并通过 AppendEntries RPC 向跟随者同步日志；第二阶段，领导者只有收到大多数跟随者的成功响应，才会将这条日志的状态改为“已提交”，并在随后请其它节点也提交这条日志。有几个问题：</p>
-
 <ul>
 <li>如果有多个节点在收到日志时，都是领导者（任期号不同）。任期号小的领导者一定是失败的。因为任期号大的领导者的出现，必然将大于1/2的节点的任期号更新成较大的。</li>
 <li>没有领导者，或者领导者收到后，未成功提交就宕机了。那么基本上是客户端重新发送请求，或者领导者迅速恢复。不过未提交的日志，无需保证其不丢失。</li>
 <li>如果是“已提交”的日志，如何保证其在新的领导者的 AppendEntries RPC 下一定不会被覆盖掉呢？领导选举有一额外的策略要求，候选者的最后一条日志至少需要和跟随者一样新，跟随者才会投票给这个候选者。日志“已提交”，至少大于1/2节点都有这条日志，而候选者必须得到大于1/2的投票，才能变成领导者。</li>
 </ul>
-
 <h3 id="安全">安全</h3>
-
 <p>对安全就不多加描述，它分散在领导选举和日志复制两个子问题中，对整个 Raft 做担保。</p>
-
 <table>
 <thead>
 <tr>
@@ -224,200 +179,176 @@
 <th>解释</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>选举安全特性</td>
 <td>对于一个给定的任期号，最多只会有一个领导人被选举出来</td>
 </tr>
-
 <tr>
 <td>领导人只附加原则</td>
 <td>领导人绝对不会删除或者覆盖自己的日志，只会增加</td>
 </tr>
-
 <tr>
 <td>日志匹配原则</td>
 <td>如果两个日志在相同的索引位置的日志条目的任期号相同，那么我们就认为这个日志从头到这个索引位置之间全部完全相同</td>
 </tr>
-
 <tr>
 <td>领导人完全特性</td>
 <td>如果某个日志条目在某个任期号中已经被提交，那么这个条目必然出现在更大任期号的所有领导人中</td>
 </tr>
-
 <tr>
 <td>状态机安全特性</td>
 <td>如果一个领导人已经将给定的索引值位置的日志条目应用到状态机中，那么其他任何的服务器在这个索引位置不会应用一个不同的日志</td>
 </tr>
 </tbody>
 </table>
-
 <h2 id="单节点的并发问题">单节点的并发问题</h2>
-
 <p>两次推翻代码，都是因为在单节点的并发处理上存在很大问题。虽然多个 Raft 节点之间的共识问题通过算法能够很好地处理，而且理解上也不存在障碍。不过单节点的并发导致了相当多的问题。包括</p>
-
 <ul>
 <li>低任期领导者收到高任期领导者的心跳，需要自行降级成跟随者；</li>
 <li>领导者需要广播 AppendEntries RPC；</li>
 <li>跟随者既要维护选举超时心跳等待自动成为候选人，也要等待领导者的心跳</li>
 <li>等等&hellip;</li>
 </ul>
-
 <p>对上述问题的处理都不是一个原子事件，那么并发就是不得不考虑的问题。</p>
-
 <p>不过，既然网络是不可靠的，问题也就完全可以通过事件驱动的方案，用串行的思路来解。同时有多个请求到达，那就都打包成事件等待处理即可。认识上可以等同于网络导致的延迟。毕竟 Raft 已经充分考虑了这个问题了。</p>
-
 <ul>
 <li>跟随者监听 AppendEntries 和 RequestVote 事件以及选举超时事件</li>
 </ul>
-
-<pre><code class="language-go">func (rf *Raft) followerLoop() {
-	rf.votedFor = notVoted
-	for rf.State() == StateFollower {
-		select {
-		case ev := &lt;-rf.c:
-			var err error
-			switch req := ev.req.(type) {
-			case *AppendEntriesArgs:
-				ev.resp = rf.processAppendEntries(req)
-			case *RequestVoteArgs:
-				ev.resp = rf.processRequestVote(req)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">rf</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Raft</span>) <span style="color:#a6e22e">followerLoop</span>() {
+	<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">votedFor</span> = <span style="color:#a6e22e">notVoted</span>
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">State</span>() <span style="color:#f92672">==</span> <span style="color:#a6e22e">StateFollower</span> {
+		<span style="color:#66d9ef">select</span> {
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">ev</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">c</span>:
+			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+			<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">req</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">req</span>.(<span style="color:#66d9ef">type</span>) {
+			<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">AppendEntriesArgs</span>:
+				<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">resp</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">processAppendEntries</span>(<span style="color:#a6e22e">req</span>)
+			<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RequestVoteArgs</span>:
+				<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">resp</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">processRequestVote</span>(<span style="color:#a6e22e">req</span>)
             }
-			ev.c &lt;- err
-		case &lt;-time.After(randElectionTick()):
-			rf.setState(StateCandidate)
+			<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">c</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">err</span>
+		<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">After</span>(<span style="color:#a6e22e">randElectionTick</span>()):
+			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">setState</span>(<span style="color:#a6e22e">StateCandidate</span>)
 		}
     }
 }
-</code></pre>
-
-<ul>
+</code></pre></div><ul>
 <li>候选人每个候选周期发送 RequestVote，并等待其它的 AppendEntries、RequestVote 和选举响应、选举超时事件</li>
 </ul>
-
-<pre><code class="language-go">func (rf *Raft) candidateLoop() {
-	newTerm := true
-	var timeoutChan &lt;-chan time.Time
-	var replyChan chan *RequestVoteReply
-	for rf.State() == StateCandidate {
-		if newTerm {
-			newTerm = false
-			rf.incTerm()
-			rf.voteCount = 1
-			rf.votedFor = rf.me
-			replyChan = make(chan *RequestVoteReply, rf.nPeers)
-			for i := 0; i &lt; rf.nPeers; i++ {
-				if i == rf.me {
-					continue
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">rf</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Raft</span>) <span style="color:#a6e22e">candidateLoop</span>() {
+	<span style="color:#a6e22e">newTerm</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">true</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">timeoutChan</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Time</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">replyChan</span> <span style="color:#66d9ef">chan</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RequestVoteReply</span>
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">State</span>() <span style="color:#f92672">==</span> <span style="color:#a6e22e">StateCandidate</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">newTerm</span> {
+			<span style="color:#a6e22e">newTerm</span> = <span style="color:#66d9ef">false</span>
+			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">incTerm</span>()
+			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">voteCount</span> = <span style="color:#ae81ff">1</span>
+			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">votedFor</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">me</span>
+			<span style="color:#a6e22e">replyChan</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RequestVoteReply</span>, <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nPeers</span>)
+			<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nPeers</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">me</span> {
+					<span style="color:#66d9ef">continue</span>
 				}
-				entry := rf.log.LastEntry()
-				args := &amp;RequestVoteArgs{
-					Term:         rf.Term(),
-					CandidateId:  rf.me,
-					LastLogIndex: entry.Index,
-					LastLogTerm:  entry.Term,
+				<span style="color:#a6e22e">entry</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">LastEntry</span>()
+				<span style="color:#a6e22e">args</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">RequestVoteArgs</span>{
+					<span style="color:#a6e22e">Term</span>:         <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">Term</span>(),
+					<span style="color:#a6e22e">CandidateId</span>:  <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">me</span>,
+					<span style="color:#a6e22e">LastLogIndex</span>: <span style="color:#a6e22e">entry</span>.<span style="color:#a6e22e">Index</span>,
+					<span style="color:#a6e22e">LastLogTerm</span>:  <span style="color:#a6e22e">entry</span>.<span style="color:#a6e22e">Term</span>,
 				}
-				go rf.sendRequestVote(i, args, replyChan)
+				<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">sendRequestVote</span>(<span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">args</span>, <span style="color:#a6e22e">replyChan</span>)
 			}
-			timeoutChan = time.After(randElectionTick())
+			<span style="color:#a6e22e">timeoutChan</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">After</span>(<span style="color:#a6e22e">randElectionTick</span>())
 		}
 
-		select {
-		case reply := &lt;-replyChan:
-			rf.commonRule(reply.Term)
-			if rf.State() == StateCandidate &amp;&amp; reply.VoteGranted {
-				rf.voteCount++
-				DPrintf(&quot;raft %v get new vote, total: %v&quot;, rf.me, rf.voteCount)
-				if rf.voteCount &gt; (rf.nPeers &gt;&gt; 1) {
-					rf.setState(StateLeader)
+		<span style="color:#66d9ef">select</span> {
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">reply</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">replyChan</span>:
+			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">commonRule</span>(<span style="color:#a6e22e">reply</span>.<span style="color:#a6e22e">Term</span>)
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">State</span>() <span style="color:#f92672">==</span> <span style="color:#a6e22e">StateCandidate</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">reply</span>.<span style="color:#a6e22e">VoteGranted</span> {
+				<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">voteCount</span><span style="color:#f92672">++</span>
+				<span style="color:#a6e22e">DPrintf</span>(<span style="color:#e6db74">&#34;raft %v get new vote, total: %v&#34;</span>, <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">me</span>, <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">voteCount</span>)
+				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">voteCount</span> &gt; (<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nPeers</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">1</span>) {
+					<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">setState</span>(<span style="color:#a6e22e">StateLeader</span>)
 				}
 			}
-		case ev := &lt;-rf.c:
-			var err error
-			switch req := ev.req.(type) {
-			case *AppendEntriesArgs:
-				ev.resp = rf.processAppendEntries(req)
-			case *RequestVoteArgs:
-				ev.resp = rf.processRequestVote(req)
-			default:
-				err = UnknownEventErr
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">ev</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">c</span>:
+			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+			<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">req</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">req</span>.(<span style="color:#66d9ef">type</span>) {
+			<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">AppendEntriesArgs</span>:
+				<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">resp</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">processAppendEntries</span>(<span style="color:#a6e22e">req</span>)
+			<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RequestVoteArgs</span>:
+				<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">resp</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">processRequestVote</span>(<span style="color:#a6e22e">req</span>)
+			<span style="color:#66d9ef">default</span>:
+				<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">UnknownEventErr</span>
 			}
-			ev.c &lt;- err
-		case &lt;-timeoutChan:
-			newTerm = true
+			<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">c</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">err</span>
+		<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">timeoutChan</span>:
+			<span style="color:#a6e22e">newTerm</span> = <span style="color:#66d9ef">true</span>
 		}
 	}
 }
-</code></pre>
-
-<ul>
+</code></pre></div><ul>
 <li>领导者需要定期发送 AppendEntries，并等待其它 RequestVote 和 AppendEntries 事件</li>
 </ul>
-
-<pre><code class="language-go">func (rf *Raft) leaderLoop() {
-	for i := 0; i &lt; rf.nPeers; i++ {
-		rf.nextIndex[i] = rf.log.NextIndex()
-		rf.matchIndex[i] = 0
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">rf</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Raft</span>) <span style="color:#a6e22e">leaderLoop</span>() {
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nPeers</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+		<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nextIndex</span>[<span style="color:#a6e22e">i</span>] = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">NextIndex</span>()
+		<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">matchIndex</span>[<span style="color:#a6e22e">i</span>] = <span style="color:#ae81ff">0</span>
 	}
-	var tickChan &lt;-chan time.Time
-	newHeartbeat := true
-	var replyChan chan *AppendEntriesReply
-	for rf.State() == StateLeader {
-		if newHeartbeat {
-			rf.updateCommitIndex()
-			replyChan = make(chan *AppendEntriesReply)
-			for i := 0; i &lt; rf.nPeers; i++ {
-				if i == rf.me {
-					continue
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">tickChan</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Time</span>
+	<span style="color:#a6e22e">newHeartbeat</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">true</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">replyChan</span> <span style="color:#66d9ef">chan</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">AppendEntriesReply</span>
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">State</span>() <span style="color:#f92672">==</span> <span style="color:#a6e22e">StateLeader</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">newHeartbeat</span> {
+			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">updateCommitIndex</span>()
+			<span style="color:#a6e22e">replyChan</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">AppendEntriesReply</span>)
+			<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nPeers</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">me</span> {
+					<span style="color:#66d9ef">continue</span>
 				}
 
-				entries := rf.log.Entries(rf.nextIndex[i] - 1)
-				prevLogEntry := entries[0]
+				<span style="color:#a6e22e">entries</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Entries</span>(<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nextIndex</span>[<span style="color:#a6e22e">i</span>] <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>)
+				<span style="color:#a6e22e">prevLogEntry</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">entries</span>[<span style="color:#ae81ff">0</span>]
 
-				args := &amp;AppendEntriesArgs{
-					Term:         rf.currentTerm,
-					LeaderId:     rf.me,
-					PrevLogIndex: prevLogEntry.Index,
-					PrevLogTerm:  prevLogEntry.Term,
-					Entries:      entries[1:],
-					LeaderCommit: rf.log.commitIndex,
+				<span style="color:#a6e22e">args</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">AppendEntriesArgs</span>{
+					<span style="color:#a6e22e">Term</span>:         <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">currentTerm</span>,
+					<span style="color:#a6e22e">LeaderId</span>:     <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">me</span>,
+					<span style="color:#a6e22e">PrevLogIndex</span>: <span style="color:#a6e22e">prevLogEntry</span>.<span style="color:#a6e22e">Index</span>,
+					<span style="color:#a6e22e">PrevLogTerm</span>:  <span style="color:#a6e22e">prevLogEntry</span>.<span style="color:#a6e22e">Term</span>,
+					<span style="color:#a6e22e">Entries</span>:      <span style="color:#a6e22e">entries</span>[<span style="color:#ae81ff">1</span>:],
+					<span style="color:#a6e22e">LeaderCommit</span>: <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">commitIndex</span>,
 				}
-				go rf.sendAppendEntries(i, args, replyChan)
+				<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">sendAppendEntries</span>(<span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">args</span>, <span style="color:#a6e22e">replyChan</span>)
 			}
-			tickChan = time.After(fixedHeartbeatTick())
-			newHeartbeat = false
+			<span style="color:#a6e22e">tickChan</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">After</span>(<span style="color:#a6e22e">fixedHeartbeatTick</span>())
+			<span style="color:#a6e22e">newHeartbeat</span> = <span style="color:#66d9ef">false</span>
 		}
 
-		select {
-		case reply := &lt;-replyChan:
-			rf.commonRule(reply.Term)
-		case ev := &lt;-rf.c:
-			var err error
-			switch req := ev.req.(type) {
-			case *AppendEntriesArgs:
-				ev.resp = rf.processAppendEntries(req)
-			case *RequestVoteArgs:
-				ev.resp = rf.processRequestVote(req)
-			default:
-				err = UnknownEventErr
+		<span style="color:#66d9ef">select</span> {
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">reply</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">replyChan</span>:
+			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">commonRule</span>(<span style="color:#a6e22e">reply</span>.<span style="color:#a6e22e">Term</span>)
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">ev</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">c</span>:
+			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+			<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">req</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">req</span>.(<span style="color:#66d9ef">type</span>) {
+			<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">AppendEntriesArgs</span>:
+				<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">resp</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">processAppendEntries</span>(<span style="color:#a6e22e">req</span>)
+			<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RequestVoteArgs</span>:
+				<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">resp</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">processRequestVote</span>(<span style="color:#a6e22e">req</span>)
+			<span style="color:#66d9ef">default</span>:
+				<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">UnknownEventErr</span>
 			}
-			ev.c &lt;- err
-		case &lt;-tickChan:
-			newHeartbeat = true
+			<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">c</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">err</span>
+		<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">tickChan</span>:
+			<span style="color:#a6e22e">newHeartbeat</span> = <span style="color:#66d9ef">true</span>
 		}
 	}
 }
-</code></pre>
-
-<h2 id="参考资料">参考资料</h2>
-
-<p>[1]. <em>Wikipedia: Paxos </em><a href="https://en.wikipedia.org/wiki/Paxos_(computer_science)">https://en.wikipedia.org/wiki/Paxos_(computer_science)</a></p>
-
+</code></pre></div><h2 id="参考资料">参考资料</h2>
+<p>[1]. _Wikipedia: Paxos <em></em>(computer_science)<a href="https://en.wikipedia.org/wiki/Paxos_(computer_science)">https://en.wikipedia.org/wiki/Paxos</a></p>
 <p>[2]. The Raft Consensus Algorithm <a href="https://raft.github.io/">https://raft.github.io/</a></p>
-
 <p>[3]. In Search of an Understandable Consensus Algorithm(Extended Version) <a href="https://raft.github.io/raft.pdf">https://raft.github.io/raft.pdf</a></p>
-
 <p>[4]. MIT 6.824 <a href="https://pdos.csail.mit.edu/6.824/schedule.html">https://pdos.csail.mit.edu/6.824/schedule.html</a></p>
         </div>
 

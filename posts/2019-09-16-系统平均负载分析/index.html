@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.55.6" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "系统平均负载分析",
       "headline" : "系统平均负载分析",
-      "description" : "\x3cp\x3e\x3ccode\x3eLoad Average\x3c\/code\x3e 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。\x3c\/p\x3e\n\n\x3cpre\x3e\x3ccode class=\x22language-sh\x22\x3effutop $ time .\/a\n.\/a  59.48s user 0.04s system 98% cpu 1:00.59 total\nffutop $ uptime\n09:58:56 up 165 days, 20:14,  2 users,  load average: 0.63, 0.24, 0.09\n\x3c\/code\x3e\x3c\/pre\x3e\n\n\x3cp\x3e是什么原因导致平均负载与预期值不符呢？\x3c\/p\x3e",
+      "description" : "\x3cp\x3e\x3ccode\x3eLoad Average\x3c\/code\x3e 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-sh\x22 data-lang=\x22sh\x22\x3effutop $ time .\/a\n.\/a  59.48s user 0.04s system 98% cpu 1:00.59 total\nffutop $ uptime\n09:58:56 up \x3cspan style=\x22color:#ae81ff\x22\x3e165\x3c\/span\x3e days, 20:14,  \x3cspan style=\x22color:#ae81ff\x22\x3e2\x3c\/span\x3e users,  load average: 0.63, 0.24, 0.09\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e\x3cp\x3e是什么原因导致平均负载与预期值不符呢？\x3c\/p\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -41,22 +41,16 @@
   <meta property="og:title" content="系统平均负载分析 - Utop&#39;s Blog" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="Load Average 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。
-
 ffutop $ time ./a
 ./a  59.48s user 0.04s system 98% cpu 1:00.59 total
 ffutop $ uptime
 09:58:56 up 165 days, 20:14,  2 users,  load average: 0.63, 0.24, 0.09
-
-
 是什么原因导致平均负载与预期值不符呢？" />
   <meta name="description" content="Load Average 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。
-
 ffutop $ time ./a
 ./a  59.48s user 0.04s system 98% cpu 1:00.59 total
 ffutop $ uptime
 09:58:56 up 165 days, 20:14,  2 users,  load average: 0.63, 0.24, 0.09
-
-
 是什么原因导致平均负载与预期值不符呢？" />
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
@@ -118,113 +112,82 @@ ffutop $ uptime
         <div class="post-content markdown-body">
           
           <p><code>Load Average</code> 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。</p>
-
-<pre><code class="language-sh">ffutop $ time ./a
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ffutop $ time ./a
 ./a  59.48s user 0.04s system 98% cpu 1:00.59 total
 ffutop $ uptime
-09:58:56 up 165 days, 20:14,  2 users,  load average: 0.63, 0.24, 0.09
-</code></pre>
-
-<p>是什么原因导致平均负载与预期值不符呢？</p>
-
-<h2 id="proc-loadavg">/proc/loadavg</h2>
-
+09:58:56 up <span style="color:#ae81ff">165</span> days, 20:14,  <span style="color:#ae81ff">2</span> users,  load average: 0.63, 0.24, 0.09
+</code></pre></div><p>是什么原因导致平均负载与预期值不符呢？</p>
+<h2 id="procloadavg">/proc/loadavg</h2>
 <p>通过对 <code>strace</code> 的分析，系统平均负载的数据来源于 <code>/proc</code> 虚拟文件系统下的文件 <code>loadavg</code>。</p>
-
-<pre><code class="language-sh">ffutop $ strace uptime
-# ... some thing omitted ...
-openat(AT_FDCWD, &quot;/proc/loadavg&quot;, O_RDONLY) = 4
-lseek(4, 0, SEEK_SET)                   = 0
-read(4, &quot;0.00 0.01 0.00 3/245 32222\n&quot;, 8191) = 27
-fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(136, 0), ...}) = 0
-write(1, &quot; 10:24:25 up 165 days, 20:39,  2&quot;..., 72 10:24:25 up 165 days, 20:39,  2 users,  load average: 0.00, 0.01, 0.00
-# ... 
-</code></pre>
-
-<p>打印 loadavg 的内容，总共 5 项结果。</p>
-
-<pre><code class="language-sh">cat /proc/loadavg
-0.02 0.03 0.01 1/244 32408
-</code></pre>
-
-<ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ffutop $ strace uptime
+<span style="color:#75715e"># ... some thing omitted ...</span>
+openat<span style="color:#f92672">(</span>AT_FDCWD, <span style="color:#e6db74">&#34;/proc/loadavg&#34;</span>, O_RDONLY<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>
+lseek<span style="color:#f92672">(</span>4, 0, SEEK_SET<span style="color:#f92672">)</span>                   <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+read<span style="color:#f92672">(</span>4, <span style="color:#e6db74">&#34;0.00 0.01 0.00 3/245 32222\n&#34;</span>, 8191<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">27</span>
+fstat<span style="color:#f92672">(</span>1, <span style="color:#f92672">{</span>st_mode<span style="color:#f92672">=</span>S_IFCHR|0620, st_rdev<span style="color:#f92672">=</span>makedev<span style="color:#f92672">(</span>136, 0<span style="color:#f92672">)</span>, ...<span style="color:#f92672">})</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+write<span style="color:#f92672">(</span>1, <span style="color:#e6db74">&#34; 10:24:25 up 165 days, 20:39,  2&#34;</span>..., <span style="color:#ae81ff">72</span> 10:24:25 up <span style="color:#ae81ff">165</span> days, 20:39,  <span style="color:#ae81ff">2</span> users,  load average: 0.00, 0.01, 0.00
+<span style="color:#75715e"># ...</span> 
+</code></pre></div><p>打印 loadavg 的内容，总共 5 项结果。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">cat /proc/loadavg
+0.02 0.03 0.01 1/244 <span style="color:#ae81ff">32408</span>
+</code></pre></div><ul>
 <li>前三个数代表 1/5/15 分钟内的系统平均负载，包含所有处于<strong>就绪</strong>(Running) 和<strong>不可中断睡眠</strong>(Uninterruptible Sleep) 状态的任务。</li>
-<li>&ldquo;<sup>1</sup>&frasl;<sub>244</sub>&rdquo; 代表当前 1 个任务处于就绪状态，总共有 244 个任务。</li>
+<li>&ldquo;1/244&rdquo; 代表当前 1 个任务处于就绪状态，总共有 244 个任务。</li>
 <li>&ldquo;32408&rdquo; 表示最近一次分配的任务 PID 编号。</li>
 </ul>
-
 <p>背后的内核函数是 <code>loadavg_proc_show</code></p>
-
 <h2 id="avenrun-统计值">avenrun 统计值</h2>
-
-<pre><code class="language-c">/* From fs/proc/loadavg.c */
-static int loadavg_proc_show(struct seq_file *m, void *v)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* From fs/proc/loadavg.c */</span>
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">loadavg_proc_show</span>(<span style="color:#66d9ef">struct</span> seq_file <span style="color:#f92672">*</span>m, <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>v)
 {
-    unsigned long avnrun[3];
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span> avnrun[<span style="color:#ae81ff">3</span>];
 
-    get_avenrun(avnrun, FIXED_1/200, 0);
+    get_avenrun(avnrun, FIXED_1<span style="color:#f92672">/</span><span style="color:#ae81ff">200</span>, <span style="color:#ae81ff">0</span>);
 
-    seq_printf(m, &quot;%lu.%02lu %lu.%02lu %lu.%02lu %ld/%d %d\n&quot;,
-        LOAD_INT(avnrun[0]), LOAD_FRAC(avnrun[0]),
-        LOAD_INT(avnrun[1]), LOAD_FRAC(avnrun[1]),
-        LOAD_INT(avnrun[2]), LOAD_FRAC(avnrun[2]),
+    seq_printf(m, <span style="color:#e6db74">&#34;%lu.%02lu %lu.%02lu %lu.%02lu %ld/%d %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,
+        LOAD_INT(avnrun[<span style="color:#ae81ff">0</span>]), LOAD_FRAC(avnrun[<span style="color:#ae81ff">0</span>]),
+        LOAD_INT(avnrun[<span style="color:#ae81ff">1</span>]), LOAD_FRAC(avnrun[<span style="color:#ae81ff">1</span>]),
+        LOAD_INT(avnrun[<span style="color:#ae81ff">2</span>]), LOAD_FRAC(avnrun[<span style="color:#ae81ff">2</span>]),
         nr_running(), nr_threads,
-        task_active_pid_ns(current)-&gt;last_pid);
-    return 0;
+        task_active_pid_ns(current)<span style="color:#f92672">-&gt;</span>last_pid);
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 }
 
-/* From kernel/sched/core.c */
-unsigned long avenrun[3];
-void get_avenrun(unsigned long *loads, unsigned long offset, int shift)
+<span style="color:#75715e">/* From kernel/sched/core.c */</span>
+<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span> avenrun[<span style="color:#ae81ff">3</span>];
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">get_avenrun</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span> <span style="color:#f92672">*</span>loads, <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span> offset, <span style="color:#66d9ef">int</span> shift)
 {
-	loads[0] = (avenrun[0] + offset) &lt;&lt; shift;
-	loads[1] = (avenrun[1] + offset) &lt;&lt; shift;
-	loads[2] = (avenrun[2] + offset) &lt;&lt; shift;
+	loads[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (avenrun[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> offset) <span style="color:#f92672">&lt;&lt;</span> shift;
+	loads[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> (avenrun[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> offset) <span style="color:#f92672">&lt;&lt;</span> shift;
+	loads[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> (avenrun[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">+</span> offset) <span style="color:#f92672">&lt;&lt;</span> shift;
 }
-</code></pre>
-
-<p>事实上 <code>loadavg_proc_show</code> 也仅仅只是承担将数据按预定格式渲染的职责，真正的数据源是内核全局变量 <code>avenrun</code> 。后者由函数 <code>calc_global_load</code> 负责实时刷新。不过，确切地说是周期性刷新（默认的周期是 5 秒一次）。</p>
-
+</code></pre></div><p>事实上 <code>loadavg_proc_show</code> 也仅仅只是承担将数据按预定格式渲染的职责，真正的数据源是内核全局变量 <code>avenrun</code> 。后者由函数 <code>calc_global_load</code> 负责实时刷新。不过，确切地说是周期性刷新（默认的周期是 5 秒一次）。</p>
 <p>注意，全局变量 <code>avenrun</code> 是一个长整型的数组，分别用于维护 1 分钟、5 分钟、15 分钟的平均负载。但是，打印出来的结果分明是浮点数啊！这里内核使用了整数来避免浮点运算带来的性能问题。32 位整型的低 11 位用来表示小数部分，而高位作为整数部分。</p>
-
 <p>如何计算 <code>avenrun</code> ？这里使用了取样的方式，默认是每 5 秒种对各个 CPU 核上处于就绪和不可中断睡眠状态的任务做计数。然后以指数移动平均的方式累积到 <code>avenrun</code> 结果中。</p>
-
 <p>先简单介绍一下朴素的移动平均。假设计算 60 秒的系统平均负载，每 5 秒取样一次，则最近 1 分钟的平均负载：</p>
-
 <p>$$
 avenrun[0]_{t} = \frac{load_{t} + load_{t+5} + load_{t+10} + \dots + load_{t+55}}{60 / 5}
 $$</p>
-
 <p>对于下一个 5 秒的采样结果，使用下列计算公式：</p>
-
 <p>$$
 avenrun[0]_{t+5} = avenrun[0]_{t} - \frac{1}{60 / 5} \times load_{t} + \frac{1}{60 / 5} \times load_{t+60}
 $$</p>
-
 <p>依次类推。移动平均即以类似活动窗口的模式运行，移除最早的采样点对结果的影响，同时添加最新的采样点。</p>
-
 <p>不过，<code>avenrun</code> 使用的移动平均并不太朴素，指数移动平均的描述一般呈现为越早的采样数值对结果的影响越小，呈现指数式的曲线。</p>
-
 <p>$$
 avenrun_t = (1 - \beta) \times avenrun_{t-1} + \beta \times load_t
 $$</p>
-
 <p>至于此处的 $\beta$ ，内核分别使用了 $\frac{2^{11}}{e^{5 / 60}} \approx 1884$ 、$\frac{2^{11}}{e^{5 / 300}} \approx 2014$、$\frac{2^{11}}{e^{5 / 900}} \approx 2037$ 作为 1、5、15 分钟的比例系数。此处的 $2^{11}$ 是用整数计算代替浮点运算带来的倍数（低 11 位代表小数部分）。</p>
-
-<pre><code class="language-c">#define FSHIFT		11		/* nr of bits of precision */
-#define FIXED_1		(1&lt;&lt;FSHIFT)	/* 1.0 as fixed-point */
-#define LOAD_FREQ	(5*HZ+1)	/* 5 sec intervals */
-#define EXP_1		1884		/* 1/exp(5sec/1min) as fixed-point */
-#define EXP_5		2014		/* 1/exp(5sec/5min) */
-#define EXP_15		2037		/* 1/exp(5sec/15min) */
-</code></pre>
-
-<h2 id="end">End</h2>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#define FSHIFT		11		</span><span style="color:#75715e">/* nr of bits of precision */</span><span style="color:#75715e">
+</span><span style="color:#75715e">#define FIXED_1		(1&lt;&lt;FSHIFT)	</span><span style="color:#75715e">/* 1.0 as fixed-point */</span><span style="color:#75715e">
+</span><span style="color:#75715e">#define LOAD_FREQ	(5*HZ+1)	</span><span style="color:#75715e">/* 5 sec intervals */</span><span style="color:#75715e">
+</span><span style="color:#75715e">#define EXP_1		1884		</span><span style="color:#75715e">/* 1/exp(5sec/1min) as fixed-point */</span><span style="color:#75715e">
+</span><span style="color:#75715e">#define EXP_5		2014		</span><span style="color:#75715e">/* 1/exp(5sec/5min) */</span><span style="color:#75715e">
+</span><span style="color:#75715e">#define EXP_15		2037		</span><span style="color:#75715e">/* 1/exp(5sec/15min) */</span><span style="color:#75715e">
+</span></code></pre></div><h2 id="end">End</h2>
 <p>回到最初的问题，几乎跑了 100% CPU 的任务，无法将系统平均负载打到 1.00 也就再正常不过了。虽然从名称上的描述为 1、5、15 分钟的系统平均负载，但事实上，若干分钟前的数据仍然对 1 分钟的平均负载有残留的影响，而这种影响差不多需要 4、5 分钟来消除。</p>
-
-<p><img src="https://www.brendangregg.com/blog/images/2017/loadavg.png" alt="load average" />
-<center><small>Copied From <a href="https://www.brendangregg.com">https://www.brendangregg.com</a></small></center></p>
+<p><img src="https://www.brendangregg.com/blog/images/2017/loadavg.png" alt="load average"></p>
+<!-- raw HTML omitted -->
         </div>
 
         <div class="row middle-xs">

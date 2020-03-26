@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.55.6" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "跟踪内核函数的工具—— Ftrace",
       "headline" : "跟踪内核函数的工具—— Ftrace",
-      "description" : "\x3cp\x3e前两天仿照 \x3ccode\x3estrings\x3c\/code\x3e 工具写了个打印进程运行时堆栈可打印字符的工具 \x3ca href=\x22https:\/\/github.com\/DorMOUSE-None\/ff-proc-utils\/blob\/master\/ffstrings.c\x22\x3effstrings\x3c\/a\x3e 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):\x26lt;\x3c\/p\x3e\n\n\x3cp\x3e在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— \x3ccode\x3eftrace\x3c\/code\x3e 。\x3c\/p\x3e\n\n\x3cblockquote\x3e\n\x3cp\x3eFtrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。\x3c\/p\x3e\n\n\x3cp\x3e虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。\x3c\/p\x3e\n\x3c\/blockquote\x3e\n\n\x3cp\x3e当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 \x3ccode\x3effstrings\x3c\/code\x3e 出现 \x3ccode\x3eEPERM\x3c\/code\x3e 的原因。\x3c\/p\x3e",
+      "description" : "\x3cp\x3e前两天仿照 \x3ccode\x3estrings\x3c\/code\x3e 工具写了个打印进程运行时堆栈可打印字符的工具 \x3ca href=\x22https:\/\/github.com\/DorMOUSE-None\/ff-proc-utils\/blob\/master\/ffstrings.c\x22\x3effstrings\x3c\/a\x3e 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):\x26lt;\x3c\/p\x3e\n\x3cp\x3e在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— \x3ccode\x3eftrace\x3c\/code\x3e 。\x3c\/p\x3e\n\x3cblockquote\x3e\n\x3cp\x3eFtrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。\x3c\/p\x3e\n\x3cp\x3e虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。\x3c\/p\x3e\n\x3c\/blockquote\x3e\n\x3cp\x3e当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 \x3ccode\x3effstrings\x3c\/code\x3e 出现 \x3ccode\x3eEPERM\x3c\/code\x3e 的原因。\x3c\/p\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -41,25 +41,17 @@
   <meta property="og:title" content="跟踪内核函数的工具—— Ftrace - Utop&#39;s Blog" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="前两天仿照 strings 工具写了个打印进程运行时堆栈可打印字符的工具 ffstrings 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&lt;
-
 在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— ftrace 。
 
-
 Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。
-
 虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。
-
 
 当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 ffstrings 出现 EPERM 的原因。" />
   <meta name="description" content="前两天仿照 strings 工具写了个打印进程运行时堆栈可打印字符的工具 ffstrings 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&lt;
-
 在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— ftrace 。
 
-
 Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。
-
 虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。
-
 
 当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 ffstrings 出现 EPERM 的原因。" />
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
@@ -122,30 +114,18 @@ Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在�
         <div class="post-content markdown-body">
           
           <p>前两天仿照 <code>strings</code> 工具写了个打印进程运行时堆栈可打印字符的工具 <a href="https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c">ffstrings</a> 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&lt;</p>
-
 <p>在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— <code>ftrace</code> 。</p>
-
 <blockquote>
 <p>Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。</p>
-
 <p>虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。</p>
 </blockquote>
-
 <p>当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 <code>ffstrings</code> 出现 <code>EPERM</code> 的原因。</p>
-
 <h2 id="启用-ftrace">启用 Ftrace</h2>
-
 <p><code>Ftrace</code> 自版本 2.6.28 开始加入内核。首先要做的就是确保内核已经集成了 <code>Ftrace</code> 。当然，目前的内核版本都已经到 5.X 了，而且云服务器的普及，相信已经没有太多还在使用7、8年前 Linux 发行版的机器了吧 :)</p>
-
 <p><code>Ftrace</code> 使用 debugfs 文件系统以文件的形式来维护控制项和跟踪器输出。一般来说，这个文件系统将挂载在 <code>/sys/kernel/debug</code> 目录下。如果没有找到，那就主动先挂载上 debugfs 文件系统：</p>
-
-<pre><code class="language-sh">mount -t debugfs nodev /sys/kernel/debug
-</code></pre>
-
-<p>挂载文件系统之后，可以检查下 <code>/sys/kernel/debug/tracing</code> 目录，这里就是 <code>Ftrace</code> 全部的可配置项和输出。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mount -t debugfs nodev /sys/kernel/debug
+</code></pre></div><p>挂载文件系统之后，可以检查下 <code>/sys/kernel/debug/tracing</code> 目录，这里就是 <code>Ftrace</code> 全部的可配置项和输出。</p>
 <p>几个重要的文件包括：</p>
-
 <ul>
 <li><code>current_tracer</code>, 配置当前跟踪器进行哪些项目的跟踪</li>
 <li><code>available_tracers</code>, 当前内核支持的所有跟踪项目</li>
@@ -162,131 +142,101 @@ Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在�
 <li><code>set_graph_function</code>, 设置要清晰显示调用关系的函数，以 C 语言缩进式地呈现</li>
 <li><code>available_filter_functions</code>, 显示目前可以跟踪的所有内核函数</li>
 </ul>
-
 <h2 id="使用-ftrace">使用 Ftrace</h2>
-
 <p>配置 <code>current_tracer</code> ，跟踪内核所有函数的调用</p>
-
-<pre><code class="language-sh">$ echo function &gt; current_tracer
-</code></pre>
-
-<p>配置 <code>tracing_enabled</code>，开启跟踪器</p>
-
-<pre><code class="language-sh">$ echo 1 &gt; tracing_on
-</code></pre>
-
-<p>查看 <code>trace</code> 文件中记录的跟踪器输出</p>
-
-<pre><code class="language-sh">$ head -15 trace
-# tracer: function
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ echo <span style="color:#66d9ef">function</span> &gt; current_tracer
+</code></pre></div><p>配置 <code>tracing_enabled</code>，开启跟踪器</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ echo <span style="color:#ae81ff">1</span> &gt; tracing_on
+</code></pre></div><p>查看 <code>trace</code> 文件中记录的跟踪器输出</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ head -15 trace
+<span style="color:#75715e"># tracer: function</span>
 #
-#                              _-----=&gt; irqs-off
-#                             / _----=&gt; need-resched
-#                            | / _---=&gt; hardirq/softirq
-#                            || / _--=&gt; preempt-depth
-#                            ||| /     delay
-#           TASK-PID   CPU#  ||||    TIMESTAMP  FUNCTION
-#              | |       |   ||||       |         |
-             zsh-23126 [000] d... 5252243.233084: do_syscall_64 &lt;-entry_SYSCALL_64_after_hwframe
-             zsh-23126 [000] .... 5252243.233084: SyS_rt_sigprocmask &lt;-do_syscall_64
-             zsh-23126 [000] .... 5252243.233084: sigprocmask &lt;-SyS_rt_sigprocmask
-             zsh-23126 [000] .... 5252243.233084: __set_current_blocked &lt;-sigprocmask
-             zsh-23126 [000] .... 5252243.233084: _raw_spin_lock_irq &lt;-__set_current_blocked
-             zsh-23126 [000] d... 5252243.233085: __set_task_blocked &lt;-__set_current_blocked
-</code></pre>
-
-<p>OK，如果觉得这个结果并不直观，可以重新配置 <code>current_tracer</code>，使用 <code>function_graph</code></p>
-
-<pre><code class="language-sh">$ echo function_graph &gt; current_tracer
+<span style="color:#75715e">#                              _-----=&gt; irqs-off</span>
+<span style="color:#75715e">#                             / _----=&gt; need-resched</span>
+<span style="color:#75715e">#                            | / _---=&gt; hardirq/softirq</span>
+<span style="color:#75715e">#                            || / _--=&gt; preempt-depth</span>
+<span style="color:#75715e">#                            ||| /     delay</span>
+<span style="color:#75715e">#           TASK-PID   CPU#  ||||    TIMESTAMP  FUNCTION</span>
+<span style="color:#75715e">#              | |       |   ||||       |         |</span>
+             zsh-23126 <span style="color:#f92672">[</span>000<span style="color:#f92672">]</span> d... 5252243.233084: do_syscall_64 &lt;-entry_SYSCALL_64_after_hwframe
+             zsh-23126 <span style="color:#f92672">[</span>000<span style="color:#f92672">]</span> .... 5252243.233084: SyS_rt_sigprocmask &lt;-do_syscall_64
+             zsh-23126 <span style="color:#f92672">[</span>000<span style="color:#f92672">]</span> .... 5252243.233084: sigprocmask &lt;-SyS_rt_sigprocmask
+             zsh-23126 <span style="color:#f92672">[</span>000<span style="color:#f92672">]</span> .... 5252243.233084: __set_current_blocked &lt;-sigprocmask
+             zsh-23126 <span style="color:#f92672">[</span>000<span style="color:#f92672">]</span> .... 5252243.233084: _raw_spin_lock_irq &lt;-__set_current_blocked
+             zsh-23126 <span style="color:#f92672">[</span>000<span style="color:#f92672">]</span> d... 5252243.233085: __set_task_blocked &lt;-__set_current_blocked
+</code></pre></div><p>OK，如果觉得这个结果并不直观，可以重新配置 <code>current_tracer</code>，使用 <code>function_graph</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ echo function_graph &gt; current_tracer
 $ head -15 trace
-# tracer: function_graph
+<span style="color:#75715e"># tracer: function_graph</span>
 #
-# CPU  DURATION                  FUNCTION CALLS
-# |     |   |                     |   |   |   |
- 0)               |      __fdget_pos() {
- 0)   0.072 us    |        __fget_light();
- 0)   0.377 us    |      }
- 0)               |      vfs_read() {
- 0)               |        rw_verify_area() {
- 0)               |          security_file_permission() {
- 0)               |            apparmor_file_permission() {
- 0)               |              common_file_perm() {
- 0)   0.079 us    |                aa_file_perm();
- 0)   0.480 us    |              }
- 0)   0.877 us    |            }
-</code></pre>
-
-<h2 id="跟踪应用程序的系统调用">跟踪应用程序的系统调用</h2>
-
+<span style="color:#75715e"># CPU  DURATION                  FUNCTION CALLS</span>
+<span style="color:#75715e"># |     |   |                     |   |   |   |</span>
+ 0<span style="color:#f92672">)</span>               |      __fdget_pos<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+ 0<span style="color:#f92672">)</span>   0.072 us    |        __fget_light<span style="color:#f92672">()</span>;
+ 0<span style="color:#f92672">)</span>   0.377 us    |      <span style="color:#f92672">}</span>
+ 0<span style="color:#f92672">)</span>               |      vfs_read<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+ 0<span style="color:#f92672">)</span>               |        rw_verify_area<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+ 0<span style="color:#f92672">)</span>               |          security_file_permission<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+ 0<span style="color:#f92672">)</span>               |            apparmor_file_permission<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+ 0<span style="color:#f92672">)</span>               |              common_file_perm<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+ 0<span style="color:#f92672">)</span>   0.079 us    |                aa_file_perm<span style="color:#f92672">()</span>;
+ 0<span style="color:#f92672">)</span>   0.480 us    |              <span style="color:#f92672">}</span>
+ 0<span style="color:#f92672">)</span>   0.877 us    |            <span style="color:#f92672">}</span>
+</code></pre></div><h2 id="跟踪应用程序的系统调用">跟踪应用程序的系统调用</h2>
 <p>虽然 <code>strace</code> 就可以打印出任务的每个系统调用，但是，它所能完成的仅仅只是对每个系统调用及结果进行记录，而无法看到系统调用内部究竟发生了什么。而 ftrace 可以很好的完成这一点。当然，这需要一点点编码量。</p>
-
 <p>回到最初的命题，执行 <code>ffstrings</code> 过程中，抛出了 <code>EPERM</code> 错误码。首先使用 <code>strace</code> 进行定位，究竟是哪个系统调用出了问题</p>
-
-<pre><code class="language-sh">$ strace ./ffstrings &lt;PID&gt;
-# ... omitted output
-read(4, 0x7f9ac2970000, 1024)           = -1 EPERM (Operation not permitted)
-# ... omitted output
-</code></pre>
-
-<p>修改应用程序代码，添加两个新的函数 (<code>trace_on</code>, <code>trace_off</code>)。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ strace ./ffstrings &lt;PID&gt;
+<span style="color:#75715e"># ... omitted output</span>
+read<span style="color:#f92672">(</span>4, 0x7f9ac2970000, 1024<span style="color:#f92672">)</span>           <span style="color:#f92672">=</span> -1 EPERM <span style="color:#f92672">(</span>Operation not permitted<span style="color:#f92672">)</span>
+<span style="color:#75715e"># ... omitted output</span>
+</code></pre></div><p>修改应用程序代码，添加两个新的函数 (<code>trace_on</code>, <code>trace_off</code>)。</p>
 <p><em>Hint: 这段代码的健壮性并不好，请各位多担待</em></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">int</span> trace_fd <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+<span style="color:#66d9ef">int</span> marker_fd <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>debugfs <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/sys/kernel/debug&#34;</span>;
 
-<pre><code class="language-c">int trace_fd = -1;
-int marker_fd = -1;
-char *debugfs = &quot;/sys/kernel/debug&quot;;
-
-void trace_on()
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">trace_on</span>()
 {
-	char path[256];
+	<span style="color:#66d9ef">char</span> path[<span style="color:#ae81ff">256</span>];
 
-	strcpy(path, debugfs);  /* BEWARE buffer overflow */
-	strcat(path,&quot;/tracing/tracing_on&quot;);
-	trace_fd = open(path, O_WRONLY);
-	if (trace_fd &gt;= 0)
-		write(trace_fd, &quot;1&quot;, 1);
+	strcpy(path, debugfs);  <span style="color:#75715e">/* BEWARE buffer overflow */</span>
+	strcat(path,<span style="color:#e6db74">&#34;/tracing/tracing_on&#34;</span>);
+	trace_fd <span style="color:#f92672">=</span> open(path, O_WRONLY);
+	<span style="color:#66d9ef">if</span> (trace_fd <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>)
+		write(trace_fd, <span style="color:#e6db74">&#34;1&#34;</span>, <span style="color:#ae81ff">1</span>);
 
 	strcpy(path, debugfs);
-	strcat(path,&quot;/tracing/trace_marker&quot;);
-	marker_fd = open(path, O_WRONLY);
-    if (marker_fd &gt;= 0)
-	    write(marker_fd, &quot;In critical area\n&quot;, 17);
+	strcat(path,<span style="color:#e6db74">&#34;/tracing/trace_marker&#34;</span>);
+	marker_fd <span style="color:#f92672">=</span> open(path, O_WRONLY);
+    <span style="color:#66d9ef">if</span> (marker_fd <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>)
+	    write(marker_fd, <span style="color:#e6db74">&#34;In critical area</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">17</span>);
 }
 
-void trace_off()
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">trace_off</span>()
 {
-    if (marker_fd &gt;= 0)
-	    write(marker_fd, &quot;Out critical area\n&quot;, 17);
-    write(trace_fd, &quot;0&quot;, 1);
+    <span style="color:#66d9ef">if</span> (marker_fd <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>)
+	    write(marker_fd, <span style="color:#e6db74">&#34;Out critical area</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">17</span>);
+    write(trace_fd, <span style="color:#e6db74">&#34;0&#34;</span>, <span style="color:#ae81ff">1</span>);
     close(trace_fd);
     close(marker_fd);
-    trace_fd = -1;
-    marker_fd = -1;
+    trace_fd <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+    marker_fd <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
 }
-</code></pre>
-
-<p>在问题代码前后执行这两个新的函数</p>
-
-<pre><code class="language-c">trace_on();
-char c = getc(mem);
+</code></pre></div><p>在问题代码前后执行这两个新的函数</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">trace_on();
+<span style="color:#66d9ef">char</span> c <span style="color:#f92672">=</span> getc(mem);
 trace_off();
-</code></pre>
-
-<p>再去从 <code>trace</code> 文件中取一下执行结果（局部结果）</p>
-
-<p><img src="https://img.ffutop.com/669F0256-7612-48E5-9069-292D4E687660.png" alt="" /></p>
-
+</code></pre></div><p>再去从 <code>trace</code> 文件中取一下执行结果（局部结果）</p>
+<p><img src="https://img.ffutop.com/669F0256-7612-48E5-9069-292D4E687660.png" alt=""></p>
 <p>到此为止，就可以简单的实现对内核函数的跟踪。</p>
-
 <p>不过，这仅仅只能看到内核函数调用，具体的调用关系，还是得拿到相应版本的内核代码仔细研读研读。毕竟，内核代码的改动也是相当频繁的，不同版本调用关系会出现很大的变化。</p>
-
-<pre><code class="language-plain">  __                    __                  
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
-| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+| |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
 |_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
                  |___/                |___/ 
-</code></pre>
+</code></pre></div>
         </div>
 
         <div class="row middle-xs">

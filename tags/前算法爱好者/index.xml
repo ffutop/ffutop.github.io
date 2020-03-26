@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>前算法爱好者 on Utop&#39;s Blog</title>
@@ -16,9 +16,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.ffutop.com/about/</guid>
-      <description>https://www.ffutop.com/
-dormousenone@gmail.com
-Hangzhou, China</description>
+      <description>https://www.ffutop.com/ dormousenone@gmail.com Hangzhou, China</description>
     </item>
     
   </channel>

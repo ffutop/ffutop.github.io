@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Memory Model on Utop&#39;s Blog</title>
@@ -18,8 +18,7 @@
       
       <guid>https://www.ffutop.com/posts/2018-06-21-java-memory-model/</guid>
       <description>&lt;h2 id=&#34;jvm-运行时数据区&#34;&gt;JVM 运行时数据区&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

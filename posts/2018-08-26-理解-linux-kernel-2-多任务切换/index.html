@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.55.6" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "理解 Linux Kernel (2) - 多任务切换",
       "headline" : "理解 Linux Kernel (2) - 多任务切换",
-      "description" : "\x3ch2 id=\x22概述\x22\x3e概述\x3c\/h2\x3e\n\n\x3cp\x3e《只是为了好玩》书中，林纳斯描述过他最早的试验性程序就是执行两个不同的任务（一个不断输出A，另一个输出B），同时不断地让 CPU 在两个任务间做切换。结合《Linux 内核完全注释》提供的一个多任务切换示例程序，本篇将就多任务切换程序的执行流程进行详述，并提供当下汇编工具下的适配。\x3c\/p\x3e\n\n\x3cp\x3e关于运行环境的说明，欢迎参考 \x3ca href=\x22https:\/\/www.ffutop.com\/2018-08-19-understand-Kernel-1\/#Bochs-%E4%BB%BF%E7%9C%9F%E5%99%A8\x22\x3eBochs 仿真器使用简介\x3c\/a\x3e\x3c\/p\x3e",
+      "description" : "\x3ch2 id=\x22概述\x22\x3e概述\x3c\/h2\x3e\n\x3cp\x3e《只是为了好玩》书中，林纳斯描述过他最早的试验性程序就是执行两个不同的任务（一个不断输出A，另一个输出B），同时不断地让 CPU 在两个任务间做切换。结合《Linux 内核完全注释》提供的一个多任务切换示例程序，本篇将就多任务切换程序的执行流程进行详述，并提供当下汇编工具下的适配。\x3c\/p\x3e\n\x3cp\x3e关于运行环境的说明，欢迎参考 \x3ca href=\x22https:\/\/www.ffutop.com\/2018-08-19-understand-Kernel-1\/#Bochs-%E4%BB%BF%E7%9C%9F%E5%99%A8\x22\x3eBochs 仿真器使用简介\x3c\/a\x3e\x3c\/p\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -41,14 +41,10 @@
   <meta property="og:title" content="理解 Linux Kernel (2) - 多任务切换 - Utop&#39;s Blog" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="概述
-
 《只是为了好玩》书中，林纳斯描述过他最早的试验性程序就是执行两个不同的任务（一个不断输出A，另一个输出B），同时不断地让 CPU 在两个任务间做切换。结合《Linux 内核完全注释》提供的一个多任务切换示例程序，本篇将就多任务切换程序的执行流程进行详述，并提供当下汇编工具下的适配。
-
 关于运行环境的说明，欢迎参考 Bochs 仿真器使用简介" />
   <meta name="description" content="概述
-
 《只是为了好玩》书中，林纳斯描述过他最早的试验性程序就是执行两个不同的任务（一个不断输出A，另一个输出B），同时不断地让 CPU 在两个任务间做切换。结合《Linux 内核完全注释》提供的一个多任务切换示例程序，本篇将就多任务切换程序的执行流程进行详述，并提供当下汇编工具下的适配。
-
 关于运行环境的说明，欢迎参考 Bochs 仿真器使用简介" />
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
@@ -110,24 +106,15 @@
         <div class="post-content markdown-body">
           
           <h2 id="概述">概述</h2>
-
 <p>《只是为了好玩》书中，林纳斯描述过他最早的试验性程序就是执行两个不同的任务（一个不断输出A，另一个输出B），同时不断地让 CPU 在两个任务间做切换。结合《Linux 内核完全注释》提供的一个多任务切换示例程序，本篇将就多任务切换程序的执行流程进行详述，并提供当下汇编工具下的适配。</p>
-
 <p>关于运行环境的说明，欢迎参考 <a href="https://www.ffutop.com/2018-08-19-understand-Kernel-1/#Bochs-%E4%BB%BF%E7%9C%9F%E5%99%A8">Bochs 仿真器使用简介</a></p>
-
 <h2 id="引导程序">引导程序</h2>
-
 <p><a href="https://www.ffutop.com/2018-08-19-understand-Kernel-1/">理解 Linux Kernel (1)</a> 中已经描述过 BIOS 加载/执行引导程序的全流程。操作系统的概念对于处理器、内存等底层硬件来说，并不是必须的。处理器永远只是忠实地执行指令指针(IP, instruction pointer)指向的机器指令。那么，机器上电之后，第一个 IP 是如何提供给处理器的呢？由硬件来直接完成初始化的工作（至于细节，没实际操作过，不表）。</p>
-
 <p>在机器上电启动之后，存储在非易失性存储器/只读存储器上的 BIOS 程序将被加载到内存，并执行(至于细节，不甚了解，不表)。随后，BIOS 从指定磁盘（软盘、硬盘等）读取首个扇区 512 字节的内容（称为 boot 引导程序），载入到预定的内存地址（0x7c000 开始的内存块）。同时处理器 JMP 到 CS:IP = 0x07c00:0x0000 的位置。从而触发引导程序。</p>
-
 <p>随后处理器将忠实地执行 boot 引导程序描述的指令。至于引导程序的实现是让处理器执行一个操作系统程序，还是执行一个用户程序。这完全取决于编写引导程序的人，而对处理器来说，完全没有差别。</p>
-
 <p><code>BIOS -&gt; boot 引导程序 -&gt; 操作系统引导程序 -&gt; 操作系统</code>
 这就构成了一个宏观的操作系统启动的一个流程。</p>
-
-<p>boot.s 引导程序 <small>主体代码来自《Linux 内核完全注释》，进行了一定量的改写</small></p>
-
+<p>boot.s 引导程序 <!-- raw HTML omitted -->主体代码来自《Linux 内核完全注释》，进行了一定量的改写<!-- raw HTML omitted --></p>
 <pre><code>BOOTSEG = 0x07c0
 SYSSEG = 0x0100
 SYSLEN = 17
@@ -186,18 +173,11 @@ gdt_48:
 
 .org 510
     .word   0xAA55
-</code></pre>
-
-<p>这段汇编程序，通过 <code>load_system</code> 标识符标识的这段程序表明需要加载0号磁盘,0号磁头,0号磁道,从第2扇区开始,连续17个扇区的内容(这里将存储支持任务切换的程序)，加载到内存以 0x1000 开始的物理地址处。</p>
-
+</code></pre><p>这段汇编程序，通过 <code>load_system</code> 标识符标识的这段程序表明需要加载0号磁盘,0号磁头,0号磁道,从第2扇区开始,连续17个扇区的内容(这里将存储支持任务切换的程序)，加载到内存以 0x1000 开始的物理地址处。</p>
 <p><code>continue_load</code> 标识将 0x1000 物理地址开始的 4096 字 (即 8192 字节) 的内容依次复制到以 0x0000 开始的物理地址处。</p>
-
 <p>其后，设置 IDT (中断描述符表)、IDTR(中断描述符表寄存器) 及 GDT(全局描述符表)、GDTR(全局描述符表寄存器)，将 CPU 运行模式改成 <code>保护模式</code> ，继而将控制权转交给这个被加载进来的程序。</p>
-
 <h2 id="多任务程序">多任务程序</h2>
-
-<p><small>主体内容来自《Linux 内核完全注释》，经过一定量改变以适应当前运行环境</small></p>
-
+<p><!-- raw HTML omitted -->主体内容来自《Linux 内核完全注释》，经过一定量改变以适应当前运行环境<!-- raw HTML omitted --></p>
 <pre><code># head.s
 .code32
 LATCH = 11930
@@ -437,70 +417,57 @@ task1:
 
     .fill 128,4,0
 usr_stk1:
-</code></pre>
-
-<p>上面的这个程序内容不再详述，想了解细节请参考 《Linux 内核完全注释》</p>
-
+</code></pre><p>上面的这个程序内容不再详述，想了解细节请参考 《Linux 内核完全注释》</p>
 <p>下面提供编译 <code>boot.s</code> 以及 <code>head.s</code> 的可用 Makefile</p>
-
 <p>首先描述一下额外的工具版本</p>
-
 <ul>
 <li>GNU as : GNU assembler version 2.26.1</li>
 <li>GNU ld : GNU ld 2.26.1
 其它内容详见 <a href="https://dormouse-none.github.io/2018-08-19-understand-Kernel-0/">理解 Linux Kernel (0)</a></li>
 </ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#75715e"># Makefile for the simple example kernel.
+</span><span style="color:#75715e"></span>AS86	<span style="color:#f92672">=</span>as86 -0 -a
+LD86	<span style="color:#f92672">=</span>ld86 -0
+AS	<span style="color:#f92672">=</span>as
+ASFLAGS <span style="color:#f92672">=</span>-32
+LD	<span style="color:#f92672">=</span>ld
+LDFLAGS	<span style="color:#f92672">=</span>-s -x -M -m elf_i386 -e startup_32 -Ttext 0x0
 
-<pre><code class="language-makefile"># Makefile for the simple example kernel.
-AS86	=as86 -0 -a
-LD86	=ld86 -0
-AS	=as
-ASFLAGS =-32
-LD	=ld
-LDFLAGS	=-s -x -M -m elf_i386 -e startup_32 -Ttext 0x0
+<span style="color:#a6e22e">all</span><span style="color:#f92672">:</span>	Image
 
-all:	Image
-
-Image: boot system
-	dd bs=32 if=boot of=Image skip=1
-	dd bs=512 if=system of=Image skip=8 seek=1
+<span style="color:#a6e22e">Image</span><span style="color:#f92672">:</span> boot system
+	dd bs<span style="color:#f92672">=</span><span style="color:#ae81ff">32</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>boot of<span style="color:#f92672">=</span>Image skip<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+	dd bs<span style="color:#f92672">=</span><span style="color:#ae81ff">512</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>system of<span style="color:#f92672">=</span>Image skip<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span> seek<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
 	sync
 
-disk: Image
-	dd bs=8192 if=Image of=/dev/fd0
+<span style="color:#a6e22e">disk</span><span style="color:#f92672">:</span> Image
+	dd bs<span style="color:#f92672">=</span><span style="color:#ae81ff">8192</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>Image of<span style="color:#f92672">=</span>/dev/fd0
 	sync;sync;sync
 
-head.o: 
-	$(AS) $(ASFLAGS) -o head.o head.s
+<span style="color:#a6e22e">head.o</span><span style="color:#f92672">:</span> 
+	<span style="color:#66d9ef">$(</span>AS<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>ASFLAGS<span style="color:#66d9ef">)</span> -o head.o head.s
 
-system:	head.o 
-	$(LD) $(LDFLAGS) head.o  -o system &gt; System.map
+<span style="color:#a6e22e">system</span><span style="color:#f92672">:</span>	head.o 
+	<span style="color:#66d9ef">$(</span>LD<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>LDFLAGS<span style="color:#66d9ef">)</span> head.o  -o system &gt; System.map
 
-boot:	boot.s
-	$(AS86) -o boot.o boot.s
-	$(LD86) -s -o boot boot.o
+<span style="color:#a6e22e">boot</span><span style="color:#f92672">:</span>	boot.s
+	<span style="color:#66d9ef">$(</span>AS86<span style="color:#66d9ef">)</span> -o boot.o boot.s
+	<span style="color:#66d9ef">$(</span>LD86<span style="color:#66d9ef">)</span> -s -o boot boot.o
 
-clean:
+<span style="color:#a6e22e">clean</span><span style="color:#f92672">:</span>
 	rm -f Image System.map core boot *.o system
-</code></pre>
-
-<h2 id="运行结果">运行结果</h2>
-
+</code></pre></div><h2 id="运行结果">运行结果</h2>
 <p>想了解更多细节的请自行实操查看吧!</p>
-
-<p><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fun1fvafhwg30k40d4x6p.gif" alt="" /></p>
-
+<p><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fun1fvafhwg30k40d4x6p.gif" alt=""></p>
 <h2 id="附件">附件</h2>
-
 <p><a href="https://raw.githubusercontent.com/DorMOUSE-None/Repo/master/understand-kernel-2.zip">程序源码</a></p>
-
-<pre><code class="language-plain">  __                    __                  
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
-| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+| |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
 |_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
                  |___/                |___/ 
-</code></pre>
+</code></pre></div>
         </div>
 
         <div class="row middle-xs">

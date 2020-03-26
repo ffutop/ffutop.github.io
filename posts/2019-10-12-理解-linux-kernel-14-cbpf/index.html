@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.55.6" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "理解 Linux Kernel (14) - cBPF",
       "headline" : "理解 Linux Kernel (14) - cBPF",
-      "description" : "\x3cp\x3eBPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态\/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控\/过滤网络数据包的任务，必然地会涉及到内核空间\/用户空间的拷贝。而众所周知的，内核空间\/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。\x3c\/p\x3e\n\n\x3cp\x3eBPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。\x3c\/p\x3e\n\n\x3cp\x3e本篇只着眼于传统的 BPF 技术，探求 BPF 如何在内核埋入包过滤相关的钩子以实现其功能。\x3c\/p\x3e",
+      "description" : "\x3cp\x3eBPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态\/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控\/过滤网络数据包的任务，必然地会涉及到内核空间\/用户空间的拷贝。而众所周知的，内核空间\/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。\x3c\/p\x3e\n\x3cp\x3eBPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。\x3c\/p\x3e\n\x3cp\x3e本篇只着眼于传统的 BPF 技术，探求 BPF 如何在内核埋入包过滤相关的钩子以实现其功能。\x3c\/p\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -41,14 +41,10 @@
   <meta property="og:title" content="理解 Linux Kernel (14) - cBPF - Utop&#39;s Blog" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="BPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控/过滤网络数据包的任务，必然地会涉及到内核空间/用户空间的拷贝。而众所周知的，内核空间/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。
-
 BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。
-
 本篇只着眼于传统的 BPF 技术，探求 BPF 如何在内核埋入包过滤相关的钩子以实现其功能。" />
   <meta name="description" content="BPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控/过滤网络数据包的任务，必然地会涉及到内核空间/用户空间的拷贝。而众所周知的，内核空间/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。
-
 BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。
-
 本篇只着眼于传统的 BPF 技术，探求 BPF 如何在内核埋入包过滤相关的钩子以实现其功能。" />
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
@@ -110,588 +106,552 @@ BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 
         <div class="post-content markdown-body">
           
           <p>BPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控/过滤网络数据包的任务，必然地会涉及到内核空间/用户空间的拷贝。而众所周知的，内核空间/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。</p>
-
 <p>BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。</p>
-
 <p>本篇只着眼于传统的 BPF 技术，探求 BPF 如何在内核埋入包过滤相关的钩子以实现其功能。</p>
-
 <h2 id="bpf-代理程序">BPF 代理程序</h2>
-
 <p><em>本节所展示的源码均基于内核版本 2.6.24</em></p>
-
 <p>既然说 BPF 的高效在于其将一定用户高度个性定制的包过滤代码埋入了内核，那么就先来看看代理程序是如何深入内核，并展开相应的工作。</p>
-
-<p><img src="https://img.ffutop.com/39D53E85-8DEF-421E-AA8A-3383B271981B.png" alt="" /></p>
-
+<p><img src="https://img.ffutop.com/39D53E85-8DEF-421E-AA8A-3383B271981B.png" alt=""></p>
 <p>与 BPF 相关的系统调用</p>
-
-<pre><code class="language-plain">socket(AF_PACKET, SOCK_RAW, ...)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">socket(AF_PACKET, SOCK_RAW, ...)
 bind(sockfd, iface)
 setsockopt(sockfd, SOL_SOCKET, SO_ATTACH_FILTER, ...)
 recv(sockfd, ...)
-</code></pre>
+</code></pre></div><p>通过 <code>setsockopt</code> 系统调用，用户自定义的过滤程序将进入内核空间，并作为钩子对每个通过网络协议栈的网络包进行过滤，抓取并拷贝命中的网络包提交到监听 socket 的接收等待队列中。下列的示例程序展示了配置代理过滤程序及提取过滤结果的逻辑。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;net/if.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;net/ethernet.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netinet/in.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netinet/ip.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;arpa/inet.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netpacket/packet.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;linux/filter.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#define OP_LDH (BPF_LD  | BPF_H   | BPF_ABS)
+</span><span style="color:#75715e">#define OP_LDB (BPF_LD  | BPF_B   | BPF_ABS)
+</span><span style="color:#75715e">#define OP_JEQ (BPF_JMP | BPF_JEQ | BPF_K)
+</span><span style="color:#75715e">#define OP_RET (BPF_RET | BPF_K)
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">struct</span> sock_filter bpfcode[<span style="color:#ae81ff">6</span>] <span style="color:#f92672">=</span> {
+	{ OP_LDH, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">12</span>          },	<span style="color:#75715e">// ldh [12]
+</span><span style="color:#75715e"></span>	{ OP_JEQ, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">2</span>, ETH_P_IP    },	<span style="color:#75715e">// jeq #0x800, L2, L5
+</span><span style="color:#75715e"></span>	{ OP_LDB, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">23</span>          },	<span style="color:#75715e">// ldb [23]
+</span><span style="color:#75715e"></span>	{ OP_JEQ, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, IPPROTO_TCP },	<span style="color:#75715e">// jeq #0x6, L4, L5
+</span><span style="color:#75715e"></span>	{ OP_RET, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>           },	<span style="color:#75715e">// ret #0x0
+</span><span style="color:#75715e"></span>	{ OP_RET, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,         },	<span style="color:#75715e">// ret #0xffffffff
+</span><span style="color:#75715e"></span>};
 
-<p>通过 <code>setsockopt</code> 系统调用，用户自定义的过滤程序将进入内核空间，并作为钩子对每个通过网络协议栈的网络包进行过滤，抓取并拷贝命中的网络包提交到监听 socket 的接收等待队列中。下列的示例程序展示了配置代理过滤程序及提取过滤结果的逻辑。</p>
-
-<pre><code class="language-c">#include &lt;stdio.h&gt;
-#include &lt;string.h&gt;
-#include &lt;sys/types.h&gt;
-#include &lt;sys/socket.h&gt;
-#include &lt;net/if.h&gt;
-#include &lt;net/ethernet.h&gt;
-#include &lt;netinet/in.h&gt;
-#include &lt;netinet/ip.h&gt;
-#include &lt;arpa/inet.h&gt;
-#include &lt;netpacket/packet.h&gt;
-#include &lt;linux/filter.h&gt;
-
-#define OP_LDH (BPF_LD  | BPF_H   | BPF_ABS)
-#define OP_LDB (BPF_LD  | BPF_B   | BPF_ABS)
-#define OP_JEQ (BPF_JMP | BPF_JEQ | BPF_K)
-#define OP_RET (BPF_RET | BPF_K)
-
-static struct sock_filter bpfcode[6] = {
-	{ OP_LDH, 0, 0, 12          },	// ldh [12]
-	{ OP_JEQ, 0, 2, ETH_P_IP    },	// jeq #0x800, L2, L5
-	{ OP_LDB, 0, 0, 23          },	// ldb [23]
-	{ OP_JEQ, 0, 1, IPPROTO_TCP },	// jeq #0x6, L4, L5
-	{ OP_RET, 0, 0, 0           },	// ret #0x0
-	{ OP_RET, 0, 0, -1,         },	// ret #0xffffffff
-};
-
-int main(int argc, char **argv)
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv)
 {
-	int sock;
-	int n;
-	char buf[2000];
-	struct sockaddr_ll addr;
-	struct packet_mreq mreq;
-	struct iphdr *ip;
-	char saddr_str[INET_ADDRSTRLEN], daddr_str[INET_ADDRSTRLEN];
-	char *proto_str;
-	char *name;
-	struct sock_fprog bpf = { 6, bpfcode };
+	<span style="color:#66d9ef">int</span> sock;
+	<span style="color:#66d9ef">int</span> n;
+	<span style="color:#66d9ef">char</span> buf[<span style="color:#ae81ff">2000</span>];
+	<span style="color:#66d9ef">struct</span> sockaddr_ll addr;
+	<span style="color:#66d9ef">struct</span> packet_mreq mreq;
+	<span style="color:#66d9ef">struct</span> iphdr <span style="color:#f92672">*</span>ip;
+	<span style="color:#66d9ef">char</span> saddr_str[INET_ADDRSTRLEN], daddr_str[INET_ADDRSTRLEN];
+	<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>proto_str;
+	<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name;
+	<span style="color:#66d9ef">struct</span> sock_fprog bpf <span style="color:#f92672">=</span> { <span style="color:#ae81ff">6</span>, bpfcode };
 
-	if (argc != 2) {
-		printf(&quot;Usage: %s ifname\n&quot;, argv[0]);
-		return 1;
+	<span style="color:#66d9ef">if</span> (argc <span style="color:#f92672">!=</span> <span style="color:#ae81ff">2</span>) {
+		printf(<span style="color:#e6db74">&#34;Usage: %s ifname</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, argv[<span style="color:#ae81ff">0</span>]);
+		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
 	}
 
-	name = argv[1];
+	name <span style="color:#f92672">=</span> argv[<span style="color:#ae81ff">1</span>];
 
-	sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-	if (sock &lt; 0) {
-		perror(&quot;socket&quot;);
-		return 1;
+	sock <span style="color:#f92672">=</span> socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+	<span style="color:#66d9ef">if</span> (sock <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) {
+		perror(<span style="color:#e6db74">&#34;socket&#34;</span>);
+		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
 	}
 
-	memset(&amp;addr, 0, sizeof(addr));
-	addr.sll_ifindex = if_nametoindex(name);
-	addr.sll_family = AF_PACKET;
-	addr.sll_protocol = htons(ETH_P_ALL);
+	memset(<span style="color:#f92672">&amp;</span>addr, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">sizeof</span>(addr));
+	addr.sll_ifindex <span style="color:#f92672">=</span> if_nametoindex(name);
+	addr.sll_family <span style="color:#f92672">=</span> AF_PACKET;
+	addr.sll_protocol <span style="color:#f92672">=</span> htons(ETH_P_ALL);
 
-	if (bind(sock, (struct sockaddr *) &amp;addr, sizeof(addr))) {
-		perror(&quot;bind&quot;);
-		return 1;
+	<span style="color:#66d9ef">if</span> (bind(sock, (<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>) <span style="color:#f92672">&amp;</span>addr, <span style="color:#66d9ef">sizeof</span>(addr))) {
+		perror(<span style="color:#e6db74">&#34;bind&#34;</span>);
+		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
 	}
 
-	if (setsockopt(sock, SOL_SOCKET, SO_ATTACH_FILTER, &amp;bpf, sizeof(bpf))) {
-		perror(&quot;setsockopt ATTACH_FILTER&quot;);
-		return 1;
+	<span style="color:#66d9ef">if</span> (setsockopt(sock, SOL_SOCKET, SO_ATTACH_FILTER, <span style="color:#f92672">&amp;</span>bpf, <span style="color:#66d9ef">sizeof</span>(bpf))) {
+		perror(<span style="color:#e6db74">&#34;setsockopt ATTACH_FILTER&#34;</span>);
+		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
 	}
 
-	memset(&amp;mreq, 0, sizeof(mreq));
-	mreq.mr_type = PACKET_MR_PROMISC;
-	mreq.mr_ifindex = if_nametoindex(name);
+	memset(<span style="color:#f92672">&amp;</span>mreq, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">sizeof</span>(mreq));
+	mreq.mr_type <span style="color:#f92672">=</span> PACKET_MR_PROMISC;
+	mreq.mr_ifindex <span style="color:#f92672">=</span> if_nametoindex(name);
 
-	if (setsockopt(sock, SOL_PACKET,
-				PACKET_ADD_MEMBERSHIP, (char *)&amp;mreq, sizeof(mreq))) {
-		perror(&quot;setsockopt MR_PROMISC&quot;);
-		return 1;
+	<span style="color:#66d9ef">if</span> (setsockopt(sock, SOL_PACKET,
+				PACKET_ADD_MEMBERSHIP, (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>mreq, <span style="color:#66d9ef">sizeof</span>(mreq))) {
+		perror(<span style="color:#e6db74">&#34;setsockopt MR_PROMISC&#34;</span>);
+		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
 	}
 
-	for (;;) {
-		n = recv(sock, buf, sizeof(buf), 0);
-		if (n &lt; 1) {
-			perror(&quot;recv&quot;);
-			return 0;
+	<span style="color:#66d9ef">for</span> (;;) {
+		n <span style="color:#f92672">=</span> recv(sock, buf, <span style="color:#66d9ef">sizeof</span>(buf), <span style="color:#ae81ff">0</span>);
+		<span style="color:#66d9ef">if</span> (n <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1</span>) {
+			perror(<span style="color:#e6db74">&#34;recv&#34;</span>);
+			<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 		}
 
-		ip = (struct iphdr *)(buf + sizeof(struct ether_header));
+		ip <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> iphdr <span style="color:#f92672">*</span>)(buf <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> ether_header));
 
-		inet_ntop(AF_INET, &amp;ip-&gt;saddr, saddr_str, sizeof(saddr_str));
-		inet_ntop(AF_INET, &amp;ip-&gt;daddr, daddr_str, sizeof(daddr_str));
+		inet_ntop(AF_INET, <span style="color:#f92672">&amp;</span>ip<span style="color:#f92672">-&gt;</span>saddr, saddr_str, <span style="color:#66d9ef">sizeof</span>(saddr_str));
+		inet_ntop(AF_INET, <span style="color:#f92672">&amp;</span>ip<span style="color:#f92672">-&gt;</span>daddr, daddr_str, <span style="color:#66d9ef">sizeof</span>(daddr_str));
 
-		switch (ip-&gt;protocol) {
-#define PTOSTR(_p,_str) \
-			case _p: proto_str = _str; break
-
-		PTOSTR(IPPROTO_ICMP, &quot;icmp&quot;);
-		PTOSTR(IPPROTO_TCP, &quot;tcp&quot;);
-		PTOSTR(IPPROTO_UDP, &quot;udp&quot;);
-		default:
-			proto_str = &quot;&quot;;
-			break;
+		<span style="color:#66d9ef">switch</span> (ip<span style="color:#f92672">-&gt;</span>protocol) {
+<span style="color:#75715e">#define PTOSTR(_p,_str) \
+</span><span style="color:#75715e">			case _p: proto_str = _str; break
+</span><span style="color:#75715e"></span>
+		PTOSTR(IPPROTO_ICMP, <span style="color:#e6db74">&#34;icmp&#34;</span>);
+		PTOSTR(IPPROTO_TCP, <span style="color:#e6db74">&#34;tcp&#34;</span>);
+		PTOSTR(IPPROTO_UDP, <span style="color:#e6db74">&#34;udp&#34;</span>);
+		<span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+			proto_str <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>;
+			<span style="color:#66d9ef">break</span>;
 		}
 
-		printf(&quot;IPv%d proto=%d(%s) src=%s dst=%s\n&quot;,
-				ip-&gt;version, ip-&gt;protocol, proto_str, saddr_str, daddr_str);
+		printf(<span style="color:#e6db74">&#34;IPv%d proto=%d(%s) src=%s dst=%s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,
+				ip<span style="color:#f92672">-&gt;</span>version, ip<span style="color:#f92672">-&gt;</span>protocol, proto_str, saddr_str, daddr_str);
 	}
 
-	return 0;
+	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 }
-</code></pre>
-
-<p><code>setsockopt</code> 作为代理程序进出内核的核心路径。提供 <code>SO_ATTACH_FILTER</code> 和 <code>SO_DETACH_FILTER</code> 两个操作枚举值</p>
-
-<pre><code class="language-c">/* Copied from net/core/sock.c */
-int sock_setsockopt(struct socket *sock, int level, int optname,
-		    char __user *optval, int optlen)
+</code></pre></div><p><code>setsockopt</code> 作为代理程序进出内核的核心路径。提供 <code>SO_ATTACH_FILTER</code> 和 <code>SO_DETACH_FILTER</code> 两个操作枚举值</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Copied from net/core/sock.c */</span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sock_setsockopt</span>(<span style="color:#66d9ef">struct</span> socket <span style="color:#f92672">*</span>sock, <span style="color:#66d9ef">int</span> level, <span style="color:#66d9ef">int</span> optname,
+		    <span style="color:#66d9ef">char</span> __user <span style="color:#f92672">*</span>optval, <span style="color:#66d9ef">int</span> optlen)
 {
-	struct sock *sk=sock-&gt;sk;
-	int ret = 0;
+	<span style="color:#66d9ef">struct</span> sock <span style="color:#f92672">*</span>sk<span style="color:#f92672">=</span>sock<span style="color:#f92672">-&gt;</span>sk;
+	<span style="color:#66d9ef">int</span> ret <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
 
-	switch(optname) {
-    /* some code omitted ... */
-	case SO_ATTACH_FILTER:
-		ret = -EINVAL;
-		if (optlen == sizeof(struct sock_fprog)) {
-			struct sock_fprog fprog;
+	<span style="color:#66d9ef">switch</span>(optname) {
+    <span style="color:#75715e">/* some code omitted ... */</span>
+	<span style="color:#66d9ef">case</span> SO_ATTACH_FILTER:
+		ret <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>EINVAL;
+		<span style="color:#66d9ef">if</span> (optlen <span style="color:#f92672">==</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> sock_fprog)) {
+			<span style="color:#66d9ef">struct</span> sock_fprog fprog;
 
-			ret = -EFAULT;
-            /* 从用户空间向内核空间拷贝维护着代理程序的通用数据结构 */
-			if (copy_from_user(&amp;fprog, optval, sizeof(fprog)))
-				break;
-            /* 给 sock 挂载上代理程序 */
-			ret = sk_attach_filter(&amp;fprog, sk);
+			ret <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>EFAULT;
+            <span style="color:#75715e">/* 从用户空间向内核空间拷贝维护着代理程序的通用数据结构 */</span>
+			<span style="color:#66d9ef">if</span> (copy_from_user(<span style="color:#f92672">&amp;</span>fprog, optval, <span style="color:#66d9ef">sizeof</span>(fprog)))
+				<span style="color:#66d9ef">break</span>;
+            <span style="color:#75715e">/* 给 sock 挂载上代理程序 */</span>
+			ret <span style="color:#f92672">=</span> sk_attach_filter(<span style="color:#f92672">&amp;</span>fprog, sk);
 		}
-		break;
+		<span style="color:#66d9ef">break</span>;
 
-	case SO_DETACH_FILTER:
-        /* 解挂代理程序 */
-		ret = sk_detach_filter(sk);
-		break;
+	<span style="color:#66d9ef">case</span> SO_DETACH_FILTER:
+        <span style="color:#75715e">/* 解挂代理程序 */</span>
+		ret <span style="color:#f92672">=</span> sk_detach_filter(sk);
+		<span style="color:#66d9ef">break</span>;
 
-	default:
-		ret = -ENOPROTOOPT;
-		break;
+	<span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+		ret <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>ENOPROTOOPT;
+		<span style="color:#66d9ef">break</span>;
 	}
 	release_sock(sk);
-	return ret;
+	<span style="color:#66d9ef">return</span> ret;
 }
-</code></pre>
-
-<p><code>sk_attach_filter</code> 对代理程序进行安全检测，并在确认不会导致内核 panic 的前提下，将程序挂载到钩子 <code>sk_filter</code> 上。</p>
-
-<pre><code class="language-c">/* Copied from net/core/filter.c */
-int sk_attach_filter(struct sock_fprog *fprog, struct sock *sk)
+</code></pre></div><p><code>sk_attach_filter</code> 对代理程序进行安全检测，并在确认不会导致内核 panic 的前提下，将程序挂载到钩子 <code>sk_filter</code> 上。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Copied from net/core/filter.c */</span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sk_attach_filter</span>(<span style="color:#66d9ef">struct</span> sock_fprog <span style="color:#f92672">*</span>fprog, <span style="color:#66d9ef">struct</span> sock <span style="color:#f92672">*</span>sk)
 {
-	struct sk_filter *fp, *old_fp;
-	unsigned int fsize = sizeof(struct sock_filter) * fprog-&gt;len;
-	int err;
+	<span style="color:#66d9ef">struct</span> sk_filter <span style="color:#f92672">*</span>fp, <span style="color:#f92672">*</span>old_fp;
+	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> fsize <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> sock_filter) <span style="color:#f92672">*</span> fprog<span style="color:#f92672">-&gt;</span>len;
+	<span style="color:#66d9ef">int</span> err;
 
-	fp = sock_kmalloc(sk, fsize+sizeof(*fp), GFP_KERNEL);
-    /* 从用户空间向内核空间拷贝代理程序 */
-	if (copy_from_user(fp-&gt;insns, fprog-&gt;filter, fsize)) {
-		sock_kfree_s(sk, fp, fsize+sizeof(*fp));
-		return -EFAULT;
+	fp <span style="color:#f92672">=</span> sock_kmalloc(sk, fsize<span style="color:#f92672">+</span><span style="color:#66d9ef">sizeof</span>(<span style="color:#f92672">*</span>fp), GFP_KERNEL);
+    <span style="color:#75715e">/* 从用户空间向内核空间拷贝代理程序 */</span>
+	<span style="color:#66d9ef">if</span> (copy_from_user(fp<span style="color:#f92672">-&gt;</span>insns, fprog<span style="color:#f92672">-&gt;</span>filter, fsize)) {
+		sock_kfree_s(sk, fp, fsize<span style="color:#f92672">+</span><span style="color:#66d9ef">sizeof</span>(<span style="color:#f92672">*</span>fp));
+		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span>EFAULT;
 	}
 
-	atomic_set(&amp;fp-&gt;refcnt, 1);
-	fp-&gt;len = fprog-&gt;len;
+	atomic_set(<span style="color:#f92672">&amp;</span>fp<span style="color:#f92672">-&gt;</span>refcnt, <span style="color:#ae81ff">1</span>);
+	fp<span style="color:#f92672">-&gt;</span>len <span style="color:#f92672">=</span> fprog<span style="color:#f92672">-&gt;</span>len;
 
-    /* 在沙箱中对代理程序做安全检测 */
-	err = sk_chk_filter(fp-&gt;insns, fp-&gt;len);
-	if (err) {
+    <span style="color:#75715e">/* 在沙箱中对代理程序做安全检测 */</span>
+	err <span style="color:#f92672">=</span> sk_chk_filter(fp<span style="color:#f92672">-&gt;</span>insns, fp<span style="color:#f92672">-&gt;</span>len);
+	<span style="color:#66d9ef">if</span> (err) {
 		sk_filter_uncharge(sk, fp);
-		return err;
+		<span style="color:#66d9ef">return</span> err;
 	}
 
 	rcu_read_lock_bh();
-	old_fp = rcu_dereference(sk-&gt;sk_filter);
-    /* 在 sk_filter 绑上经过检测的代理程序 */
-	rcu_assign_pointer(sk-&gt;sk_filter, fp);
+	old_fp <span style="color:#f92672">=</span> rcu_dereference(sk<span style="color:#f92672">-&gt;</span>sk_filter);
+    <span style="color:#75715e">/* 在 sk_filter 绑上经过检测的代理程序 */</span>
+	rcu_assign_pointer(sk<span style="color:#f92672">-&gt;</span>sk_filter, fp);
 	rcu_read_unlock_bh();
 
-	if (old_fp)
+	<span style="color:#66d9ef">if</span> (old_fp)
 		sk_filter_delayed_uncharge(sk, old_fp);
-	return 0;
+	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 }
-</code></pre>
-
-<p>核心的安全检测函数是 <code>sk_chk_filter</code> 。BPF 的沙箱化处理，就是实现里一套精简指令集，提供有限的几十个指令以及几个寄存器，在内核模拟了一个小的处理器来执行代理程序。这里的安全检测，其核心就是检测是否存在非预期的指令，相关指令的非法配合，是否存在读取非法地址的情况以及程序是否以 <code>BPF_RET</code> 指令作为结束。</p>
-
+</code></pre></div><p>核心的安全检测函数是 <code>sk_chk_filter</code> 。BPF 的沙箱化处理，就是实现里一套精简指令集，提供有限的几十个指令以及几个寄存器，在内核模拟了一个小的处理器来执行代理程序。这里的安全检测，其核心就是检测是否存在非预期的指令，相关指令的非法配合，是否存在读取非法地址的情况以及程序是否以 <code>BPF_RET</code> 指令作为结束。</p>
 <p>了解了代理程序的挂载，再来看看这个代理程序在网络协议栈中由谁触发，并如何完成令人惊艳的过滤工作。</p>
-
-<pre><code class="language-c">/* Copied from net/packet/af_packet.c */
-/* socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)) 内核创建 packet 族套接字的核心流程 */
-static int packet_create(struct net *net, struct socket *sock, int protocol)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Copied from net/packet/af_packet.c */</span>
+<span style="color:#75715e">/* socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)) 内核创建 packet 族套接字的核心流程 */</span>
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">packet_create</span>(<span style="color:#66d9ef">struct</span> net <span style="color:#f92672">*</span>net, <span style="color:#66d9ef">struct</span> socket <span style="color:#f92672">*</span>sock, <span style="color:#66d9ef">int</span> protocol)
 {
-    /* some code omitted ... */
-	po = pkt_sk(sk);
-	sk-&gt;sk_family = PF_PACKET;
-	po-&gt;num = proto;
+    <span style="color:#75715e">/* some code omitted ... */</span>
+	po <span style="color:#f92672">=</span> pkt_sk(sk);
+	sk<span style="color:#f92672">-&gt;</span>sk_family <span style="color:#f92672">=</span> PF_PACKET;
+	po<span style="color:#f92672">-&gt;</span>num <span style="color:#f92672">=</span> proto;
 
-	spin_lock_init(&amp;po-&gt;bind_lock);
-    /* 配置协议相关钩子函数 */
-	po-&gt;prot_hook.func = packet_rcv;
+	spin_lock_init(<span style="color:#f92672">&amp;</span>po<span style="color:#f92672">-&gt;</span>bind_lock);
+    <span style="color:#75715e">/* 配置协议相关钩子函数 */</span>
+	po<span style="color:#f92672">-&gt;</span>prot_hook.func <span style="color:#f92672">=</span> packet_rcv;
 
-    /* 根据套接字的类型，有两类不同的钩子 */
-	if (sock-&gt;type == SOCK_PACKET)
-		po-&gt;prot_hook.func = packet_rcv_spkt;
+    <span style="color:#75715e">/* 根据套接字的类型，有两类不同的钩子 */</span>
+	<span style="color:#66d9ef">if</span> (sock<span style="color:#f92672">-&gt;</span>type <span style="color:#f92672">==</span> SOCK_PACKET)
+		po<span style="color:#f92672">-&gt;</span>prot_hook.func <span style="color:#f92672">=</span> packet_rcv_spkt;
 
-	if (proto) {
-		po-&gt;prot_hook.type = proto;
-        /* 将钩子函数直接与网络设备挂钩 */
-		dev_add_pack(&amp;po-&gt;prot_hook);
+	<span style="color:#66d9ef">if</span> (proto) {
+		po<span style="color:#f92672">-&gt;</span>prot_hook.type <span style="color:#f92672">=</span> proto;
+        <span style="color:#75715e">/* 将钩子函数直接与网络设备挂钩 */</span>
+		dev_add_pack(<span style="color:#f92672">&amp;</span>po<span style="color:#f92672">-&gt;</span>prot_hook);
 		sock_hold(sk);
-		po-&gt;running = 1;
+		po<span style="color:#f92672">-&gt;</span>running <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
 	}
 }
 
-/* 网络包(接收/发送)达到数据链路层，都将尝试调用预置的钩子函数 */
-static int packet_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, struct net_device *orig_dev)
+<span style="color:#75715e">/* 网络包(接收/发送)达到数据链路层，都将尝试调用预置的钩子函数 */</span>
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">packet_rcv</span>(<span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb, <span style="color:#66d9ef">struct</span> net_device <span style="color:#f92672">*</span>dev, <span style="color:#66d9ef">struct</span> packet_type <span style="color:#f92672">*</span>pt, <span style="color:#66d9ef">struct</span> net_device <span style="color:#f92672">*</span>orig_dev)
 {
-    sk = pt-&gt;af_packet_priv;
-    snaplen = skb-&gt;len;
-    /* 核心代理函数的触发逻辑 */
-	res = run_filter(skb, sk, snaplen);
-    if (!res)
-		goto drop_n_restore;
-    /* 根据代理函数执行结果，如果 res 不为零，则将这个 sk_buff 提交到之前创建的 packet 族的套接字等待队列 */
-    __skb_queue_tail(&amp;sk-&gt;sk_receive_queue, skb);
+    sk <span style="color:#f92672">=</span> pt<span style="color:#f92672">-&gt;</span>af_packet_priv;
+    snaplen <span style="color:#f92672">=</span> skb<span style="color:#f92672">-&gt;</span>len;
+    <span style="color:#75715e">/* 核心代理函数的触发逻辑 */</span>
+	res <span style="color:#f92672">=</span> run_filter(skb, sk, snaplen);
+    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>res)
+		<span style="color:#66d9ef">goto</span> drop_n_restore;
+    <span style="color:#75715e">/* 根据代理函数执行结果，如果 res 不为零，则将这个 sk_buff 提交到之前创建的 packet 族的套接字等待队列 */</span>
+    __skb_queue_tail(<span style="color:#f92672">&amp;</span>sk<span style="color:#f92672">-&gt;</span>sk_receive_queue, skb);
 }
 
-static inline unsigned int run_filter(struct sk_buff *skb, struct sock *sk,
-				      unsigned int res)
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">inline</span> <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">run_filter</span>(<span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb, <span style="color:#66d9ef">struct</span> sock <span style="color:#f92672">*</span>sk,
+				      <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> res)
 {
-	struct sk_filter *filter;
+	<span style="color:#66d9ef">struct</span> sk_filter <span style="color:#f92672">*</span>filter;
 
 	rcu_read_lock_bh();
-	filter = rcu_dereference(sk-&gt;sk_filter);
-    /* 存在代理函数，则尝试执行 */
-	if (filter != NULL)
-		res = sk_run_filter(skb, filter-&gt;insns, filter-&gt;len);
+	filter <span style="color:#f92672">=</span> rcu_dereference(sk<span style="color:#f92672">-&gt;</span>sk_filter);
+    <span style="color:#75715e">/* 存在代理函数，则尝试执行 */</span>
+	<span style="color:#66d9ef">if</span> (filter <span style="color:#f92672">!=</span> NULL)
+		res <span style="color:#f92672">=</span> sk_run_filter(skb, filter<span style="color:#f92672">-&gt;</span>insns, filter<span style="color:#f92672">-&gt;</span>len);
 	rcu_read_unlock_bh();
 
-	return res;
+	<span style="color:#66d9ef">return</span> res;
 }
-</code></pre>
-
-<p>总的来说，创建的套接字 <code>socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL))</code> 就相当于在数据链路层挂上了一个窃听程序，负责将命中的包全部提取到这个窃听套接字的接收队列中。至于内核空间到用户空间的数据提取工作，就像普通的套接字一样。直接使用 <code>recv</code> 系统调用读取套接字的接收队列也就完成了。</p>
-
+</code></pre></div><p>总的来说，创建的套接字 <code>socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL))</code> 就相当于在数据链路层挂上了一个窃听程序，负责将命中的包全部提取到这个窃听套接字的接收队列中。至于内核空间到用户空间的数据提取工作，就像普通的套接字一样。直接使用 <code>recv</code> 系统调用读取套接字的接收队列也就完成了。</p>
 <p>最后来看一下代理程序是如何沙箱化执行的。</p>
-
-<pre><code class="language-c">/* Copied from net/core/filter.c */
-/*
- * 核心的实现就是模拟了一套简单的处理器，由累加器、索引寄存器、小块内存、PC 组成，
- * 一般负责对一段数据的某些特定字节的校验工作
- */
-unsigned int sk_run_filter(struct sk_buff *skb, struct sock_filter *filter, int flen)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Copied from net/core/filter.c */</span>
+<span style="color:#75715e">/*
+</span><span style="color:#75715e"> * 核心的实现就是模拟了一套简单的处理器，由累加器、索引寄存器、小块内存、PC 组成，
+</span><span style="color:#75715e"> * 一般负责对一段数据的某些特定字节的校验工作
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sk_run_filter</span>(<span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb, <span style="color:#66d9ef">struct</span> sock_filter <span style="color:#f92672">*</span>filter, <span style="color:#66d9ef">int</span> flen)
 {
-	struct sock_filter *fentry;	/* We walk down these */
-	void *ptr;
-	u32 A = 0;			/* Accumulator */
-	u32 X = 0;			/* Index Register */
-	u32 mem[BPF_MEMWORDS];		/* Scratch Memory Store */
+	<span style="color:#66d9ef">struct</span> sock_filter <span style="color:#f92672">*</span>fentry;	<span style="color:#75715e">/* We walk down these */</span>
+	<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>ptr;
+	u32 A <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;			<span style="color:#75715e">/* Accumulator */</span>
+	u32 X <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;			<span style="color:#75715e">/* Index Register */</span>
+	u32 mem[BPF_MEMWORDS];		<span style="color:#75715e">/* Scratch Memory Store */</span>
 	u32 tmp;
-	int k;
-	int pc;
+	<span style="color:#66d9ef">int</span> k;
+	<span style="color:#66d9ef">int</span> pc;
 
-	/*
-	 * Process array of filter instructions.
-	 */
-	for (pc = 0; pc &lt; flen; pc++) {
-		fentry = &amp;filter[pc];
+	<span style="color:#75715e">/*
+</span><span style="color:#75715e">	 * Process array of filter instructions.
+</span><span style="color:#75715e">	 */</span>
+	<span style="color:#66d9ef">for</span> (pc <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; pc <span style="color:#f92672">&lt;</span> flen; pc<span style="color:#f92672">++</span>) {
+		fentry <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>filter[pc];
 
-		switch (fentry-&gt;code) {
-		case BPF_ALU|BPF_ADD|BPF_X:
-			A += X;
-			continue;
-		case BPF_ALU|BPF_ADD|BPF_K:
-			A += fentry-&gt;k;
-			continue;
-		case BPF_ALU|BPF_SUB|BPF_X:
-			A -= X;
-			continue;
-		case BPF_ALU|BPF_SUB|BPF_K:
-			A -= fentry-&gt;k;
-			continue;
-		case BPF_ALU|BPF_MUL|BPF_X:
-			A *= X;
-			continue;
-		case BPF_ALU|BPF_MUL|BPF_K:
-			A *= fentry-&gt;k;
-			continue;
-		case BPF_ALU|BPF_DIV|BPF_X:
-			if (X == 0)
-				return 0;
-			A /= X;
-			continue;
-		case BPF_ALU|BPF_DIV|BPF_K:
-			A /= fentry-&gt;k;
-			continue;
-		case BPF_ALU|BPF_AND|BPF_X:
-			A &amp;= X;
-			continue;
-		case BPF_ALU|BPF_AND|BPF_K:
-			A &amp;= fentry-&gt;k;
-			continue;
-		case BPF_ALU|BPF_OR|BPF_X:
-			A |= X;
-			continue;
-		case BPF_ALU|BPF_OR|BPF_K:
-			A |= fentry-&gt;k;
-			continue;
-		case BPF_ALU|BPF_LSH|BPF_X:
-			A &lt;&lt;= X;
-			continue;
-		case BPF_ALU|BPF_LSH|BPF_K:
-			A &lt;&lt;= fentry-&gt;k;
-			continue;
-		case BPF_ALU|BPF_RSH|BPF_X:
-			A &gt;&gt;= X;
-			continue;
-		case BPF_ALU|BPF_RSH|BPF_K:
-			A &gt;&gt;= fentry-&gt;k;
-			continue;
-		case BPF_ALU|BPF_NEG:
-			A = -A;
-			continue;
-		case BPF_JMP|BPF_JA:
-			pc += fentry-&gt;k;
-			continue;
-		case BPF_JMP|BPF_JGT|BPF_K:
-			pc += (A &gt; fentry-&gt;k) ? fentry-&gt;jt : fentry-&gt;jf;
-			continue;
-		case BPF_JMP|BPF_JGE|BPF_K:
-			pc += (A &gt;= fentry-&gt;k) ? fentry-&gt;jt : fentry-&gt;jf;
-			continue;
-		case BPF_JMP|BPF_JEQ|BPF_K:
-			pc += (A == fentry-&gt;k) ? fentry-&gt;jt : fentry-&gt;jf;
-			continue;
-		case BPF_JMP|BPF_JSET|BPF_K:
-			pc += (A &amp; fentry-&gt;k) ? fentry-&gt;jt : fentry-&gt;jf;
-			continue;
-		case BPF_JMP|BPF_JGT|BPF_X:
-			pc += (A &gt; X) ? fentry-&gt;jt : fentry-&gt;jf;
-			continue;
-		case BPF_JMP|BPF_JGE|BPF_X:
-			pc += (A &gt;= X) ? fentry-&gt;jt : fentry-&gt;jf;
-			continue;
-		case BPF_JMP|BPF_JEQ|BPF_X:
-			pc += (A == X) ? fentry-&gt;jt : fentry-&gt;jf;
-			continue;
-		case BPF_JMP|BPF_JSET|BPF_X:
-			pc += (A &amp; X) ? fentry-&gt;jt : fentry-&gt;jf;
-			continue;
-		case BPF_LD|BPF_W|BPF_ABS:
-			k = fentry-&gt;k;
+		<span style="color:#66d9ef">switch</span> (fentry<span style="color:#f92672">-&gt;</span>code) {
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_ADD<span style="color:#f92672">|</span>BPF_X:
+			A <span style="color:#f92672">+=</span> X;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_ADD<span style="color:#f92672">|</span>BPF_K:
+			A <span style="color:#f92672">+=</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_SUB<span style="color:#f92672">|</span>BPF_X:
+			A <span style="color:#f92672">-=</span> X;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_SUB<span style="color:#f92672">|</span>BPF_K:
+			A <span style="color:#f92672">-=</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_MUL<span style="color:#f92672">|</span>BPF_X:
+			A <span style="color:#f92672">*=</span> X;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_MUL<span style="color:#f92672">|</span>BPF_K:
+			A <span style="color:#f92672">*=</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_DIV<span style="color:#f92672">|</span>BPF_X:
+			<span style="color:#66d9ef">if</span> (X <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+				<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+			A <span style="color:#f92672">/=</span> X;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_DIV<span style="color:#f92672">|</span>BPF_K:
+			A <span style="color:#f92672">/=</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_AND<span style="color:#f92672">|</span>BPF_X:
+			A <span style="color:#f92672">&amp;=</span> X;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_AND<span style="color:#f92672">|</span>BPF_K:
+			A <span style="color:#f92672">&amp;=</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_OR<span style="color:#f92672">|</span>BPF_X:
+			A <span style="color:#f92672">|=</span> X;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_OR<span style="color:#f92672">|</span>BPF_K:
+			A <span style="color:#f92672">|=</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_LSH<span style="color:#f92672">|</span>BPF_X:
+			A <span style="color:#f92672">&lt;&lt;=</span> X;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_LSH<span style="color:#f92672">|</span>BPF_K:
+			A <span style="color:#f92672">&lt;&lt;=</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_RSH<span style="color:#f92672">|</span>BPF_X:
+			A <span style="color:#f92672">&gt;&gt;=</span> X;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_RSH<span style="color:#f92672">|</span>BPF_K:
+			A <span style="color:#f92672">&gt;&gt;=</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_NEG:
+			A <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>A;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JA:
+			pc <span style="color:#f92672">+=</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JGT<span style="color:#f92672">|</span>BPF_K:
+			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">&gt;</span> fentry<span style="color:#f92672">-&gt;</span>k) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JGE<span style="color:#f92672">|</span>BPF_K:
+			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">&gt;=</span> fentry<span style="color:#f92672">-&gt;</span>k) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JEQ<span style="color:#f92672">|</span>BPF_K:
+			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">==</span> fentry<span style="color:#f92672">-&gt;</span>k) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JSET<span style="color:#f92672">|</span>BPF_K:
+			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">&amp;</span> fentry<span style="color:#f92672">-&gt;</span>k) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JGT<span style="color:#f92672">|</span>BPF_X:
+			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">&gt;</span> X) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JGE<span style="color:#f92672">|</span>BPF_X:
+			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">&gt;=</span> X) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JEQ<span style="color:#f92672">|</span>BPF_X:
+			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">==</span> X) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JSET<span style="color:#f92672">|</span>BPF_X:
+			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">&amp;</span> X) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_W<span style="color:#f92672">|</span>BPF_ABS:
+			k <span style="color:#f92672">=</span> fentry<span style="color:#f92672">-&gt;</span>k;
 load_w:
-			ptr = load_pointer(skb, k, 4, &amp;tmp);
-			if (ptr != NULL) {
-				A = ntohl(get_unaligned((__be32 *)ptr));
-				continue;
+			ptr <span style="color:#f92672">=</span> load_pointer(skb, k, <span style="color:#ae81ff">4</span>, <span style="color:#f92672">&amp;</span>tmp);
+			<span style="color:#66d9ef">if</span> (ptr <span style="color:#f92672">!=</span> NULL) {
+				A <span style="color:#f92672">=</span> ntohl(get_unaligned((__be32 <span style="color:#f92672">*</span>)ptr));
+				<span style="color:#66d9ef">continue</span>;
 			}
-			break;
-		case BPF_LD|BPF_H|BPF_ABS:
-			k = fentry-&gt;k;
+			<span style="color:#66d9ef">break</span>;
+		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_H<span style="color:#f92672">|</span>BPF_ABS:
+			k <span style="color:#f92672">=</span> fentry<span style="color:#f92672">-&gt;</span>k;
 load_h:
-			ptr = load_pointer(skb, k, 2, &amp;tmp);
-			if (ptr != NULL) {
-				A = ntohs(get_unaligned((__be16 *)ptr));
-				continue;
+			ptr <span style="color:#f92672">=</span> load_pointer(skb, k, <span style="color:#ae81ff">2</span>, <span style="color:#f92672">&amp;</span>tmp);
+			<span style="color:#66d9ef">if</span> (ptr <span style="color:#f92672">!=</span> NULL) {
+				A <span style="color:#f92672">=</span> ntohs(get_unaligned((__be16 <span style="color:#f92672">*</span>)ptr));
+				<span style="color:#66d9ef">continue</span>;
 			}
-			break;
-		case BPF_LD|BPF_B|BPF_ABS:
-			k = fentry-&gt;k;
+			<span style="color:#66d9ef">break</span>;
+		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_B<span style="color:#f92672">|</span>BPF_ABS:
+			k <span style="color:#f92672">=</span> fentry<span style="color:#f92672">-&gt;</span>k;
 load_b:
-			ptr = load_pointer(skb, k, 1, &amp;tmp);
-			if (ptr != NULL) {
-				A = *(u8 *)ptr;
-				continue;
+			ptr <span style="color:#f92672">=</span> load_pointer(skb, k, <span style="color:#ae81ff">1</span>, <span style="color:#f92672">&amp;</span>tmp);
+			<span style="color:#66d9ef">if</span> (ptr <span style="color:#f92672">!=</span> NULL) {
+				A <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>(u8 <span style="color:#f92672">*</span>)ptr;
+				<span style="color:#66d9ef">continue</span>;
 			}
-			break;
-		case BPF_LD|BPF_W|BPF_LEN:
-			A = skb-&gt;len;
-			continue;
-		case BPF_LDX|BPF_W|BPF_LEN:
-			X = skb-&gt;len;
-			continue;
-		case BPF_LD|BPF_W|BPF_IND:
-			k = X + fentry-&gt;k;
-			goto load_w;
-		case BPF_LD|BPF_H|BPF_IND:
-			k = X + fentry-&gt;k;
-			goto load_h;
-		case BPF_LD|BPF_B|BPF_IND:
-			k = X + fentry-&gt;k;
-			goto load_b;
-		case BPF_LDX|BPF_B|BPF_MSH:
-			ptr = load_pointer(skb, fentry-&gt;k, 1, &amp;tmp);
-			if (ptr != NULL) {
-				X = (*(u8 *)ptr &amp; 0xf) &lt;&lt; 2;
-				continue;
+			<span style="color:#66d9ef">break</span>;
+		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_W<span style="color:#f92672">|</span>BPF_LEN:
+			A <span style="color:#f92672">=</span> skb<span style="color:#f92672">-&gt;</span>len;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_LDX<span style="color:#f92672">|</span>BPF_W<span style="color:#f92672">|</span>BPF_LEN:
+			X <span style="color:#f92672">=</span> skb<span style="color:#f92672">-&gt;</span>len;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_W<span style="color:#f92672">|</span>BPF_IND:
+			k <span style="color:#f92672">=</span> X <span style="color:#f92672">+</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">goto</span> load_w;
+		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_H<span style="color:#f92672">|</span>BPF_IND:
+			k <span style="color:#f92672">=</span> X <span style="color:#f92672">+</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">goto</span> load_h;
+		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_B<span style="color:#f92672">|</span>BPF_IND:
+			k <span style="color:#f92672">=</span> X <span style="color:#f92672">+</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">goto</span> load_b;
+		<span style="color:#66d9ef">case</span> BPF_LDX<span style="color:#f92672">|</span>BPF_B<span style="color:#f92672">|</span>BPF_MSH:
+			ptr <span style="color:#f92672">=</span> load_pointer(skb, fentry<span style="color:#f92672">-&gt;</span>k, <span style="color:#ae81ff">1</span>, <span style="color:#f92672">&amp;</span>tmp);
+			<span style="color:#66d9ef">if</span> (ptr <span style="color:#f92672">!=</span> NULL) {
+				X <span style="color:#f92672">=</span> (<span style="color:#f92672">*</span>(u8 <span style="color:#f92672">*</span>)ptr <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xf</span>) <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">2</span>;
+				<span style="color:#66d9ef">continue</span>;
 			}
-			return 0;
-		case BPF_LD|BPF_IMM:
-			A = fentry-&gt;k;
-			continue;
-		case BPF_LDX|BPF_IMM:
-			X = fentry-&gt;k;
-			continue;
-		case BPF_LD|BPF_MEM:
-			A = mem[fentry-&gt;k];
-			continue;
-		case BPF_LDX|BPF_MEM:
-			X = mem[fentry-&gt;k];
-			continue;
-		case BPF_MISC|BPF_TAX:
-			X = A;
-			continue;
-		case BPF_MISC|BPF_TXA:
-			A = X;
-			continue;
-		case BPF_RET|BPF_K:
-			return fentry-&gt;k;
-		case BPF_RET|BPF_A:
-			return A;
-		case BPF_ST:
-			mem[fentry-&gt;k] = A;
-			continue;
-		case BPF_STX:
-			mem[fentry-&gt;k] = X;
-			continue;
-		default:
-			WARN_ON(1);
-			return 0;
+			<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_IMM:
+			A <span style="color:#f92672">=</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_LDX<span style="color:#f92672">|</span>BPF_IMM:
+			X <span style="color:#f92672">=</span> fentry<span style="color:#f92672">-&gt;</span>k;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_MEM:
+			A <span style="color:#f92672">=</span> mem[fentry<span style="color:#f92672">-&gt;</span>k];
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_LDX<span style="color:#f92672">|</span>BPF_MEM:
+			X <span style="color:#f92672">=</span> mem[fentry<span style="color:#f92672">-&gt;</span>k];
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_MISC<span style="color:#f92672">|</span>BPF_TAX:
+			X <span style="color:#f92672">=</span> A;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_MISC<span style="color:#f92672">|</span>BPF_TXA:
+			A <span style="color:#f92672">=</span> X;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_RET<span style="color:#f92672">|</span>BPF_K:
+			<span style="color:#66d9ef">return</span> fentry<span style="color:#f92672">-&gt;</span>k;
+		<span style="color:#66d9ef">case</span> BPF_RET<span style="color:#f92672">|</span>BPF_A:
+			<span style="color:#66d9ef">return</span> A;
+		<span style="color:#66d9ef">case</span> BPF_ST:
+			mem[fentry<span style="color:#f92672">-&gt;</span>k] <span style="color:#f92672">=</span> A;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> BPF_STX:
+			mem[fentry<span style="color:#f92672">-&gt;</span>k] <span style="color:#f92672">=</span> X;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+			WARN_ON(<span style="color:#ae81ff">1</span>);
+			<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 		}
 
-		/*
-		 * Handle ancillary data, which are impossible
-		 * (or very difficult) to get parsing packet contents.
-		 */
-		switch (k-SKF_AD_OFF) {
-		case SKF_AD_PROTOCOL:
-			A = ntohs(skb-&gt;protocol);
-			continue;
-		case SKF_AD_PKTTYPE:
-			A = skb-&gt;pkt_type;
-			continue;
-		case SKF_AD_IFINDEX:
-			A = skb-&gt;dev-&gt;ifindex;
-			continue;
-		default:
-			return 0;
+		<span style="color:#75715e">/*
+</span><span style="color:#75715e">		 * Handle ancillary data, which are impossible
+</span><span style="color:#75715e">		 * (or very difficult) to get parsing packet contents.
+</span><span style="color:#75715e">		 */</span>
+		<span style="color:#66d9ef">switch</span> (k<span style="color:#f92672">-</span>SKF_AD_OFF) {
+		<span style="color:#66d9ef">case</span> SKF_AD_PROTOCOL:
+			A <span style="color:#f92672">=</span> ntohs(skb<span style="color:#f92672">-&gt;</span>protocol);
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> SKF_AD_PKTTYPE:
+			A <span style="color:#f92672">=</span> skb<span style="color:#f92672">-&gt;</span>pkt_type;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">case</span> SKF_AD_IFINDEX:
+			A <span style="color:#f92672">=</span> skb<span style="color:#f92672">-&gt;</span>dev<span style="color:#f92672">-&gt;</span>ifindex;
+			<span style="color:#66d9ef">continue</span>;
+		<span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+			<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 		}
 	}
-	return 0;
+	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 }
-</code></pre>
-
-<h2 id="bpf-jit-技术">BPF JIT 技术</h2>
-
+</code></pre></div><h2 id="bpf-jit-技术">BPF JIT 技术</h2>
 <p>沙箱执行虽然保证了内核的安全，无需担心用户随意定制的程序导致内核 panic 。但大量的网络包都需要经过这个沙箱的检测，这部分逻辑的效率就变得至关重要了。因此，在 Linux 3.x 版本之后，BPF 开始引入 JIT 技术来提高这部分代码的执行效率。</p>
-
 <p><em>下列源代码均来自于 Linux 3.10.1 版本</em></p>
-
 <p>以 BPF 指令 <code>BPF_S_ALU_ADD_X</code> 来讲，本质上 JIT 就是做完成编译的工作，将高级语言向低级语言做一个翻译工作。</p>
-
-<pre><code class="language-c">/* Copied from arch/x86/net/bpf_jit_comp.c */
-case BPF_S_ALU_ADD_X: /* A += X; */
-    seen |= SEEN_XREG;
-    EMIT2(0x01, 0xd8);		/* add %ebx,%eax */
-	break;
-</code></pre>
-
-<p>在 x86 架构下，翻译作机器码的 <code>add %ebx,%eax</code> 就是 0x01d8 啦</p>
-
-<pre><code class="language-c">void bpf_jit_compile(struct sk_filter *fp)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Copied from arch/x86/net/bpf_jit_comp.c */</span>
+<span style="color:#66d9ef">case</span> BPF_S_ALU_ADD_X: <span style="color:#75715e">/* A += X; */</span>
+    seen <span style="color:#f92672">|=</span> SEEN_XREG;
+    EMIT2(<span style="color:#ae81ff">0x01</span>, <span style="color:#ae81ff">0xd8</span>);		<span style="color:#75715e">/* add %ebx,%eax */</span>
+	<span style="color:#66d9ef">break</span>;
+</code></pre></div><p>在 x86 架构下，翻译作机器码的 <code>add %ebx,%eax</code> 就是 0x01d8 啦</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">bpf_jit_compile</span>(<span style="color:#66d9ef">struct</span> sk_filter <span style="color:#f92672">*</span>fp)
 {
-	u8 temp[64];
-	u8 *prog;
-	unsigned int proglen, oldproglen = 0;
-	int ilen, i;
-	int t_offset, f_offset;
-	u8 t_op, f_op, seen = 0, pass;
-	u8 *image = NULL;
-	u8 *func;
-	int pc_ret0 = -1; /* bpf index of first RET #0 instruction (if any) */
-	unsigned int cleanup_addr; /* epilogue code offset */
-	unsigned int *addrs;
-	const struct sock_filter *filter = fp-&gt;insns;
-	int flen = fp-&gt;len;
+	u8 temp[<span style="color:#ae81ff">64</span>];
+	u8 <span style="color:#f92672">*</span>prog;
+	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> proglen, oldproglen <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+	<span style="color:#66d9ef">int</span> ilen, i;
+	<span style="color:#66d9ef">int</span> t_offset, f_offset;
+	u8 t_op, f_op, seen <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, pass;
+	u8 <span style="color:#f92672">*</span>image <span style="color:#f92672">=</span> NULL;
+	u8 <span style="color:#f92672">*</span>func;
+	<span style="color:#66d9ef">int</span> pc_ret0 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>; <span style="color:#75715e">/* bpf index of first RET #0 instruction (if any) */</span>
+	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> cleanup_addr; <span style="color:#75715e">/* epilogue code offset */</span>
+	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>addrs;
+	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> sock_filter <span style="color:#f92672">*</span>filter <span style="color:#f92672">=</span> fp<span style="color:#f92672">-&gt;</span>insns;
+	<span style="color:#66d9ef">int</span> flen <span style="color:#f92672">=</span> fp<span style="color:#f92672">-&gt;</span>len;
 
-	if (!bpf_jit_enable)
-		return;
+	<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>bpf_jit_enable)
+		<span style="color:#66d9ef">return</span>;
 
-	addrs = kmalloc(flen * sizeof(*addrs), GFP_KERNEL);
-	if (addrs == NULL)
-		return;
+	addrs <span style="color:#f92672">=</span> kmalloc(flen <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#f92672">*</span>addrs), GFP_KERNEL);
+	<span style="color:#66d9ef">if</span> (addrs <span style="color:#f92672">==</span> NULL)
+		<span style="color:#66d9ef">return</span>;
 
-	/* Before first pass, make a rough estimation of addrs[]
-	 * each bpf instruction is translated to less than 64 bytes
-	 */
-	for (proglen = 0, i = 0; i &lt; flen; i++) {
-		proglen += 64;
-		addrs[i] = proglen;
+	<span style="color:#75715e">/* Before first pass, make a rough estimation of addrs[]
+</span><span style="color:#75715e">	 * each bpf instruction is translated to less than 64 bytes
+</span><span style="color:#75715e">	 */</span>
+	<span style="color:#66d9ef">for</span> (proglen <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> flen; i<span style="color:#f92672">++</span>) {
+		proglen <span style="color:#f92672">+=</span> <span style="color:#ae81ff">64</span>;
+		addrs[i] <span style="color:#f92672">=</span> proglen;
 	}
-	cleanup_addr = proglen; /* epilogue address */
+	cleanup_addr <span style="color:#f92672">=</span> proglen; <span style="color:#75715e">/* epilogue address */</span>
 
-	for (pass = 0; pass &lt; 10; pass++) {
-		u8 seen_or_pass0 = (pass == 0) ? (SEEN_XREG | SEEN_DATAREF | SEEN_MEM) : seen;
-		/* no prologue/epilogue for trivial filters (RET something) */
-		proglen = 0;
-		prog = temp;
+	<span style="color:#66d9ef">for</span> (pass <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; pass <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">10</span>; pass<span style="color:#f92672">++</span>) {
+		u8 seen_or_pass0 <span style="color:#f92672">=</span> (pass <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">?</span> (SEEN_XREG <span style="color:#f92672">|</span> SEEN_DATAREF <span style="color:#f92672">|</span> SEEN_MEM) <span style="color:#f92672">:</span> seen;
+		<span style="color:#75715e">/* no prologue/epilogue for trivial filters (RET something) */</span>
+		proglen <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+		prog <span style="color:#f92672">=</span> temp;
 
-        /* some code omitted ... */
+        <span style="color:#75715e">/* some code omitted ... */</span>
 
-        /*
-         * JIT 全部基于 prog 指针实施，temp 和 prog 就分别作为 JIT 机器码的头尾指针。
-         * 所有翻译成的机器码全部存储在 temp 指向的内存区域 
-         */
-			ilen = prog - temp;
-			if (image) {
-				if (unlikely(proglen + ilen &gt; oldproglen)) {
-					pr_err(&quot;bpb_jit_compile fatal error\n&quot;);
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * JIT 全部基于 prog 指针实施，temp 和 prog 就分别作为 JIT 机器码的头尾指针。
+</span><span style="color:#75715e">         * 所有翻译成的机器码全部存储在 temp 指向的内存区域 
+</span><span style="color:#75715e">         */</span>
+			ilen <span style="color:#f92672">=</span> prog <span style="color:#f92672">-</span> temp;
+			<span style="color:#66d9ef">if</span> (image) {
+				<span style="color:#66d9ef">if</span> (unlikely(proglen <span style="color:#f92672">+</span> ilen <span style="color:#f92672">&gt;</span> oldproglen)) {
+					pr_err(<span style="color:#e6db74">&#34;bpb_jit_compile fatal error</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
 					kfree(addrs);
 					module_free(NULL, image);
-					return;
+					<span style="color:#66d9ef">return</span>;
 				}
-                /* 最终 JIT 之后的机器码会全部拷贝到 image 指向的内存区域 */
-				memcpy(image + proglen, temp, ilen);
+                <span style="color:#75715e">/* 最终 JIT 之后的机器码会全部拷贝到 image 指向的内存区域 */</span>
+				memcpy(image <span style="color:#f92672">+</span> proglen, temp, ilen);
 			}
-			proglen += ilen;
-			addrs[i] = proglen;
-			prog = temp;
+			proglen <span style="color:#f92672">+=</span> ilen;
+			addrs[i] <span style="color:#f92672">=</span> proglen;
+			prog <span style="color:#f92672">=</span> temp;
 
-		if (image) {
-			if (proglen != oldproglen)
-				pr_err(&quot;bpb_jit_compile proglen=%u != oldproglen=%u\n&quot;, proglen, oldproglen);
-			break;
+		<span style="color:#66d9ef">if</span> (image) {
+			<span style="color:#66d9ef">if</span> (proglen <span style="color:#f92672">!=</span> oldproglen)
+				pr_err(<span style="color:#e6db74">&#34;bpb_jit_compile proglen=%u != oldproglen=%u</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, proglen, oldproglen);
+			<span style="color:#66d9ef">break</span>;
 		}
-		if (proglen == oldproglen) {
-			image = module_alloc(max_t(unsigned int,
+		<span style="color:#66d9ef">if</span> (proglen <span style="color:#f92672">==</span> oldproglen) {
+			image <span style="color:#f92672">=</span> module_alloc(max_t(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>,
 						   proglen,
-						   sizeof(struct work_struct)));
-			if (!image)
-				goto out;
+						   <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> work_struct)));
+			<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>image)
+				<span style="color:#66d9ef">goto</span> out;
 		}
-		oldproglen = proglen;
+		oldproglen <span style="color:#f92672">=</span> proglen;
 	}
 
-	if (image) {
-		bpf_flush_icache(image, image + proglen);
-        /* image 指向的机器码就直接替代了非 JIT 下的 sk_run_filter 函数 */ 
-		fp-&gt;bpf_func = (void *)image;
+	<span style="color:#66d9ef">if</span> (image) {
+		bpf_flush_icache(image, image <span style="color:#f92672">+</span> proglen);
+        <span style="color:#75715e">/* image 指向的机器码就直接替代了非 JIT 下的 sk_run_filter 函数 */</span> 
+		fp<span style="color:#f92672">-&gt;</span>bpf_func <span style="color:#f92672">=</span> (<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>)image;
 	}
 out:
 	kfree(addrs);
-	return;
+	<span style="color:#66d9ef">return</span>;
 }
-</code></pre>
-
-<p>JIT 编译完成后的机器码，完全可以类比 C 语言在编译后的 ELF 文件中的机器码。是可以交由 CPU 直接执行的。而由 CPU 直接执行的效率，一般都是高于基于 CPU 模拟的一套处理器的。</p>
+</code></pre></div><p>JIT 编译完成后的机器码，完全可以类比 C 语言在编译后的 ELF 文件中的机器码。是可以交由 CPU 直接执行的。而由 CPU 直接执行的效率，一般都是高于基于 CPU 模拟的一套处理器的。</p>
         </div>
 
         <div class="row middle-xs">

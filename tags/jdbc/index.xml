@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>JDBC on Utop&#39;s Blog</title>
@@ -18,7 +18,6 @@
       
       <guid>https://www.ffutop.com/posts/2018-01-15-spring-jdbc-%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid>
       <description>&lt;h2 id=&#34;概览&#34;&gt;概览&lt;/h2&gt;
-
 &lt;p&gt;在学习 Spring-JDBC 之前，我们有必要从 Java 原生提供的 JDBC 开始，对 JDBC 操作的一整套完整的流程有一个清晰的概念。&lt;/p&gt;</description>
     </item>
     

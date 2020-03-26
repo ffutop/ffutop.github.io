@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Smart Contract on Utop&#39;s Blog</title>
@@ -17,12 +17,10 @@
       <pubDate>Thu, 01 Mar 2018 00:00:00 +0000</pubDate>
       
       <guid>https://www.ffutop.com/posts/2018-03-01-%E5%8C%BA%E5%9D%97%E9%93%BE%E6%8A%80%E6%9C%AF%E6%A6%82%E8%BF%B0/</guid>
-      <description>&lt;p&gt;&lt;img src=&#34;https://ws3.sinaimg.cn/large/006tKfTcgy1fs8oc4ri7qj30mq055aap.jpg&#34; alt=&#34;区块链简单结构&#34; /&gt;
-&lt;center&gt;&lt;small&gt;图1. 区块链简单结构&lt;/small&gt;&lt;/center&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://ws1.sinaimg.cn/large/006tNc79gy1foxcpmmpfhj31kw107n2e.jpg&#34; alt=&#34;Merkle tree&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;center&gt;&lt;small&gt;图2. 单个区块的抽象结构&lt;/small&gt;&lt;/center&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;&lt;img src=&#34;https://ws3.sinaimg.cn/large/006tKfTcgy1fs8oc4ri7qj30mq055aap.jpg&#34; alt=&#34;区块链简单结构&#34;&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;&lt;img src=&#34;https://ws1.sinaimg.cn/large/006tNc79gy1foxcpmmpfhj31kw107n2e.jpg&#34; alt=&#34;Merkle tree&#34;&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;</description>
     </item>
     
   </channel>

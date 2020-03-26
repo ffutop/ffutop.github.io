@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.55.6" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "Linux Traffic Control",
       "headline" : "Linux Traffic Control",
-      "description" : "\x3cp\x3e最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。\x3c\/p\x3e\n\n\x3cp\x3e流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(\x3ccode\x3esk_buff\x3c\/code\x3e 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 \x3ccode\x3eenqueue\x3c\/code\x3e, \x3ccode\x3edequeue\x3c\/code\x3e 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读\/随机写了。\x3c\/p\x3e",
+      "description" : "\x3cp\x3e最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。\x3c\/p\x3e\n\x3cp\x3e流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(\x3ccode\x3esk_buff\x3c\/code\x3e 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 \x3ccode\x3eenqueue\x3c\/code\x3e, \x3ccode\x3edequeue\x3c\/code\x3e 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读\/随机写了。\x3c\/p\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -41,10 +41,8 @@
   <meta property="og:title" content="Linux Traffic Control - Utop&#39;s Blog" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。
-
 流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(sk_buff 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 enqueue, dequeue 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。" />
   <meta name="description" content="最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。
-
 流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(sk_buff 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 enqueue, dequeue 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。" />
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
@@ -106,16 +104,11 @@
         <div class="post-content markdown-body">
           
           <p>最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。</p>
-
 <p>流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(<code>sk_buff</code> 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 <code>enqueue</code>, <code>dequeue</code> 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。</p>
-
-<h2 id="前置知识-发送网络包流程">前置知识：发送网络包流程</h2>
-
+<h2 id="前置知识发送网络包流程">前置知识：发送网络包流程</h2>
 <p>此处提供一个内核网络包的发送流程，辅助了解网络协议栈。<em>跳过不影响后文阅读</em></p>
-
 <p>网络包的发送由应用层通过系统调用 <code>sendmsg</code> (类似的系统调用还有 <code>send</code>, <code>sendto</code> 等) 发起，后陷入内核态，由内核代码实现网络协议栈逐层封装，逐层下发的工作。</p>
-
-<pre><code class="language-plain"> 0)               |              sock_sendmsg() {       /* 系统调用 sendmsg 对应的内核函数 */
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain"> 0)               |              sock_sendmsg() {       /* 系统调用 sendmsg 对应的内核函数 */
  0)               |                inet_sendmsg() {     /* 使用 IPv4 (not IPv6) 实现的 sendmsg */
  0)               |                  tcp_sendmsg() {    /* 传输层，TCP 协议的处理 */
  0)               |                      sk_stream_alloc_skb() {    /* 创建 sk_buff(skb) 数据结构，网络包在内核中存在的形式 */
@@ -165,274 +158,241 @@
  0) ! 112.023 us  |      }
  0) ! 113.078 us  |    }
  0) ! 113.374 us  |  }
-</code></pre>
-
-<p>本篇核心关注流量控制，就不细数网络协议栈了。待到网络包(skb)到达数据链路层，<code>dev_queue_xmit</code> 标志着 skb 终于交付给网络设备，下面就是 TC 策略的运转了。</p>
-
+</code></pre></div><p>本篇核心关注流量控制，就不细数网络协议栈了。待到网络包(skb)到达数据链路层，<code>dev_queue_xmit</code> 标志着 skb 终于交付给网络设备，下面就是 TC 策略的运转了。</p>
 <p>Qdisc (queueing discipline) ，是整个 TC 的基本模型。所有需要通过网卡接口发送的数据包，都会进入接口绑定的 Qdisc 等待队列(enqueue)。再由 ksoftirq 内核线程读取接口 Qdisc 中的数据包(dequeue)，尽最大能力发送出去。</p>
-
 <h2 id="traffic-control-原理">Traffic Control 原理</h2>
-
 <p>对于 TC 核心的概念——队列规程，类别，过滤器，网上充斥着大量的资料，由于没有自信讲得更加通透，附上链接一枚。</p>
-
 <p><a href="https://blog.csdn.net/dog250/article/details/40483627">https://blog.csdn.net/dog250/article/details/40483627</a></p>
-
 <h2 id="traffic-control-实现">Traffic Control 实现</h2>
-
 <h3 id="数据结构">数据结构</h3>
-
 <p>遵循 TC Qdisc 的生命周期，首先要介绍的是 Qdisc 的创建流程。不过在此之前，看了解下相关的数据结构。</p>
-
-<p><img src="https://img.ffutop.com/D4466735-ED98-4A94-9C7A-FD59F7791988.png" alt="" /></p>
-
-<pre><code class="language-c">struct net_device
+<p><img src="https://img.ffutop.com/D4466735-ED98-4A94-9C7A-FD59F7791988.png" alt=""></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">struct</span> net_device
 {
-    /* 设备的发送队列列表 (这是数组的头指针)*/
-    struct netdev_queue *_tx;
+    <span style="color:#75715e">/* 设备的发送队列列表 (这是数组的头指针)*/</span>
+    <span style="color:#66d9ef">struct</span> netdev_queue <span style="color:#f92672">*</span>_tx;
 
-    /* 发送队列的个数 */
-    unsigned int num_tx_queues;
+    <span style="color:#75715e">/* 发送队列的个数 */</span>
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> num_tx_queues;
 
-    /* 使用中的发送队列个数 */
-    unsigned int real_num_tx_queues;
+    <span style="color:#75715e">/* 使用中的发送队列个数 */</span>
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> real_num_tx_queues;
 
-    /* 默认的队列策略 */
-    struct Qdisc *qdisc;
+    <span style="color:#75715e">/* 默认的队列策略 */</span>
+    <span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>qdisc;
 
-    /* 每个发送队列的最大长度 */
-    unsigned long tx_queue_len;
+    <span style="color:#75715e">/* 每个发送队列的最大长度 */</span>
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span> tx_queue_len;
 
-    /* 发送队列的全局锁 */
+    <span style="color:#75715e">/* 发送队列的全局锁 */</span>
     spinlock_t tx_global_lock;
 }
 
-struct netdev_queue {
-    /* 所属网络设备 */
-    struct net_device *dev;
-    /* 队列相应的队列策略 */
-    struct Qdisc *qdisc;
-    struct Qdisc *qdisc_sleeping;
+<span style="color:#66d9ef">struct</span> netdev_queue {
+    <span style="color:#75715e">/* 所属网络设备 */</span>
+    <span style="color:#66d9ef">struct</span> net_device <span style="color:#f92672">*</span>dev;
+    <span style="color:#75715e">/* 队列相应的队列策略 */</span>
+    <span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>qdisc;
+    <span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>qdisc_sleeping;
     spinlock_t _xmit_lock;
-    int            xmit_lock_owner;
-    unsigned long        trans_start;
-    unsigned long        trans_timeout;
-    /* 队列状态 */
-    unsigned long        state;
+    <span style="color:#66d9ef">int</span>            xmit_lock_owner;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span>        trans_start;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span>        trans_timeout;
+    <span style="color:#75715e">/* 队列状态 */</span>
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span>        state;
 };
 
-#define TCQ_F_BUILTIN        1
-#define TCQ_F_INGRESS        2
-#define TCQ_F_CAN_BYPASS    4
-#define TCQ_F_MQROOT        8
-#define TCQ_F_ONETXQUEUE    0x10
-#define TCQ_F_WARN_NONWC    (1 &lt;&lt; 16)
+<span style="color:#75715e">#define TCQ_F_BUILTIN        1
+</span><span style="color:#75715e">#define TCQ_F_INGRESS        2
+</span><span style="color:#75715e">#define TCQ_F_CAN_BYPASS    4
+</span><span style="color:#75715e">#define TCQ_F_MQROOT        8
+</span><span style="color:#75715e">#define TCQ_F_ONETXQUEUE    0x10
+</span><span style="color:#75715e">#define TCQ_F_WARN_NONWC    (1 &lt;&lt; 16)
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">struct</span> Qdisc {
+    <span style="color:#75715e">/* skb 入队函数 */</span>
+    <span style="color:#66d9ef">int</span> (<span style="color:#f92672">*</span>enqueue)(<span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb, <span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>dev);
+    <span style="color:#75715e">/* skb 出队函数 */</span>
+    <span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span> (<span style="color:#f92672">*</span>dequeue)(<span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>dev);
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> flags;
+    <span style="color:#66d9ef">struct</span> list_head    list;
+    <span style="color:#66d9ef">int</span> padded;
+    <span style="color:#75715e">/* 队列策略函数集 */</span>
+    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> Qdisc_ops <span style="color:#f92672">*</span>ops;
+    <span style="color:#66d9ef">int</span>            (<span style="color:#f92672">*</span>reshape_fail)(<span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb,
+                    <span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>q);
+    <span style="color:#75715e">/* 所属设备队列 */</span>
+    <span style="color:#66d9ef">struct</span> netdev_queue <span style="color:#f92672">*</span>dev_queue;
+    <span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>next_sched;
 
-struct Qdisc {
-    /* skb 入队函数 */
-    int (*enqueue)(struct sk_buff *skb, struct Qdisc *dev);
-    /* skb 出队函数 */
-    struct sk_buff * (*dequeue)(struct Qdisc *dev);
-    unsigned int flags;
-    struct list_head    list;
-    int padded;
-    /* 队列策略函数集 */
-    const struct Qdisc_ops *ops;
-    int            (*reshape_fail)(struct sk_buff *skb,
-                    struct Qdisc *q);
-    /* 所属设备队列 */
-    struct netdev_queue *dev_queue;
-    struct Qdisc *next_sched;
-
-    /* 队列策略的状态 */
-    unsigned long state;
-    struct sk_buff_head q;
+    <span style="color:#75715e">/* 队列策略的状态 */</span>
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span> state;
+    <span style="color:#66d9ef">struct</span> sk_buff_head q;
     u32 limit;
 };
-</code></pre>
-
-<h3 id="网络设备初始化与-qdisc">网络设备初始化与 Qdisc</h3>
-
+</code></pre></div><h3 id="网络设备初始化与-qdisc">网络设备初始化与 Qdisc</h3>
 <p>TC 的实施与网络设备密切相关。跳过设备的注册和创建流程，设备状态由 <code>state DOWN</code> 切换到 <code>state UP</code> 标志着设备正式启用</p>
-
-<p><img src="https://img.ffutop.com/BF9E5268-8C81-499D-82B6-20DA7DF57473.png" alt="" /></p>
-
+<p><img src="https://img.ffutop.com/BF9E5268-8C81-499D-82B6-20DA7DF57473.png" alt=""></p>
 <p>对应到内核流程，调用栈类似：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">dev_open
+<span style="color:#f92672">|--</span> __dev_open
+    <span style="color:#f92672">|--</span> dev_active
+        <span style="color:#f92672">|--</span> attach_default_qdiscs
 
-<pre><code class="language-c">dev_open
-|-- __dev_open
-    |-- dev_active
-        |-- attach_default_qdiscs
-
-static void attach_default_qdiscs(struct net_device *dev)
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> attach_default_qdiscs(<span style="color:#66d9ef">struct</span> net_device <span style="color:#f92672">*</span>dev)
 {
-    struct netdev_queue *txq;
-    struct Qdisc *qdisc;
+    <span style="color:#66d9ef">struct</span> netdev_queue <span style="color:#f92672">*</span>txq;
+    <span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>qdisc;
 
-    /* 获得设备的第 0 个 queue */
-    txq = netdev_get_tx_queue(dev, 0);
+    <span style="color:#75715e">/* 获得设备的第 0 个 queue */</span>
+    txq <span style="color:#f92672">=</span> netdev_get_tx_queue(dev, <span style="color:#ae81ff">0</span>);
 
-    /* 如果发送队列个数 &lt;= 1 || 发送队列长度 = 0 */
-    if (!netif_is_multiqueue(dev) || dev-&gt;tx_queue_len == 0) {
-        /* 单队列的流量控制 */
+    <span style="color:#75715e">/* 如果发送队列个数 &lt;= 1 || 发送队列长度 = 0 */</span>
+    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>netif_is_multiqueue(dev) <span style="color:#f92672">||</span> dev<span style="color:#f92672">-&gt;</span>tx_queue_len <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+        <span style="color:#75715e">/* 单队列的流量控制 */</span>
         netdev_for_each_tx_queue(dev, attach_one_default_qdisc, NULL);
-        dev-&gt;qdisc = txq-&gt;qdisc_sleeping;
-        atomic_inc(&amp;dev-&gt;qdisc-&gt;refcnt);
-    } else {
-        /* 多队列的流量控制; 此处 mq 指 multiqueue*/
-        qdisc = qdisc_create_dflt(txq, &amp;mq_qdisc_ops, TC_H_ROOT);
-        if (qdisc) {
-            qdisc-&gt;ops-&gt;attach(qdisc);
-            dev-&gt;qdisc = qdisc;
+        dev<span style="color:#f92672">-&gt;</span>qdisc <span style="color:#f92672">=</span> txq<span style="color:#f92672">-&gt;</span>qdisc_sleeping;
+        atomic_inc(<span style="color:#f92672">&amp;</span>dev<span style="color:#f92672">-&gt;</span>qdisc<span style="color:#f92672">-&gt;</span>refcnt);
+    } <span style="color:#66d9ef">else</span> {
+        <span style="color:#75715e">/* 多队列的流量控制; 此处 mq 指 multiqueue*/</span>
+        qdisc <span style="color:#f92672">=</span> qdisc_create_dflt(txq, <span style="color:#f92672">&amp;</span>mq_qdisc_ops, TC_H_ROOT);
+        <span style="color:#66d9ef">if</span> (qdisc) {
+            qdisc<span style="color:#f92672">-&gt;</span>ops<span style="color:#f92672">-&gt;</span>attach(qdisc);
+            dev<span style="color:#f92672">-&gt;</span>qdisc <span style="color:#f92672">=</span> qdisc;
         }
     }
 }
 
-static void attach_one_default_qdisc(struct net_device *dev,
-                     struct netdev_queue *dev_queue,
-                     void *_unused)
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> attach_one_default_qdisc(<span style="color:#66d9ef">struct</span> net_device <span style="color:#f92672">*</span>dev,
+                     <span style="color:#66d9ef">struct</span> netdev_queue <span style="color:#f92672">*</span>dev_queue,
+                     <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>_unused)
 {
-    /* noqueue 默认的，无队列控制实现，一般应用在虚拟设备上 */
-    struct Qdisc *qdisc = &amp;noqueue_qdisc;
+    <span style="color:#75715e">/* noqueue 默认的，无队列控制实现，一般应用在虚拟设备上 */</span>
+    <span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>qdisc <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>noqueue_qdisc;
 
-    /* 如果有发送队列长度限制 (默认应用在物理网卡设备上) */
-    if (dev-&gt;tx_queue_len) {
-        /* 创建 快速优先队列 策略的 Qdisc */
-        qdisc = qdisc_create_dflt(dev_queue,
-                      &amp;pfifo_fast_ops, TC_H_ROOT);
+    <span style="color:#75715e">/* 如果有发送队列长度限制 (默认应用在物理网卡设备上) */</span>
+    <span style="color:#66d9ef">if</span> (dev<span style="color:#f92672">-&gt;</span>tx_queue_len) {
+        <span style="color:#75715e">/* 创建 快速优先队列 策略的 Qdisc */</span>
+        qdisc <span style="color:#f92672">=</span> qdisc_create_dflt(dev_queue,
+                      <span style="color:#f92672">&amp;</span>pfifo_fast_ops, TC_H_ROOT);
     }
-    dev_queue-&gt;qdisc_sleeping = qdisc;
+    dev_queue<span style="color:#f92672">-&gt;</span>qdisc_sleeping <span style="color:#f92672">=</span> qdisc;
 }
-</code></pre>
-
-<h3 id="qdisc-的生命周期">Qdisc 的生命周期</h3>
-
+</code></pre></div><h3 id="qdisc-的生命周期">Qdisc 的生命周期</h3>
 <p>应用程序发送数据包都将涉及到系统调用，一般来说是 <code>sendmsg</code>、<code>sendto</code> 之类的系统调用。上面👆给了内核 <code>sendmsg</code> 的函数调用链路。很长，涉及的操作相当多。但是，这还仅仅是由 CPU 执行的一部分流程。试想，还有内存到网卡设备的数据交互。这里等待的时间将更加漫长，更不要说像是网络重试之类的实现了。内核究竟做了怎样的实现呢？在<a href="https://www.ffutop.com/posts/2019-01-15-understand-kernel-8/">这篇网络</a>中，描述了接收网络数据时的三阶段流程。通过接收队列作为中介，<code>recv</code> 系统调用需要做的只是去检测接收队列是否有数据包，其它流程全部交由内核线程和网络硬中断完成。类似的，发送数据包 <code>sendmsg</code> 这类系统调用，也只是将数据包提交到一个等待队列，再由内核线程和中断实施尽力发送。这里的等待队列，就是网络设备绑定的 Qdisc。</p>
-
 <p>先别管 Qdisc 是怎么实现的，它提供了两个核心函数 <code>enqueue</code>, <code>dequeue</code> ，完全符合定义一个队列的基本要求。</p>
-
 <p>额外地，一些函数 <code>peek</code>, <code>reset</code> 等，作为这个黑盒的辅助函数，在个别情况下进行使用。</p>
-
 <ul>
-<li><p>peek: 类似 dequeue，但获取的网络包仍然保留在队列中</p></li>
-
-<li><p>reset: 将 Qdisc 重置到初始状态</p></li>
-
-<li><p>init: 初始化一个新创建的 Qdisc</p></li>
-
-<li><p>destroy: 销毁一个 Qdisc 生命周期中所使用的资源</p></li>
-
-<li><p>change: 修改 Qdisc 的参数</p></li>
+<li>
+<p>peek: 类似 dequeue，但获取的网络包仍然保留在队列中</p>
+</li>
+<li>
+<p>reset: 将 Qdisc 重置到初始状态</p>
+</li>
+<li>
+<p>init: 初始化一个新创建的 Qdisc</p>
+</li>
+<li>
+<p>destroy: 销毁一个 Qdisc 生命周期中所使用的资源</p>
+</li>
+<li>
+<p>change: 修改 Qdisc 的参数</p>
+</li>
 </ul>
-
 <p>Qdisc 的整个生命周期，最初和最末分别是向内核注册一种新的 Qdisc 和取消注册一种 Qdisc</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* from net/sched/sch_api.c */</span>
+<span style="color:#66d9ef">int</span> register_qdisc(<span style="color:#66d9ef">struct</span> Qdisc_ops <span style="color:#f92672">*</span>qops)
+<span style="color:#66d9ef">int</span> unregister_qdisc(<span style="color:#66d9ef">struct</span> Qdisc_ops <span style="color:#f92672">*</span>qops)
+</code></pre></div><p>再就是创建一个 Qdisc 实例绑定到网络设备，以及从网络设备上解绑 Qdisc 实例</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>
+qdisc_create(<span style="color:#66d9ef">struct</span> net_device <span style="color:#f92672">*</span>dev, <span style="color:#66d9ef">struct</span> netdev_queue <span style="color:#f92672">*</span>dev_queue,
+	     <span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>p, u32 parent, u32 handle,
+	     <span style="color:#66d9ef">struct</span> nlattr <span style="color:#f92672">**</span>tca, <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>errp)
 
-<pre><code class="language-c">/* from net/sched/sch_api.c */
-int register_qdisc(struct Qdisc_ops *qops)
-int unregister_qdisc(struct Qdisc_ops *qops)
-</code></pre>
-
-<p>再就是创建一个 Qdisc 实例绑定到网络设备，以及从网络设备上解绑 Qdisc 实例</p>
-
-<pre><code class="language-c">static struct Qdisc *
-qdisc_create(struct net_device *dev, struct netdev_queue *dev_queue,
-	     struct Qdisc *p, u32 parent, u32 handle,
-	     struct nlattr **tca, int *errp)
-
-// n-&gt;nlmsg_type == RTM_DELQDISC
-static int tc_get_qdisc(struct sk_buff *skb, struct nlmsghdr *n)
-</code></pre>
-
-<p>再就是正常的工作流程了，<code>enqueue</code>, <code>dequeue</code> 以及其它辅助函数的使用。</p>
-
+<span style="color:#75715e">// n-&gt;nlmsg_type == RTM_DELQDISC
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> tc_get_qdisc(<span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb, <span style="color:#66d9ef">struct</span> nlmsghdr <span style="color:#f92672">*</span>n)
+</code></pre></div><p>再就是正常的工作流程了，<code>enqueue</code>, <code>dequeue</code> 以及其它辅助函数的使用。</p>
 <h3 id="qdisc-执行流">Qdisc 执行流</h3>
-
 <p><code>noop</code> 是 Qdisc 最简单，最无赖的一种实现，对于所有的数据包直接抛弃。当然，这种实现正常情况下只会出现在网络设备状态为 DOWN 的时候。</p>
-
-<pre><code class="language-c">static int noop_enqueue(struct sk_buff *skb, struct Qdisc * qdisc)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">noop_enqueue</span>(<span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb, <span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span> qdisc)
 {
     kfree_skb(skb);
-    return NET_XMIT_CN;
+    <span style="color:#66d9ef">return</span> NET_XMIT_CN;
 }
 
-static struct sk_buff *noop_dequeue(struct Qdisc * qdisc)
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span><span style="color:#a6e22e">noop_dequeue</span>(<span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span> qdisc)
 {
-    return NULL;
+    <span style="color:#66d9ef">return</span> NULL;
 }
-</code></pre>
-
-<p><code>pfifo_fast</code> 是普遍使用一种 Qdisc 实现，根据数据包 Tos 将网络包划分到三个通道，进入第0通道的网络包有 dequeue 的最高优先级。</p>
-
-<pre><code class="language-c">static int pfifo_fast_enqueue(struct sk_buff *skb, struct Qdisc *qdisc)
+</code></pre></div><p><code>pfifo_fast</code> 是普遍使用一种 Qdisc 实现，根据数据包 Tos 将网络包划分到三个通道，进入第0通道的网络包有 dequeue 的最高优先级。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">pfifo_fast_enqueue</span>(<span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb, <span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>qdisc)
 {
-    // 检测 Qdisc 队列数据包数量是否达到 dev 预定的最大值
-    if (skb_queue_len(&amp;qdisc-&gt;q) &lt; qdisc_dev(qdisc)-&gt;tx_queue_len) {
-        // 确定数据包需要进入哪个通道
-        int band = prio2band[skb-&gt;priority &amp; TC_PRIO_MAX];
-        struct pfifo_fast_priv *priv = qdisc_priv(qdisc);
-        // 获取通道列表的 head
-        struct sk_buff_head *list = band2list(priv, band);
+    <span style="color:#75715e">// 检测 Qdisc 队列数据包数量是否达到 dev 预定的最大值
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (skb_queue_len(<span style="color:#f92672">&amp;</span>qdisc<span style="color:#f92672">-&gt;</span>q) <span style="color:#f92672">&lt;</span> qdisc_dev(qdisc)<span style="color:#f92672">-&gt;</span>tx_queue_len) {
+        <span style="color:#75715e">// 确定数据包需要进入哪个通道
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> band <span style="color:#f92672">=</span> prio2band[skb<span style="color:#f92672">-&gt;</span>priority <span style="color:#f92672">&amp;</span> TC_PRIO_MAX];
+        <span style="color:#66d9ef">struct</span> pfifo_fast_priv <span style="color:#f92672">*</span>priv <span style="color:#f92672">=</span> qdisc_priv(qdisc);
+        <span style="color:#75715e">// 获取通道列表的 head
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">struct</span> sk_buff_head <span style="color:#f92672">*</span>list <span style="color:#f92672">=</span> band2list(priv, band);
 
-        priv-&gt;bitmap |= (1 &lt;&lt; band);
-        qdisc-&gt;q.qlen++;
-        // 添加到通道队尾
-        return __qdisc_enqueue_tail(skb, qdisc, list);
+        priv<span style="color:#f92672">-&gt;</span>bitmap <span style="color:#f92672">|=</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> band);
+        qdisc<span style="color:#f92672">-&gt;</span>q.qlen<span style="color:#f92672">++</span>;
+        <span style="color:#75715e">// 添加到通道队尾
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> __qdisc_enqueue_tail(skb, qdisc, list);
     }
 
-    return qdisc_drop(skb, qdisc);
+    <span style="color:#66d9ef">return</span> qdisc_drop(skb, qdisc);
 }
 
-static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span><span style="color:#a6e22e">pfifo_fast_dequeue</span>(<span style="color:#66d9ef">struct</span> Qdisc <span style="color:#f92672">*</span>qdisc)
 {
-    struct pfifo_fast_priv *priv = qdisc_priv(qdisc);
-    int band = bitmap2band[priv-&gt;bitmap];
+    <span style="color:#66d9ef">struct</span> pfifo_fast_priv <span style="color:#f92672">*</span>priv <span style="color:#f92672">=</span> qdisc_priv(qdisc);
+    <span style="color:#66d9ef">int</span> band <span style="color:#f92672">=</span> bitmap2band[priv<span style="color:#f92672">-&gt;</span>bitmap];
 
-    if (likely(band &gt;= 0)) {
-        struct sk_buff_head *list = band2list(priv, band);
-        struct sk_buff *skb = __qdisc_dequeue_head(qdisc, list);
+    <span style="color:#66d9ef">if</span> (likely(band <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>)) {
+        <span style="color:#66d9ef">struct</span> sk_buff_head <span style="color:#f92672">*</span>list <span style="color:#f92672">=</span> band2list(priv, band);
+        <span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb <span style="color:#f92672">=</span> __qdisc_dequeue_head(qdisc, list);
 
-        qdisc-&gt;q.qlen--;
-        if (skb_queue_empty(list))
-            priv-&gt;bitmap &amp;= ~(1 &lt;&lt; band);
+        qdisc<span style="color:#f92672">-&gt;</span>q.qlen<span style="color:#f92672">--</span>;
+        <span style="color:#66d9ef">if</span> (skb_queue_empty(list))
+            priv<span style="color:#f92672">-&gt;</span>bitmap <span style="color:#f92672">&amp;=</span> <span style="color:#f92672">~</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> band);
 
-        return skb;
+        <span style="color:#66d9ef">return</span> skb;
     }
 
-    return NULL;
+    <span style="color:#66d9ef">return</span> NULL;
 }
-</code></pre>
-
-<p>至于类别队列，首先也还是 Qdisc，符合它的所有要素，只是在 <code>Qdisc_ops</code> 中加入了分类的流程。例如 htb 的实现中，额外地加入了 <code>class_ops</code>，对关于分类操作的方法做了相关的实现。</p>
-
-<pre><code class="language-c">static struct Qdisc_ops htb_qdisc_ops __read_mostly = {
-    .cl_ops    =    &amp;htb_class_ops,
-    .id        =    &quot;htb&quot;,
-    .priv_size =    sizeof(struct htb_sched),
-    .enqueue   =    htb_enqueue,
-    .dequeue   =    htb_dequeue,
-    .peek      =    qdisc_peek_dequeued,
-    .drop      =    htb_drop,
-    .init      =    htb_init,
-    .reset     =    htb_reset,
-    .destroy   =    htb_destroy,
-    .dump      =    htb_dump,
-    .owner     =    THIS_MODULE,
+</code></pre></div><p>至于类别队列，首先也还是 Qdisc，符合它的所有要素，只是在 <code>Qdisc_ops</code> 中加入了分类的流程。例如 htb 的实现中，额外地加入了 <code>class_ops</code>，对关于分类操作的方法做了相关的实现。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">struct</span> Qdisc_ops htb_qdisc_ops __read_mostly <span style="color:#f92672">=</span> {
+    .cl_ops    <span style="color:#f92672">=</span>    <span style="color:#f92672">&amp;</span>htb_class_ops,
+    .id        <span style="color:#f92672">=</span>    <span style="color:#e6db74">&#34;htb&#34;</span>,
+    .priv_size <span style="color:#f92672">=</span>    <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> htb_sched),
+    .enqueue   <span style="color:#f92672">=</span>    htb_enqueue,
+    .dequeue   <span style="color:#f92672">=</span>    htb_dequeue,
+    .peek      <span style="color:#f92672">=</span>    qdisc_peek_dequeued,
+    .drop      <span style="color:#f92672">=</span>    htb_drop,
+    .init      <span style="color:#f92672">=</span>    htb_init,
+    .reset     <span style="color:#f92672">=</span>    htb_reset,
+    .destroy   <span style="color:#f92672">=</span>    htb_destroy,
+    .dump      <span style="color:#f92672">=</span>    htb_dump,
+    .owner     <span style="color:#f92672">=</span>    THIS_MODULE,
 };
-static const struct Qdisc_class_ops htb_class_ops = {
-    .graft       =    htb_graft,
-    .leaf        =    htb_leaf,
-    .qlen_notify =    htb_qlen_notify,
-    .get         =    htb_get,
-    .put         =    htb_put,
-    .change      =    htb_change_class,
-    .delete      =    htb_delete,
-    .walk        =    htb_walk,
-    .tcf_chain   =    htb_find_tcf,
-    .bind_tcf    =    htb_bind_filter,
-    .unbind_tcf  =    htb_unbind_filter,
-    .dump        =    htb_dump_class,
-    .dump_stats  =    htb_dump_class_stats,
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> Qdisc_class_ops htb_class_ops <span style="color:#f92672">=</span> {
+    .graft       <span style="color:#f92672">=</span>    htb_graft,
+    .leaf        <span style="color:#f92672">=</span>    htb_leaf,
+    .qlen_notify <span style="color:#f92672">=</span>    htb_qlen_notify,
+    .get         <span style="color:#f92672">=</span>    htb_get,
+    .put         <span style="color:#f92672">=</span>    htb_put,
+    .change      <span style="color:#f92672">=</span>    htb_change_class,
+    .delete      <span style="color:#f92672">=</span>    htb_delete,
+    .walk        <span style="color:#f92672">=</span>    htb_walk,
+    .tcf_chain   <span style="color:#f92672">=</span>    htb_find_tcf,
+    .bind_tcf    <span style="color:#f92672">=</span>    htb_bind_filter,
+    .unbind_tcf  <span style="color:#f92672">=</span>    htb_unbind_filter,
+    .dump        <span style="color:#f92672">=</span>    htb_dump_class,
+    .dump_stats  <span style="color:#f92672">=</span>    htb_dump_class_stats,
 }
-</code></pre>
+</code></pre></div>
         </div>
 
         <div class="row middle-xs">

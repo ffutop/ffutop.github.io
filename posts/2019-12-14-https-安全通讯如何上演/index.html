@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.55.6" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -102,104 +102,67 @@
         <div class="post-content markdown-body">
           
           <p>最初的 HTTP 以明文传输方式运行在 Internet 上。随着越来越多安全敏感型应用的出现，HTTP over TCP 无法提供足够的安全性保障。SSL 及其继任者 TLS 在这样的背景下产生，提供面向信道的安全性。本文着力于展现 HTTP over TLS (即 HTTPS)的工作方式，以及与此密切相关的数字证书、对称/非对称加密等，但不涉及密码学相关实现及 SSL/TLS 的安全性证明。</p>
-
 <h2 id="概述">概述</h2>
-
 <p>传输层安全性协议(Transport Layer Security, TLS) 及其先行者安全套接层(Secure Sockets Layer, SSL) 都是一种安全协议，旨在保障通信安全：</p>
-
 <ul>
 <li>防窃听：避免第三方获知通信双方的通信内容</li>
 <li>防篡改：避免第三方修改通信双方交换的通信内容</li>
 <li>防伪造：避免第三方伪造身份参与通信</li>
 </ul>
-
 <p>从 TCP/IP 协议栈上看，SSL/TLS 工作在应用层，作为基础性的安全协议向上服务其它应用层协议(FTP, HTTP, SSH 等)。普遍的，应用层协议使用两个不同的常用端口来区分服务是否建立在 SSL/TLS 之上。比如 HTTP 协议的 80, 443、FTP 协议的 21, 990。</p>
-
-<p><img src="https://img.ffutop.com/EEDB4BEE-235D-4272-A504-4D19A7EB4C5D.png" alt="TCP/IP Stack" /></p>
-
-<h2 id="ssl-tls-运行过程">SSL/TLS 运行过程</h2>
-
-<p><img src="https://img.ffutop.com/8BF32274-570C-4B9D-92B5-8344990CB339.png" alt="" /></p>
-
+<p><img src="https://img.ffutop.com/EEDB4BEE-235D-4272-A504-4D19A7EB4C5D.png" alt="TCP/IP Stack"></p>
+<h2 id="ssltls-运行过程">SSL/TLS 运行过程</h2>
+<p><img src="https://img.ffutop.com/8BF32274-570C-4B9D-92B5-8344990CB339.png" alt=""></p>
 <p>SSL/TLS 的核心是为上层协议(本文特指HTTP协议)提供安全性保障，即对信息进行加密。</p>
-
 <p>加密又分两类：对称加密与非对称加密。在对称加密中，通信双方使用相同的密钥进行加解密操作，这种技术能够提供比较高的运算效率，但双方必须提前约定密钥；而非对称加密恰恰能够解决密钥约定问题，它通过通信一方 A 向另一方 B 公开提供公钥来允许 B 进行加密，由 A 使用保留的配对私钥完成解密，但这种方案带来的是运行效率的极大下降。</p>
-
 <p>建立在 SSL/TLS 上的应用信息使用对称加密来完成信息交互。在能够保证密钥泄露的提前下，通信的安全性是能够得到保证的。</p>
-
 <h2 id="密钥约定">密钥约定</h2>
-
 <p>通信双方如何对密钥进行约定？在开始传递 HTTP 数据前，SSL/TLS 需要进行握手，对通信涉及到的必需信息进行协商：</p>
-
 <ol>
 <li>对称加密使用的算法</li>
 <li>对称加密使用的密钥</li>
 <li>通信使用的压缩算法</li>
 </ol>
-
 <p>其中对称加密算法和压缩算法的协商比较容易实现，毕竟算法实现都是公开的。难点在于如何保证在不安全的网络环境下协商密钥。</p>
-
-<p><img src="https://img.ffutop.com/D7213240-534E-4D87-9FA8-2E5F59542BE3.png" alt="" /></p>
-
+<p><img src="https://img.ffutop.com/D7213240-534E-4D87-9FA8-2E5F59542BE3.png" alt=""></p>
 <p>握手过程采用非对称加密来确保通信双方对密钥的协商。涉及几个阶段：</p>
-
 <h3 id="client-hello-阶段">Client Hello 阶段</h3>
-
 <p>TCP 三次握手完成后，Client 向 Server 发起 Client Hello 消息。消息中携带随机数(Client Random)、会话ID、客户端支持的加密方案列表、客户端支持的压缩算法列表。</p>
-
 <ul>
-<li><p>随机数由四字节的时间戳、28 字节的随机数共同组成。</p></li>
-
-<li><p>加密方案列表的每项方案均是密钥交换算法、批量加密算法、摘要算法的组合。密钥交换使用非对称加密算法实施，提供的选项包括 RSA、Diffie-Hellman 算法（包括临时公钥的变种）。</p></li>
+<li>
+<p>随机数由四字节的时间戳、28 字节的随机数共同组成。</p>
+</li>
+<li>
+<p>加密方案列表的每项方案均是密钥交换算法、批量加密算法、摘要算法的组合。密钥交换使用非对称加密算法实施，提供的选项包括 RSA、Diffie-Hellman 算法（包括临时公钥的变种）。</p>
+</li>
 </ul>
-
-<p><img src="https://img.ffutop.com/CF2561B6-1819-4844-B9C4-F130511271B3.png" alt="" /></p>
-
+<p><img src="https://img.ffutop.com/CF2561B6-1819-4844-B9C4-F130511271B3.png" alt=""></p>
 <h3 id="server-hello-阶段">Server Hello 阶段</h3>
-
 <p>Server 收到 Client 端发起的 Hello 消息后，依据客户端提供的加密、压缩可选项，回复选用的加密方案、压缩算法以及随机数(Server Random)和会话ID</p>
-
 <ul>
 <li>会话ID: Server 端收到 Client 的会话ID 后，将优先从服务器的会话缓存中查找匹配项；如果发现匹配，服务器一般会恢复原有会话，此时回复的会话ID必须与 Client 发送的会话ID一致。如果没有匹配，或服务端不同意恢复会话，则响应一个不同的会话ID，或返回为空。</li>
 </ul>
-
-<p><img src="https://img.ffutop.com/900B4A32-A47A-4439-AA1C-055C8FD1C825.png" alt="" /></p>
-
+<p><img src="https://img.ffutop.com/900B4A32-A47A-4439-AA1C-055C8FD1C825.png" alt=""></p>
 <h3 id="server-certificate-阶段">Server Certificate 阶段</h3>
-
 <p>Server Certificate 消息始终紧跟着 Server Hello 消息一起响应。一般提供 X.509 证书链，Client 借此来校验 Server 是否合法。</p>
-
 <h3 id="server-key-exchange-阶段">Server Key Exchange 阶段</h3>
-
 <p>一般来说，如果选择迪菲赫尔曼算法作为密钥交换算法，Server 产生一个随机数 y 和另外两个基础数 p, g，将(p, g, PubKey_A = g^y mod p) 发送给 Client。</p>
-
 <h3 id="server-hello-done-阶段">Server Hello Done 阶段</h3>
-
 <p>该阶段是 Server Hello 结束的标志，不携带消息内容。</p>
-
 <h3 id="client-key-exchange-阶段">Client Key Exchange 阶段</h3>
-
 <p>Client 针对收到的 (p, g, PubKey_A)，同样生成一个随机数 x，将 (PubKey_B = g^x mod p) 发送给 Server。</p>
-
 <p>Client 和 Server 将根据各自拥有的信息 (p, g, x, PubKey_A) 和 (p, g, y, PubKey_B)，计算出相同结果的 premaster-secret</p>
-
 <p>$$
 premaster_secret=PubKey_A^x mod p
 premaster_secret=pubkey_B^y mod p
 $$</p>
-
 <p>再结合握手阶段各自交换的 Server Random 和 Client Random ，计算得到对称加密所需的密钥。</p>
-
 <p>$$
 master_secret = PRF(premaster_secret, &ldquo;master secret&rdquo;, client_random + server_random, 48)
 $$</p>
-
-<h2 id="x-509-证书">X.509 证书</h2>
-
+<h2 id="x509-证书">X.509 证书</h2>
 <p>依赖于 SSL/TLS ，HTTPS 通信双方借助非对称加密完成密钥协商，依赖密钥实现对通信信息的加密传输。但是，Client 如何判断 Server 的身份？Server 如果想要确认 Client 的身份？这就需要依赖于证书(Certificate)了。</p>
-
 <p>在开始前，罗列一下专有名词：</p>
-
 <ul>
 <li>PKI (Public Key Infrastructure): 公开密钥基础设施。很大程度上安全通信保障机制就是基于 PKI 建立的。</li>
 <li>end entity: PKI 证书的用户或用户系统</li>
@@ -208,15 +171,10 @@ $$</p>
 <li>CRL issuer: 生成并签名 CRL 的系统</li>
 <li>repository: 存储证书和 CRL 的单个系统或分布式系统，同时用于分发证书和 CRLs 到 end entities</li>
 </ul>
-
 <p>证书是整个 PKI 的核心，是网络上的身份证明文件。在通信过程中，通过相互确认身份证明文件，才能确认自己在和对的人通信。但是，仅仅只是身份证明文件，并不能拿来做为证明。毕竟，也存在伪造的可能。这就需要权威机构来发行身份证明文件。CA 就在网络上证书发行的权威机构，像我们熟知的 &ldquo;Let’s Encrypt&rdquo;, &ldquo;DigiCert&rdquo; 等都是 CA 机构。</p>
-
 <p>另一个问题，CA 机构如果在网络上证明它的身份？证书需要借助证书发行机构证明文件真伪，这形成了一条证书链，链的根证书，就是常称的 CA 证书。为避免无限递归的结果，CA 证书采用自证的方式，证书主体及签署者都是自己。而在真实世界中，由 WebTrust 机构负责对 CA 机构进行审计，而浏览器厂商只会默认认可经过 WebTrust 机构审计过的 CA 机构的证书。这也就避免了自签名证书在网络上泛滥的问题，毕竟，发行一个自签名的 CA 证书在技术上没有难度。</p>
-
 <h3 id="证书结构">证书结构</h3>
-
 <p>一张常见的证书包含下列数据：</p>
-
 <ul>
 <li>版本(Version)：识别用于该证书的 X.509 标准的版本，目前有v1,v2,v3</li>
 <li>序列号(Serial Number)：CA 机构对其发行的证书赋予的唯一识别编号。在未来需要撤销证书时，将序列号添加到 CRL 发布到网络上。</li>
@@ -227,10 +185,8 @@ $$</p>
 <li>主体公钥信息(Subject Public Key Info)：提供主体的公钥，用于 SSL/TLS 认证。与证书一起被签署，被证书链信任。</li>
 <li>证书签名(Signature)</li>
 </ul>
-
 <p>下列是一张 CA 自签名证书。</p>
-
-<pre><code class="language-plain">Certificate:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">Certificate:
     Data:
         Version: 1 (0x0)
         Serial Number: 14954122101612897031 (0xcf87b6d232746307)
@@ -279,10 +235,7 @@ $$</p>
          3d:b1:a9:bc:0d:4a:48:5a:f1:40:97:3e:fe:96:fa:18:71:39:
          2f:f2:6c:c4:03:82:b3:90:02:58:14:a8:4e:3a:f5:99:97:2f:
          5d:2e:2d:92
-</code></pre>
-
-<h2 id="参考">参考</h2>
-
+</code></pre></div><h2 id="参考">参考</h2>
 <p>[1]. <a href="https://tools.ietf.org/html/rfc2246">RFC 2246</a></p>
         </div>
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>SQL on Utop&#39;s Blog</title>
@@ -18,11 +18,8 @@
       
       <guid>https://www.ffutop.com/posts/2018-12-15-sql-%E6%B3%A8%E5%85%A5/</guid>
       <description>&lt;p&gt;说实话此前对 SQL 注入的理解仅仅只是皮毛。当然，目前也是，只是有了一定程度的理解。&lt;/p&gt;
-
 &lt;p&gt;最近好像工具用得有些过头了，需要停下来整理下工具的实现原理。&lt;/p&gt;
-
 &lt;p&gt;更好地理解了工具实现，才能更加心安理得地使用工具。毕竟等别人怼的时候，还能够比较安心地回道: &amp;ldquo;我用不用现成的工具只是取决于我想不想自己再写一套&amp;rdquo;&lt;/p&gt;
-
 &lt;p&gt;当然，毕竟成熟的工具有更多的优化，这就不是短时间内我想不想自己写的问题了，哈哈。&lt;/p&gt;</description>
     </item>
     

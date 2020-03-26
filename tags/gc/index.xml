@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>GC on Utop&#39;s Blog</title>
@@ -18,17 +18,13 @@
       
       <guid>https://www.ffutop.com/posts/2019-11-06-groovyclassloader-%E5%BC%95%E5%8F%91%E7%9A%84-fullgc/</guid>
       <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
-
 &lt;p&gt;近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，&lt;strong&gt;stop the world&lt;/strong&gt; :&amp;lt; 从 &lt;code&gt;gc.log&lt;/code&gt; 中，看到的原因是触及了 &lt;code&gt;Metaspace&lt;/code&gt; 的阈值，进而引发了 FGC。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-plain&#34;&gt;2019-11-05T14:31:38.880+0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880+0800: 504600.716: [CMS2019-11-05T14:31:39.364+0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs]
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-plain&#34; data-lang=&#34;plain&#34;&gt;2019-11-05T14:31:38.880+0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880+0800: 504600.716: [CMS2019-11-05T14:31:39.364+0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs]
  (concurrent mode failure): 266828K-&amp;gt;266865K(873856K), 1.3752377 secs] 267430K-&amp;gt;266865K(1267072K), [Metaspace: 204152K-&amp;gt;204152K(1267712K)], 1.3757441 secs] [Times: user=1.36 sys=0.00, real=1.38 secs]
 2019-11-05T14:31:40.256+0800: 504602.092: [Full GC (Last ditch collection) 2019-11-05T14:31:40.256+0800: 504602.092: [CMS: 266865K-&amp;gt;266841K(873856K), 0.8590901 secs] 266865K-&amp;gt;266841K(1267072K), [Metaspace: 204152K-&amp;gt;204152K(1267712K)], 0.8595047 secs] [Times: user=0.86 sys=0.00, real=0.86 secs]
 2019-11-05T14:31:41.117+0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117+0800: 504602.953: [CMS: 266841K-&amp;gt;266816K(873856K), 0.9109948 secs] 267218K-&amp;gt;266816K(1267072K), [Metaspace: 204153K-&amp;gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]
 2019-11-05T14:31:42.028+0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028+0800: 504603.865: [CMS: 266816K-&amp;gt;266769K(873856K), 1.0351283 secs] 266816K-&amp;gt;266769K(1267072K), [Metaspace: 204153K-&amp;gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;FGC 前后，&lt;code&gt;Metaspace&lt;/code&gt; 占用的内存没有得到任何释放。&lt;em&gt;[Metaspace: 204153K-&amp;gt;204153K(1267712K)]&lt;/em&gt; 。这也就是反复 FGC 的原因。&lt;/p&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;FGC 前后，&lt;code&gt;Metaspace&lt;/code&gt; 占用的内存没有得到任何释放。&lt;em&gt;[Metaspace: 204153K-&amp;gt;204153K(1267712K)]&lt;/em&gt; 。这也就是反复 FGC 的原因。&lt;/p&gt;</description>
     </item>
     
   </channel>

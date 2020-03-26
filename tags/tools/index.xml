@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>tools on Utop&#39;s Blog</title>
@@ -18,13 +18,9 @@
       
       <guid>https://www.ffutop.com/posts/2018-07-13-%E5%A6%82%E4%BD%95%E6%96%B9%E4%BE%BF%E5%9C%B0%E8%8E%B7%E5%8F%96-cglib-%E7%94%9F%E6%88%90%E7%B1%BB/</guid>
       <description>&lt;h2 id=&#34;配置参数&#34;&gt;配置参数&lt;/h2&gt;
-
 &lt;p&gt;&lt;strong&gt;命令行使用&lt;/strong&gt;&lt;/p&gt;
-
 &lt;p&gt;在 java 启动命令中添加参数配置项 &lt;code&gt;-Dcglib.debugLocation=&amp;lt;Custom Path&amp;gt;&lt;/code&gt;&lt;/p&gt;
-
 &lt;p&gt;&lt;strong&gt;编码实现&lt;/strong&gt;&lt;/p&gt;
-
 &lt;p&gt;在执行 CGlib 获取新生成类之前，调用 &lt;code&gt;System.setProperty(&amp;quot;cglib.debugLocation&amp;quot;, &amp;lt;Custom Path&amp;gt;)&lt;/code&gt;&lt;/p&gt;</description>
     </item>
     

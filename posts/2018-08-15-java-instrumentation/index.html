@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.55.6" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "Java Instrumentation",
       "headline" : "Java Instrumentation",
-      "description" : "\x3ch2 id=\x22start\x22\x3eStart\x3c\/h2\x3e\n\n\x3cp\x3e从现有的前置知识来说，我们能够认识到两个事实:\x3c\/p\x3e\n\n\x3col\x3e\n\x3cli\x3eJava Class 通过 ClassLoader 进行加载。\n通过\x3ccode\x3e全限定名\x3c\/code\x3e进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。\n换句话说: Class 一经加载，就不会尝试重复加载 (至少按绝大多数人的认知来说，确实是的)\x3c\/li\x3e\n\x3cli\x3e有没有可能让被加载的 Class 与物理存储上的 .class 内容不同。\n当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧\n(虽然可能不了解细节。在此，欢迎学习前置技能 \x3ca href=\x22https:\/\/dormouse-none.github.io\/2018-07-10-CGlib-Enhancer\/\x22\x3eCGlib Enhancer 主流程源码解析\x3c\/a\x3e 和 \x3ca href=\x22https:\/\/dormouse-none.github.io\/2018-07-20-Java-Proxy\/\x22\x3eJava Proxy 源码解析\x3c\/a\x3e。不过不影响本文后续内容)\x3c\/li\x3e\n\x3c\/ol\x3e\n\n\x3cp\x3e另一个方面，也许绝大多数人都听说过所谓的\x3ccode\x3e热部署\x3c\/code\x3e。但是究竟怎么才能做到 \x3ccode\x3e热部署\x3c\/code\x3e(话题开得有点大哈。Y_Y 本文不讲这个)\x3c\/p\x3e\n\n\x3cp\x3e操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。\x3c\/p\x3e\n\n\x3cp\x3e如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚\x26hellip;\x3c\/p\x3e\n\n\x3cp\x3eJava 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的\x3c\/p\x3e\n\n\x3ch2 id=\x22instrumentation\x22\x3eInstrumentation\x3c\/h2\x3e\n\n\x3cp\x3e\x3ccode\x3ejava.lang.instrument.Instrumentation\x3c\/code\x3e 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)\x3c\/p\x3e\n\n\x3cp\x3e相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。\x3c\/p\x3e\n\n\x3cp\x3e下列有两种方法可以达到目的\x3c\/p\x3e\n\n\x3col\x3e\n\x3cli\x3e当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。\x3c\/li\x3e\n\x3cli\x3e当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。\x3c\/li\x3e\n\x3c\/ol\x3e\n\n\x3cp\x3e话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了*检测*的目的)的使用\x3c\/p\x3e",
+      "description" : "\x3ch2 id=\x22start\x22\x3eStart\x3c\/h2\x3e\n\x3cp\x3e从现有的前置知识来说，我们能够认识到两个事实:\x3c\/p\x3e\n\x3col\x3e\n\x3cli\x3eJava Class 通过 ClassLoader 进行加载。\n通过\x3ccode\x3e全限定名\x3c\/code\x3e进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。\n换句话说: Class 一经加载，就不会尝试重复加载 (至少按绝大多数人的认知来说，确实是的)\x3c\/li\x3e\n\x3cli\x3e有没有可能让被加载的 Class 与物理存储上的 .class 内容不同。\n当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧\n(虽然可能不了解细节。在此，欢迎学习前置技能 \x3ca href=\x22https:\/\/dormouse-none.github.io\/2018-07-10-CGlib-Enhancer\/\x22\x3eCGlib Enhancer 主流程源码解析\x3c\/a\x3e 和 \x3ca href=\x22https:\/\/dormouse-none.github.io\/2018-07-20-Java-Proxy\/\x22\x3eJava Proxy 源码解析\x3c\/a\x3e。不过不影响本文后续内容)\x3c\/li\x3e\n\x3c\/ol\x3e\n\x3cp\x3e另一个方面，也许绝大多数人都听说过所谓的\x3ccode\x3e热部署\x3c\/code\x3e。但是究竟怎么才能做到 \x3ccode\x3e热部署\x3c\/code\x3e(话题开得有点大哈。Y_Y 本文不讲这个)\x3c\/p\x3e\n\x3cp\x3e操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。\x3c\/p\x3e\n\x3cp\x3e如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚\x26hellip;\x3c\/p\x3e\n\x3cp\x3eJava 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的\x3c\/p\x3e\n\x3ch2 id=\x22instrumentation\x22\x3eInstrumentation\x3c\/h2\x3e\n\x3cp\x3e\x3ccode\x3ejava.lang.instrument.Instrumentation\x3c\/code\x3e 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)\x3c\/p\x3e\n\x3cp\x3e相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。\x3c\/p\x3e\n\x3cp\x3e下列有两种方法可以达到目的\x3c\/p\x3e\n\x3col\x3e\n\x3cli\x3e当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。\x3c\/li\x3e\n\x3cli\x3e当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。\x3c\/li\x3e\n\x3c\/ol\x3e\n\x3cp\x3e话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了\x3cem\x3e检测\x3c\/em\x3e的目的)的使用\x3c\/p\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -41,9 +41,7 @@
   <meta property="og:title" content="Java Instrumentation - Utop&#39;s Blog" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="Start
-
 从现有的前置知识来说，我们能够认识到两个事实:
-
 
 Java Class 通过 ClassLoader 进行加载。
 通过全限定名进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。
@@ -52,33 +50,21 @@ Java Class 通过 ClassLoader 进行加载。
 当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧
 (虽然可能不了解细节。在此，欢迎学习前置技能 CGlib Enhancer 主流程源码解析 和 Java Proxy 源码解析。不过不影响本文后续内容)
 
-
 另一个方面，也许绝大多数人都听说过所谓的热部署。但是究竟怎么才能做到 热部署(话题开得有点大哈。Y_Y 本文不讲这个)
-
 操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。
-
 如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚&hellip;
-
 Java 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的
-
 Instrumentation
-
 java.lang.instrument.Instrumentation 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)
-
 相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。
-
 下列有两种方法可以达到目的
-
 
 当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。
 当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。
 
-
-话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了*检测*的目的)的使用" />
+话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了检测的目的)的使用" />
   <meta name="description" content="Start
-
 从现有的前置知识来说，我们能够认识到两个事实:
-
 
 Java Class 通过 ClassLoader 进行加载。
 通过全限定名进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。
@@ -87,29 +73,19 @@ Java Class 通过 ClassLoader 进行加载。
 当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧
 (虽然可能不了解细节。在此，欢迎学习前置技能 CGlib Enhancer 主流程源码解析 和 Java Proxy 源码解析。不过不影响本文后续内容)
 
-
 另一个方面，也许绝大多数人都听说过所谓的热部署。但是究竟怎么才能做到 热部署(话题开得有点大哈。Y_Y 本文不讲这个)
-
 操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。
-
 如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚&hellip;
-
 Java 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的
-
 Instrumentation
-
 java.lang.instrument.Instrumentation 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)
-
 相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。
-
 下列有两种方法可以达到目的
-
 
 当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。
 当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。
 
-
-话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了*检测*的目的)的使用" />
+话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了检测的目的)的使用" />
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
@@ -170,9 +146,7 @@ java.lang.instrument.Instrumentation 类为提供直接操作 Java 字节码的�
         <div class="post-content markdown-body">
           
           <h2 id="start">Start</h2>
-
 <p>从现有的前置知识来说，我们能够认识到两个事实:</p>
-
 <ol>
 <li>Java Class 通过 ClassLoader 进行加载。
 通过<code>全限定名</code>进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。
@@ -181,306 +155,238 @@ java.lang.instrument.Instrumentation 类为提供直接操作 Java 字节码的�
 当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧
 (虽然可能不了解细节。在此，欢迎学习前置技能 <a href="https://dormouse-none.github.io/2018-07-10-CGlib-Enhancer/">CGlib Enhancer 主流程源码解析</a> 和 <a href="https://dormouse-none.github.io/2018-07-20-Java-Proxy/">Java Proxy 源码解析</a>。不过不影响本文后续内容)</li>
 </ol>
-
 <p>另一个方面，也许绝大多数人都听说过所谓的<code>热部署</code>。但是究竟怎么才能做到 <code>热部署</code>(话题开得有点大哈。Y_Y 本文不讲这个)</p>
-
 <p>操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。</p>
-
 <p>如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚&hellip;</p>
-
 <p>Java 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的</p>
-
 <h2 id="instrumentation">Instrumentation</h2>
-
 <p><code>java.lang.instrument.Instrumentation</code> 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)</p>
-
 <p>相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。</p>
-
 <p>下列有两种方法可以达到目的</p>
-
 <ol>
 <li>当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。</li>
 <li>当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。</li>
 </ol>
-
-<p>话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了*检测*的目的)的使用</p>
-
+<p>话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了<em>检测</em>的目的)的使用</p>
 <h2 id="对各方法进行执行时间统计">对各方法进行执行时间统计</h2>
-
 <h3 id="随-jvm-一起启动">随 JVM 一起启动</h3>
-
 <p>基本实例: 将对特定包 <code>me.fangfeng.client</code> 下的每个方法执行计时</p>
-
 <p>首先了解一下 client 包的内容:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> me.fangfeng.client<span style="color:#f92672">;</span>
 
-<pre><code class="language-java">package me.fangfeng.client;
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Main.java
+</span><span style="color:#75715e"> * 执行两个方法，rand() &amp; sleep() 
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * @author fangfeng
+</span><span style="color:#75715e"> * @since 2018/8/7
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Main</span> <span style="color:#f92672">{</span>
 
-/**
- * Main.java
- * 执行两个方法，rand() &amp; sleep() 
- *
- * @author fangfeng
- * @since 2018/8/7
- */
-public class Main {
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sleep</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>5000<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
 
-    static void sleep() {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
 
-    public static void main(String[] args) {
+        Rand rand <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Rand<span style="color:#f92672">();</span>
 
-        Rand rand = new Rand();
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span>i<span style="color:#f92672">&lt;</span>10<span style="color:#f92672">;</span>i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&gt;&gt;&gt; start Rand.run() &lt;&lt;&lt;&#34;</span><span style="color:#f92672">);</span>
+            rand<span style="color:#f92672">.</span><span style="color:#a6e22e">run</span><span style="color:#f92672">();</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&gt;&gt;&gt; end Rand.run() &lt;&lt;&lt;&#34;</span><span style="color:#f92672">);</span>
 
-        for (int i=0;i&lt;10;i++) {
-            System.out.println(&quot;&gt;&gt;&gt; start Rand.run() &lt;&lt;&lt;&quot;);
-            rand.run();
-            System.out.println(&quot;&gt;&gt;&gt; end Rand.run() &lt;&lt;&lt;&quot;);
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">();</span>
 
-            System.out.println();
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&gt;&gt;&gt; start Main.sleep() &lt;&lt;&lt;&#34;</span><span style="color:#f92672">);</span>
+            Main<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">();</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&gt;&gt;&gt; end MAin.sleep() &lt;&lt;&lt;&#34;</span><span style="color:#f92672">);</span>
 
-            System.out.println(&quot;&gt;&gt;&gt; start Main.sleep() &lt;&lt;&lt;&quot;);
-            Main.sleep();
-            System.out.println(&quot;&gt;&gt;&gt; end MAin.sleep() &lt;&lt;&lt;&quot;);
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> me.fangfeng.client<span style="color:#f92672">;</span>
 
-            System.out.println();
-        }
-    }
-}
-</code></pre>
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Rand.java
+</span><span style="color:#75715e"> * @author fangfeng
+</span><span style="color:#75715e"> * @since 2018/8/7
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Rand</span> <span style="color:#f92672">{</span>
 
-<pre><code class="language-java">package me.fangfeng.client;
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">double</span> rand <span style="color:#f92672">=</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">random</span><span style="color:#f92672">();</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>rand <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">.</span><span style="color:#a6e22e">995</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;get random, values %f&#34;</span><span style="color:#f92672">,</span> rand<span style="color:#f92672">));</span>
+                <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>接着，来构造一个代理类，以及最重要的 <code>premain</code> 方法</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> me.fangfeng.javaagent<span style="color:#f92672">;</span>
 
-/**
- * Rand.java
- * @author fangfeng
- * @since 2018/8/7
- */
-public class Rand {
+<span style="color:#f92672">import</span> java.lang.instrument.Instrumentation<span style="color:#f92672">;</span>
 
-    public void run() {
-        while (true) {
-            double rand = Math.random();
-            if (rand &gt; 0.995) {
-                System.out.println(String.format(&quot;get random, values %f&quot;, rand));
-                return;
-            }
-        }
-    }
-}
-</code></pre>
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Agent - 代理
+</span><span style="color:#75715e"> * 基于 JVM TI (JVM Tool Interface) 实现的 Java ClassFile 的增强
+</span><span style="color:#75715e"> * @author fangfeng
+</span><span style="color:#75715e"> * @since 2018/8/7
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Agent</span> <span style="color:#f92672">{</span>
 
-<p>接着，来构造一个代理类，以及最重要的 <code>premain</code> 方法</p>
+    <span style="color:#75715e">// premain 将 JVM 初始化后，main(String... ) 执行前调用
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">premain</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">,</span> Instrumentation instrumentation<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// new 一个转换器实例
+</span><span style="color:#75715e"></span>        ClassTimer transformer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ClassTimer<span style="color:#f92672">();</span>
+        instrumentation<span style="color:#f92672">.</span><span style="color:#a6e22e">addTransformer</span><span style="color:#f92672">(</span>transformer<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
 
-<pre><code class="language-java">package me.fangfeng.javaagent;
+    <span style="color:#75715e">// 之后的 agentmain(...) 将在这里提供，暂时隐去，避免对对读者产生干扰
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> me.fangfeng.javaagent<span style="color:#f92672">;</span>
 
-import java.lang.instrument.Instrumentation;
+<span style="color:#f92672">import</span> org.objectweb.asm.ClassReader<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.objectweb.asm.ClassWriter<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.objectweb.asm.Opcodes<span style="color:#f92672">;</span>
 
-/**
- * Agent - 代理
- * 基于 JVM TI (JVM Tool Interface) 实现的 Java ClassFile 的增强
- * @author fangfeng
- * @since 2018/8/7
- */
-public class Agent {
+<span style="color:#f92672">import</span> java.lang.instrument.ClassFileTransformer<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.security.ProtectionDomain<span style="color:#f92672">;</span>
 
-    // premain 将 JVM 初始化后，main(String... ) 执行前调用
-    public static void premain(String args, Instrumentation instrumentation) {
-        // new 一个转换器实例
-        ClassTimer transformer = new ClassTimer();
-        instrumentation.addTransformer(transformer);
-    }
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * @author fangfeng
+</span><span style="color:#75715e"> * @since 2018/8/7
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ClassTimer</span> <span style="color:#66d9ef">implements</span> ClassFileTransformer <span style="color:#f92672">{</span>
 
-    // 之后的 agentmain(...) 将在这里提供，暂时隐去，避免对对读者产生干扰
-}
-</code></pre>
-
-<pre><code class="language-java">package me.fangfeng.javaagent;
-
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
-
-import java.lang.instrument.ClassFileTransformer;
-import java.security.ProtectionDomain;
-
-/**
- * @author fangfeng
- * @since 2018/8/7
- */
-public class ClassTimer implements ClassFileTransformer {
-
-    @Override
-    public byte[] transform(ClassLoader loader, String className, Class&lt;?&gt; classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-        // 这里涉及到了 ASM 的内容，主要目的是向每个方法块的开始及方法块的结束部分插入与计时器有关的代码
-        // 如果想了解 ASM 的内容，请参阅 https://dormouse-none.github.io/2018-06-25-ASM-Core/  提供了一些基础性的内容，更多的请自行学习
-        // 不了解具体内容将不影响对主体内容的理解
-        ClassReader cr = new ClassReader(classfileBuffer);
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        MyClassWriter mcw = new MyClassWriter(Opcodes.ASM6, cw);
-        cr.accept(mcw, ClassReader.EXPAND_FRAMES);
-        return cw.toByteArray();
-    }
-}
-</code></pre>
-
-<p>其它代码略，详见附件。</p>
-
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> <span style="color:#a6e22e">transform</span><span style="color:#f92672">(</span>ClassLoader loader<span style="color:#f92672">,</span> String className<span style="color:#f92672">,</span> Class<span style="color:#f92672">&lt;?&gt;</span> classBeingRedefined<span style="color:#f92672">,</span> ProtectionDomain protectionDomain<span style="color:#f92672">,</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> classfileBuffer<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// 这里涉及到了 ASM 的内容，主要目的是向每个方法块的开始及方法块的结束部分插入与计时器有关的代码
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 如果想了解 ASM 的内容，请参阅 https://dormouse-none.github.io/2018-06-25-ASM-Core/  提供了一些基础性的内容，更多的请自行学习
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 不了解具体内容将不影响对主体内容的理解
+</span><span style="color:#75715e"></span>        ClassReader cr <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ClassReader<span style="color:#f92672">(</span>classfileBuffer<span style="color:#f92672">);</span>
+        ClassWriter cw <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ClassWriter<span style="color:#f92672">(</span>ClassWriter<span style="color:#f92672">.</span><span style="color:#a6e22e">COMPUTE_FRAMES</span><span style="color:#f92672">);</span>
+        MyClassWriter mcw <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> MyClassWriter<span style="color:#f92672">(</span>Opcodes<span style="color:#f92672">.</span><span style="color:#a6e22e">ASM6</span><span style="color:#f92672">,</span> cw<span style="color:#f92672">);</span>
+        cr<span style="color:#f92672">.</span><span style="color:#a6e22e">accept</span><span style="color:#f92672">(</span>mcw<span style="color:#f92672">,</span> ClassReader<span style="color:#f92672">.</span><span style="color:#a6e22e">EXPAND_FRAMES</span><span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">return</span> cw<span style="color:#f92672">.</span><span style="color:#a6e22e">toByteArray</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>其它代码略，详见附件。</p>
 <p>Java 这种对操作字节码的支持有个坑爹的地方，就是不得不打包成 Jar 来使用。</p>
-
 <p>具体来看一下</p>
-
 <p><code>me.fangfeng.javaagent</code> 包中包括</p>
-
-<p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fublsbbdw0j309o07g74u.jpg" alt="" /></p>
-
+<p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fublsbbdw0j309o07g74u.jpg" alt=""></p>
 <p>将被打包成 <code>agent.jar</code> 来使用</p>
-
 <p>首先，来看一下需要打包在 <code>agent.jar</code> 的 <strong>MANIFEST.MF</strong> 的内容</p>
-
 <pre><code>Manifest-Version: 1.0
 Class-Path: /Users/fangfeng/.m2/repository/org/ow2/asm/asm/6.1.1/asm-6.1.1.jar
 Premain-Class: me.fangfeng.javaagent.Agent
 Can-Retransform-Classes: true
-</code></pre>
-
-<p>再来个 SHELL 脚本，用来给打包这个 Jar</p>
-
-<pre><code class="language-sh">#!/bin/bash
-
-# 编译 me.fangfeng.javaagent 包下的类
+</code></pre><p>再来个 SHELL 脚本，用来给打包这个 Jar</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e"># 编译 me.fangfeng.javaagent 包下的类</span>
 javac -cp .:/Users/fangfeng/.m2/repository/org/ow2/asm/asm/6.1.1/asm-6.1.1.jar me/fangfeng/javaagent/Agent.java me/fangfeng/javaagent/ClassTimer.java me/fangfeng/javaagent/MyClassWriter.java me/fangfeng/javaagent/MyMethodWriter.java me/fangfeng/javaagent/StaticTimer.java
 
-# 打包 me.fangfeng.javaagent 的 .class -&gt; agent.jar
+<span style="color:#75715e"># 打包 me.fangfeng.javaagent 的 .class -&gt; agent.jar</span>
 jar cvfm agent.jar MANIFEST-agent.MF me/fangfeng/javaagent/Agent.class me/fangfeng/javaagent/ClassTimer.class me/fangfeng/javaagent/MyClassWriter.class me/fangfeng/javaagent/MyMethodWriter.class me/fangfeng/javaagent/StaticTimer.class
 
-# 编译 me.fangfeng.client 包下的类
+<span style="color:#75715e"># 编译 me.fangfeng.client 包下的类</span>
 javac me/fangfeng/client/Main.java me/fangfeng/client/Rand.java
 
-# 以 me.fangfeng.client.Main 作为主类启动
+<span style="color:#75715e"># 以 me.fangfeng.client.Main 作为主类启动</span>
 java -javaagent:agent.jar me.fangfeng.client.Main
-</code></pre>
-
-<p>执行后，可以看到类似如下内容:</p>
-
-<p><img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fubmp354ejj30tq0rmtdp.jpg" alt="" /></p>
-
+</code></pre></div><p>执行后，可以看到类似如下内容:</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fubmp354ejj30tq0rmtdp.jpg" alt=""></p>
 <p>而直接用 <code>java me.fangfeng.client.Main</code> 的执行结果是:</p>
-
-<p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fubmqmj4uhj30j00f0dho.jpg" alt="" /></p>
-
+<p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fubmqmj4uhj30j00f0dho.jpg" alt=""></p>
 <p>从理论上来讲，<code>-javaagent:agent.jar</code> 配合 <code>agent.jar</code> 中的 MANIFEST.MF 文件，
 使得 JVM 在初始化之后触发了被声明为 <code>Pre-Main</code> 的 me.fangfeng.javaagent.Agent 类的 premain(&hellip;) 方法。</p>
-
 <p>并为 ClassLoader 在加载类的流程上增加了一层<strong>拦截器</strong> (这里是 ClassTimer.java 类，它实现了 <code>ClassFileTransformer</code> 接口</p>
-
 <p>另外，<code>Can-Retransform-Classes: true</code> 的配置使得 ClassTimer 被允许对字节码进行重新转换。(而操作字节码是通过 ASM 来实现的)</p>
-
 <h3 id="在运行中进行增强">在运行中进行增强</h3>
-
 <p>随着程序启动时直接使用了 <code>-javaagent</code> 选项。</p>
-
 <p>那么是否存在在程序运行中进行额外代理操作的支持呢？当然是可以的。这里要借助 Java 提供的另一个类 com.sun.tools.attach.VirtualMachine 。</p>
-
 <p>启动一个新的进程来连接到 正在运行中的进程，并令其加载 java agent。</p>
-
 <p>基本的类与上一节的描述相同，主要是包 <code>me.fangfeng.javaagent.*</code> 和 <code>me.fangfeng.client.*</code></p>
-
 <p>新增一个类 <code>me.fangfeng.javaagent.Main</code> 用来启动另一个进程，并要求运行中的 java 进程加载 agent.jar 来进行增强。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> me.fangfeng.javaagent<span style="color:#f92672">;</span>
 
-<pre><code class="language-java">package me.fangfeng.javaagent;
+<span style="color:#f92672">import</span> com.sun.tools.attach.AgentInitializationException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.sun.tools.attach.AgentLoadException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.sun.tools.attach.AttachNotSupportedException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.sun.tools.attach.VirtualMachine<span style="color:#f92672">;</span>
 
-import com.sun.tools.attach.AgentInitializationException;
-import com.sun.tools.attach.AgentLoadException;
-import com.sun.tools.attach.AttachNotSupportedException;
-import com.sun.tools.attach.VirtualMachine;
+<span style="color:#f92672">import</span> java.io.IOException<span style="color:#f92672">;</span>
 
-import java.io.IOException;
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * @author fangfeng
+</span><span style="color:#75715e"> * @since 2018/8/7
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Main</span> <span style="color:#f92672">{</span>
 
-/**
- * @author fangfeng
- * @since 2018/8/7
- */
-public class Main {
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> AttachNotSupportedException<span style="color:#f92672">,</span> AgentLoadException<span style="color:#f92672">,</span> AgentInitializationException <span style="color:#f92672">{</span>
+        VirtualMachine vm <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// 通过 VirtualMachine 连接到 运行中的进程 (可以通过 jps 找到进程号)
+</span><span style="color:#75715e"></span>            vm <span style="color:#f92672">=</span> VirtualMachine<span style="color:#f92672">.</span><span style="color:#a6e22e">attach</span><span style="color:#f92672">(&lt;</span>PID<span style="color:#f92672">&gt;);</span>
+            vm<span style="color:#f92672">.</span><span style="color:#a6e22e">loadAgent</span><span style="color:#f92672">(&lt;</span>agent<span style="color:#f92672">.</span><span style="color:#a6e22e">jar</span> 的路径<span style="color:#f92672">&gt;);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>vm <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                vm<span style="color:#f92672">.</span><span style="color:#a6e22e">detach</span><span style="color:#f92672">();</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Agent</span> <span style="color:#f92672">{</span>
 
-    public static void main(String[] args) throws IOException, AttachNotSupportedException, AgentLoadException, AgentInitializationException {
-        VirtualMachine vm = null;
-        try {
-            // 通过 VirtualMachine 连接到 运行中的进程 (可以通过 jps 找到进程号)
-            vm = VirtualMachine.attach(&lt;PID&gt;);
-            vm.loadAgent(&lt;agent.jar 的路径&gt;);
-        } finally {
-            if (vm != null) {
-                vm.detach();
-            }
-        }
-    }
-}
-</code></pre>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">premain</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">,</span> Instrumentation instrumentation<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        ClassTimer transformer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ClassTimer<span style="color:#f92672">();</span>
+        instrumentation<span style="color:#f92672">.</span><span style="color:#a6e22e">addTransformer</span><span style="color:#f92672">(</span>transformer<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
 
-<pre><code class="language-java">public class Agent {
-
-    public static void premain(String args, Instrumentation instrumentation) {
-        ClassTimer transformer = new ClassTimer();
-        instrumentation.addTransformer(transformer);
-    }
-
-    // 现在在 Agent.java 上补上 agentmain(...) 的具体实现
-    public static void agentmain(String args, Instrumentation instrumentation) throws UnmodifiableClassException {
-        System.out.println(&quot;SUCCESS AGENTMAIN&quot;);
-        ClassTimer transformer = new ClassTimer();
-        // add Transformer
-        instrumentation.addTransformer(transformer, true);
-        // 对 Rand.class 进行重新转换
-        instrumentation.retransformClasses(Rand.class);
-    }
-}
-</code></pre>
-
-<p>其它内容基本相同</p>
-
+    <span style="color:#75715e">// 现在在 Agent.java 上补上 agentmain(...) 的具体实现
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">agentmain</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">,</span> Instrumentation instrumentation<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> UnmodifiableClassException <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;SUCCESS AGENTMAIN&#34;</span><span style="color:#f92672">);</span>
+        ClassTimer transformer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ClassTimer<span style="color:#f92672">();</span>
+        <span style="color:#75715e">// add Transformer
+</span><span style="color:#75715e"></span>        instrumentation<span style="color:#f92672">.</span><span style="color:#a6e22e">addTransformer</span><span style="color:#f92672">(</span>transformer<span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+        <span style="color:#75715e">// 对 Rand.class 进行重新转换
+</span><span style="color:#75715e"></span>        instrumentation<span style="color:#f92672">.</span><span style="color:#a6e22e">retransformClasses</span><span style="color:#f92672">(</span>Rand<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>其它内容基本相同</p>
 <p>首先需要先打包 agent.jar 。当然，如果是顺着本文的顺序进行本机实验，则 agent.jar 已经存在</p>
-
 <p>先启动进程 <code>java me.fangfeng.client.Main</code></p>
-
 <p>通过 <code>jps</code> 获取 Main 进程的 <strong>PID</strong></p>
-
 <p>在 <code>java me.fangfeng.javaagent.Main</code> 中替换上进程号，并执行</p>
-
-<p><img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fuboclcelsj30tu152dlw.jpg" alt="" /></p>
-
+<p><img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fuboclcelsj30tu152dlw.jpg" alt=""></p>
 <p>从执行结果可以看到，原进程首先正常执行代码，等到被 load Agent 之后，字节码已经有了新的变化，从而导致输出结果动态的产生了变化。</p>
-
 <p><em>当然，需要注意的是，执行中的进程被要求 load Agent 之后，运行中的 Class 将被改写，并始终如此，知道进程终止。再下一次重新启动</em></p>
-
 <h2 id="btrace">BTrace</h2>
-
 <p>以上描述的内容也可以理解为是 BTrace 实现的基础。毕竟，JVMTI (JVM Tool Interface) 原本的目的就是赋予使用者一个在运行中
 查询系统各项数据的权利</p>
-
 <p>当然，实现上，上述代码直接将各种增强(计时)硬编码到该进程中，同时统一使用了该进程的输入输出。</p>
-
 <p>但是，BTrace 通过 Socket 将这些分离，检测代码通过 Socket 发回新的进程来维持输入输出。</p>
-
 <p>在此，不再细说。</p>
-
 <h2 id="附录">附录</h2>
-
 <p>[1]. 示例代码: <a href="https://github.com/DorMOUSE-None/Repo/raw/master/instru.zip">instru.zip</a>
 [2]. <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/instrument/Instrumentation.html">java.lang.instrument.Instrumentation</a>
 [3]. <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/instrument/package-summary.html">Package java.lang.instrument</a></p>
-
-<pre><code class="language-plain">  __                    __                  
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
-| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+| |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
 |_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
                  |___/                |___/ 
-</code></pre>
+</code></pre></div>
         </div>
 
         <div class="row middle-xs">

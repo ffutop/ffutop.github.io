@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.55.6" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "JNI 引发的堆外内存泄露",
       "headline" : "JNI 引发的堆外内存泄露",
-      "description" : "\x3cp\x3e本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。\x3c\/p\x3e\n\n\x3cp\x3e为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。\x3c\/p\x3e\n\n\x3cp\x3e问题代码类似于下列代码：\x3c\/p\x3e\n\n\x3cpre\x3e\x3ccode class=\x22language-c\x22\x3e#include \x26quot;Main.h\x26quot;\n\nJNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)\n{\n    const char *str = (*env)-\x26gt;GetStringUTFChars(env, jstr, 0);\n    int len = (*env)-\x26gt;GetStringUTFLength(env, jstr);\n\n    \/\/ ... some code omitted \n\n    return ;\n}\n\x3c\/code\x3e\x3c\/pre\x3e",
+      "description" : "\x3cp\x3e本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。\x3c\/p\x3e\n\x3cp\x3e为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。\x3c\/p\x3e\n\x3cp\x3e问题代码类似于下列代码：\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-c\x22 data-lang=\x22c\x22\x3e\x3cspan style=\x22color:#75715e\x22\x3e#include\x3c\/span\x3e \x3cspan style=\x22color:#75715e\x22\x3e\x26#34;Main.h\x26#34;\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e\nJNIEXPORT \x3cspan style=\x22color:#66d9ef\x22\x3evoid\x3c\/span\x3e JNICALL \x3cspan style=\x22color:#a6e22e\x22\x3eJava_Main_sayHi\x3c\/span\x3e (JNIEnv \x3cspan style=\x22color:#f92672\x22\x3e*\x3c\/span\x3eenv, jobject jobj, jstring jstr)\n{\n    \x3cspan style=\x22color:#66d9ef\x22\x3econst\x3c\/span\x3e \x3cspan style=\x22color:#66d9ef\x22\x3echar\x3c\/span\x3e \x3cspan style=\x22color:#f92672\x22\x3e*\x3c\/span\x3estr \x3cspan style=\x22color:#f92672\x22\x3e=\x3c\/span\x3e (\x3cspan style=\x22color:#f92672\x22\x3e*\x3c\/span\x3eenv)\x3cspan style=\x22color:#f92672\x22\x3e-\x26gt;\x3c\/span\x3eGetStringUTFChars(env, jstr, \x3cspan style=\x22color:#ae81ff\x22\x3e0\x3c\/span\x3e);\n    \x3cspan style=\x22color:#66d9ef\x22\x3eint\x3c\/span\x3e len \x3cspan style=\x22color:#f92672\x22\x3e=\x3c\/span\x3e (\x3cspan style=\x22color:#f92672\x22\x3e*\x3c\/span\x3eenv)\x3cspan style=\x22color:#f92672\x22\x3e-\x26gt;\x3c\/span\x3eGetStringUTFLength(env, jstr);\n\n    \x3cspan style=\x22color:#75715e\x22\x3e\/\/ ... some code omitted \n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e\n    \x3cspan style=\x22color:#66d9ef\x22\x3ereturn\x3c\/span\x3e ;\n}\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -41,12 +41,9 @@
   <meta property="og:title" content="JNI 引发的堆外内存泄露 - Utop&#39;s Blog" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。
-
 为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。
-
 问题代码类似于下列代码：
-
-#include &quot;Main.h&quot;
+#include &#34;Main.h&#34;
 
 JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
 {
@@ -59,12 +56,9 @@ JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
 }
 " />
   <meta name="description" content="本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。
-
 为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。
-
 问题代码类似于下列代码：
-
-#include &quot;Main.h&quot;
+#include &#34;Main.h&#34;
 
 JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
 {
@@ -136,216 +130,182 @@ JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
         <div class="post-content markdown-body">
           
           <p>本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。</p>
-
 <p>为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。</p>
-
 <p>问题代码类似于下列代码：</p>
-
-<pre><code class="language-c">#include &quot;Main.h&quot;
-
-JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;Main.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+JNIEXPORT <span style="color:#66d9ef">void</span> JNICALL <span style="color:#a6e22e">Java_Main_sayHi</span> (JNIEnv <span style="color:#f92672">*</span>env, jobject jobj, jstring jstr)
 {
-    const char *str = (*env)-&gt;GetStringUTFChars(env, jstr, 0);
-    int len = (*env)-&gt;GetStringUTFLength(env, jstr);
+    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>str <span style="color:#f92672">=</span> (<span style="color:#f92672">*</span>env)<span style="color:#f92672">-&gt;</span>GetStringUTFChars(env, jstr, <span style="color:#ae81ff">0</span>);
+    <span style="color:#66d9ef">int</span> len <span style="color:#f92672">=</span> (<span style="color:#f92672">*</span>env)<span style="color:#f92672">-&gt;</span>GetStringUTFLength(env, jstr);
 
-    // ... some code omitted 
-
-    return ;
+    <span style="color:#75715e">// ... some code omitted 
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">return</span> ;
 }
-</code></pre>
-
-<h2 id="问题表现">问题表现</h2>
-
+</code></pre></div><h2 id="问题表现">问题表现</h2>
 <p>最初的表现很明显，2核4G的机器，2GB的 Java 堆，最终物理内存不够用，导致 Java 进程被强制杀掉。几乎毫无疑问，就是 Java 堆外内存引发的问题。不过遗憾的是，物理内存不够用，没有留下足够多的堆栈详情。另外找了一台快要把内存打满的机器，打印信息。</p>
-
-<pre><code class="language-sh">$ pmap -x 27765 | sort -n -k3 | tail -n 50
-00007f460c9ac000   55632   23896   23896 rw---   [ anon ]
-00007f45d0000000   38980   38980   38980 rw---   [ anon ]
-00007f45dc000000   45980   39512   39512 rw---   [ anon ]
-00007f45e0000000   46120   39652   39652 rw---   [ anon ]
-00007f45d4000000   42160   41744   41744 rw---   [ anon ]
-00007f45c8000000   45992   45992   45992 rw---   [ anon ]
-00007f4610000000   48896   48872   48872 rwx--   [ anon ]
-00007f45f8000000   51084   51084   51084 rw---   [ anon ]
-00007f4600000000   52328   52328   52328 rw---   [ anon ]
-00007f4608000000   58332   55452   55452 rw---   [ anon ]
-00000000014f8000   57036   56908   56908 rw---   [ anon ]
-00007f45d8000000   63760   57292   57292 rw---   [ anon ]
-00007f45e8000000   58488   58488   58488 rw---   [ anon ]
-00007f4604000000   59912   59912   59912 rw---   [ anon ]
-00007f45fc000000   60080   60080   60080 rw---   [ anon ]
-00007f45e4000000   64460   64452   64452 rw---   [ anon ]
-00007f45f4000000   65072   65072   65072 rw---   [ anon ]
-00007f4620000000   65536   65536   65536 rw---   [ anon ]
-0000000080000000 2105600 2008240 2008240 rw---   [ anon ]   # 2GB 的 Java 堆
-total kB         4885820 3040036 3030476
-</code></pre>
-
-<p>比较多的内存块都在 64M 左右大小。确实也很明显，就是申请的内存没有得到释放。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ pmap -x <span style="color:#ae81ff">27765</span> | sort -n -k3 | tail -n <span style="color:#ae81ff">50</span>
+00007f460c9ac000   <span style="color:#ae81ff">55632</span>   <span style="color:#ae81ff">23896</span>   <span style="color:#ae81ff">23896</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f45d0000000   <span style="color:#ae81ff">38980</span>   <span style="color:#ae81ff">38980</span>   <span style="color:#ae81ff">38980</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f45dc000000   <span style="color:#ae81ff">45980</span>   <span style="color:#ae81ff">39512</span>   <span style="color:#ae81ff">39512</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f45e0000000   <span style="color:#ae81ff">46120</span>   <span style="color:#ae81ff">39652</span>   <span style="color:#ae81ff">39652</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f45d4000000   <span style="color:#ae81ff">42160</span>   <span style="color:#ae81ff">41744</span>   <span style="color:#ae81ff">41744</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f45c8000000   <span style="color:#ae81ff">45992</span>   <span style="color:#ae81ff">45992</span>   <span style="color:#ae81ff">45992</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f4610000000   <span style="color:#ae81ff">48896</span>   <span style="color:#ae81ff">48872</span>   <span style="color:#ae81ff">48872</span> rwx--   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f45f8000000   <span style="color:#ae81ff">51084</span>   <span style="color:#ae81ff">51084</span>   <span style="color:#ae81ff">51084</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f4600000000   <span style="color:#ae81ff">52328</span>   <span style="color:#ae81ff">52328</span>   <span style="color:#ae81ff">52328</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f4608000000   <span style="color:#ae81ff">58332</span>   <span style="color:#ae81ff">55452</span>   <span style="color:#ae81ff">55452</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00000000014f8000   <span style="color:#ae81ff">57036</span>   <span style="color:#ae81ff">56908</span>   <span style="color:#ae81ff">56908</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f45d8000000   <span style="color:#ae81ff">63760</span>   <span style="color:#ae81ff">57292</span>   <span style="color:#ae81ff">57292</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f45e8000000   <span style="color:#ae81ff">58488</span>   <span style="color:#ae81ff">58488</span>   <span style="color:#ae81ff">58488</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f4604000000   <span style="color:#ae81ff">59912</span>   <span style="color:#ae81ff">59912</span>   <span style="color:#ae81ff">59912</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f45fc000000   <span style="color:#ae81ff">60080</span>   <span style="color:#ae81ff">60080</span>   <span style="color:#ae81ff">60080</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f45e4000000   <span style="color:#ae81ff">64460</span>   <span style="color:#ae81ff">64452</span>   <span style="color:#ae81ff">64452</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f45f4000000   <span style="color:#ae81ff">65072</span>   <span style="color:#ae81ff">65072</span>   <span style="color:#ae81ff">65072</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f4620000000   <span style="color:#ae81ff">65536</span>   <span style="color:#ae81ff">65536</span>   <span style="color:#ae81ff">65536</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+<span style="color:#ae81ff">0000000080000000</span> <span style="color:#ae81ff">2105600</span> <span style="color:#ae81ff">2008240</span> <span style="color:#ae81ff">2008240</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>   <span style="color:#75715e"># 2GB 的 Java 堆</span>
+total kB         <span style="color:#ae81ff">4885820</span> <span style="color:#ae81ff">3040036</span> <span style="color:#ae81ff">3030476</span>
+</code></pre></div><p>比较多的内存块都在 64M 左右大小。确实也很明显，就是申请的内存没有得到释放。</p>
 <h2 id="问题排查">问题排查</h2>
-
 <p>C 不似 Java，没有 Garbage Collection 。所有申请的内存都必须主动进行释放。唯一的问题就是 <code>GetStringUTFChars</code> 得到的内存是否会被 JVM 统一管理。</p>
-
 <p>结果当然是不会，虽然是 Java 与 C 衔接的胶水代码，但这部分得到的内存需要自行管理。不过，JNI 也提供了函数来进行释放。</p>
-
-<pre><code class="language-c">/* from src/share/vm/prims/jni.cpp */
-JNI_ENTRY(const char*, jni_GetStringUTFChars(JNIEnv *env, jstring string, jboolean *isCopy))
-  JNIWrapper(&quot;GetStringUTFChars&quot;);
-  char* result = NULL;
-  oop java_string = JNIHandles::resolve_non_null(string);
-  if (java_lang_String::value(java_string) != NULL) {
-    size_t length = java_lang_String::utf8_length(java_string);
-    /* 申请堆内存 */
-    result = AllocateHeap(length + 1, mtInternal, 0, AllocFailStrategy::RETURN_NULL);
-    if (result != NULL) {
-      java_lang_String::as_utf8_string(java_string, result, (int) length + 1);
-      if (isCopy != NULL) {
-        *isCopy = JNI_TRUE;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* from src/share/vm/prims/jni.cpp */</span>
+JNI_ENTRY(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>, jni_GetStringUTFChars(JNIEnv <span style="color:#f92672">*</span>env, jstring string, jboolean <span style="color:#f92672">*</span>isCopy))
+  JNIWrapper(<span style="color:#e6db74">&#34;GetStringUTFChars&#34;</span>);
+  <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> result <span style="color:#f92672">=</span> NULL;
+  oop java_string <span style="color:#f92672">=</span> JNIHandles<span style="color:#f92672">::</span>resolve_non_null(string);
+  <span style="color:#66d9ef">if</span> (java_lang_String<span style="color:#f92672">::</span>value(java_string) <span style="color:#f92672">!=</span> NULL) {
+    size_t length <span style="color:#f92672">=</span> java_lang_String<span style="color:#f92672">::</span>utf8_length(java_string);
+    <span style="color:#75715e">/* 申请堆内存 */</span>
+    result <span style="color:#f92672">=</span> AllocateHeap(length <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, mtInternal, <span style="color:#ae81ff">0</span>, AllocFailStrategy<span style="color:#f92672">::</span>RETURN_NULL);
+    <span style="color:#66d9ef">if</span> (result <span style="color:#f92672">!=</span> NULL) {
+      java_lang_String<span style="color:#f92672">::</span>as_utf8_string(java_string, result, (<span style="color:#66d9ef">int</span>) length <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
+      <span style="color:#66d9ef">if</span> (isCopy <span style="color:#f92672">!=</span> NULL) {
+        <span style="color:#f92672">*</span>isCopy <span style="color:#f92672">=</span> JNI_TRUE;
       }
     }
   }
-  return result;
+  <span style="color:#66d9ef">return</span> result;
 JNI_END
 
-/* from src/share/vm/memory/allocation.inline.hpp */
-inline char* AllocateHeap(size_t size, MEMFLAGS flags,
-    const NativeCallStack&amp; stack,
-    AllocFailType alloc_failmode = AllocFailStrategy::EXIT_OOM) {
-    // 申请内存
-    char* p = (char*) os::malloc(size, flags, stack);
-#ifdef ASSERT
-    if (PrintMallocFree) trace_heap_malloc(size, &quot;AllocateHeap&quot;, p);
-#endif
-    if (p == NULL &amp;&amp; alloc_failmode == AllocFailStrategy::EXIT_OOM) {
-        vm_exit_out_of_memory(size, OOM_MALLOC_ERROR, &quot;AllocateHeap&quot;);
+<span style="color:#75715e">/* from src/share/vm/memory/allocation.inline.hpp */</span>
+<span style="color:#66d9ef">inline</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> AllocateHeap(size_t size, MEMFLAGS flags,
+    <span style="color:#66d9ef">const</span> NativeCallStack<span style="color:#f92672">&amp;</span> stack,
+    AllocFailType alloc_failmode <span style="color:#f92672">=</span> AllocFailStrategy<span style="color:#f92672">::</span>EXIT_OOM) {
+    <span style="color:#75715e">// 申请内存
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> p <span style="color:#f92672">=</span> (<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>) os<span style="color:#f92672">::</span>malloc(size, flags, stack);
+<span style="color:#75715e">#ifdef ASSERT
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (PrintMallocFree) trace_heap_malloc(size, <span style="color:#e6db74">&#34;AllocateHeap&#34;</span>, p);
+<span style="color:#75715e">#endif
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (p <span style="color:#f92672">==</span> NULL <span style="color:#f92672">&amp;&amp;</span> alloc_failmode <span style="color:#f92672">==</span> AllocFailStrategy<span style="color:#f92672">::</span>EXIT_OOM) {
+        vm_exit_out_of_memory(size, OOM_MALLOC_ERROR, <span style="color:#e6db74">&#34;AllocateHeap&#34;</span>);
     }
-    return p;
+    <span style="color:#66d9ef">return</span> p;
 }
 
-/* from src/share/vm/prims/jni.cpp */
-JNI_LEAF(void, jni_ReleaseStringUTFChars(JNIEnv *env, jstring str, const char *chars))
-  JNIWrapper(&quot;ReleaseStringUTFChars&quot;);
-  if (chars != NULL) {
-    // 释放内存
-    FreeHeap((char*) chars);
+<span style="color:#75715e">/* from src/share/vm/prims/jni.cpp */</span>
+JNI_LEAF(<span style="color:#66d9ef">void</span>, jni_ReleaseStringUTFChars(JNIEnv <span style="color:#f92672">*</span>env, jstring str, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>chars))
+  JNIWrapper(<span style="color:#e6db74">&#34;ReleaseStringUTFChars&#34;</span>);
+  <span style="color:#66d9ef">if</span> (chars <span style="color:#f92672">!=</span> NULL) {
+    <span style="color:#75715e">// 释放内存
+</span><span style="color:#75715e"></span>    FreeHeap((<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>) chars);
   }
 );
 JNI_END
 
-/* from src/share/vm/memory/allocation.inline.hpp */
-inline void FreeHeap(void* p, MEMFLAGS memflags = mtInternal) {
-#ifdef ASSERT
-    if (PrintMallocFree) trace_heap_free(p);
-#endif
-    os::free(p, memflags);
+<span style="color:#75715e">/* from src/share/vm/memory/allocation.inline.hpp */</span>
+<span style="color:#66d9ef">inline</span> <span style="color:#66d9ef">void</span> FreeHeap(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> p, MEMFLAGS memflags <span style="color:#f92672">=</span> mtInternal) {
+<span style="color:#75715e">#ifdef ASSERT
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (PrintMallocFree) trace_heap_free(p);
+<span style="color:#75715e">#endif
+</span><span style="color:#75715e"></span>    os<span style="color:#f92672">::</span>free(p, memflags);
 }
-</code></pre>
-
-<p>从名称就可以看出来，<code>GetStringUTFChars</code> 和 <code>ReleaseStringUTFChars</code> 是相对的方法。而且默认走的都是 Glibc 的 <code>malloc</code> 和 <code>free</code> 。</p>
-
+</code></pre></div><p>从名称就可以看出来，<code>GetStringUTFChars</code> 和 <code>ReleaseStringUTFChars</code> 是相对的方法。而且默认走的都是 Glibc 的 <code>malloc</code> 和 <code>free</code> 。</p>
 <h2 id="问题验证">问题验证</h2>
-
 <p>为了验证问题的原因和最终的现象，整了一段代码来测试效果。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> java.io.IOException<span style="color:#f92672">;</span>
 
-<pre><code class="language-java">import java.io.IOException;
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Main</span> <span style="color:#f92672">{</span>
 
-public class Main {
+    <span style="color:#66d9ef">static</span> <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">load</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/root/jni/Main.so&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
 
-    static {
-        System.load(&quot;/root/jni/Main.so&quot;);
-    }
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> String value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHH&#34;</span><span style="color:#f92672">;</span>
 
-    private static final String value = &quot;AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHH&quot;;
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">native</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sayHi</span><span style="color:#f92672">(</span>String value<span style="color:#f92672">);</span>
 
-    public native void sayHi(String value);
-
-    public static void main(String[] args) throws IOException {
-        Main main = new Main();
-        while (true)
-        {
-            for (int i=0;i&lt;100000;i++) {
-                char c1 = (char) ('A' + Math.random() * 26);
-                char c2 = (char) ('a' + Math.random() * 26);
-                main.sayHi(value + c1 + c2);
-            }
-            System.gc();
-            int val = System.in.read();
-            if (val == '1')
-                break;
-        }
-    }
-}
-</code></pre>
-
-<pre><code class="language-c">#include &quot;Main.h&quot;
-
-JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+        Main main <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Main<span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+        <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span>i<span style="color:#f92672">&lt;</span>100000<span style="color:#f92672">;</span>i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">char</span> c1 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">char</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span><span style="color:#e6db74">&#39;A&#39;</span> <span style="color:#f92672">+</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">random</span><span style="color:#f92672">()</span> <span style="color:#f92672">*</span> 26<span style="color:#f92672">);</span>
+                <span style="color:#66d9ef">char</span> c2 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">char</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span><span style="color:#e6db74">&#39;a&#39;</span> <span style="color:#f92672">+</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">random</span><span style="color:#f92672">()</span> <span style="color:#f92672">*</span> 26<span style="color:#f92672">);</span>
+                main<span style="color:#f92672">.</span><span style="color:#a6e22e">sayHi</span><span style="color:#f92672">(</span>value <span style="color:#f92672">+</span> c1 <span style="color:#f92672">+</span> c2<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">gc</span><span style="color:#f92672">();</span>
+            <span style="color:#66d9ef">int</span> val <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">in</span><span style="color:#f92672">.</span><span style="color:#a6e22e">read</span><span style="color:#f92672">();</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>val <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;1&#39;</span><span style="color:#f92672">)</span>
+                <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;Main.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+JNIEXPORT <span style="color:#66d9ef">void</span> JNICALL <span style="color:#a6e22e">Java_Main_sayHi</span> (JNIEnv <span style="color:#f92672">*</span>env, jobject jobj, jstring jstr)
 {
-    const char *str = (*env)-&gt;GetStringUTFChars(env, jstr, 0);
-    int len = (*env)-&gt;GetStringUTFLength(env, jstr);
-    printf(&quot;%p\n&quot;, str);
-#ifdef SUCCESS
-    (*env)-&gt;ReleaseStringUTFChars(env, jstr, str);
-#endif
-    return ;
+    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>str <span style="color:#f92672">=</span> (<span style="color:#f92672">*</span>env)<span style="color:#f92672">-&gt;</span>GetStringUTFChars(env, jstr, <span style="color:#ae81ff">0</span>);
+    <span style="color:#66d9ef">int</span> len <span style="color:#f92672">=</span> (<span style="color:#f92672">*</span>env)<span style="color:#f92672">-&gt;</span>GetStringUTFLength(env, jstr);
+    printf(<span style="color:#e6db74">&#34;%p</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, str);
+<span style="color:#75715e">#ifdef SUCCESS
+</span><span style="color:#75715e"></span>    (<span style="color:#f92672">*</span>env)<span style="color:#f92672">-&gt;</span>ReleaseStringUTFChars(env, jstr, str);
+<span style="color:#75715e">#endif
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> ;
 }
-</code></pre>
-
-<p><a href="https://raw.githubusercontent.com/DorMOUSE-None/Repo/master/jni-memory-leak.zip">测试用的源代码</a></p>
-
-<pre><code class="language-sh">$ java Main
-$ pmap -x 22690 | sort -n -k3
-# ...
-00007f0d44000000   65536   65500   65500 rw---   [ anon ]
-00007f0d04000000  131072  131068  131068 rw---   [ anon ]
-00007f0cc4000000  131072  131072  131072 rw---   [ anon ]
-00007f0ccc000000  131072  131072  131072 rw---   [ anon ]
-00007f0cd4000000  131072  131072  131072 rw---   [ anon ]
-00007f0cdc000000  131072  131072  131072 rw---   [ anon ]
-00007f0ce4000000  131072  131072  131072 rw---   [ anon ]
-00007f0cec000000  131072  131072  131072 rw---   [ anon ]
-00007f0cf4000000  131072  131072  131072 rw---   [ anon ]
-00007f0cfc000000  131072  131072  131072 rw---   [ anon ]
-total kB         3822700 1293952 1276900 
-</code></pre>
-
-<p>确实引起了内存的增长，而将内存 dump 下了之后，也看到了大量字符串。</p>
-
-<pre><code class="language-sh">$ PID=23756; grep rw-p /proc/${PID}/maps | sed -n 's/^\([0-9a-f]*\)-\([0-9a-f]*\) .*$/\1 \2/p' | while read start stop;  \
-do \
-    gdb --batch --pid ${PID} -ex &quot;dump memory ${PID}-$start-$stop.dump 0x$start 0x$stop&quot;;  \
-done 
-$ strings 23756-7f6f6c000000-7f6f70000000.dump| grep 'AAAA'
-# ...
+</code></pre></div><p><a href="https://raw.githubusercontent.com/DorMOUSE-None/Repo/master/jni-memory-leak.zip">测试用的源代码</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ java Main
+$ pmap -x <span style="color:#ae81ff">22690</span> | sort -n -k3
+<span style="color:#75715e"># ...</span>
+00007f0d44000000   <span style="color:#ae81ff">65536</span>   <span style="color:#ae81ff">65500</span>   <span style="color:#ae81ff">65500</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f0d04000000  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131068</span>  <span style="color:#ae81ff">131068</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f0cc4000000  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f0ccc000000  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f0cd4000000  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f0cdc000000  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f0ce4000000  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f0cec000000  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f0cf4000000  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+00007f0cfc000000  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span>  <span style="color:#ae81ff">131072</span> rw---   <span style="color:#f92672">[</span> anon <span style="color:#f92672">]</span>
+total kB         <span style="color:#ae81ff">3822700</span> <span style="color:#ae81ff">1293952</span> <span style="color:#ae81ff">1276900</span> 
+</code></pre></div><p>确实引起了内存的增长，而将内存 dump 下了之后，也看到了大量字符串。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ PID<span style="color:#f92672">=</span>23756; grep rw-p /proc/<span style="color:#e6db74">${</span>PID<span style="color:#e6db74">}</span>/maps | sed -n <span style="color:#e6db74">&#39;s/^\([0-9a-f]*\)-\([0-9a-f]*\) .*$/\1 \2/p&#39;</span> | <span style="color:#66d9ef">while</span> read start stop;  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span><span style="color:#66d9ef">do</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    gdb --batch --pid <span style="color:#e6db74">${</span>PID<span style="color:#e6db74">}</span> -ex <span style="color:#e6db74">&#34;dump memory </span><span style="color:#e6db74">${</span>PID<span style="color:#e6db74">}</span><span style="color:#e6db74">-</span>$start<span style="color:#e6db74">-</span>$stop<span style="color:#e6db74">.dump 0x</span>$start<span style="color:#e6db74"> 0x</span>$stop<span style="color:#e6db74">&#34;</span>;  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span><span style="color:#66d9ef">done</span> 
+$ strings 23756-7f6f6c000000-7f6f70000000.dump| grep <span style="color:#e6db74">&#39;AAAA&#39;</span>
+<span style="color:#75715e"># ...</span>
 AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHVn
 AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHXp
 AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHFn
-</code></pre>
-
-<p>待到添加上 <code>ReleaseStringUTFChars</code> ，申请到内存得到释放，确实解决了这个问题。</p>
-
+</code></pre></div><p>待到添加上 <code>ReleaseStringUTFChars</code> ，申请到内存得到释放，确实解决了这个问题。</p>
 <h2 id="总结">总结</h2>
-
 <p>定位问题确实看起来不难，但这种异构代码，真正难点在于定位问题。这期间走了不少的弯路，也无法确定究竟是对是错。毕竟问题的原因多种多样：</p>
-
 <ol>
 <li>可能是 Java 代码用了诸如 Zip 等容易出现堆外内存泄露的方法</li>
 <li>不当使用 JNI （就像是上文描述的问题）</li>
 <li>再有就是第三方 C 库使用不当，或者其本身存在 BUG。</li>
 </ol>
-
 <p>这是第一次排查异构代码的问题，颇多难以分辨，无法做定论之事。</p>
-
 <p>再就是 C 的平台相关性实在是太过于严重了，加之本就不太熟悉，搞个编译新的库文件就好一番折腾。</p>
-
-<pre><code class="language-plain">  __                    __                  
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
-| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+| |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
 |_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
                  |___/                |___/ 
-</code></pre>
+</code></pre></div>
         </div>
 
         <div class="row middle-xs">

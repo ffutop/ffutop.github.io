@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Hugo 0.55.6" />
+  <meta name="generator" content="Hugo 0.68.3" />
 
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "ASM 核心包基本内容漫谈",
       "headline" : "ASM 核心包基本内容漫谈",
-      "description" : "\x3cblockquote\x3e\n\x3cp\x3e本文描述的 ASM 指的是 OW2 ASM\x3c\/p\x3e\n\x3c\/blockquote\x3e\n\n\x3ch2 id=\x22asm-core-的结构\x22\x3eASM-Core 的结构\x3c\/h2\x3e\n\n\x3cp\x3e\x3cem\x3e首先是一些概述性的内容。\x3c\/em\x3e\x3c\/p\x3e\n\n\x3cp\x3e由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。\n因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)\x3c\/p\x3e\n\n\x3cp\x3e从核心包声明的类来看，主要包括:\x3c\/p\x3e\n\n\x3col\x3e\n\x3cli\x3e\x3cp\x3eClassReader - 作为结构化对象，将接收(accept)访问者的访问\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3e几种访问者抽象类以及相应的实现类\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3eAnnotationVisitor -\x26gt; AnnotationWriter\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3eClassVisitor -\x26gt; ClassWriter\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3eFieldVisitor -\x26gt; FieldWriter\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3eMethodVisitor -\x26gt; MethodWriter\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3eModuleVisitor -\x26gt; ModuleWriter\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3eOpcodes \x26amp; Constants - ClassFile 中描述的大量常量符号与值\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3e其它一些辅助的类\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3eAttribute - 用于处理非标准化的属性(ClassFile 允许\x3ca href=\x22https:\/\/docs.oracle.com\/javase\/specs\/jvms\/se8\/html\/jvms-4.html\x22\x3eJVMS\x3c\/a\x3e 中未定义的 Attribute)\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3eByteArray - 动态可自适应的 byte[] (字节数组)\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3eContext - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类\/对象\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3eSymbol - 用于表示 ClassFile 中描述的 Constant 的基类\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3eSymbolTable - 用于存储常量池对象\x3c\/p\x3e\x3c\/li\x3e\n\n\x3cli\x3e\x3cp\x3e其它内容省略\x3c\/p\x3e\x3c\/li\x3e\n\x3c\/ol\x3e",
+      "description" : "\x3cblockquote\x3e\n\x3cp\x3e本文描述的 ASM 指的是 OW2 ASM\x3c\/p\x3e\n\x3c\/blockquote\x3e\n\x3ch2 id=\x22asm-core-的结构\x22\x3eASM-Core 的结构\x3c\/h2\x3e\n\x3cp\x3e\x3cem\x3e首先是一些概述性的内容。\x3c\/em\x3e\x3c\/p\x3e\n\x3cp\x3e由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。\n因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)\x3c\/p\x3e\n\x3cp\x3e从核心包声明的类来看，主要包括:\x3c\/p\x3e\n\x3col\x3e\n\x3cli\x3e\n\x3cp\x3eClassReader - 作为结构化对象，将接收(accept)访问者的访问\x3c\/p\x3e\n\x3c\/li\x3e\n\x3cli\x3e\n\x3cp\x3e几种访问者抽象类以及相应的实现类\x3c\/p\x3e\n\x3c\/li\x3e\n\x3c\/ol\x3e\n\x3cul\x3e\n\x3cli\x3eAnnotationVisitor -\x26gt; AnnotationWriter\x3c\/li\x3e\n\x3cli\x3eClassVisitor -\x26gt; ClassWriter\x3c\/li\x3e\n\x3cli\x3eFieldVisitor -\x26gt; FieldWriter\x3c\/li\x3e\n\x3cli\x3eMethodVisitor -\x26gt; MethodWriter\x3c\/li\x3e\n\x3cli\x3eModuleVisitor -\x26gt; ModuleWriter\x3c\/li\x3e\n\x3c\/ul\x3e\n\x3col start=\x223\x22\x3e\n\x3cli\x3e\n\x3cp\x3eOpcodes \x26amp; Constants - ClassFile 中描述的大量常量符号与值\x3c\/p\x3e\n\x3c\/li\x3e\n\x3cli\x3e\n\x3cp\x3e其它一些辅助的类\x3c\/p\x3e\n\x3c\/li\x3e\n\x3c\/ol\x3e\n\x3cul\x3e\n\x3cli\x3eAttribute - 用于处理非标准化的属性(ClassFile 允许\x3ca href=\x22https:\/\/docs.oracle.com\/javase\/specs\/jvms\/se8\/html\/jvms-4.html\x22\x3eJVMS\x3c\/a\x3e 中未定义的 Attribute)\x3c\/li\x3e\n\x3cli\x3eByteArray - 动态可自适应的 byte[] (字节数组)\x3c\/li\x3e\n\x3cli\x3eContext - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类\/对象\x3c\/li\x3e\n\x3cli\x3eSymbol - 用于表示 ClassFile 中描述的 Constant 的基类\x3c\/li\x3e\n\x3cli\x3eSymbolTable - 用于存储常量池对象\x3c\/li\x3e\n\x3cli\x3e其它内容省略\x3c\/li\x3e\n\x3c\/ul\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -43,89 +43,79 @@
   <meta property="og:description" content="
 本文描述的 ASM 指的是 OW2 ASM
 
-
 ASM-Core 的结构
-
 首先是一些概述性的内容。
-
 由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。
 因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)
-
 从核心包声明的类来看，主要包括:
 
 
 ClassReader - 作为结构化对象，将接收(accept)访问者的访问
 
+
 几种访问者抽象类以及相应的实现类
 
+
+
 AnnotationVisitor -&gt; AnnotationWriter
-
 ClassVisitor -&gt; ClassWriter
-
 FieldVisitor -&gt; FieldWriter
-
 MethodVisitor -&gt; MethodWriter
-
 ModuleVisitor -&gt; ModuleWriter
+
+
 
 Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值
 
+
 其它一些辅助的类
 
+
+
 Attribute - 用于处理非标准化的属性(ClassFile 允许JVMS 中未定义的 Attribute)
-
 ByteArray - 动态可自适应的 byte[] (字节数组)
-
 Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象
-
 Symbol - 用于表示 ClassFile 中描述的 Constant 的基类
-
 SymbolTable - 用于存储常量池对象
-
 其它内容省略
 " />
   <meta name="description" content="
 本文描述的 ASM 指的是 OW2 ASM
 
-
 ASM-Core 的结构
-
 首先是一些概述性的内容。
-
 由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。
 因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)
-
 从核心包声明的类来看，主要包括:
 
 
 ClassReader - 作为结构化对象，将接收(accept)访问者的访问
 
+
 几种访问者抽象类以及相应的实现类
 
+
+
 AnnotationVisitor -&gt; AnnotationWriter
-
 ClassVisitor -&gt; ClassWriter
-
 FieldVisitor -&gt; FieldWriter
-
 MethodVisitor -&gt; MethodWriter
-
 ModuleVisitor -&gt; ModuleWriter
+
+
 
 Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值
 
+
 其它一些辅助的类
 
+
+
 Attribute - 用于处理非标准化的属性(ClassFile 允许JVMS 中未定义的 Attribute)
-
 ByteArray - 动态可自适应的 byte[] (字节数组)
-
 Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象
-
 Symbol - 用于表示 ClassFile 中描述的 Constant 的基类
-
 SymbolTable - 用于存储常量池对象
-
 其它内容省略
 " />
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
@@ -190,584 +180,541 @@ SymbolTable - 用于存储常量池对象
           <blockquote>
 <p>本文描述的 ASM 指的是 OW2 ASM</p>
 </blockquote>
-
 <h2 id="asm-core-的结构">ASM-Core 的结构</h2>
-
 <p><em>首先是一些概述性的内容。</em></p>
-
 <p>由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。
 因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)</p>
-
 <p>从核心包声明的类来看，主要包括:</p>
-
 <ol>
-<li><p>ClassReader - 作为结构化对象，将接收(accept)访问者的访问</p></li>
-
-<li><p>几种访问者抽象类以及相应的实现类</p></li>
-
-<li><p>AnnotationVisitor -&gt; AnnotationWriter</p></li>
-
-<li><p>ClassVisitor -&gt; ClassWriter</p></li>
-
-<li><p>FieldVisitor -&gt; FieldWriter</p></li>
-
-<li><p>MethodVisitor -&gt; MethodWriter</p></li>
-
-<li><p>ModuleVisitor -&gt; ModuleWriter</p></li>
-
-<li><p>Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值</p></li>
-
-<li><p>其它一些辅助的类</p></li>
-
-<li><p>Attribute - 用于处理非标准化的属性(ClassFile 允许<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVMS</a> 中未定义的 Attribute)</p></li>
-
-<li><p>ByteArray - 动态可自适应的 byte[] (字节数组)</p></li>
-
-<li><p>Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象</p></li>
-
-<li><p>Symbol - 用于表示 ClassFile 中描述的 Constant 的基类</p></li>
-
-<li><p>SymbolTable - 用于存储常量池对象</p></li>
-
-<li><p>其它内容省略</p></li>
+<li>
+<p>ClassReader - 作为结构化对象，将接收(accept)访问者的访问</p>
+</li>
+<li>
+<p>几种访问者抽象类以及相应的实现类</p>
+</li>
 </ol>
-
+<ul>
+<li>AnnotationVisitor -&gt; AnnotationWriter</li>
+<li>ClassVisitor -&gt; ClassWriter</li>
+<li>FieldVisitor -&gt; FieldWriter</li>
+<li>MethodVisitor -&gt; MethodWriter</li>
+<li>ModuleVisitor -&gt; ModuleWriter</li>
+</ul>
+<ol start="3">
+<li>
+<p>Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值</p>
+</li>
+<li>
+<p>其它一些辅助的类</p>
+</li>
+</ol>
+<ul>
+<li>Attribute - 用于处理非标准化的属性(ClassFile 允许<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVMS</a> 中未定义的 Attribute)</li>
+<li>ByteArray - 动态可自适应的 byte[] (字节数组)</li>
+<li>Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象</li>
+<li>Symbol - 用于表示 ClassFile 中描述的 Constant 的基类</li>
+<li>SymbolTable - 用于存储常量池对象</li>
+<li>其它内容省略</li>
+</ul>
 <h2 id="classfile-文件格式">ClassFile 文件格式</h2>
-
 <p>本节的内容可以参阅 <a href="https://dormouse-none.github.io/2018-06-11-ASM-ClassReader/">ClassFile 文件格式</a></p>
-
 <p>ClassFile 是 ASM 操作字节码的基础与前提。在 JVMS 定义了 .class 文件格式之后，ASM 才在此基础上进行了对 ClassFile 的字节码操作。</p>
-
 <p>因此，无论如何，个人认为在真正开始了解 ASM 之前，通读一遍 ClassFile 文件格式是完全有必要的。并且，在基本了解 ClassFile 内容的基础上，
 尝试对某个 .class 文件进行手工解析也不失为一种加深理解的途径。</p>
-
 <h2 id="visitor-pattern">Visitor Pattern</h2>
-
 <p>由于 ASM 的实现采用了偏门的访问者模式。因此，了解访问者模式也是一个必不可少的重要环节。同时在了解后也将为源码阅读者提供更清晰的解读思路。</p>
-
 <p>《设计模式：可复用面向对象软件的基础》一书的“5.11 VISITOR(访问者)——对象行为型模式”提供了很详尽的解释。</p>
-
 <p>本人对这方面的不甚了解，推荐自行查找资料。</p>
-
 <h2 id="classreader">ClassReader</h2>
-
 <p>ClassReader 是解析现有的 .class 文件的基本工具。同时，ClassReader 也作为一个内容的持有者，与 SymboleTable 配合，来满足访问者基本的访问需求。</p>
-
 <p>刨除大量的内部私有方法，ClassReader 对外开放的接口相当简单。最核心的方法仅包括 ClassReader(&hellip;) 以及 accetp(&hellip;)</p>
-
 <h3 id="classreader-构造方法">ClassReader(&hellip;) 构造方法</h3>
-
 <p>顾名思义，构造方法用于实例化 ClassReader 对象，包括一些必须的变量的初始化。</p>
+<p>在构造函数中完成的初始化内容包括:</p>
+<ul>
+<li>校验版本号</li>
+<li>存储每个常量池项目的起始偏移量 cpInfoOffsets</li>
+<li>存储每个引导方法的起始偏移量 bootstrapMethodOffsets</li>
+<li>存储最长字符串常量的大小 maxStringLength</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  ClassReader<span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> classFileBuffer<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> classFileOffset<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> checkClassVersion<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">b</span> <span style="color:#f92672">=</span> classFileBuffer<span style="color:#f92672">;</span>   <span style="color:#75715e">// .class 文件缓存
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 检查主版本号, 第6,7个字节(从0字节开始计数)
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>checkClassVersion <span style="color:#f92672">&amp;&amp;</span> readShort<span style="color:#f92672">(</span>classFileOffset <span style="color:#f92672">+</span> 6<span style="color:#f92672">)</span> <span style="color:#f92672">&gt;</span> Opcodes<span style="color:#f92672">.</span><span style="color:#a6e22e">V11</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">(</span>
+          <span style="color:#e6db74">&#34;Unsupported class file major version &#34;</span> <span style="color:#f92672">+</span> readShort<span style="color:#f92672">(</span>classFileOffset <span style="color:#f92672">+</span> 6<span style="color:#f92672">));</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#75715e">// 创建常量池数组，常量池长度的定义 constant_pool_count 在第8,9字节
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> constantPoolCount <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>classFileOffset <span style="color:#f92672">+</span> 8<span style="color:#f92672">);</span>     <span style="color:#75715e">// 读取无符号short, 即读取连续两字节作为一个short值
+</span><span style="color:#75715e"></span>    cpInfoOffsets <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">[</span>constantPoolCount<span style="color:#f92672">];</span>                         <span style="color:#75715e">// 每个常量的偏移位置
+</span><span style="color:#75715e"></span>    cpInfoValues <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">[</span>constantPoolCount<span style="color:#f92672">];</span>                       <span style="color:#75715e">// 每个常量的实例对象
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> currentCpInfoIndex <span style="color:#f92672">=</span> 1<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">int</span> currentCpInfoOffset <span style="color:#f92672">=</span> classFileOffset <span style="color:#f92672">+</span> 10<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">int</span> currentMaxStringLength <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>                                     <span style="color:#75715e">// 最长字符串常量
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>currentCpInfoIndex <span style="color:#f92672">&lt;</span> constantPoolCount<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      cpInfoOffsets<span style="color:#f92672">[</span>currentCpInfoIndex<span style="color:#f92672">++]</span> <span style="color:#f92672">=</span> currentCpInfoOffset <span style="color:#f92672">+</span> 1<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">int</span> cpInfoSize<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">switch</span> <span style="color:#f92672">(</span>classFileBuffer<span style="color:#f92672">[</span>currentCpInfoOffset<span style="color:#f92672">])</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_FIELDREF_TAG</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_METHODREF_TAG</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_INTERFACE_METHODREF_TAG</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_INTEGER_TAG</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_FLOAT_TAG</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_NAME_AND_TYPE_TAG</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_INVOKE_DYNAMIC_TAG</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_DYNAMIC_TAG</span><span style="color:#f92672">:</span>
+          cpInfoSize <span style="color:#f92672">=</span> 5<span style="color:#f92672">;</span>
+          <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_LONG_TAG</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_DOUBLE_TAG</span><span style="color:#f92672">:</span>
+          cpInfoSize <span style="color:#f92672">=</span> 9<span style="color:#f92672">;</span>
+          currentCpInfoIndex<span style="color:#f92672">++;</span>
+          <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_UTF8_TAG</span><span style="color:#f92672">:</span>
+          cpInfoSize <span style="color:#f92672">=</span> 3 <span style="color:#f92672">+</span> readUnsignedShort<span style="color:#f92672">(</span>currentCpInfoOffset <span style="color:#f92672">+</span> 1<span style="color:#f92672">);</span>
+          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>cpInfoSize <span style="color:#f92672">&gt;</span> currentMaxStringLength<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// The size in bytes of this CONSTANT_Utf8 structure provides a conservative estimate
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// of the length in characters of the corresponding string, and is much cheaper to
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// compute than this exact length.
+</span><span style="color:#75715e"></span>            currentMaxStringLength <span style="color:#f92672">=</span> cpInfoSize<span style="color:#f92672">;</span>
+          <span style="color:#f92672">}</span>
+          <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_METHOD_HANDLE_TAG</span><span style="color:#f92672">:</span>
+          cpInfoSize <span style="color:#f92672">=</span> 4<span style="color:#f92672">;</span>
+          <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_CLASS_TAG</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_STRING_TAG</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_METHOD_TYPE_TAG</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_PACKAGE_TAG</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_MODULE_TAG</span><span style="color:#f92672">:</span>
+          cpInfoSize <span style="color:#f92672">=</span> 3<span style="color:#f92672">;</span>
+          <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+          <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">();</span>
+      <span style="color:#f92672">}</span>
+      currentCpInfoOffset <span style="color:#f92672">+=</span> cpInfoSize<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">maxStringLength</span> <span style="color:#f92672">=</span> currentMaxStringLength<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// The Classfile&#39;s access_flags field is just after the last constant pool entry.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">header</span> <span style="color:#f92672">=</span> currentCpInfoOffset<span style="color:#f92672">;</span>
 
-<p>在构造函数中完成的初始化内容包括:
-  - 校验版本号
-  - 存储每个常量池项目的起始偏移量 cpInfoOffsets
-  - 存储每个引导方法的起始偏移量 bootstrapMethodOffsets
-  - 存储最长字符串常量的大小 maxStringLength</p>
-
-<pre><code class="language-java">  ClassReader(final byte[] classFileBuffer, final int classFileOffset, final boolean checkClassVersion) {
-    this.b = classFileBuffer;   // .class 文件缓存
-    // 检查主版本号, 第6,7个字节(从0字节开始计数)
-    if (checkClassVersion &amp;&amp; readShort(classFileOffset + 6) &gt; Opcodes.V11) {
-      throw new IllegalArgumentException(
-          &quot;Unsupported class file major version &quot; + readShort(classFileOffset + 6));
-    }
-    // 创建常量池数组，常量池长度的定义 constant_pool_count 在第8,9字节
-    int constantPoolCount = readUnsignedShort(classFileOffset + 8);     // 读取无符号short, 即读取连续两字节作为一个short值
-    cpInfoOffsets = new int[constantPoolCount];                         // 每个常量的偏移位置
-    cpInfoValues = new Object[constantPoolCount];                       // 每个常量的实例对象
-    int currentCpInfoIndex = 1;
-    int currentCpInfoOffset = classFileOffset + 10;
-    int currentMaxStringLength = 0;                                     // 最长字符串常量
-    while (currentCpInfoIndex &lt; constantPoolCount) {
-      cpInfoOffsets[currentCpInfoIndex++] = currentCpInfoOffset + 1;
-      int cpInfoSize;
-      switch (classFileBuffer[currentCpInfoOffset]) {
-        case Symbol.CONSTANT_FIELDREF_TAG:
-        case Symbol.CONSTANT_METHODREF_TAG:
-        case Symbol.CONSTANT_INTERFACE_METHODREF_TAG:
-        case Symbol.CONSTANT_INTEGER_TAG:
-        case Symbol.CONSTANT_FLOAT_TAG:
-        case Symbol.CONSTANT_NAME_AND_TYPE_TAG:
-        case Symbol.CONSTANT_INVOKE_DYNAMIC_TAG:
-        case Symbol.CONSTANT_DYNAMIC_TAG:
-          cpInfoSize = 5;
-          break;
-        case Symbol.CONSTANT_LONG_TAG:
-        case Symbol.CONSTANT_DOUBLE_TAG:
-          cpInfoSize = 9;
-          currentCpInfoIndex++;
-          break;
-        case Symbol.CONSTANT_UTF8_TAG:
-          cpInfoSize = 3 + readUnsignedShort(currentCpInfoOffset + 1);
-          if (cpInfoSize &gt; currentMaxStringLength) {
-            // The size in bytes of this CONSTANT_Utf8 structure provides a conservative estimate
-            // of the length in characters of the corresponding string, and is much cheaper to
-            // compute than this exact length.
-            currentMaxStringLength = cpInfoSize;
-          }
-          break;
-        case Symbol.CONSTANT_METHOD_HANDLE_TAG:
-          cpInfoSize = 4;
-          break;
-        case Symbol.CONSTANT_CLASS_TAG:
-        case Symbol.CONSTANT_STRING_TAG:
-        case Symbol.CONSTANT_METHOD_TYPE_TAG:
-        case Symbol.CONSTANT_PACKAGE_TAG:
-        case Symbol.CONSTANT_MODULE_TAG:
-          cpInfoSize = 3;
-          break;
-        default:
-          throw new IllegalArgumentException();
-      }
-      currentCpInfoOffset += cpInfoSize;
-    }
-    this.maxStringLength = currentMaxStringLength;
-    // The Classfile's access_flags field is just after the last constant pool entry.
-    this.header = currentCpInfoOffset;
-
-    // 读取 BootstrapMethods 属性(如果存在)
-    int currentAttributeOffset = getFirstAttributeOffset();
-    int[] currentBootstrapMethodOffsets = null;
-    for (int i = readUnsignedShort(currentAttributeOffset - 2); i &gt; 0; --i) {
-      // 读取每个 attribute_info 的属性名和属性长度
-      String attributeName = readUTF8(currentAttributeOffset, new char[maxStringLength]);
-      int attributeLength = readInt(currentAttributeOffset + 2);
-      currentAttributeOffset += 6;
-      // 如果当前属性名为 BootstrapMethods ，则进入处理逻辑
-      if (Constants.BOOTSTRAP_METHODS.equals(attributeName)) {
-        // Read the num_bootstrap_methods field and create an array of this size.
-        currentBootstrapMethodOffsets = new int[readUnsignedShort(currentAttributeOffset)];
-        // Compute and store the offset of each 'bootstrap_methods' array field entry.
-        int currentBootstrapMethodOffset = currentAttributeOffset + 2;
-        for (int j = 0; j &lt; currentBootstrapMethodOffsets.length; ++j) {
-          currentBootstrapMethodOffsets[j] = currentBootstrapMethodOffset;
-          // Skip the bootstrap_method_ref and num_bootstrap_arguments fields (2 bytes each),
-          // as well as the bootstrap_arguments array field (of size num_bootstrap_arguments * 2).
-          currentBootstrapMethodOffset +=
-              4 + readUnsignedShort(currentBootstrapMethodOffset + 2) * 2;
-        }
-      }
-      currentAttributeOffset += attributeLength;
-    }
-    this.bootstrapMethodOffsets = currentBootstrapMethodOffsets;
-  }
-</code></pre>
-
-<p>到此为止，ClassReader 已经解析了包括 magic, minor version, major version, constant pool 。
+    <span style="color:#75715e">// 读取 BootstrapMethods 属性(如果存在)
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> currentAttributeOffset <span style="color:#f92672">=</span> getFirstAttributeOffset<span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">int</span><span style="color:#f92672">[]</span> currentBootstrapMethodOffsets <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>currentAttributeOffset <span style="color:#f92672">-</span> 2<span style="color:#f92672">);</span> i <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">;</span> <span style="color:#f92672">--</span>i<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#75715e">// 读取每个 attribute_info 的属性名和属性长度
+</span><span style="color:#75715e"></span>      String attributeName <span style="color:#f92672">=</span> readUTF8<span style="color:#f92672">(</span>currentAttributeOffset<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">[</span>maxStringLength<span style="color:#f92672">]);</span>
+      <span style="color:#66d9ef">int</span> attributeLength <span style="color:#f92672">=</span> readInt<span style="color:#f92672">(</span>currentAttributeOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">);</span>
+      currentAttributeOffset <span style="color:#f92672">+=</span> 6<span style="color:#f92672">;</span>
+      <span style="color:#75715e">// 如果当前属性名为 BootstrapMethods ，则进入处理逻辑
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">BOOTSTRAP_METHODS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// Read the num_bootstrap_methods field and create an array of this size.
+</span><span style="color:#75715e"></span>        currentBootstrapMethodOffsets <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">[</span>readUnsignedShort<span style="color:#f92672">(</span>currentAttributeOffset<span style="color:#f92672">)];</span>
+        <span style="color:#75715e">// Compute and store the offset of each &#39;bootstrap_methods&#39; array field entry.
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> currentBootstrapMethodOffset <span style="color:#f92672">=</span> currentAttributeOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> j <span style="color:#f92672">&lt;</span> currentBootstrapMethodOffsets<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span> <span style="color:#f92672">++</span>j<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+          currentBootstrapMethodOffsets<span style="color:#f92672">[</span>j<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> currentBootstrapMethodOffset<span style="color:#f92672">;</span>
+          <span style="color:#75715e">// Skip the bootstrap_method_ref and num_bootstrap_arguments fields (2 bytes each),
+</span><span style="color:#75715e"></span>          <span style="color:#75715e">// as well as the bootstrap_arguments array field (of size num_bootstrap_arguments * 2).
+</span><span style="color:#75715e"></span>          currentBootstrapMethodOffset <span style="color:#f92672">+=</span>
+              4 <span style="color:#f92672">+</span> readUnsignedShort<span style="color:#f92672">(</span>currentBootstrapMethodOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">)</span> <span style="color:#f92672">*</span> 2<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+      <span style="color:#f92672">}</span>
+      currentAttributeOffset <span style="color:#f92672">+=</span> attributeLength<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">bootstrapMethodOffsets</span> <span style="color:#f92672">=</span> currentBootstrapMethodOffsets<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+</code></pre></div><p>到此为止，ClassReader 已经解析了包括 magic, minor version, major version, constant pool 。
 但是，诸如 field_info, method_info, attribute_info 等仍然没有得到处理。</p>
-
 <h3 id="accept">accept(&hellip;)</h3>
-
 <p>访问者模式的核心操作就是结构化对象接受(accept)访问者对象实例的访问，并将结构化内容完全暴露给访问者。</p>
-
 <p>从抽象的方法角度看，可以理解成:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">
+  <span style="color:#75715e">// --- 结构化对象的 accept() 方法 ---
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">accept</span><span style="color:#f92672">(</span>Visitor visitor<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    visitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visit</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">);</span>
+  <span style="color:#f92672">}</span>
 
-<pre><code class="language-java">
-  // --- 结构化对象的 accept() 方法 ---
-  public void accept(Visitor visitor) {
-    visitor.visit(this);
-  }
+  <span style="color:#75715e">// --- 访问者对象的 visit() 方法 ---
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">public</span> Xxx <span style="color:#a6e22e">visit</span><span style="color:#f92672">(</span>Element element<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// 若干关于 element 的读操作 + 其它操作
+</span><span style="color:#75715e"></span>  <span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">accept</span><span style="color:#f92672">(</span>
+      <span style="color:#66d9ef">final</span> ClassVisitor classVisitor<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">final</span> Attribute<span style="color:#f92672">[]</span> attributePrototypes<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> parsingOptions<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// 定义 Context 作为辅助类，暂存被访问过程的“累积状态”
+</span><span style="color:#75715e"></span>    Context context <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Context<span style="color:#f92672">();</span>
+    context<span style="color:#f92672">.</span><span style="color:#a6e22e">attributePrototypes</span> <span style="color:#f92672">=</span> attributePrototypes<span style="color:#f92672">;</span>
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 解析选项: 
+</span><span style="color:#75715e">     * 1. SKIP_CODE - 不解析 CODE 属性 
+</span><span style="color:#75715e">     * 2. SKIP_DEBUG - 不解析 DEBUG 相关的属性(例如SourceFile, SourceDebugExtension, LocalVariableTable, LocalVariableTypeTable, LineNumberTable)
+</span><span style="color:#75715e">     * 4. SKIP_FRAMES - 跳过对 StackMap 和 StackMapTable 属性的解析
+</span><span style="color:#75715e">     * ...
+</span><span style="color:#75715e">     */</span>
+    context<span style="color:#f92672">.</span><span style="color:#a6e22e">parsingOptions</span> <span style="color:#f92672">=</span> parsingOptions<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// 从常量池读取常量所使用的缓冲数字
+</span><span style="color:#75715e"></span>    context<span style="color:#f92672">.</span><span style="color:#a6e22e">charBuffer</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">[</span>maxStringLength<span style="color:#f92672">];</span>
 
-  // --- 访问者对象的 visit() 方法 ---
-  public Xxx visit(Element element) {
-    // 若干关于 element 的读操作 + 其它操作
-  }
-</code></pre>
+    <span style="color:#75715e">// Read the access_flags, this_class, super_class, interface_count and interfaces fields.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 解析访问控制, 当前类, 父类, 接口数量与接口值等
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span><span style="color:#f92672">[]</span> charBuffer <span style="color:#f92672">=</span> context<span style="color:#f92672">.</span><span style="color:#a6e22e">charBuffer</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">int</span> currentOffset <span style="color:#f92672">=</span> header<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">int</span> accessFlags <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>currentOffset<span style="color:#f92672">);</span>
+    String thisClass <span style="color:#f92672">=</span> readClass<span style="color:#f92672">(</span>currentOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+    String superClass <span style="color:#f92672">=</span> readClass<span style="color:#f92672">(</span>currentOffset <span style="color:#f92672">+</span> 4<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+    String<span style="color:#f92672">[]</span> interfaces <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String<span style="color:#f92672">[</span>readUnsignedShort<span style="color:#f92672">(</span>currentOffset <span style="color:#f92672">+</span> 6<span style="color:#f92672">)];</span>
+    currentOffset <span style="color:#f92672">+=</span> 8<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> interfaces<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span> <span style="color:#f92672">++</span>i<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      interfaces<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> readClass<span style="color:#f92672">(</span>currentOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+      currentOffset <span style="color:#f92672">+=</span> 2<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
 
-<pre><code class="language-java">public void accept(
-      final ClassVisitor classVisitor,
-      final Attribute[] attributePrototypes,
-      final int parsingOptions) {
-    // 定义 Context 作为辅助类，暂存被访问过程的“累积状态”
-    Context context = new Context();
-    context.attributePrototypes = attributePrototypes;
-    /**
-     * 解析选项: 
-     * 1. SKIP_CODE - 不解析 CODE 属性 
-     * 2. SKIP_DEBUG - 不解析 DEBUG 相关的属性(例如SourceFile, SourceDebugExtension, LocalVariableTable, LocalVariableTypeTable, LineNumberTable)
-     * 4. SKIP_FRAMES - 跳过对 StackMap 和 StackMapTable 属性的解析
-     * ...
-     */
-    context.parsingOptions = parsingOptions;
-    // 从常量池读取常量所使用的缓冲数字
-    context.charBuffer = new char[maxStringLength];
+    <span style="color:#75715e">// Read the class attributes (the variables are ordered as in Section 4.7 of the JVMS).
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Attribute offsets exclude the attribute_name_index and attribute_length fields.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// - The offset of the InnerClasses attribute, or 0.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> innerClassesOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The offset of the EnclosingMethod attribute, or 0.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> enclosingMethodOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The string corresponding to the Signature attribute, or null.
+</span><span style="color:#75715e"></span>    String signature <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The string corresponding to the SourceFile attribute, or null.
+</span><span style="color:#75715e"></span>    String sourceFile <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The string corresponding to the SourceDebugExtension attribute, or null.
+</span><span style="color:#75715e"></span>    String sourceDebugExtension <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The offset of the RuntimeVisibleAnnotations attribute, or 0.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> runtimeVisibleAnnotationsOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The offset of the RuntimeInvisibleAnnotations attribute, or 0.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> runtimeInvisibleAnnotationsOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The offset of the RuntimeVisibleTypeAnnotations attribute, or 0.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> runtimeVisibleTypeAnnotationsOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The offset of the RuntimeInvisibleTypeAnnotations attribute, or 0.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> runtimeInvisibleTypeAnnotationsOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The offset of the Module attribute, or 0.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> moduleOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The offset of the ModulePackages attribute, or 0.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> modulePackagesOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The string corresponding to the ModuleMainClass attribute, or null.
+</span><span style="color:#75715e"></span>    String moduleMainClass <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The string corresponding to the NestHost attribute, or null.
+</span><span style="color:#75715e"></span>    String nestHostClass <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The offset of the NestMembers attribute, or 0.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> nestMembersOffset <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#75715e">// - The non standard attributes (linked with their {@link Attribute#nextAttribute} field).
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">//   This list in the &lt;i&gt;reverse order&lt;/i&gt; or their order in the ClassFile structure.
+</span><span style="color:#75715e"></span>    Attribute attributes <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
 
-    // Read the access_flags, this_class, super_class, interface_count and interfaces fields.
-    // 解析访问控制, 当前类, 父类, 接口数量与接口值等
-    char[] charBuffer = context.charBuffer;
-    int currentOffset = header;
-    int accessFlags = readUnsignedShort(currentOffset);
-    String thisClass = readClass(currentOffset + 2, charBuffer);
-    String superClass = readClass(currentOffset + 4, charBuffer);
-    String[] interfaces = new String[readUnsignedShort(currentOffset + 6)];
-    currentOffset += 8;
-    for (int i = 0; i &lt; interfaces.length; ++i) {
-      interfaces[i] = readClass(currentOffset, charBuffer);
-      currentOffset += 2;
-    }
+    <span style="color:#75715e">// 解析 Class 持有的属性
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> currentAttributeOffset <span style="color:#f92672">=</span> getFirstAttributeOffset<span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>currentAttributeOffset <span style="color:#f92672">-</span> 2<span style="color:#f92672">);</span> i <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">;</span> <span style="color:#f92672">--</span>i<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#75715e">// Read the attribute_info&#39;s attribute_name and attribute_length fields.
+</span><span style="color:#75715e"></span>      String attributeName <span style="color:#f92672">=</span> readUTF8<span style="color:#f92672">(</span>currentAttributeOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">int</span> attributeLength <span style="color:#f92672">=</span> readInt<span style="color:#f92672">(</span>currentAttributeOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">);</span>
+      currentAttributeOffset <span style="color:#f92672">+=</span> 6<span style="color:#f92672">;</span>
+      <span style="color:#75715e">// The tests are sorted in decreasing frequency order (based on frequencies observed on
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">// typical classes).
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">SOURCE_FILE</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        sourceFile <span style="color:#f92672">=</span> readUTF8<span style="color:#f92672">(</span>currentAttributeOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">INNER_CLASSES</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        innerClassesOffset <span style="color:#f92672">=</span> currentAttributeOffset<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">ENCLOSING_METHOD</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        enclosingMethodOffset <span style="color:#f92672">=</span> currentAttributeOffset<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">NEST_HOST</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        nestHostClass <span style="color:#f92672">=</span> readClass<span style="color:#f92672">(</span>currentAttributeOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">NEST_MEMBERS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        nestMembersOffset <span style="color:#f92672">=</span> currentAttributeOffset<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">SIGNATURE</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        signature <span style="color:#f92672">=</span> readUTF8<span style="color:#f92672">(</span>currentAttributeOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">RUNTIME_VISIBLE_ANNOTATIONS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        runtimeVisibleAnnotationsOffset <span style="color:#f92672">=</span> currentAttributeOffset<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">RUNTIME_VISIBLE_TYPE_ANNOTATIONS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        runtimeVisibleTypeAnnotationsOffset <span style="color:#f92672">=</span> currentAttributeOffset<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">DEPRECATED</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        accessFlags <span style="color:#f92672">|=</span> Opcodes<span style="color:#f92672">.</span><span style="color:#a6e22e">ACC_DEPRECATED</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">SYNTHETIC</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        accessFlags <span style="color:#f92672">|=</span> Opcodes<span style="color:#f92672">.</span><span style="color:#a6e22e">ACC_SYNTHETIC</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">SOURCE_DEBUG_EXTENSION</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        sourceDebugExtension <span style="color:#f92672">=</span>
+            readUTF<span style="color:#f92672">(</span>currentAttributeOffset<span style="color:#f92672">,</span> attributeLength<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">[</span>attributeLength<span style="color:#f92672">]);</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">RUNTIME_INVISIBLE_ANNOTATIONS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        runtimeInvisibleAnnotationsOffset <span style="color:#f92672">=</span> currentAttributeOffset<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">RUNTIME_INVISIBLE_TYPE_ANNOTATIONS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        runtimeInvisibleTypeAnnotationsOffset <span style="color:#f92672">=</span> currentAttributeOffset<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">MODULE</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        moduleOffset <span style="color:#f92672">=</span> currentAttributeOffset<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">MODULE_MAIN_CLASS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        moduleMainClass <span style="color:#f92672">=</span> readClass<span style="color:#f92672">(</span>currentAttributeOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">MODULE_PACKAGES</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        modulePackagesOffset <span style="color:#f92672">=</span> currentAttributeOffset<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">BOOTSTRAP_METHODS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// This attribute is read in the constructor.
+</span><span style="color:#75715e"></span>      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+        Attribute attribute <span style="color:#f92672">=</span>
+            readAttribute<span style="color:#f92672">(</span>
+                attributePrototypes<span style="color:#f92672">,</span>
+                attributeName<span style="color:#f92672">,</span>
+                currentAttributeOffset<span style="color:#f92672">,</span>
+                attributeLength<span style="color:#f92672">,</span>
+                charBuffer<span style="color:#f92672">,</span>
+                <span style="color:#f92672">-</span>1<span style="color:#f92672">,</span>
+                <span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+        attribute<span style="color:#f92672">.</span><span style="color:#a6e22e">nextAttribute</span> <span style="color:#f92672">=</span> attributes<span style="color:#f92672">;</span>
+        attributes <span style="color:#f92672">=</span> attribute<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+      currentAttributeOffset <span style="color:#f92672">+=</span> attributeLength<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
 
-    // Read the class attributes (the variables are ordered as in Section 4.7 of the JVMS).
-    // Attribute offsets exclude the attribute_name_index and attribute_length fields.
-    // - The offset of the InnerClasses attribute, or 0.
-    int innerClassesOffset = 0;
-    // - The offset of the EnclosingMethod attribute, or 0.
-    int enclosingMethodOffset = 0;
-    // - The string corresponding to the Signature attribute, or null.
-    String signature = null;
-    // - The string corresponding to the SourceFile attribute, or null.
-    String sourceFile = null;
-    // - The string corresponding to the SourceDebugExtension attribute, or null.
-    String sourceDebugExtension = null;
-    // - The offset of the RuntimeVisibleAnnotations attribute, or 0.
-    int runtimeVisibleAnnotationsOffset = 0;
-    // - The offset of the RuntimeInvisibleAnnotations attribute, or 0.
-    int runtimeInvisibleAnnotationsOffset = 0;
-    // - The offset of the RuntimeVisibleTypeAnnotations attribute, or 0.
-    int runtimeVisibleTypeAnnotationsOffset = 0;
-    // - The offset of the RuntimeInvisibleTypeAnnotations attribute, or 0.
-    int runtimeInvisibleTypeAnnotationsOffset = 0;
-    // - The offset of the Module attribute, or 0.
-    int moduleOffset = 0;
-    // - The offset of the ModulePackages attribute, or 0.
-    int modulePackagesOffset = 0;
-    // - The string corresponding to the ModuleMainClass attribute, or null.
-    String moduleMainClass = null;
-    // - The string corresponding to the NestHost attribute, or null.
-    String nestHostClass = null;
-    // - The offset of the NestMembers attribute, or 0.
-    int nestMembersOffset = 0;
-    // - The non standard attributes (linked with their {@link Attribute#nextAttribute} field).
-    //   This list in the &lt;i&gt;reverse order&lt;/i&gt; or their order in the ClassFile structure.
-    Attribute attributes = null;
+    <span style="color:#75715e">// 第一个 .visit() 。让 ClassVisitor 的实现类处理当前类的版本号, 访问控制标志, 当前类, 结构, 父类, 接口
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 具体 visit() 由实现类随意定制。例如，针对于那些有打印功能的访问者实现类，直接打印也不失为一种有效的访问操作
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Visit the class declaration. The minor_version and major_version fields start 6 bytes before
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// the first constant pool entry, which itself starts at cpInfoOffsets[1] - 1 (by definition).
+</span><span style="color:#75715e"></span>    classVisitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visit</span><span style="color:#f92672">(</span>
+        readInt<span style="color:#f92672">(</span>cpInfoOffsets<span style="color:#f92672">[</span>1<span style="color:#f92672">]</span> <span style="color:#f92672">-</span> 7<span style="color:#f92672">),</span> accessFlags<span style="color:#f92672">,</span> thisClass<span style="color:#f92672">,</span> signature<span style="color:#f92672">,</span> superClass<span style="color:#f92672">,</span> interfaces<span style="color:#f92672">);</span>
 
-    // 解析 Class 持有的属性
-    int currentAttributeOffset = getFirstAttributeOffset();
-    for (int i = readUnsignedShort(currentAttributeOffset - 2); i &gt; 0; --i) {
-      // Read the attribute_info's attribute_name and attribute_length fields.
-      String attributeName = readUTF8(currentAttributeOffset, charBuffer);
-      int attributeLength = readInt(currentAttributeOffset + 2);
-      currentAttributeOffset += 6;
-      // The tests are sorted in decreasing frequency order (based on frequencies observed on
-      // typical classes).
-      if (Constants.SOURCE_FILE.equals(attributeName)) {
-        sourceFile = readUTF8(currentAttributeOffset, charBuffer);
-      } else if (Constants.INNER_CLASSES.equals(attributeName)) {
-        innerClassesOffset = currentAttributeOffset;
-      } else if (Constants.ENCLOSING_METHOD.equals(attributeName)) {
-        enclosingMethodOffset = currentAttributeOffset;
-      } else if (Constants.NEST_HOST.equals(attributeName)) {
-        nestHostClass = readClass(currentAttributeOffset, charBuffer);
-      } else if (Constants.NEST_MEMBERS.equals(attributeName)) {
-        nestMembersOffset = currentAttributeOffset;
-      } else if (Constants.SIGNATURE.equals(attributeName)) {
-        signature = readUTF8(currentAttributeOffset, charBuffer);
-      } else if (Constants.RUNTIME_VISIBLE_ANNOTATIONS.equals(attributeName)) {
-        runtimeVisibleAnnotationsOffset = currentAttributeOffset;
-      } else if (Constants.RUNTIME_VISIBLE_TYPE_ANNOTATIONS.equals(attributeName)) {
-        runtimeVisibleTypeAnnotationsOffset = currentAttributeOffset;
-      } else if (Constants.DEPRECATED.equals(attributeName)) {
-        accessFlags |= Opcodes.ACC_DEPRECATED;
-      } else if (Constants.SYNTHETIC.equals(attributeName)) {
-        accessFlags |= Opcodes.ACC_SYNTHETIC;
-      } else if (Constants.SOURCE_DEBUG_EXTENSION.equals(attributeName)) {
-        sourceDebugExtension =
-            readUTF(currentAttributeOffset, attributeLength, new char[attributeLength]);
-      } else if (Constants.RUNTIME_INVISIBLE_ANNOTATIONS.equals(attributeName)) {
-        runtimeInvisibleAnnotationsOffset = currentAttributeOffset;
-      } else if (Constants.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS.equals(attributeName)) {
-        runtimeInvisibleTypeAnnotationsOffset = currentAttributeOffset;
-      } else if (Constants.MODULE.equals(attributeName)) {
-        moduleOffset = currentAttributeOffset;
-      } else if (Constants.MODULE_MAIN_CLASS.equals(attributeName)) {
-        moduleMainClass = readClass(currentAttributeOffset, charBuffer);
-      } else if (Constants.MODULE_PACKAGES.equals(attributeName)) {
-        modulePackagesOffset = currentAttributeOffset;
-      } else if (Constants.BOOTSTRAP_METHODS.equals(attributeName)) {
-        // This attribute is read in the constructor.
-      } else {
-        Attribute attribute =
-            readAttribute(
-                attributePrototypes,
-                attributeName,
-                currentAttributeOffset,
-                attributeLength,
-                charBuffer,
-                -1,
-                null);
-        attribute.nextAttribute = attributes;
-        attributes = attribute;
-      }
-      currentAttributeOffset += attributeLength;
-    }
+    <span style="color:#75715e">// 访问 SourceFile 和 SourceDebugExtenstion 属性
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Visit the SourceFile and SourceDebugExtenstion attributes.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span>parsingOptions <span style="color:#f92672">&amp;</span> SKIP_DEBUG<span style="color:#f92672">)</span> <span style="color:#f92672">==</span> 0
+        <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">(</span>sourceFile <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> sourceDebugExtension <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+      classVisitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visitSource</span><span style="color:#f92672">(</span>sourceFile<span style="color:#f92672">,</span> sourceDebugExtension<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
 
-    // 第一个 .visit() 。让 ClassVisitor 的实现类处理当前类的版本号, 访问控制标志, 当前类, 结构, 父类, 接口
-    // 具体 visit() 由实现类随意定制。例如，针对于那些有打印功能的访问者实现类，直接打印也不失为一种有效的访问操作
-    // Visit the class declaration. The minor_version and major_version fields start 6 bytes before
-    // the first constant pool entry, which itself starts at cpInfoOffsets[1] - 1 (by definition).
-    classVisitor.visit(
-        readInt(cpInfoOffsets[1] - 7), accessFlags, thisClass, signature, superClass, interfaces);
+    <span style="color:#75715e">// Visit the Module, ModulePackages and ModuleMainClass attributes.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>moduleOffset <span style="color:#f92672">!=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      readModule<span style="color:#f92672">(</span>classVisitor<span style="color:#f92672">,</span> context<span style="color:#f92672">,</span> moduleOffset<span style="color:#f92672">,</span> modulePackagesOffset<span style="color:#f92672">,</span> moduleMainClass<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
 
-    // 访问 SourceFile 和 SourceDebugExtenstion 属性
-    // Visit the SourceFile and SourceDebugExtenstion attributes.
-    if ((parsingOptions &amp; SKIP_DEBUG) == 0
-        &amp;&amp; (sourceFile != null || sourceDebugExtension != null)) {
-      classVisitor.visitSource(sourceFile, sourceDebugExtension);
-    }
+    <span style="color:#75715e">// Visit the NestHost attribute.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>nestHostClass <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      classVisitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visitNestHostExperimental</span><span style="color:#f92672">(</span>nestHostClass<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
 
-    // Visit the Module, ModulePackages and ModuleMainClass attributes.
-    if (moduleOffset != 0) {
-      readModule(classVisitor, context, moduleOffset, modulePackagesOffset, moduleMainClass);
-    }
+    <span style="color:#75715e">// Visit the EnclosingMethod attribute.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>enclosingMethodOffset <span style="color:#f92672">!=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      String className <span style="color:#f92672">=</span> readClass<span style="color:#f92672">(</span>enclosingMethodOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">int</span> methodIndex <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>enclosingMethodOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">);</span>
+      String name <span style="color:#f92672">=</span> methodIndex <span style="color:#f92672">==</span> 0 <span style="color:#f92672">?</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">:</span> readUTF8<span style="color:#f92672">(</span>cpInfoOffsets<span style="color:#f92672">[</span>methodIndex<span style="color:#f92672">],</span> charBuffer<span style="color:#f92672">);</span>
+      String type <span style="color:#f92672">=</span> methodIndex <span style="color:#f92672">==</span> 0 <span style="color:#f92672">?</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">:</span> readUTF8<span style="color:#f92672">(</span>cpInfoOffsets<span style="color:#f92672">[</span>methodIndex<span style="color:#f92672">]</span> <span style="color:#f92672">+</span> 2<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+      classVisitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visitOuterClass</span><span style="color:#f92672">(</span>className<span style="color:#f92672">,</span> name<span style="color:#f92672">,</span> type<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
 
-    // Visit the NestHost attribute.
-    if (nestHostClass != null) {
-      classVisitor.visitNestHostExperimental(nestHostClass);
-    }
+    <span style="color:#75715e">// Visit the RuntimeVisibleAnnotations attribute.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>runtimeVisibleAnnotationsOffset <span style="color:#f92672">!=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">int</span> numAnnotations <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>runtimeVisibleAnnotationsOffset<span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">int</span> currentAnnotationOffset <span style="color:#f92672">=</span> runtimeVisibleAnnotationsOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>numAnnotations<span style="color:#f92672">--</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// Parse the type_index field.
+</span><span style="color:#75715e"></span>        String annotationDescriptor <span style="color:#f92672">=</span> readUTF8<span style="color:#f92672">(</span>currentAnnotationOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+        currentAnnotationOffset <span style="color:#f92672">+=</span> 2<span style="color:#f92672">;</span>
+        <span style="color:#75715e">// Parse num_element_value_pairs and element_value_pairs and visit these values.
+</span><span style="color:#75715e"></span>        currentAnnotationOffset <span style="color:#f92672">=</span>
+            readElementValues<span style="color:#f92672">(</span>
+                classVisitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visitAnnotation</span><span style="color:#f92672">(</span>annotationDescriptor<span style="color:#f92672">,</span> <span style="color:#75715e">/* visible = */</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">),</span>
+                currentAnnotationOffset<span style="color:#f92672">,</span>
+                <span style="color:#75715e">/* named = */</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">,</span>
+                charBuffer<span style="color:#f92672">);</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
 
-    // Visit the EnclosingMethod attribute.
-    if (enclosingMethodOffset != 0) {
-      String className = readClass(enclosingMethodOffset, charBuffer);
-      int methodIndex = readUnsignedShort(enclosingMethodOffset + 2);
-      String name = methodIndex == 0 ? null : readUTF8(cpInfoOffsets[methodIndex], charBuffer);
-      String type = methodIndex == 0 ? null : readUTF8(cpInfoOffsets[methodIndex] + 2, charBuffer);
-      classVisitor.visitOuterClass(className, name, type);
-    }
+    <span style="color:#75715e">// Visit the RuntimeInvisibleAnnotations attribute.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>runtimeInvisibleAnnotationsOffset <span style="color:#f92672">!=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">int</span> numAnnotations <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>runtimeInvisibleAnnotationsOffset<span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">int</span> currentAnnotationOffset <span style="color:#f92672">=</span> runtimeInvisibleAnnotationsOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>numAnnotations<span style="color:#f92672">--</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// Parse the type_index field.
+</span><span style="color:#75715e"></span>        String annotationDescriptor <span style="color:#f92672">=</span> readUTF8<span style="color:#f92672">(</span>currentAnnotationOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+        currentAnnotationOffset <span style="color:#f92672">+=</span> 2<span style="color:#f92672">;</span>
+        <span style="color:#75715e">// Parse num_element_value_pairs and element_value_pairs and visit these values.
+</span><span style="color:#75715e"></span>        currentAnnotationOffset <span style="color:#f92672">=</span>
+            readElementValues<span style="color:#f92672">(</span>
+                classVisitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visitAnnotation</span><span style="color:#f92672">(</span>annotationDescriptor<span style="color:#f92672">,</span> <span style="color:#75715e">/* visible = */</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">),</span>
+                currentAnnotationOffset<span style="color:#f92672">,</span>
+                <span style="color:#75715e">/* named = */</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">,</span>
+                charBuffer<span style="color:#f92672">);</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
 
-    // Visit the RuntimeVisibleAnnotations attribute.
-    if (runtimeVisibleAnnotationsOffset != 0) {
-      int numAnnotations = readUnsignedShort(runtimeVisibleAnnotationsOffset);
-      int currentAnnotationOffset = runtimeVisibleAnnotationsOffset + 2;
-      while (numAnnotations-- &gt; 0) {
-        // Parse the type_index field.
-        String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
-        currentAnnotationOffset += 2;
-        // Parse num_element_value_pairs and element_value_pairs and visit these values.
-        currentAnnotationOffset =
-            readElementValues(
-                classVisitor.visitAnnotation(annotationDescriptor, /* visible = */ true),
-                currentAnnotationOffset,
-                /* named = */ true,
-                charBuffer);
-      }
-    }
+    <span style="color:#75715e">// Visit the RuntimeVisibleTypeAnnotations attribute.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>runtimeVisibleTypeAnnotationsOffset <span style="color:#f92672">!=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">int</span> numAnnotations <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>runtimeVisibleTypeAnnotationsOffset<span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">int</span> currentAnnotationOffset <span style="color:#f92672">=</span> runtimeVisibleTypeAnnotationsOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>numAnnotations<span style="color:#f92672">--</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// Parse the target_type, target_info and target_path fields.
+</span><span style="color:#75715e"></span>        currentAnnotationOffset <span style="color:#f92672">=</span> readTypeAnnotationTarget<span style="color:#f92672">(</span>context<span style="color:#f92672">,</span> currentAnnotationOffset<span style="color:#f92672">);</span>
+        <span style="color:#75715e">// Parse the type_index field.
+</span><span style="color:#75715e"></span>        String annotationDescriptor <span style="color:#f92672">=</span> readUTF8<span style="color:#f92672">(</span>currentAnnotationOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+        currentAnnotationOffset <span style="color:#f92672">+=</span> 2<span style="color:#f92672">;</span>
+        <span style="color:#75715e">// Parse num_element_value_pairs and element_value_pairs and visit these values.
+</span><span style="color:#75715e"></span>        currentAnnotationOffset <span style="color:#f92672">=</span>
+            readElementValues<span style="color:#f92672">(</span>
+                classVisitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visitTypeAnnotation</span><span style="color:#f92672">(</span>
+                    context<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTypeAnnotationTarget</span><span style="color:#f92672">,</span>
+                    context<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTypeAnnotationTargetPath</span><span style="color:#f92672">,</span>
+                    annotationDescriptor<span style="color:#f92672">,</span>
+                    <span style="color:#75715e">/* visible = */</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">),</span>
+                currentAnnotationOffset<span style="color:#f92672">,</span>
+                <span style="color:#75715e">/* named = */</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">,</span>
+                charBuffer<span style="color:#f92672">);</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
 
-    // Visit the RuntimeInvisibleAnnotations attribute.
-    if (runtimeInvisibleAnnotationsOffset != 0) {
-      int numAnnotations = readUnsignedShort(runtimeInvisibleAnnotationsOffset);
-      int currentAnnotationOffset = runtimeInvisibleAnnotationsOffset + 2;
-      while (numAnnotations-- &gt; 0) {
-        // Parse the type_index field.
-        String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
-        currentAnnotationOffset += 2;
-        // Parse num_element_value_pairs and element_value_pairs and visit these values.
-        currentAnnotationOffset =
-            readElementValues(
-                classVisitor.visitAnnotation(annotationDescriptor, /* visible = */ false),
-                currentAnnotationOffset,
-                /* named = */ true,
-                charBuffer);
-      }
-    }
+    <span style="color:#75715e">// Visit the RuntimeInvisibleTypeAnnotations attribute.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>runtimeInvisibleTypeAnnotationsOffset <span style="color:#f92672">!=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">int</span> numAnnotations <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>runtimeInvisibleTypeAnnotationsOffset<span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">int</span> currentAnnotationOffset <span style="color:#f92672">=</span> runtimeInvisibleTypeAnnotationsOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>numAnnotations<span style="color:#f92672">--</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// Parse the target_type, target_info and target_path fields.
+</span><span style="color:#75715e"></span>        currentAnnotationOffset <span style="color:#f92672">=</span> readTypeAnnotationTarget<span style="color:#f92672">(</span>context<span style="color:#f92672">,</span> currentAnnotationOffset<span style="color:#f92672">);</span>
+        <span style="color:#75715e">// Parse the type_index field.
+</span><span style="color:#75715e"></span>        String annotationDescriptor <span style="color:#f92672">=</span> readUTF8<span style="color:#f92672">(</span>currentAnnotationOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">);</span>
+        currentAnnotationOffset <span style="color:#f92672">+=</span> 2<span style="color:#f92672">;</span>
+        <span style="color:#75715e">// Parse num_element_value_pairs and element_value_pairs and visit these values.
+</span><span style="color:#75715e"></span>        currentAnnotationOffset <span style="color:#f92672">=</span>
+            readElementValues<span style="color:#f92672">(</span>
+                classVisitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visitTypeAnnotation</span><span style="color:#f92672">(</span>
+                    context<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTypeAnnotationTarget</span><span style="color:#f92672">,</span>
+                    context<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTypeAnnotationTargetPath</span><span style="color:#f92672">,</span>
+                    annotationDescriptor<span style="color:#f92672">,</span>
+                    <span style="color:#75715e">/* visible = */</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">),</span>
+                currentAnnotationOffset<span style="color:#f92672">,</span>
+                <span style="color:#75715e">/* named = */</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">,</span>
+                charBuffer<span style="color:#f92672">);</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
 
-    // Visit the RuntimeVisibleTypeAnnotations attribute.
-    if (runtimeVisibleTypeAnnotationsOffset != 0) {
-      int numAnnotations = readUnsignedShort(runtimeVisibleTypeAnnotationsOffset);
-      int currentAnnotationOffset = runtimeVisibleTypeAnnotationsOffset + 2;
-      while (numAnnotations-- &gt; 0) {
-        // Parse the target_type, target_info and target_path fields.
-        currentAnnotationOffset = readTypeAnnotationTarget(context, currentAnnotationOffset);
-        // Parse the type_index field.
-        String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
-        currentAnnotationOffset += 2;
-        // Parse num_element_value_pairs and element_value_pairs and visit these values.
-        currentAnnotationOffset =
-            readElementValues(
-                classVisitor.visitTypeAnnotation(
-                    context.currentTypeAnnotationTarget,
-                    context.currentTypeAnnotationTargetPath,
-                    annotationDescriptor,
-                    /* visible = */ true),
-                currentAnnotationOffset,
-                /* named = */ true,
-                charBuffer);
-      }
-    }
+    <span style="color:#75715e">// 访问非标准的属性
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Visit the non standard attributes.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>attributes <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#75715e">// Copy and reset the nextAttribute field so that it can also be used in ClassWriter.
+</span><span style="color:#75715e"></span>      Attribute nextAttribute <span style="color:#f92672">=</span> attributes<span style="color:#f92672">.</span><span style="color:#a6e22e">nextAttribute</span><span style="color:#f92672">;</span>
+      attributes<span style="color:#f92672">.</span><span style="color:#a6e22e">nextAttribute</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+      classVisitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visitAttribute</span><span style="color:#f92672">(</span>attributes<span style="color:#f92672">);</span>
+      attributes <span style="color:#f92672">=</span> nextAttribute<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
 
-    // Visit the RuntimeInvisibleTypeAnnotations attribute.
-    if (runtimeInvisibleTypeAnnotationsOffset != 0) {
-      int numAnnotations = readUnsignedShort(runtimeInvisibleTypeAnnotationsOffset);
-      int currentAnnotationOffset = runtimeInvisibleTypeAnnotationsOffset + 2;
-      while (numAnnotations-- &gt; 0) {
-        // Parse the target_type, target_info and target_path fields.
-        currentAnnotationOffset = readTypeAnnotationTarget(context, currentAnnotationOffset);
-        // Parse the type_index field.
-        String annotationDescriptor = readUTF8(currentAnnotationOffset, charBuffer);
-        currentAnnotationOffset += 2;
-        // Parse num_element_value_pairs and element_value_pairs and visit these values.
-        currentAnnotationOffset =
-            readElementValues(
-                classVisitor.visitTypeAnnotation(
-                    context.currentTypeAnnotationTarget,
-                    context.currentTypeAnnotationTargetPath,
-                    annotationDescriptor,
-                    /* visible = */ false),
-                currentAnnotationOffset,
-                /* named = */ true,
-                charBuffer);
-      }
-    }
+    <span style="color:#75715e">// Visit the NestedMembers attribute.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>nestMembersOffset <span style="color:#f92672">!=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">int</span> numberOfNestMembers <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>nestMembersOffset<span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">int</span> currentNestMemberOffset <span style="color:#f92672">=</span> nestMembersOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>numberOfNestMembers<span style="color:#f92672">--</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        classVisitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visitNestMemberExperimental</span><span style="color:#f92672">(</span>readClass<span style="color:#f92672">(</span>currentNestMemberOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">));</span>
+        currentNestMemberOffset <span style="color:#f92672">+=</span> 2<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
 
-    // 访问非标准的属性
-    // Visit the non standard attributes.
-    while (attributes != null) {
-      // Copy and reset the nextAttribute field so that it can also be used in ClassWriter.
-      Attribute nextAttribute = attributes.nextAttribute;
-      attributes.nextAttribute = null;
-      classVisitor.visitAttribute(attributes);
-      attributes = nextAttribute;
-    }
+    <span style="color:#75715e">// Visit the InnerClasses attribute.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>innerClassesOffset <span style="color:#f92672">!=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">int</span> numberOfClasses <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>innerClassesOffset<span style="color:#f92672">);</span>
+      <span style="color:#66d9ef">int</span> currentClassesOffset <span style="color:#f92672">=</span> innerClassesOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>numberOfClasses<span style="color:#f92672">--</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        classVisitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visitInnerClass</span><span style="color:#f92672">(</span>
+            readClass<span style="color:#f92672">(</span>currentClassesOffset<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">),</span>
+            readClass<span style="color:#f92672">(</span>currentClassesOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">),</span>
+            readUTF8<span style="color:#f92672">(</span>currentClassesOffset <span style="color:#f92672">+</span> 4<span style="color:#f92672">,</span> charBuffer<span style="color:#f92672">),</span>
+            readUnsignedShort<span style="color:#f92672">(</span>currentClassesOffset <span style="color:#f92672">+</span> 6<span style="color:#f92672">));</span>
+        currentClassesOffset <span style="color:#f92672">+=</span> 8<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
 
-    // Visit the NestedMembers attribute.
-    if (nestMembersOffset != 0) {
-      int numberOfNestMembers = readUnsignedShort(nestMembersOffset);
-      int currentNestMemberOffset = nestMembersOffset + 2;
-      while (numberOfNestMembers-- &gt; 0) {
-        classVisitor.visitNestMemberExperimental(readClass(currentNestMemberOffset, charBuffer));
-        currentNestMemberOffset += 2;
-      }
-    }
+    <span style="color:#75715e">// 访问字段和方法
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Visit the fields and methods.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> fieldsCount <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>currentOffset<span style="color:#f92672">);</span>
+    currentOffset <span style="color:#f92672">+=</span> 2<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>fieldsCount<span style="color:#f92672">--</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      currentOffset <span style="color:#f92672">=</span> readField<span style="color:#f92672">(</span>classVisitor<span style="color:#f92672">,</span> context<span style="color:#f92672">,</span> currentOffset<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">int</span> methodsCount <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>currentOffset<span style="color:#f92672">);</span>
+    currentOffset <span style="color:#f92672">+=</span> 2<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>methodsCount<span style="color:#f92672">--</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      currentOffset <span style="color:#f92672">=</span> readMethod<span style="color:#f92672">(</span>classVisitor<span style="color:#f92672">,</span> context<span style="color:#f92672">,</span> currentOffset<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
 
-    // Visit the InnerClasses attribute.
-    if (innerClassesOffset != 0) {
-      int numberOfClasses = readUnsignedShort(innerClassesOffset);
-      int currentClassesOffset = innerClassesOffset + 2;
-      while (numberOfClasses-- &gt; 0) {
-        classVisitor.visitInnerClass(
-            readClass(currentClassesOffset, charBuffer),
-            readClass(currentClassesOffset + 2, charBuffer),
-            readUTF8(currentClassesOffset + 4, charBuffer),
-            readUnsignedShort(currentClassesOffset + 6));
-        currentClassesOffset += 8;
-      }
-    }
-
-    // 访问字段和方法
-    // Visit the fields and methods.
-    int fieldsCount = readUnsignedShort(currentOffset);
-    currentOffset += 2;
-    while (fieldsCount-- &gt; 0) {
-      currentOffset = readField(classVisitor, context, currentOffset);
-    }
-    int methodsCount = readUnsignedShort(currentOffset);
-    currentOffset += 2;
-    while (methodsCount-- &gt; 0) {
-      currentOffset = readMethod(classVisitor, context, currentOffset);
-    }
-
-    // Visit the end of the class.
-    classVisitor.visitEnd();
-  }
-</code></pre>
-
-<h3 id="小结">小结</h3>
-
+    <span style="color:#75715e">// Visit the end of the class.
+</span><span style="color:#75715e"></span>    classVisitor<span style="color:#f92672">.</span><span style="color:#a6e22e">visitEnd</span><span style="color:#f92672">();</span>
+  <span style="color:#f92672">}</span>
+</code></pre></div><h3 id="小结">小结</h3>
 <p>其实，将整个 ClassReader 理解成一个对 .class 字节文件的解析器不失为一种可行的认知。</p>
-
 <ol>
 <li>在构造方法中完成对 .class 文件 minor_version, major_version 的确认。</li>
 <li>继而完成对整个 Constants_pool 的解析</li>
 <li>以及 BootstarpMethod 属性的定位</li>
 <li>之后在 accept(&hellip;) 方法中逐一调用相应的访问者实现类实现对不同内容的访问。</li>
 </ol>
-
 <p>但是，要注意的是，ClassReader 绝对不会涉及到对其解析的 .class 文件内容的写操作。
 所有的写操作都基于不同的目的，在 ClassVisitor 中实现。</p>
-
 <h2 id="classvisitor">ClassVisitor</h2>
-
 <p>Java .class 的访问者，按照严格的顺序规范逐一调用</p>
-
 <p>visit
 [ visitSource ] [ visitModule ][ visitNestHost ][ visitOuterClass ]
 ( visitAnnotation | visitTypeAnnotation | visitAttribute )*
 ( visitNestMember | visitInnerClass | visitField | visitMethod )*
 visitEnd.</p>
-
 <p>各个 visitXXX 方法</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ClassVisitor</span> <span style="color:#f92672">{</span>
 
-<pre><code class="language-java">
-public abstract class ClassVisitor {
+  <span style="color:#75715e">/**
+</span><span style="color:#75715e">   * 访问类的首部
+</span><span style="color:#75715e">      */</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">visit</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> version<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> access<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> String name<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> String signature<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> String superName<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> String<span style="color:#f92672">[]</span> interfaces<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
 
-  /**
-   * 访问类的首部
-      */
-    public void visit(final int version, final int access, final String name, final String signature, final String superName, final String[] interfaces) {}
+  <span style="color:#75715e">/**
+</span><span style="color:#75715e">   * 访问类的源文件名等
+</span><span style="color:#75715e">      */</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">visitSource</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> String source<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> String debug<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
 
-  /**
-   * 访问类的源文件名等
-      */
-    public void visitSource(final String source, final String debug) {}
+  <span style="color:#75715e">/**
+</span><span style="color:#75715e">   * 访问与类关联的模块
+</span><span style="color:#75715e">      */</span>
+    <span style="color:#66d9ef">public</span> ModuleVisitor <span style="color:#a6e22e">visitModule</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> String name<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> access<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> String version<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
 
-  /**
-   * 访问与类关联的模块
-      */
-    public ModuleVisitor visitModule(final String name, final int access, final String version) {}
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">visitOuterClass</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> String owner<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> String name<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> String descriptor<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
 
-  public void visitOuterClass(final String owner, final String name, final String descriptor) {}
+  <span style="color:#66d9ef">public</span> AnnotationVisitor <span style="color:#a6e22e">visitAnnotation</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> String descriptor<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> visible<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
 
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {}
+  <span style="color:#66d9ef">public</span> AnnotationVisitor <span style="color:#a6e22e">visitTypeAnnotation</span><span style="color:#f92672">(</span>
+      <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> typeRef<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> TypePath typePath<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> String descriptor<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> visible<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
 
-  public AnnotationVisitor visitTypeAnnotation(
-      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {}
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">visitAttribute</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Attribute attribute<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
 
-  public void visitAttribute(final Attribute attribute) {}
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">visitInnerClass</span><span style="color:#f92672">(</span>
+      <span style="color:#66d9ef">final</span> String name<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> String outerName<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> String innerName<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> access<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
 
-  public void visitInnerClass(
-      final String name, final String outerName, final String innerName, final int access) {}
+  <span style="color:#75715e">/**
+</span><span style="color:#75715e">   * 访问类的变量
+</span><span style="color:#75715e">      */</span>
+    <span style="color:#66d9ef">public</span> FieldVisitor <span style="color:#a6e22e">visitField</span><span style="color:#f92672">(</span>
+      <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> access<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">final</span> String name<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">final</span> String descriptor<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">final</span> String signature<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">final</span> Object value<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
 
-  /**
-   * 访问类的变量
-      */
-    public FieldVisitor visitField(
-      final int access,
-      final String name,
-      final String descriptor,
-      final String signature,
-      final Object value) {}
+  <span style="color:#75715e">/**
+</span><span style="color:#75715e">   * 访问类的方法
+</span><span style="color:#75715e">      */</span>
+    <span style="color:#66d9ef">public</span> MethodVisitor <span style="color:#a6e22e">visitMethod</span><span style="color:#f92672">(</span>
+      <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> access<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">final</span> String name<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">final</span> String descriptor<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">final</span> String signature<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">final</span> String<span style="color:#f92672">[]</span> exceptions<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
 
-  /**
-   * 访问类的方法
-      */
-    public MethodVisitor visitMethod(
-      final int access,
-      final String name,
-      final String descriptor,
-      final String signature,
-      final String[] exceptions) {}
-
-  public void visitEnd() {}
-}
-</code></pre>
-
-<p>随着 visitXxx() 方法的逐一执行，ClassVisitor 将对当前的 .class 文件越来越熟悉，并逐渐补全常量池(由 SymbolTable 持有并维护)</p>
-
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">visitEnd</span><span style="color:#f92672">()</span> <span style="color:#f92672">{}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>随着 visitXxx() 方法的逐一执行，ClassVisitor 将对当前的 .class 文件越来越熟悉，并逐渐补全常量池(由 SymbolTable 持有并维护)</p>
 <h2 id="总结">总结</h2>
-
 <p>到此为止，对整个 ClassReader &amp; ClassVisitor 将有一个基础而简单的印象。</p>
-
 <p>ClassReader 通过对 .class 文件字节码的解析而获得对这个类的具体印象(更多的偏向是随意访问 .class 的各种细节)。</p>
-
 <p>ClassVisitor 通过 visitXxx(&hellip;) 方法，由其它对象(可以是 ClassReader, 也可以直接是 Coder)逐渐对其开放一些 .class 的细节，
 但需要 ClassVisitor 自行维护获得的内容(如果有必要的话)。由此得到对 .class 全部内容的了解(当然，如果本身 visitXxx() 得到的内容不全，则了解的自然有限)。</p>
-
-<pre><code class="language-plain">  __                    __                  
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
-| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+| |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
 |_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
                  |___/                |___/ 
-</code></pre>
+</code></pre></div>
         </div>
 
         <div class="row middle-xs">

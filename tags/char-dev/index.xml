@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Char Dev on Utop&#39;s Blog</title>
@@ -18,9 +18,7 @@
       
       <guid>https://www.ffutop.com/posts/2018-12-28-%E7%90%86%E8%A7%A3-linux-kernel-7-%E5%AD%97%E7%AC%A6%E8%AE%BE%E5%A4%87/</guid>
       <description>&lt;p&gt;相比较于块设备，字符设备无论从物理认知上，抑或是理论理解上，都存在着相当大的入门门槛。特别是在将字符设备与控制台、命令行终端混淆的时候，就更加难以进行分辨了。&lt;/p&gt;
-
 &lt;p&gt;回到字符设备本身，字符设备与块设备最主要的区别就在于块设备可以随机读写，而字符设备只能够顺序读，顺序写。&lt;/p&gt;
-
 &lt;p&gt;那么，常见的字符设备有什么？显示器、键盘、鼠标。&lt;/p&gt;</description>
     </item>
     

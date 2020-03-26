@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>JVM on Utop&#39;s Blog</title>
@@ -18,10 +18,8 @@
       
       <guid>https://www.ffutop.com/posts/2018-07-24-jvm-%E6%8C%87%E4%BB%A4%E7%AE%80%E6%9E%90/</guid>
       <description>&lt;p&gt;在之前描述过包括 ASM, CGlib, Java Proxy 的基本内容之后，本文将就更为基础的 JVM 指令集进行简单而有效的介绍。&lt;/p&gt;
-
 &lt;p&gt;当然，在开始正文前，读者需要了解到，JVM 指令集这种类似于汇编的规范性内容，包含一百多个指令，若要求一一介绍。
 那么，直接阅读 &lt;a href=&#34;https://docs.oracle.com/javase/specs/jvms/se8/html/index.html&#34;&gt;官方文档&lt;/a&gt; 绝对是比本文的内容更为详实且准确。&lt;/p&gt;
-
 &lt;p&gt;这篇文档的目的，只是为了使读者建立起关于 JVM 指令集基本的常识性观念。&lt;/p&gt;</description>
     </item>
     
@@ -32,8 +30,7 @@
       
       <guid>https://www.ffutop.com/posts/2018-06-21-java-memory-model/</guid>
       <description>&lt;h2 id=&#34;jvm-运行时数据区&#34;&gt;JVM 运行时数据区&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

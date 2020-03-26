@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Authenticate on Utop&#39;s Blog</title>
@@ -18,11 +18,9 @@
       
       <guid>https://www.ffutop.com/posts/2019-03-19-%E8%AE%A4%E8%AF%81%E4%B8%8E%E6%8E%88%E6%9D%83%E7%AE%80%E8%BF%B0/</guid>
       <description>&lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;在大多数系统中，都或多或少需要认证授权模型/系统的支持。&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;p&gt;认证/授权是什么？最简单的，我们的系统要求用户必须在“登录”之后才允许进行一些操作。“登录”的过程就是认证；而区别与未登录状态，只允许登录用户进行一些操作，这就是授权。认证与授权相互独立，有协同配合，共同支撑起系统对安全的基本要求。&lt;/p&gt;</description>
     </item>
     
