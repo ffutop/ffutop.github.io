@@ -13,10 +13,10 @@
     
     <item>
       <title>Netfilter 导览 - based on iptables</title>
-      <link>https://www.ffutop.com/2019/08/06/netfilter-%E5%AF%BC%E8%A7%88-based-on-iptables/</link>
+      <link>https://www.ffutop.com/posts/2019-08-06-netfilter-%E5%AF%BC%E8%A7%88-based-on-iptables/</link>
       <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/2019/08/06/netfilter-%E5%AF%BC%E8%A7%88-based-on-iptables/</guid>
+      <guid>https://www.ffutop.com/posts/2019-08-06-netfilter-%E5%AF%BC%E8%A7%88-based-on-iptables/</guid>
       <description>&lt;p&gt;&lt;code&gt;Netfilter&lt;/code&gt;，内核中用于管理网络数据包的重要网络模块；&lt;code&gt;iptables&lt;/code&gt;，运行在用户空间，用于控制 &lt;code&gt;Netfilter&lt;/code&gt; 模块的一种软件。需要注意的，&lt;code&gt;iptables&lt;/code&gt; 只能控制 IPv4 数据包，对于 IPv6 数据包，需要使用 &lt;code&gt;ip6tables&lt;/code&gt; 。&lt;/p&gt;</description>
     </item>
     

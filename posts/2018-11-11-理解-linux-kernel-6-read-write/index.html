@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.55.6" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2018-11-11-%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2018-11-11-%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/www.ffutop.com\/"
+      },
+      "articleSection" : "posts",
+      "name" : "理解 Linux Kernel (6) - read \x26 write",
+      "headline" : "理解 Linux Kernel (6) - read \x26 write",
+      "description" : "\x3cp\x3e\x3ca href=\x22https:\/\/dormouse-none.github.io\/2018-10-14-understand-Kernel-5\/\x22\x3e前一篇\x3c\/a\x3e已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。\x3c\/p\x3e\n\n\x3cp\x3e首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式\x3c\/p\x3e\n\n\x3cpre\x3e\x3ccode class=\x22language-c\x22\x3e#include \x26lt;stdio.h\x26gt;\n#include \x26lt;stdlib.h\x26gt;\n#include \x26lt;string.h\x26gt;\n#include \x26lt;unistd.h\x26gt;\n#include \x26lt;fcntl.h\x26gt;\n#include \x26lt;errno.h\x26gt;\n#include \x26lt;sys\/types.h\x26gt;\n#include \x26lt;sys\/stat.h\x26gt;\n\nint panic()\n{\n    fprintf(stderr, \x26quot;%s (errno=%d)\\n\x26quot;, strerror(errno), errno);\n    return -1;\n}\n\nint main(int argc, char *argv[])\n{\n    \/* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) *\/\n    int fd = open(\x26quot;\/root\/frw.txt\x26quot;, O_RDWR | O_CREAT);\n    if (fd == -1)\n        return panic();\n\n    \/* 向文件写入 Hello World! 共计 12 个字符 *\/\n    ssize_t wsize = write(fd, \x26quot;Hello World!\x26quot;, 12);\n    if (wsize == -1)\n        return panic();\n\n    \/* 重定位文件读写指针 *\/\n    off_t off = lseek(fd, 0, SEEK_SET);\n    if (off == -1)\n        return panic();\n\n    char* buf = (char *) malloc(wsize);\n    \/* 读取文件内容 *\/\n    ssize_t rsize = read(fd, buf, wsize);\n    if (rsize == -1)\n        return panic();\n\n    printf(\x26quot;%s\\n\x26quot;, buf);\n    free(buf);\n    \/* 关闭文件 *\/\n    int stat = close(fd);\n    if (stat == -1)\n        return panic();\n\n    return 0;\n}\n\x3c\/code\x3e\x3c\/pre\x3e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "11110",
+      "datePublished": "2018-11-11 00:00:00 \x2b0000 UTC",
+      "dateModified" : "2018-11-11 00:00:00 \x2b0000 UTC",
+      "url" : "https:\/\/www.ffutop.com\/posts\/2018-11-11-%E7%90%86%E8%A7%A3-linux-kernel-6-read-write\/",
+      "keywords" : [ "Linux","Kernel","File System","read \x26 write", ]
+  }
+</script>
+<title>理解 Linux Kernel (6) - read &amp; write - Utop&#39;s Blog</title>
+  <meta property="og:title" content="理解 Linux Kernel (6) - read &amp; write - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="前一篇已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。
+
+首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+
+int panic()
+{
+    fprintf(stderr, &quot;%s (errno=%d)\n&quot;, strerror(errno), errno);
+    return -1;
+}
+
+int main(int argc, char *argv[])
+{
+    /* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */
+    int fd = open(&quot;/root/frw.txt&quot;, O_RDWR | O_CREAT);
+    if (fd == -1)
+        return panic();
+
+    /* 向文件写入 Hello World! 共计 12 个字符 */
+    ssize_t wsize = write(fd, &quot;Hello World!&quot;, 12);
+    if (wsize == -1)
+        return panic();
+
+    /* 重定位文件读写指针 */
+    off_t off = lseek(fd, 0, SEEK_SET);
+    if (off == -1)
+        return panic();
+
+    char* buf = (char *) malloc(wsize);
+    /* 读取文件内容 */
+    ssize_t rsize = read(fd, buf, wsize);
+    if (rsize == -1)
+        return panic();
+
+    printf(&quot;%s\n&quot;, buf);
+    free(buf);
+    /* 关闭文件 */
+    int stat = close(fd);
+    if (stat == -1)
+        return panic();
+
+    return 0;
+}
+" />
+  <meta name="description" content="前一篇已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。
+
+首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+
+int panic()
+{
+    fprintf(stderr, &quot;%s (errno=%d)\n&quot;, strerror(errno), errno);
+    return -1;
+}
+
+int main(int argc, char *argv[])
+{
+    /* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */
+    int fd = open(&quot;/root/frw.txt&quot;, O_RDWR | O_CREAT);
+    if (fd == -1)
+        return panic();
+
+    /* 向文件写入 Hello World! 共计 12 个字符 */
+    ssize_t wsize = write(fd, &quot;Hello World!&quot;, 12);
+    if (wsize == -1)
+        return panic();
+
+    /* 重定位文件读写指针 */
+    off_t off = lseek(fd, 0, SEEK_SET);
+    if (off == -1)
+        return panic();
+
+    char* buf = (char *) malloc(wsize);
+    /* 读取文件内容 */
+    ssize_t rsize = read(fd, buf, wsize);
+    if (rsize == -1)
+        return panic();
+
+    printf(&quot;%s\n&quot;, buf);
+    free(buf);
+    /* 关闭文件 */
+    int stat = close(fd);
+    if (stat == -1)
+        return panic();
+
+    return 0;
+}
+" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+
+<body>
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">理解 Linux Kernel (6) - read &amp; write</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2018-11-11 00:00:00 UTC">
+                11 Nov 2018
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p><a href="https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/">前一篇</a>已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。</p>
+
+<p>首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+
+int panic()
+{
+    fprintf(stderr, &quot;%s (errno=%d)\n&quot;, strerror(errno), errno);
+    return -1;
+}
+
+int main(int argc, char *argv[])
+{
+    /* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */
+    int fd = open(&quot;/root/frw.txt&quot;, O_RDWR | O_CREAT);
+    if (fd == -1)
+        return panic();
+
+    /* 向文件写入 Hello World! 共计 12 个字符 */
+    ssize_t wsize = write(fd, &quot;Hello World!&quot;, 12);
+    if (wsize == -1)
+        return panic();
+
+    /* 重定位文件读写指针 */
+    off_t off = lseek(fd, 0, SEEK_SET);
+    if (off == -1)
+        return panic();
+
+    char* buf = (char *) malloc(wsize);
+    /* 读取文件内容 */
+    ssize_t rsize = read(fd, buf, wsize);
+    if (rsize == -1)
+        return panic();
+
+    printf(&quot;%s\n&quot;, buf);
+    free(buf);
+    /* 关闭文件 */
+    int stat = close(fd);
+    if (stat == -1)
+        return panic();
+
+    return 0;
+}
+</code></pre>
+
+<h2 id="高速缓冲区初始化">高速缓冲区初始化</h2>
+
+<p>上一篇已经描述过了，文件系统的结构、包括数据，都是持久化地存储在存储设备中的。</p>
+
+<p>但是，我们应该也隐约的了解另一个事实，文件读写操作并不会直接操作存储设备上的数据，而是先经过一个称之为高速缓冲的内存区域。</p>
+
+<p>那么，高速缓冲是什么? 究竟承担什么工作? 先来看看它的初始化流程吧。</p>
+
+<p>首先回到 <code>main.c</code> (内核代码的主函数)</p>
+
+<pre><code class="language-c">void main(void)	
+{
+ 	ROOT_DEV = ORIG_ROOT_DEV;
+ 	drive_info = DRIVE_INFO;
+	memory_end = (1&lt;&lt;20) + (EXT_MEM_K&lt;&lt;10);
+	memory_end &amp;= 0xfffff000;
+	if (memory_end &gt; 16*1024*1024)
+		memory_end = 16*1024*1024;
+	if (memory_end &gt; 12*1024*1024)
+		buffer_memory_end = 4*1024*1024;
+	else if (memory_end &gt; 6*1024*1024)
+		buffer_memory_end = 2*1024*1024;
+	else
+		buffer_memory_end = 1*1024*1024;
+	main_memory_start = buffer_memory_end;
+#ifdef RAMDISK
+	main_memory_start += rd_init(main_memory_start, RAMDISK*1024);
+#endif
+	mem_init(main_memory_start,memory_end);
+	trap_init();
+	blk_dev_init();
+	chr_dev_init();
+	tty_init();
+	time_init();
+	sched_init();                       // 第四篇已经讲过，负责任务调度模块的初始化
+	buffer_init(buffer_memory_end);     // 本篇的起始，负责缓冲区的初始化
+	hd_init();
+	floppy_init();
+	sti();
+	move_to_user_mode();
+	if (!fork()) {		/* we count on this going ok */
+		init();
+	}
+	for(;;) pause();
+}
+</code></pre>
+
+<p><code>buffer_init(buffer_memory_end);</code> 用来初始化缓冲区。此处有几个原因:</p>
+
+<ol>
+<li><p>CPU 读写操作如果直接操作外存，速度上是一个极大的考验。毕竟内存已经较之 CPU 速度慢，外存的读写速度就更慢了。</p></li>
+
+<li><p>解耦，其实读写操作并不仅仅发生在外存(块存储设备)，同样的，字符设备等等也都会需要读写操作，增加中间层可以封装变化。</p></li>
+
+<li><p>更多，个人了解有限&hellip;</p></li>
+</ol>
+
+<pre><code class="language-c">struct buffer_head {
+ char * b_data;
+ unsigned long b_blocknr;
+ unsigned short b_dev;
+ unsigned char b_uptodate;
+ unsigned char b_dirt;
+ unsigned char b_count;
+ unsigned char b_lock;
+ struct task_struct * b_wait;
+ struct buffer_head * b_prev;
+ struct buffer_head * b_next;
+ struct buffer_head * b_prev_free;
+ struct buffer_head * b_next_free;
+};
+
+/* from fs/buffer.c */
+void buffer_init(long buffer_end)
+{
+	struct buffer_head * h = start_buffer;
+	void * b;
+	int i;
+
+	if (buffer_end == 1&lt;&lt;20)
+		b = (void *) (640*1024);
+	else
+		b = (void *) buffer_end;
+	while ( (b -= BLOCK_SIZE) &gt;= ((void *) (h+1)) ) {
+		h-&gt;b_dev = 0;
+		h-&gt;b_dirt = 0;
+		h-&gt;b_count = 0;
+		h-&gt;b_lock = 0;
+		h-&gt;b_uptodate = 0;
+		h-&gt;b_wait = NULL;
+		h-&gt;b_next = NULL;
+		h-&gt;b_prev = NULL;
+		h-&gt;b_data = (char *) b;
+		h-&gt;b_prev_free = h-1;
+		h-&gt;b_next_free = h+1;
+		h++;
+		NR_BUFFERS++;
+        /* 跳过 640K ~ 1M 的显存和 BIOS RAM 部分 */
+		if (b == (void *) 0x100000)
+			b = (void *) 0xA0000;
+	}
+	h--;
+	free_list = start_buffer;
+	free_list-&gt;b_prev_free = h;
+	h-&gt;b_next_free = free_list;
+	for (i=0;i&lt;NR_HASH;i++)
+		hash_table[i]=NULL;
+}
+</code></pre>
+
+<p>缓冲块的所有关键信息都由 <code>buffer_head</code> 数据结构进行记录, 至于有多少个 <code>buffer_head</code>? 只能说能划分多少就划分多少。</p>
+
+<p>比较直观的结构信息如下</p>
+
+<p><img src="https://ws2.sinaimg.cn/large/006tNbRwly1fwy2iag1exj31kw0k1dgb.jpg" alt="" /></p>
+
+<p>在 <code>main.c</code> 中已经提前确认了内核程序占用内存的大小，缓冲区大小以及主内存大小。</p>
+
+<p>在高速缓冲区的开始位置，都用来存储 <code>buffer_head</code> 的信息，与每个缓冲块(从缓冲区结束位置开始分配)一一对应，直到中间某个位置不足以分配缓冲块为止。</p>
+
+<p>另外的信息，就是可以看到一个 <code>hash_table</code> 数据结构了。</p>
+
+<p>应该都能够想象，每个缓存块与外存中的数据块相对应，通过设备号 + 数据块号进行唯一定位。但是，如何快速查找需要操作的数据块是否已经存在与高速缓存中了呢? 显然直接遍历查找是不太可靠的办法。采用开放地址法的哈希表能够协助快速定位缓冲块。</p>
+
+<h2 id="挂载文件系统">挂载文件系统</h2>
+
+<p>既然高速缓冲区都准备就绪了，那么文件系统是否已经挂载了呢? 很遗憾，知道 <code>main()</code> 调用 <code>init()</code> 函数之前，文件系统依然没有挂载，也就是说，CPU 仍然只能通过基本输入输出对存储设备进行相当初级的 IO 操作。</p>
+
+<p>那么，什么时候才能去挂载根目录呢?</p>
+
+<pre><code class="language-c">/* from init/main.c */
+/* 由 main() 触发 */
+void init(void)
+{
+	int pid,i;
+    /* 这是比较重要的一环了，开始挂载的起始动作 */
+	setup((void *) &amp;drive_info);
+    ...
+}
+</code></pre>
+
+<p><code>setup</code> 函数做了什么呢？这是一个内嵌汇编，主要做的就是触发系统调用 <code>int 0x80</code></p>
+
+<pre><code class="language-asm">__inline__ int setup(void * BIOS) { 
+    long __res; 
+    __asm__ volatile (
+            &quot;int $0x80&quot; 
+            : &quot;=a&quot; (__res) 
+            : &quot;0&quot; (0),&quot;b&quot; ((long)(BIOS))
+    ); 
+    if (__res &gt;= 0) 
+        return (int) __res; 
+    errno = -__res; 
+    return -1; 
+}
+</code></pre>
+
+<p>其中看到给出的 <code>EAX = 0</code>, 查表(表在 <code>include/linux/sys.h</code> 里) 可以知道触发的是 <code>sys_setup</code> 函数(函数位于 <code>kernel/blk_drv/hd.c</code>)</p>
+
+<pre><code class="language-c">/* This may be used only once, enforced by 'static int callable' */
+int sys_setup(void * BIOS)
+{
+	static int callable = 1;
+	int i,drive;
+	unsigned char cmos_disks;
+	struct partition *p;
+	struct buffer_head * bh;
+
+    /* setup 只允许被调用一次 */
+	if (!callable)
+		return -1;
+	callable = 0;
+    /* 可以强制在源码中指定硬盘参数, 所以加了宏定义作判断*/
+#ifndef HD_TYPE
+	for (drive=0 ; drive&lt;2 ; drive++) {
+		hd_info[drive].cyl = *(unsigned short *) BIOS;
+		hd_info[drive].head = *(unsigned char *) (2+BIOS);
+		hd_info[drive].wpcom = *(unsigned short *) (5+BIOS);
+		hd_info[drive].ctl = *(unsigned char *) (8+BIOS);
+		hd_info[drive].lzone = *(unsigned short *) (12+BIOS);
+		hd_info[drive].sect = *(unsigned char *) (14+BIOS);
+		BIOS += 16;
+	}
+	if (hd_info[1].cyl)
+		NR_HD=2;
+	else
+		NR_HD=1;
+#endif
+	for (i=0 ; i&lt;NR_HD ; i++) {
+		hd[i*5].start_sect = 0;
+		hd[i*5].nr_sects = hd_info[i].head*
+				hd_info[i].sect*hd_info[i].cyl;
+	}
+
+	/*
+		We querry CMOS about hard disks : it could be that
+		we have a SCSI/ESDI/etc controller that is BIOS
+		compatable with ST-506, and thus showing up in our
+		BIOS table, but not register compatable, and therefore
+		not present in CMOS.
+
+		Furthurmore, we will assume that our ST-506 drives
+		&lt;if any&gt; are the primary drives in the system, and
+		the ones reflected as drive 1 or 2.
+
+		The first drive is stored in the high nibble of CMOS
+		byte 0x12, the second in the low nibble.  This will be
+		either a 4 bit drive type or 0xf indicating use byte 0x19
+		for an 8 bit type, drive 1, 0x1a for drive 2 in CMOS.
+
+		Needless to say, a non-zero value means we have
+		an AT controller hard disk for that drive.
+
+
+	*/
+
+	if ((cmos_disks = CMOS_READ(0x12)) &amp; 0xf0)
+		if (cmos_disks &amp; 0x0f)
+			NR_HD = 2;
+		else
+			NR_HD = 1;
+	else
+		NR_HD = 0;
+	for (i = NR_HD ; i &lt; 2 ; i++) {
+		hd[i*5].start_sect = 0;
+		hd[i*5].nr_sects = 0;
+	}
+    /* 更进一步设置每个盘的参数 */
+	for (drive=0 ; drive&lt;NR_HD ; drive++) {
+        /* 0x300 和 0x305 分别代表两个硬盘 */
+        /* 读取每个硬盘的第一块数据 (1024B) */
+		if (!(bh = bread(0x300 + drive*5,0))) {
+			printk(&quot;Unable to read partition table of drive %d\n\r&quot;,
+				drive);
+			panic(&quot;&quot;);
+		}
+        /* 判断硬盘有效性 */
+		if (bh-&gt;b_data[510] != 0x55 || (unsigned char)
+		    bh-&gt;b_data[511] != 0xAA) {
+			printk(&quot;Bad partition table on drive %d\n\r&quot;,drive);
+			panic(&quot;&quot;);
+		}
+        /* 读取分区表 (位于 引导扇区第 446 字节开始处 */
+		p = 0x1BE + (void *)bh-&gt;b_data;
+		for (i=1;i&lt;5;i++,p++) {
+			hd[i+5*drive].start_sect = p-&gt;start_sect;
+			hd[i+5*drive].nr_sects = p-&gt;nr_sects;
+		}
+		brelse(bh);
+	}
+	if (NR_HD)
+		printk(&quot;Partition table%s ok.\n\r&quot;,(NR_HD&gt;1)?&quot;s&quot;:&quot;&quot;);
+	rd_load();              /* 尝试创建并加载虚拟盘 */
+	mount_root();           /* mount 根文件系统 */
+	return (0);
+}
+</code></pre>
+
+<p>终于到了挂载文件系统的时候了</p>
+
+<p><code>mount_root</code> 用来做初级的初始化工作。同时，上一节已经描述过了，存储设备的超级块是用了记录整个文件系统最重要的结构。</p>
+
+<p>那么通过将超级块的信息读取到内存，也就可以将内存与外存的文件系统相互联系起来了。</p>
+
+<p>下面这段代码最重要的内容就是 <code>read_super()</code> 函数了 .</p>
+
+<pre><code class="language-c">void mount_root(void)
+{
+	int i,free;
+	struct super_block * p;
+	struct m_inode * mi;
+
+	if (32 != sizeof (struct d_inode))
+		panic(&quot;bad i-node size&quot;);
+    /* 先初始化文件表，该版本操作系统限制最大同时打开 NR_FILE(64个) 文件 */
+	for(i=0;i&lt;NR_FILE;i++)
+        /* f_count = 0 表明没有被引用 */
+		file_table[i].f_count=0;
+    /* 如果引导盘是软盘的话，提示插入根文件系统盘 */
+	if (MAJOR(ROOT_DEV) == 2) {
+		printk(&quot;Insert root floppy and press ENTER&quot;);
+		wait_for_keypress();
+	}
+    /* 初始化内存超级块数据结构 (总共 8 个) */
+	for(p = &amp;super_block[0] ; p &lt; &amp;super_block[NR_SUPER] ; p++) {
+		p-&gt;s_dev = 0;
+		p-&gt;s_lock = 0;
+		p-&gt;s_wait = NULL;
+	}
+    /* Hint: 读取超级块的信息，挂载根文件系统重要的部分(代码请往下翻) */
+	if (!(p=read_super(ROOT_DEV)))
+		panic(&quot;Unable to mount root&quot;);
+    /* 读取文件系统的 1 号i节点 (即该设备上文件系统的根节点) */
+	if (!(mi=iget(ROOT_DEV,ROOT_INO)))
+		panic(&quot;Unable to read root i-node&quot;);
+	mi-&gt;i_count += 3 ;	/* NOTE! it is logically used 4 times, not 1 */
+	p-&gt;s_isup = p-&gt;s_imount = mi;
+    /* 应该还记得吧，current 指的是当前的任务(任务1)，以后所有的任务都会由任务1或任务1的子任务进行派生，也就意味着 current-&gt;root 会一直复制过去
+     * 到这里为止，应该认为根文件系统以及被挂载了。是不是跟被耍了一样?
+     */
+	current-&gt;pwd = mi;
+	current-&gt;root = mi;
+	free=0;
+	i=p-&gt;s_nzones;
+    /* 统计还有多少空闲数据块以及多少可用i节点 (附上一张启动过程中打印的信息) */
+	while (-- i &gt;= 0)
+		if (!set_bit(i&amp;8191,p-&gt;s_zmap[i&gt;&gt;13]-&gt;b_data))
+			free++;
+	printk(&quot;%d/%d free blocks\n\r&quot;,free,p-&gt;s_nzones);
+	free=0;
+	i=p-&gt;s_ninodes+1;
+	while (-- i &gt;= 0)
+		if (!set_bit(i&amp;8191,p-&gt;s_imap[i&gt;&gt;13]-&gt;b_data))
+			free++;
+	printk(&quot;%d/%d free inodes\n\r&quot;,free,p-&gt;s_ninodes);
+}
+</code></pre>
+
+<p><img src="https://ws4.sinaimg.cn/large/006tNbRwly1fwz8kvvgbpj30l006i3yb.jpg" alt="" /></p>
+
+<p>重要要的部分，<code>read_super(int dev)</code>，用于读取超级块的数据</p>
+
+<pre><code class="language-c">static struct super_block * read_super(int dev)
+{
+	struct super_block * s;
+	struct buffer_head * bh;
+	int i,block;
+
+	if (!dev)
+		return NULL;
+	check_disk_change(dev);
+    /* 如果该超级块已经在内存中了，那么就直接使用 (和这里挂载根文件系统的流程无关) */
+	if (s = get_super(dev))
+		return s;
+    /* 设备超级块不在内存中，就先找一个空闲的内存超级块 (总共维护 8 个超级块数据结构) */
+	for (s = 0+super_block ;; s++) {
+		if (s &gt;= NR_SUPER+super_block)
+			return NULL;
+		if (!s-&gt;s_dev)
+			break;
+	}
+	s-&gt;s_dev = dev;
+	s-&gt;s_isup = NULL;
+	s-&gt;s_imount = NULL;
+	s-&gt;s_time = 0;
+	s-&gt;s_rd_only = 0;
+	s-&gt;s_dirt = 0;
+	lock_super(s);
+    /* 通过 block read 读取设备第一个物理块 (每个物理块 1024 B) */
+	if (!(bh = bread(dev,1))) {
+		s-&gt;s_dev=0;
+		free_super(s);
+		return NULL;
+	}
+    /* 复制一份超级块的数据 */
+	*((struct d_super_block *) s) =
+		*((struct d_super_block *) bh-&gt;b_data);
+    /* 释放缓冲区的数据 */
+	brelse(bh);
+    /* 验证魔数, 该版本操作系统只支持 1.0 版 Minix 文件系统，魔数 0x137F */
+	if (s-&gt;s_magic != SUPER_MAGIC) {
+		s-&gt;s_dev = 0;
+		free_super(s);
+		return NULL;
+	}
+    /* 先清空内存中的数据 */
+	for (i=0;i&lt;I_MAP_SLOTS;i++)
+		s-&gt;s_imap[i] = NULL;
+	for (i=0;i&lt;Z_MAP_SLOTS;i++)
+		s-&gt;s_zmap[i] = NULL;
+	block=2;
+    /* 读取 i 节点位图块 */
+	for (i=0 ; i &lt; s-&gt;s_imap_blocks ; i++)
+		if (s-&gt;s_imap[i]=bread(dev,block))
+			block++;
+		else
+			break;
+    /* 读取数据块位图 */
+	for (i=0 ; i &lt; s-&gt;s_zmap_blocks ; i++)
+		if (s-&gt;s_zmap[i]=bread(dev,block))
+			block++;
+		else
+			break;
+	if (block != 2+s-&gt;s_imap_blocks+s-&gt;s_zmap_blocks) {
+		for(i=0;i&lt;I_MAP_SLOTS;i++)
+			brelse(s-&gt;s_imap[i]);
+		for(i=0;i&lt;Z_MAP_SLOTS;i++)
+			brelse(s-&gt;s_zmap[i]);
+		s-&gt;s_dev=0;
+		free_super(s);
+		return NULL;
+	}
+	s-&gt;s_imap[0]-&gt;b_data[0] |= 1;
+	s-&gt;s_zmap[0]-&gt;b_data[0] |= 1;
+    /* 与前面的 wait_on_super() 对应(解开lock标志) */
+	free_super(s);
+	return s;
+}
+</code></pre>
+
+<p>是不是觉得也没什么，就这样根文件系统已经挂载了? 毫无实感是吧。</p>
+
+<h2 id="extra-普通挂载">Extra: 普通挂载</h2>
+
+<p>既然讲过了根文件系统的挂载。那就顺带着讲讲普通文件系统的挂载吧。</p>
+
+<p>相信从命令上来讲应该比较简单也比较熟悉吧。<code>mount disk.img /mnt</code> 也算是挂载到 /mnt 下了</p>
+
+<p>但是，究竟是怎么实现的呢?</p>
+
+<pre><code class="language-c">int sys_mount(char * dev_name, char * dir_name, int rw_flag)
+{
+	struct m_inode * dev_i, * dir_i;
+	struct super_block * sb;
+	int dev;
+
+    /** 
+     * 省略大部分判断逻辑, 主要就是:
+     * 1. 判断 dev_name 所属的设备号，读取该设备上的超级块
+     * 2. 读取 dir_name (需要挂载到的位置)，判定是否允许被挂载(比如根节点不允许挂其它设备)
+     */
+    ...
+
+    /* 设置超级块的 mount 标志 */
+	sb-&gt;s_imount=dir_i;
+    /* 设置该 i 节点的 mount 标志 */
+	dir_i-&gt;i_mount=1;
+	dir_i-&gt;i_dirt=1;		/* NOTE! we don't iput(dir_i) */
+	return 0;			/* we do that in umount */
+}
+</code></pre>
+
+<h2 id="文件读写">文件读写</h2>
+
+<p>前面讲了这么多，终于到了最关心的部分了。当然，也并不是说前面的内容不重要，事实上，相当重要，只是都隐藏在了内核引导的过程中，且调用频度低，才导致了没有存在感。但是这恰恰才是支持文件读写的基石。</p>
+
+<p>不多说废话，下面就要开始文件读写的内容。</p>
+
+<h3 id="打开文件">打开文件</h3>
+
+<p>打开文件的函数原型是 <code>int open(const char * filename, int flag, ...);</code></p>
+
+<p>当然，此类系统调用最终的实现都是 <code>int 0x80</code> , 明确一个调用号，然后就陷入内核态了。</p>
+
+<p>内核态下调用的函数是: <code>int sys_open(const char * filename,int flag,int mode)</code></p>
+
+<p>来看看细节:</p>
+
+<pre><code class="language-c">int sys_open(const char * filename,int flag,int mode)
+{
+	struct m_inode * inode;
+	struct file * f;
+	int i,fd;
+
+    /*
+     * current 是由内核数据段维护的当前任务的指针
+     * umask 是指当前任务在新建文件时的默认掩码
+     *   例如 Linux 默认是 022, 即新建文件被禁止了组用户与其它用户的写权限
+     * 这里是先确定新建文件的权限
+     */
+	mode &amp;= 0777 &amp; ~current-&gt;umask;
+    /*
+     * 文件描述符，每个文件单独维护一套，以数字标记
+     * 找一个空闲的文件描述符项
+     */
+	for(fd=0 ; fd&lt;NR_OPEN ; fd++)
+		if (!current-&gt;filp[fd])
+			break;
+	if (fd&gt;=NR_OPEN)
+		return -EINVAL;
+    /*
+     * 顾名思义，设置在调用 exec() 函数时主动关闭的文件
+     * exec() 通常与 fork() 联用，fork() 负责复制一个任务，而 exec 负责替换新任务的代码和数据段(从而产生一个新的任务)
+     * 这里的声明即是复位 fd 位置的标志，允许子任务也持有相同的文件描述符项
+     */
+	current-&gt;close_on_exec &amp;= ~(1&lt;&lt;fd);
+	f=0+file_table;
+    /* 在文件表中找一项空闲的 */
+	for (i=0 ; i&lt;NR_FILE ; i++,f++)
+		if (!f-&gt;f_count) break;
+	if (i&gt;=NR_FILE)
+		return -EINVAL;
+    /* 当前任务的文件描述符项指向文件表项, 同时文件表项的引用计数+1*/
+	(current-&gt;filp[fd]=f)-&gt;f_count++;
+    /* 调用 open_namei 打开文件，如果失败则释放刚才占用的文件结构，并返回错误码 */
+	if ((i=open_namei(filename,flag,mode,&amp;inode))&lt;0) {
+		current-&gt;filp[fd]=NULL;
+		f-&gt;f_count=0;
+		return i;
+	}
+    /* 
+     * 对不同的文件进行不同的特殊处理, 毕竟有 &quot;一切皆文件&quot; 的口号嘛
+     * 诸如字符设备等也都是文件
+     */
+/* ttys are somewhat special (ttyxx major==4, tty major==5) */
+	if (S_ISCHR(inode-&gt;i_mode))
+		if (MAJOR(inode-&gt;i_zone[0])==4) {
+			if (current-&gt;leader &amp;&amp; current-&gt;tty&lt;0) {
+				current-&gt;tty = MINOR(inode-&gt;i_zone[0]);
+				tty_table[current-&gt;tty].pgrp = current-&gt;pgrp;
+			}
+		} else if (MAJOR(inode-&gt;i_zone[0])==5)
+			if (current-&gt;tty&lt;0) {
+				iput(inode);
+				current-&gt;filp[fd]=NULL;
+				f-&gt;f_count=0;
+				return -EPERM;
+			}
+/* Likewise with block-devices: check for floppy_change */
+	if (S_ISBLK(inode-&gt;i_mode))
+		check_disk_change(inode-&gt;i_zone[0]);
+    /* 初始化内存文件结构的各个参数 */
+	f-&gt;f_mode = inode-&gt;i_mode;
+	f-&gt;f_flags = flag;
+	f-&gt;f_count = 1;
+	f-&gt;f_inode = inode;
+	f-&gt;f_pos = 0;
+	return (fd);
+}
+</code></pre>
+
+<p>在整个打开文件的过程中，除了真正去文件系统查找文件的时候用到了文件名，其它时候，都将是以文件描述符进行交互的。</p>
+
+<p>再看看更细节的方面，毕竟就目前来说，我们跳过了最重要的一环 <code>open_namei</code> ，从而看似整个流程都简单了很多很多。</p>
+
+<p>通常我们在编码过程中都是通过绝对地址/相对地址来唯一定位一个文件。因此，就必然存在逐级寻找文件的过程</p>
+
+<pre><code class="language-c">
+static struct m_inode * get_dir(const char * pathname)
+{
+	char c;
+	const char * thisname;
+	struct m_inode * inode;
+	struct buffer_head * bh;
+	int namelen,inr,idev;
+	struct dir_entry * de;
+
+    /* 判定当前任务设定的根节点是否有效 */
+	if (!current-&gt;root || !current-&gt;root-&gt;i_count)
+		panic(&quot;No root inode&quot;);
+    /* 判定当前路径i节点是否有效 */
+	if (!current-&gt;pwd || !current-&gt;pwd-&gt;i_count)
+		panic(&quot;No cwd inode&quot;);
+    /* 
+     * 这里的 get_fs_byte(..) 是宏定义，fs 指的是 FS 段寄存器
+     * Linux 内核将 DS, ES 用于内核数据段, 用 FS 指向局部描述符表的当前任务数据段
+     * 这里可以简单理解成取字符数组的第一个字节
+     */
+	if ((c=get_fs_byte(pathname))=='/') {
+		inode = current-&gt;root;
+		pathname++;
+	} else if (c)
+		inode = current-&gt;pwd;
+	else
+		return NULL;	/* empty name is bad */
+	inode-&gt;i_count++;
+	while (1) {
+		thisname = pathname;
+		if (!S_ISDIR(inode-&gt;i_mode) || !permission(inode,MAY_EXEC)) {
+			iput(inode);
+			return NULL;
+		}
+		for(namelen=0;(c=get_fs_byte(pathname++))&amp;&amp;(c!='/');namelen++)
+			/* nothing */ ;
+		if (!c)
+			return inode;
+		if (!(bh = find_entry(&amp;inode,thisname,namelen,&amp;de))) {
+			iput(inode);
+			return NULL;
+		}
+		inr = de-&gt;inode;
+		idev = inode-&gt;i_dev;
+		brelse(bh);
+		iput(inode);
+		if (!(inode = iget(idev,inr)))
+			return NULL;
+	}
+}
+
+/*
+ *	dir_namei()
+ *
+ * 处理路径 pathname, 处理成i节点表示的最终一级目录+目录下文件名(也可能pathname表示的就是目录)
+ */
+static struct m_inode * dir_namei(const char * pathname, int * namelen, const char ** name)
+{
+	char c;
+	const char * basename;
+	struct m_inode * dir;
+
+	if (!(dir = get_dir(pathname)))
+		return NULL;
+	basename = pathname;
+	while (c=get_fs_byte(pathname++))
+		if (c=='/')
+			basename=pathname;
+	*namelen = pathname-basename-1;
+	*name = basename;
+	return dir;
+}
+
+/*
+ *	open_namei()
+ *
+ * namei for open - this is in fact almost the whole open-routine.
+ */
+int open_namei(const char * pathname, int flag, int mode,
+	struct m_inode ** res_inode)
+{
+	const char * basename;
+	int inr,dev,namelen;
+	struct m_inode * dir, *inode;
+	struct buffer_head * bh;
+	struct dir_entry * de;
+
+	if ((flag &amp; O_TRUNC) &amp;&amp; !(flag &amp; O_ACCMODE))
+		flag |= O_WRONLY;
+	mode &amp;= 0777 &amp; ~current-&gt;umask;
+	mode |= I_REGULAR;
+	if (!(dir = dir_namei(pathname,&amp;namelen,&amp;basename)))
+		return -ENOENT;
+    /* 如果给的 pathname 是一个目录 */
+	if (!namelen) {			/* special case: '/usr/' etc */
+		if (!(flag &amp; (O_ACCMODE|O_CREAT|O_TRUNC))) {
+			*res_inode=dir;
+			return 0;
+		}
+		iput(dir);
+		return -EISDIR;
+	}
+    /* 找到目录对应的i节点的数据块 */
+	bh = find_entry(&amp;dir,basename,namelen,&amp;de);
+	if (!bh) {
+		if (!(flag &amp; O_CREAT)) {
+			iput(dir);
+			return -ENOENT;
+		}
+		if (!permission(dir,MAY_WRITE)) {
+			iput(dir);
+			return -EACCES;
+		}
+		inode = new_inode(dir-&gt;i_dev);
+		if (!inode) {
+			iput(dir);
+			return -ENOSPC;
+		}
+		inode-&gt;i_uid = current-&gt;euid;
+		inode-&gt;i_mode = mode;
+		inode-&gt;i_dirt = 1;
+		bh = add_entry(dir,basename,namelen,&amp;de);
+		if (!bh) {
+			inode-&gt;i_nlinks--;
+			iput(inode);
+			iput(dir);
+			return -ENOSPC;
+		}
+		de-&gt;inode = inode-&gt;i_num;
+		bh-&gt;b_dirt = 1;
+		brelse(bh);
+		iput(dir);
+		*res_inode = inode;
+		return 0;
+	}
+	inr = de-&gt;inode;
+	dev = dir-&gt;i_dev;
+	brelse(bh);
+	iput(dir);
+	if (flag &amp; O_EXCL)
+		return -EEXIST;
+	if (!(inode=iget(dev,inr)))
+		return -EACCES;
+	if ((S_ISDIR(inode-&gt;i_mode) &amp;&amp; (flag &amp; O_ACCMODE)) ||
+	    !permission(inode,ACC_MODE(flag))) {
+		iput(inode);
+		return -EPERM;
+	}
+	inode-&gt;i_atime = CURRENT_TIME;
+	if (flag &amp; O_TRUNC)
+		truncate(inode);
+	*res_inode = inode;
+	return 0;
+}
+</code></pre>
+
+<h3 id="文件写入">文件写入</h3>
+
+<p>接下来就要进行文件写入的流程了</p>
+
+<p>如何陷入内核态函数就不再细说了，相信看过这么多系统调用之后，也能知道基本上系统调用在内核态对应的函数都是以 sys_<method> 形式出现的</p>
+
+<pre><code class="language-c">int sys_write(unsigned int fd,char * buf,int count)
+{
+	struct file * file;
+	struct m_inode * inode;
+
+    /* 非法 fd , 抛异常 */
+	if (fd&gt;=NR_OPEN || count &lt;0 || !(file=current-&gt;filp[fd]))
+		return -EINVAL;
+    /* count = 0，无需写入数据 */
+	if (!count)
+		return 0;
+	inode=file-&gt;f_inode;
+    /* 针对不同的i节点类型，有不同的写入函数 */
+	if (inode-&gt;i_pipe)
+		return (file-&gt;f_mode&amp;2)?write_pipe(inode,buf,count):-EIO;
+	if (S_ISCHR(inode-&gt;i_mode))
+		return rw_char(WRITE,inode-&gt;i_zone[0],buf,count,&amp;file-&gt;f_pos);
+	if (S_ISBLK(inode-&gt;i_mode))
+		return block_write(inode-&gt;i_zone[0],&amp;file-&gt;f_pos,buf,count);
+	if (S_ISREG(inode-&gt;i_mode))
+		return file_write(inode,file,buf,count);
+	printk(&quot;(Write)inode-&gt;i_mode=%06o\n\r&quot;,inode-&gt;i_mode);
+	return -EINVAL;
+}
+</code></pre>
+
+<p>看看对于常规文件是怎么操作的吧。</p>
+
+<pre><code class="language-c">int file_write(struct m_inode * inode, struct file * filp, char * buf, int count)
+{
+	off_t pos;      /* 偏移量 */
+	int block,c;
+	struct buffer_head * bh;
+	char * p;
+	int i=0;
+
+    /* 如果是 Append 模式，把偏移量重置到文件末尾 */
+	if (filp-&gt;f_flags &amp; O_APPEND) 
+		pos = inode-&gt;i_size;
+    /* 否则就使用当前文件数据结构持有的偏移量 */
+    /*
+        附上数据结构  file 的内容 
+        struct file {
+        	unsigned short f_mode;
+        	unsigned short f_flags;
+        	unsigned short f_count;
+        	struct m_inode * f_inode;
+        	off_t f_pos;    每个打开的文件都将持有当前的偏移值
+        };
+     */
+	else
+		pos = filp-&gt;f_pos;
+    /* 逐字符向缓冲区写入数据 */
+	while (i&lt;count) {
+        /* 最开始当然是创建在磁盘上占用一个数据块了 (如果文件对应的块不存在的话) */
+		if (!(block = create_block(inode,pos/BLOCK_SIZE)))
+			break;
+        /* 根据数据块获得相应的缓冲块 */
+		if (!(bh=bread(inode-&gt;i_dev,block)))
+			break;
+        /* 在缓冲块中的偏移量 */
+		c = pos % BLOCK_SIZE;
+        /* 定位到具体的缓冲区的内存地址 */
+		p = c + bh-&gt;b_data;
+		bh-&gt;b_dirt = 1;
+        /* 当前这个缓冲块还有多少字节可写 */
+		c = BLOCK_SIZE-c;
+        /* 如果需要写入的数据量少于 c */
+		if (c &gt; count-i) c = count-i;
+        /* 添加偏移量计数, 更新数据结构中维护的值 */
+		pos += c;
+		if (pos &gt; inode-&gt;i_size) {
+			inode-&gt;i_size = pos;
+			inode-&gt;i_dirt = 1;
+		}
+		i += c;
+        /* 向缓冲块逐字节写入数据 */
+		while (c--&gt;0)
+			*(p++) = get_fs_byte(buf++);
+        /* 释放对缓冲块的占用，当然，在释放前会完成缓冲块&lt;-&gt;外存数据块的同步 */
+		brelse(bh);
+	}
+	inode-&gt;i_mtime = CURRENT_TIME;
+	if (!(filp-&gt;f_flags &amp; O_APPEND)) {
+        /* 非 APPEND 模式，更新文件读写指针(偏移量); APPEND 模式是使用 inode-&gt;i_size ，所有就不需要在这里更新了 */
+		filp-&gt;f_pos = pos;
+		inode-&gt;i_ctime = CURRENT_TIME;
+	}
+	return (i?i:-1);
+}
+</code></pre>
+
+<p>是不是觉得也没有什么太高大上的操作。确实如此，更多关于缓存块与文件系统数据块的同步都已经被包装到 bread(), brelse() 中了。</p>
+
+<p>不过，暂时无需细究。总之到此为止，先要有一个基础的观念: 所有与外存储器(这里也包括控制台等)进行数据交互都必须经过缓冲区</p>
+
+<p>缓冲区封装了对外存储器的全部操作，而提供给 CPU 更高效的 I/O 操作，当然，也更为简单快捷</p>
+
+<h3 id="文件读取">文件读取</h3>
+
+<p>至于文件读取，也基本类似了，所以也就不再深入描述。</p>
+
+<p>当然，要注意的就是，在本篇开始的部分提供的例程中，write &amp; read 中插入了 <code>off_t off = lseek(fd, 0, SEEK_SET);</code>  这样的代码。</p>
+
+<p>原因应该也能够想到，学习 <code>sys_write(..)</code> 的时候我们已经看到，任务对同一个文件在内存中维护了一个文件读写偏移量。因此，要读取刚才写入的内容，就不得不先改动这个读写偏移量了</p>
+
+<pre><code class="language-c">int sys_read(unsigned int fd,char * buf,int count)
+{
+	struct file * file;
+	struct m_inode * inode;
+
+	if (fd&gt;=NR_OPEN || count&lt;0 || !(file=current-&gt;filp[fd]))
+		return -EINVAL;
+	if (!count)
+		return 0;
+	verify_area(buf,count);
+	inode = file-&gt;f_inode;
+	if (inode-&gt;i_pipe)
+		return (file-&gt;f_mode&amp;1)?read_pipe(inode,buf,count):-EIO;
+	if (S_ISCHR(inode-&gt;i_mode))
+		return rw_char(READ,inode-&gt;i_zone[0],buf,count,&amp;file-&gt;f_pos);
+	if (S_ISBLK(inode-&gt;i_mode))
+		return block_read(inode-&gt;i_zone[0],&amp;file-&gt;f_pos,buf,count);
+	if (S_ISDIR(inode-&gt;i_mode) || S_ISREG(inode-&gt;i_mode)) {
+		if (count+file-&gt;f_pos &gt; inode-&gt;i_size)
+			count = inode-&gt;i_size - file-&gt;f_pos;
+		if (count&lt;=0)
+			return 0;
+		return file_read(inode,file,buf,count);
+	}
+	printk(&quot;(Read)inode-&gt;i_mode=%06o\n\r&quot;,inode-&gt;i_mode);
+	return -EINVAL;
+}
+</code></pre>
+
+<h2 id="小结">小结</h2>
+
+<p>这篇对文件系统的代码层面的描述，仅仅只是捡了一个相当有限的片面 (常规文件读写)。从文件系统的挂载开始提供了一个读写的完整流程介绍(当然，很多细节是缺失的，不过不要着急)。</p>
+
+<p>虽然平常都能够了解到一个比较模糊的前提，文件读写需要利用缓冲区，但是究竟什么是缓存区，如何使用都不会有太多的概念。本篇最大的重点，就是首先请读者们建立起一个基础性的对缓冲区的了解。事实上，这个中介在 I/O 中扮演了相当重要的角色。而且内存也为其提供了相当大的一份空间，差不多有 <sup>1</sup>&frasl;<sub>4</sub> 了。</p>
+
+<p>跨了差不多半个多月来写，上下文的承接可能有些生硬了，甚至不一致了&hellip; 尴尬&hellip;</p>
+
+<pre><code class="language-plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | '_ \ / _` | |_ / _ \ '_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2018-10-14-%E7%90%86%E8%A7%A3-linux-kernel-5-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AE%8F%E8%A7%82%E6%8F%8F%E8%BF%B0/">理解 Linux Kernel (5) - 文件系统(宏观描述)</a></li>
+    
+    <li><a href="/posts/2018-10-12-%E7%90%86%E8%A7%A3-linux-kernel-4-%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/">理解 Linux Kernel (4) - 任务调度</a></li>
+    
+    <li><a href="/posts/2018-10-06-%E7%90%86%E8%A7%A3-linux-kernel-3-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8/">理解 Linux Kernel (3) - 操作系统启动</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>

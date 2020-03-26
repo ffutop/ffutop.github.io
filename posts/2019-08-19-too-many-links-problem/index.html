@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.55.6" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2019-08-19-too-many-links-problem/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2019-08-19-too-many-links-problem/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/www.ffutop.com\/"
+      },
+      "articleSection" : "posts",
+      "name" : "Too many links problem",
+      "headline" : "Too many links problem",
+      "description" : "\x3cp\x3e今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：\x3c\/p\x3e\n\n\x3cpre\x3e\x3ccode class=\x22language-sh\x22\x3eWarning  Failed 4m  kubelet, 172.16.1.1 Failed to pull image \x26quot;xxx.xxx.com\/\x26lt;image-name\x26gt;:\x26lt;version\x26gt;\x26quot;: rpc error: code = Unknown desc = failed to register layer: link \/data\/docker\/storage\/overlay\/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a\/root\/var\/lib\/yum\/yumdb\/o\/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64\/checksum_type \/data\/docker\/storage\/overlay\/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da\/tmproot525452492\/var\/lib\/yum\/yumdb\/o\/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64\/checksum_type: too many links\n\x3c\/code\x3e\x3c\/pre\x3e\n\n\x3cp\x3e最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 \x3ccode\x3e172.16.1.1\x3c\/code\x3e。而 Kubernetes 事件中提示的是 \x3ccode\x3etoo many links\x3c\/code\x3e，对问题原因的怀疑开始转向文件系统。\x3c\/p\x3e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "19190",
+      "datePublished": "2019-08-19 00:00:00 \x2b0000 UTC",
+      "dateModified" : "2019-08-19 00:00:00 \x2b0000 UTC",
+      "url" : "https:\/\/www.ffutop.com\/posts\/2019-08-19-too-many-links-problem\/",
+      "keywords" : [ "docker","fs","ext4", ]
+  }
+</script>
+<title>Too many links problem - Utop&#39;s Blog</title>
+  <meta property="og:title" content="Too many links problem - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：
+
+Warning  Failed 4m  kubelet, 172.16.1.1 Failed to pull image &quot;xxx.xxx.com/&lt;image-name&gt;:&lt;version&gt;&quot;: rpc error: code = Unknown desc = failed to register layer: link /data/docker/storage/overlay/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a/root/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type /data/docker/storage/overlay/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da/tmproot525452492/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type: too many links
+
+
+最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 172.16.1.1。而 Kubernetes 事件中提示的是 too many links，对问题原因的怀疑开始转向文件系统。" />
+  <meta name="description" content="今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：
+
+Warning  Failed 4m  kubelet, 172.16.1.1 Failed to pull image &quot;xxx.xxx.com/&lt;image-name&gt;:&lt;version&gt;&quot;: rpc error: code = Unknown desc = failed to register layer: link /data/docker/storage/overlay/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a/root/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type /data/docker/storage/overlay/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da/tmproot525452492/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type: too many links
+
+
+最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 172.16.1.1。而 Kubernetes 事件中提示的是 too many links，对问题原因的怀疑开始转向文件系统。" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+
+<body>
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">Too many links problem</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2019-08-19 00:00:00 UTC">
+                19 Aug 2019
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：</p>
+
+<pre><code class="language-sh">Warning  Failed 4m  kubelet, 172.16.1.1 Failed to pull image &quot;xxx.xxx.com/&lt;image-name&gt;:&lt;version&gt;&quot;: rpc error: code = Unknown desc = failed to register layer: link /data/docker/storage/overlay/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a/root/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type /data/docker/storage/overlay/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da/tmproot525452492/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type: too many links
+</code></pre>
+
+<p>最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 <code>172.16.1.1</code>。而 Kubernetes 事件中提示的是 <code>too many links</code>，对问题原因的怀疑开始转向文件系统。</p>
+
+<h2 id="inode-与硬链接">Inode 与硬链接</h2>
+
+<p>先验知识请参看<a href="https://www.ffutop.com/posts/2018-10-14-understand-kernel-5/">文件系统</a>。</p>
+
+<p>Inode 是文件系统描述一段数据内容的核心结构。目录下的文件名/目录名通过指向一个特定的 Inode 来绑定到数据内容上。同一个 Inode 可以有很多很多个与众不同的文件名/目录名，只需要保证这些文件/目录最终指向同一个 Inode，这对应的概念也就是“<strong>硬链接</strong>”。</p>
+
+<p>文件系统的硬链接数有上限吗？显然是有的，这个链接数总是需要一个字段来存储的。首先 CHECK 下使用的文件系统。</p>
+
+<pre><code class="language-sh">[root@172-16-1-1]$ mount
+...
+/dev/sdc on /data/docker/storage/overlay type ext4 (rw,relatime,seclabel)
+</code></pre>
+
+<p>再 CHECK 下出问题的文件，<strong>64854</strong>，差不多等同于 $2^{16}$。</p>
+
+<pre><code class="language-sh">[root@172-16-1-1]$ ls -alh checksum_type
+-rw-r--r--. 64854 root root   64 Fed  2  2018  checksum_type
+</code></pre>
+
+<p>查查 EXT4 的硬链接上限</p>
+
+<pre><code class="language-c">/* fs/ext4/ext4.h */
+
+/*
+ * Maximal count of links to a file
+ */
+#define EXT4_LINK_MAX       65000
+
+struct ext4_inode {
+    __le16  i_mode;     /* File mode */
+    __le16  i_uid;      /* Low 16 bits of Owner Uid */
+    __le32  i_size_lo;  /* Size in bytes */
+    __le32  i_atime;    /* Access time */
+    __le32  i_ctime;    /* Inode Change time */
+    __le32  i_mtime;    /* Modification time */
+    __le32  i_dtime;    /* Deletion Time */
+    __le16  i_gid;      /* Low 16 bits of Group Id */
+    __le16  i_links_count;  /* Links count */
+    __le32  i_blocks_lo;    /* Blocks count */
+    __le32  i_flags;    /* File flags */
+    /* ... some things omitted ... */
+}
+</code></pre>
+
+<p><code>i_links_count</code> 字段用来描述 Inode 被引用的次数，类型是 <code>__le16</code>，小端存储的 16 位数。又有一个宏“最大 EXT4 链接数”，硬编码的上限值被定在了 65000</p>
+
+<p>OK，为什么还差了 146 个硬链呢？按照逻辑应该能够再添加几个。且耐心往下看。</p>
+
+<h2 id="overlay-file-system">Overlay File System</h2>
+
+<p>首先确认下 <code>docker</code> 使用的存储驱动，</p>
+
+<pre><code class="language-sh">[root@172-16-1-1]$ docker info 
+# ... some thing omitted ...
+Storage Driver: overlay
+ Backing Filesystem: extfs
+ Supports d_type: true
+</code></pre>
+
+<p>使用了 Overlay 驱动；overlay 使用硬链接的方式完成镜像的叠加，这部分也算是这个 UnionFS 和 Docker 组合使用下的硬伤了。</p>
+
+<p><img src="https://docs.docker.com/storage/storagedriver/images/overlay_constructs.jpg" alt="" /></p>
+
+<p>最后检查一下这个文件被哪些文件链接吧。</p>
+
+<pre><code class="language-sh">[root@172-16-1-1]$ ls -i checksum_type 
+34997956 /data/docker/storage/overlay/071d913f222a78d3fd42e371ae506cd44ce134514b80a9045a787f01cad74d30/root/var/lib/yum/yumdb/e/6e92fab82fc8215308e066f5f984fb4fcf26a404-e2fsprogs-1.42.9-10.el7-x86_64/checksum_type
+[root@172-16-1-1]$ cd /data/docker/storage/overlay/
+[root@172-16-1-1]$ find . -inum 34997956 | wc 
+64854
+</code></pre>
+
+<p>恰好符合之前得到的硬链接数量。最后的最后，就是为什么离上限还差了百余链接数。实际上看一下 <code>find . -inum 34997956</code> 打印出的前几项就能得出结论了。</p>
+
+<pre><code class="language-sh">[root@172-16-1-1]$ find . -inum 34997956 
+/data/docker/storage/overlay/071d913f222a78d3fd42e371ae506cd44ce134514b80a9045a787f01cad74d30/root/var/lib/yum/yumdb/e/6e92fab82fc8215308e066f5f984fb4fcf26a404-e2fsprogs-1.42.9-10.el7-x86_64/checksum_type
+/data/docker/storage/overlay/071d913f222a78d3fd42e371ae506cd44ce134514b80a9045a787f01cad74d30/root/var/lib/yum/yumdb/e/50be40805794126a56fecc7f720a00eddbeb0ac4-ebtables-2.0.10-15.el7-x86_64/checksum_type
+/data/docker/storage/overlay/071d913f222a78d3fd42e371ae506cd44ce134514b80a9045a787f01cad74d30/root/var/lib/yum/yumdb/e/6afbf327df2e805ec7f41172744151395afefb4b-elfutils-default-yama-scope-0.168-8.el7-noarch/checksum_type
+/data/docker/storage/overlay/071d913f222a78d3fd42e371ae506cd44ce134514b80a9045a787f01cad74d30/root/var/lib/yum/yumdb/e/cdde997a3984c69574975c4516593744d0578fe5-e2fsprogs-libs-1.42.9-10.el7-x86_64/checksum_type
+/data/docker/storage/overlay/071d913f222a78d3fd42e371ae506cd44ce134514b80a9045a787f01cad74d30/root/var/lib/yum/yumdb/e/3e23a7d10536c7794ef133302f2213f3eca11028-elfutils-libs-0.168-8.el7-x86_64/checksum_type
+/data/docker/storage/overlay/071d913f222a78d3fd42e371ae506cd44ce134514b80a9045a787f01cad74d30/root/var/lib/yum/yumdb/e/7e621968f73154565600b86be2fbc162cc6e0f47-ethtool-4.8-1.el7-x86_64/checksum_type
+/data/docker/storage/overlay/071d913f222a78d3fd42e371ae506cd44ce134514b80a9045a787f01cad74d30/root/var/lib/yum/yumdb/e/838dfbc19277a0435fd7bf182149d624dc4d2ecf-elfutils-libelf-0.168-8.el7-x86_64/checksum_type
+/data/docker/storage/overlay/071d913f222a78d3fd42e371ae506cd44ce134514b80a9045a787f01cad74d30/root/var/lib/yum/yumdb/e/60ff81da46672c6d0409df1180d5076641c50934-expat-2.1.0-10.el7_3-x86_64/checksum_type
+/data/docker/storage/overlay/071d913f222a78d3fd42e371ae506cd44ce134514b80a9045a787f01cad74d30/root/var/lib/yum/yumdb/G/5d1d730c5f843277da5723b9d79e05fa10cd8019-GeoIP-1.5.0-11.el7-x86_64/checksum_type
+/data/docker/storage/overlay/071d913f222a78d3fd42e371ae506cd44ce134514b80a9045a787f01cad74d30/root/var/lib/yum/yumdb/g/a20c407739d081345b8b2ab34d4d9e5f8e054f65-glib2-2.50.3-3.el7-x86_64/checksum_type
+# ... more omitted ...
+</code></pre>
+
+<p><code>checksum_type</code> 这个文件在单一镜像中就已经被链接了近两百次，这就意味了一个新的 Layer 的创建必然带来新的200+链接，在创建过程中也就必然失败了。</p>
+
+<h2 id="解决方案">解决方案?</h2>
+
+<p>替掉 overlay，换上 overlay2 是官方最为推荐的方案了。毕竟这个问题是 overlay 设计上引起的问题，是一种必然。</p>
+
+<p>临时性的解决方案就是删除掉不再使用的镜像: <code>docker system prune -a</code></p>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+</body>
+
+</html>

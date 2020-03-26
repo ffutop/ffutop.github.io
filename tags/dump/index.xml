@@ -13,10 +13,10 @@
     
     <item>
       <title>如何获取运行时进程堆栈</title>
-      <link>https://www.ffutop.com/2019/03/25/%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E8%BF%90%E8%A1%8C%E6%97%B6%E8%BF%9B%E7%A8%8B%E5%A0%86%E6%A0%88/</link>
+      <link>https://www.ffutop.com/posts/2019-03-25-%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E8%BF%90%E8%A1%8C%E6%97%B6%E8%BF%9B%E7%A8%8B%E5%A0%86%E6%A0%88/</link>
       <pubDate>Mon, 25 Mar 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/2019/03/25/%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E8%BF%90%E8%A1%8C%E6%97%B6%E8%BF%9B%E7%A8%8B%E5%A0%86%E6%A0%88/</guid>
+      <guid>https://www.ffutop.com/posts/2019-03-25-%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E8%BF%90%E8%A1%8C%E6%97%B6%E8%BF%9B%E7%A8%8B%E5%A0%86%E6%A0%88/</guid>
       <description>&lt;p&gt;前些天看了关于在密码学应用中使用&lt;code&gt;java.lang.String&lt;/code&gt;与&lt;code&gt;byte[]&lt;/code&gt;的相关讨论，不推荐使用&lt;code&gt;java.lang.String&lt;/code&gt;的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。&lt;/p&gt;
 
 &lt;h2 id=&#34;proc-pid-maps&#34;&gt;/proc/${pid}/maps&lt;/h2&gt;
