@@ -119,7 +119,7 @@ HINT 上述的 . 仅仅是为了指代非打印字符，并非真的是 点号�
 <p>在 <code>PNG 签名</code> 数据之后，紧接着就是 <code>数据块(chunk)</code> 的数据。虽然统称<code>数据块</code>，但存在不同类型的数据块（例如 IHDR, PLTE, IDAT, IEND 等）。每个 PNG 文件可以有若干连续的数据块（至少 3 个数据块），其中第一个数据块和最后一个数据块类型分别是 IHDR、IEND 。</p>
 <h2 id="chunk-layout">Chunk Layout</h2>
 <p>数据块由三/四部分组成：长度、数据块类型、数据（可选）、CRC 校验码</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">+ ------ + ---------- + ---------- + --- +
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">+ ------ + ---------- + ---------- + --- +
 | LENGTH | CHUNK TYPE | CHUNK DATA | CRC |
 + ------ + ---------- + ---------- + --- +
 OR
@@ -161,7 +161,7 @@ OR
 </li>
 </ul>
 <p>例如数据类型 <code>cHNk</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">cHNk  &lt;-- 32 bit chunk type represented in text form
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">cHNk  &lt;-- 32 bit chunk type represented in text form
 ||||
 |||+- Safe-to-copy bit is 1 (lower case letter; bit 5 is 1)
 ||+-- Reserved bit is 0     (upper case letter; bit 5 is 0)
@@ -371,7 +371,7 @@ OR
 </tr>
 </tbody>
 </table>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">0000 000d 4948 4452 0000 004c 0000 0019 
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">0000 000d 4948 4452 0000 004c 0000 0019 
 0806 0000 009b d4c8 6f
 
 LENGTH: 0x0000000d
@@ -389,7 +389,7 @@ CRC: 0x9bd4c86f
 <p>索引颜色主要见于使用较少颜色的图像中，对出现的颜色建立索引，每个像素点直接指向索引即可。</p>
 <h3 id="idat">IDAT</h3>
 <p>IDAT 数据块用于存储各像素点的数据，具体数据由 <strong>IHDR</strong> 中声明的 <code>Filter method</code> 和 <code>Compression method</code> 共同决定。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">0000 0020 4944 4154 081d 63e8 64fd f9bf 
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">0000 0020 4944 4154 081d 63e8 64fd f9bf 
 9de3 bb02 0308 8038 400a 8419 9840 0410 
 3082 0800 dcfc 07b5 4c0c 837a 
 
@@ -399,13 +399,13 @@ DATA: 稍后解析
 CRC: 0x4c0c837a
 </code></pre></div><p>DATA 部分的数据由于已经被压缩过了，因此看不出任何与原图相关的内容 <a href="https://github.com/DorMOUSE-None/Repo/blob/master/z.png">原图</a> 大小为 3×3 像素</p>
 <p>OK，在 <strong>IHDR</strong> 有个数据描述的是使用的压缩算法 (Compression)，0 代表默认，即 PNG 规范所指出的 Zlib 。在 MacOS 下，抽取出 DATA 数据，用 <code>zlib_decompress</code> 解压，得到如下数据：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">00000000: 0089 05f9 ff87 08f7 2000 0000 00  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">00000000: 0089 05f9 ff87 08f7 2000 0000 00  
 0000000d: 0089 05f9 ff00 0000 ff00 0000 00  
 0000001a: 0200 0000 0000 0000 0100 0000 00  
 </code></pre></div><p>OK，现在应该能看出点内容来了。<strong>Colour Type</strong> 描述过图像是带透明通道的真彩色，每个样本点用 8 bits 来描述。3×3 的图像也就意味着需要 4 字节/像素 (RGBA) × 3 像素/行 × 3 行 = 36 字节。好吧，莫名其妙多了 3 字节？这当然与 <code>Filter method</code> 有关。用于描述图像每行的像素点将被如何描述。0 代表直接通过 RGBA 描述，而 2 代表需要借助上一行数据与当前行做累加。还有更多详见 <a href="https://www.w3.org/TR/2003/REC-PNG-20031110/#9Filters">Filters</a></p>
 <p>每行像素点描述的最开始一个字节就是对 <code>Filter method</code> 所使用的类型的描述。</p>
 <p>简单解析一下，9 个像素点的数据如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">00000000: 8905f9ff 8708f720 00000000  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">00000000: 8905f9ff 8708f720 00000000  
 0000000d: 8905f9ff 000000ff 00000000  
 0000001a: 8905f9ff 00000000 00000000  
 </code></pre></div><p>去看看<a href="https://github.com/DorMOUSE-None/Repo/blob/master/z.png">实际的图像</a>，恰如解析出的结果，完全匹配。</p>
@@ -414,7 +414,7 @@ CRC: 0x4c0c837a
 <h2 id="more">More</h2>
 <p>PNG 规范的文档很长，对规范的描述也相当详细，除了对初次接触图像的非专业人士存在很大的障碍。有太多的新名词的出现。</p>
 <p>本篇仅仅只是摘录及翻译了一部分内容，只是为了能够对 PNG 的文件格式建立初步的印象，以及能够简单解析一些图像信息。更多的内容请移步 <a href="https://www.w3.org/TR/2003/REC-PNG-20031110/">PNG 规范</a></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -425,6 +425,12 @@ CRC: 0x4c0c837a
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "MySQL TIMESTAMP 时间精度问题",
       "headline" : "MySQL TIMESTAMP 时间精度问题",
-      "description" : "\x3cp\x3e最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-java\x22 data-lang=\x22java\x22\x3e\x3cspan style=\x22color:#75715e\x22\x3e\/**\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e  * 表结构\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e  * CREATE TABLE `time_0` (\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e  *     `timeout` timestamp NOT NULL\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e  * )\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e  *\/\x3c\/span\x3e\n\n\x3cspan style=\x22color:#75715e\x22\x3e\/\/ part 1\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3ejdbcTemplate\x3cspan style=\x22color:#f92672\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#a6e22e\x22\x3eexecute\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e(\x3c\/span\x3e\x3cspan style=\x22color:#e6db74\x22\x3e\x26#34;UPDATE `time_0` SET `timeout`=now() WHERE `id` = xxx;\x26#34;\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e);\x3c\/span\x3e\n\n\x3cspan style=\x22color:#75715e\x22\x3e\/\/ part 2\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3eDate timeout \x3cspan style=\x22color:#f92672\x22\x3e=\x3c\/span\x3e jdbcTemplate\x3cspan style=\x22color:#f92672\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#a6e22e\x22\x3equeryForObject\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e(\x3c\/span\x3e\x3cspan style=\x22color:#e6db74\x22\x3e\x26#34;SELECT `timeout` FROM `time_0` WHERE `id` = xxx;\x26#34;\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e,\x3c\/span\x3e Date\x3cspan style=\x22color:#f92672\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#a6e22e\x22\x3eclass\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e);\x3c\/span\x3e\nAssert\x3cspan style=\x22color:#f92672\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#a6e22e\x22\x3eassertTrue\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e(\x3c\/span\x3etimeout\x3cspan style=\x22color:#f92672\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#a6e22e\x22\x3egetTime\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e()\x3c\/span\x3e \x3cspan style=\x22color:#f92672\x22\x3e\x26lt;\x3c\/span\x3e System\x3cspan style=\x22color:#f92672\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#a6e22e\x22\x3ecurrentTimeMillis\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e());\x3c\/span\x3e\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e\x3cp\x3e在绝大多数模拟中，先执行 \x3ccode\x3epart 1\x3c\/code\x3e，紧跟着执行 \x3ccode\x3epart 2\x3c\/code\x3e 都能通过测试。但偶尔还是挂掉了。\x3c\/p\x3e",
+      "description" : "\x3cp\x3e最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-java\x22 data-lang=\x22java\x22\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/**\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e  * 表结构\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e  * CREATE TABLE `time_0` (\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e  *     `timeout` timestamp NOT NULL\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e  * )\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e  *\/\x3c\/span\x3e\n\n\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ part 1\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3ejdbcTemplate\x3cspan style=\x22color:#666\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3eexecute\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e(\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3e\x26#34;UPDATE `time_0` SET `timeout`=now() WHERE `id` = xxx;\x26#34;\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e);\x3c\/span\x3e\n\n\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ part 2\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3eDate timeout \x3cspan style=\x22color:#666\x22\x3e=\x3c\/span\x3e jdbcTemplate\x3cspan style=\x22color:#666\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3equeryForObject\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e(\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3e\x26#34;SELECT `timeout` FROM `time_0` WHERE `id` = xxx;\x26#34;\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e,\x3c\/span\x3e Date\x3cspan style=\x22color:#666\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3eclass\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e);\x3c\/span\x3e\nAssert\x3cspan style=\x22color:#666\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3eassertTrue\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e(\x3c\/span\x3etimeout\x3cspan style=\x22color:#666\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3egetTime\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e()\x3c\/span\x3e \x3cspan style=\x22color:#666\x22\x3e\x26lt;\x3c\/span\x3e System\x3cspan style=\x22color:#666\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3ecurrentTimeMillis\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e());\x3c\/span\x3e\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e\x3cp\x3e在绝大多数模拟中，先执行 \x3ccode\x3epart 1\x3c\/code\x3e，紧跟着执行 \x3ccode\x3epart 2\x3c\/code\x3e 都能通过测试。但偶尔还是挂掉了。\x3c\/p\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -130,19 +130,19 @@ Assert.assertTrue(timeout.getTime() &lt; System.currentTimeMillis());
         <div class="post-content markdown-body">
           
           <p>最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
-</span><span style="color:#75715e">  * 表结构
-</span><span style="color:#75715e">  * CREATE TABLE `time_0` (
-</span><span style="color:#75715e">  *     `timeout` timestamp NOT NULL
-</span><span style="color:#75715e">  * )
-</span><span style="color:#75715e">  */</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic">  * 表结构
+</span><span style="color:#60a0b0;font-style:italic">  * CREATE TABLE `time_0` (
+</span><span style="color:#60a0b0;font-style:italic">  *     `timeout` timestamp NOT NULL
+</span><span style="color:#60a0b0;font-style:italic">  * )
+</span><span style="color:#60a0b0;font-style:italic">  */</span>
 
-<span style="color:#75715e">// part 1
-</span><span style="color:#75715e"></span>jdbcTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;UPDATE `time_0` SET `timeout`=now() WHERE `id` = xxx;&#34;</span><span style="color:#f92672">);</span>
+<span style="color:#60a0b0;font-style:italic">// part 1
+</span><span style="color:#60a0b0;font-style:italic"></span>jdbcTemplate<span style="color:#666">.</span><span style="color:#4070a0">execute</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;UPDATE `time_0` SET `timeout`=now() WHERE `id` = xxx;&#34;</span><span style="color:#666">);</span>
 
-<span style="color:#75715e">// part 2
-</span><span style="color:#75715e"></span>Date timeout <span style="color:#f92672">=</span> jdbcTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">queryForObject</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;SELECT `timeout` FROM `time_0` WHERE `id` = xxx;&#34;</span><span style="color:#f92672">,</span> Date<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
-Assert<span style="color:#f92672">.</span><span style="color:#a6e22e">assertTrue</span><span style="color:#f92672">(</span>timeout<span style="color:#f92672">.</span><span style="color:#a6e22e">getTime</span><span style="color:#f92672">()</span> <span style="color:#f92672">&lt;</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTimeMillis</span><span style="color:#f92672">());</span>
+<span style="color:#60a0b0;font-style:italic">// part 2
+</span><span style="color:#60a0b0;font-style:italic"></span>Date timeout <span style="color:#666">=</span> jdbcTemplate<span style="color:#666">.</span><span style="color:#4070a0">queryForObject</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;SELECT `timeout` FROM `time_0` WHERE `id` = xxx;&#34;</span><span style="color:#666">,</span> Date<span style="color:#666">.</span><span style="color:#4070a0">class</span><span style="color:#666">);</span>
+Assert<span style="color:#666">.</span><span style="color:#4070a0">assertTrue</span><span style="color:#666">(</span>timeout<span style="color:#666">.</span><span style="color:#4070a0">getTime</span><span style="color:#666">()</span> <span style="color:#666">&lt;</span> System<span style="color:#666">.</span><span style="color:#4070a0">currentTimeMillis</span><span style="color:#666">());</span>
 </code></pre></div><p>在绝大多数模拟中，先执行 <code>part 1</code>，紧跟着执行 <code>part 2</code> 都能通过测试。但偶尔还是挂掉了。</p>
 <h2 id="mysql-时间表示">MySQL 时间表示</h2>
 <table>
@@ -183,29 +183,29 @@ Assert<span style="color:#f92672">.</span><span style="color:#a6e22e">assertTrue
 </table>
 <!-- raw HTML omitted -->
 <p><code>TimeStamp</code> 由四字节描述，可以存储 <code>1970-01-01 00:00:00</code> 到 <code>2038-01-19 03:14:07</code>。4 字节存储正好是精确到秒为止。根据表中所描述的毫秒存储，是依赖于额外的存储空间。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; show variables like <span style="color:#e6db74">&#39;version&#39;</span>;
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; show variables like <span style="color:#4070a0">&#39;version&#39;</span>;
 +---------------+--------+
 | Variable_name | Value  |
 +---------------+--------+
 | version       | 5.7.20 |
 +---------------+--------+
 </code></pre></div><p>OK，版本大于 5.6.4，能够支持毫秒级精度。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># mysql-cli 直接插入新的数据</span>
-mysql&gt; INSERT INTO <span style="color:#e6db74">`</span>time_0<span style="color:#e6db74">`</span> <span style="color:#f92672">(</span>timeout<span style="color:#f92672">)</span> VALUES <span style="color:#f92672">(</span><span style="color:#e6db74">&#39;2019-04-26 08:00:00.500&#39;</span><span style="color:#f92672">)</span>;
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#60a0b0;font-style:italic"># mysql-cli 直接插入新的数据</span>
+mysql&gt; INSERT INTO <span style="color:#4070a0">`</span>time_0<span style="color:#4070a0">`</span> <span style="color:#666">(</span>timeout<span style="color:#666">)</span> VALUES <span style="color:#666">(</span><span style="color:#4070a0">&#39;2019-04-26 08:00:00.500&#39;</span><span style="color:#666">)</span>;
 
-<span style="color:#75715e"># Check 结果</span>
-mysql&gt; SELECT * FROM <span style="color:#e6db74">`</span>time_0<span style="color:#e6db74">`</span>;
+<span style="color:#60a0b0;font-style:italic"># Check 结果</span>
+mysql&gt; SELECT * FROM <span style="color:#4070a0">`</span>time_0<span style="color:#4070a0">`</span>;
 +---------------------+
 | timeout             |
 +---------------------+
 | 2019-04-26 08:00:01 |
 +---------------------+
-<span style="color:#ae81ff">1</span> row in set <span style="color:#f92672">(</span>0.00 sec<span style="color:#f92672">)</span>
+<span style="color:#40a070">1</span> row in <span style="color:#007020">set</span> <span style="color:#666">(</span>0.00 sec<span style="color:#666">)</span>
 </code></pre></div><p>被向上取整了？没有存储毫秒级数据？还是说 <code>SELECT</code> 展示结果的时候被加工了？直接去检查数据文件 <code>/path/to/time_0.ibd</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># 2019-04-26 08:00:00 -&gt; 1556236800 second -&gt; 0x5cc24a00</span> 
-<span style="color:#75715e"># 2019-04-26 08:00:00 -&gt; 1556236801 second -&gt; 0x5cc24a01</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#60a0b0;font-style:italic"># 2019-04-26 08:00:00 -&gt; 1556236800 second -&gt; 0x5cc24a00</span> 
+<span style="color:#60a0b0;font-style:italic"># 2019-04-26 08:00:00 -&gt; 1556236801 second -&gt; 0x5cc24a01</span>
 $ xxd time_0.ibd | grep 5cc2
-0000c090: 5cc2 4a01 <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span>  <span style="color:#ae81ff">\.</span>J.............
+0000c090: 5cc2 4a01 <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>  <span style="color:#4070a0;font-weight:bold">\.</span>J.............
 </code></pre></div><p>存储时已经被四舍五入了，存了 <code>5cc24a01</code>。</p>
 <p>:&lt; 如果需要存储毫秒级精度，需要在声明类型 <code>timestamp</code> 时添加毫秒精度的声明。Like <code>timestamp(1)</code>：最小精度 0.1 秒。不同的毫秒精度还将决定所需的存储空间大小。</p>
 <table>
@@ -235,52 +235,52 @@ $ xxd time_0.ibd | grep 5cc2
 </tbody>
 </table>
 <p>新建表 <code>time_1</code> (timestamp(3))</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; insert into time_1 <span style="color:#f92672">(</span>timeout<span style="color:#f92672">)</span> values <span style="color:#f92672">(</span><span style="color:#e6db74">&#39;2019-04-26 08:00:00.500&#39;</span><span style="color:#f92672">)</span>;
-mysql&gt; <span style="color:#66d9ef">select</span> * from time_1;
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; insert into time_1 <span style="color:#666">(</span>timeout<span style="color:#666">)</span> values <span style="color:#666">(</span><span style="color:#4070a0">&#39;2019-04-26 08:00:00.500&#39;</span><span style="color:#666">)</span>;
+mysql&gt; <span style="color:#007020;font-weight:bold">select</span> * from time_1;
 +----+-------------------------+
 | id | timeout                 |
 +----+-------------------------+
-|  <span style="color:#ae81ff">1</span> | 2019-04-26 08:00:00.500 |
+|  <span style="color:#40a070">1</span> | 2019-04-26 08:00:00.500 |
 +----+-------------------------+
 </code></pre></div><p>从 <code>/path/to/time_1.ibd</code> 检查数据</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># 2019-04-26 08:00:00.500 -&gt; 2019-04-26 08:00:00.5000  3,4 位毫秒级精度存储方式相同</span>
-<span style="color:#75715e"># -&gt; 1556236800.5000 second -&gt; 0x5cc24a00 0x1388</span>
-$ xxd time_1.ibd | grep -A <span style="color:#ae81ff">1</span> 5cc2
-0000c080: <span style="color:#ae81ff">0100</span> <span style="color:#ae81ff">0000</span> 008c 87ce <span style="color:#ae81ff">0000</span> 01e4 <span style="color:#ae81ff">0110</span> 5cc2  ..............<span style="color:#ae81ff">\.</span>
-0000c090: 4a00 <span style="color:#ae81ff">1388</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">0000</span>  J...............
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#60a0b0;font-style:italic"># 2019-04-26 08:00:00.500 -&gt; 2019-04-26 08:00:00.5000  3,4 位毫秒级精度存储方式相同</span>
+<span style="color:#60a0b0;font-style:italic"># -&gt; 1556236800.5000 second -&gt; 0x5cc24a00 0x1388</span>
+$ xxd time_1.ibd | grep -A <span style="color:#40a070">1</span> 5cc2
+0000c080: <span style="color:#40a070">0100</span> <span style="color:#40a070">0000</span> 008c 87ce <span style="color:#40a070">0000</span> 01e4 <span style="color:#40a070">0110</span> 5cc2  ..............<span style="color:#4070a0;font-weight:bold">\.</span>
+0000c090: 4a00 <span style="color:#40a070">1388</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>  J...............
 </code></pre></div><p>OK，看来确实如此。</p>
 <h2 id="now">NOW()</h2>
 <p>确认了 MySQL 对 <code>TIMESTAMP</code> 的存储方式。还有 <code>now()</code> 函数的表现亟待确认。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#a6e22e">now</span>();
-<span style="color:#f92672">+---------------------+</span>
-<span style="color:#f92672">|</span> <span style="color:#a6e22e">now</span>()               <span style="color:#f92672">|</span>
-<span style="color:#f92672">+---------------------+</span>
-<span style="color:#f92672">|</span> <span style="color:#ae81ff">2019</span><span style="color:#f92672">-</span><span style="color:#ae81ff">04</span><span style="color:#f92672">-</span><span style="color:#ae81ff">26</span> <span style="color:#ae81ff">09</span>:<span style="color:#ae81ff">03</span>:<span style="color:#ae81ff">27</span> <span style="color:#f92672">|</span>
-<span style="color:#f92672">+---------------------+</span>
-<span style="color:#ae81ff">1</span> row <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">mysql<span style="color:#666">&gt;</span> <span style="color:#007020;font-weight:bold">SELECT</span> <span style="color:#06287e">now</span>();
+<span style="color:#666">+---------------------+</span>
+<span style="color:#666">|</span> <span style="color:#06287e">now</span>()               <span style="color:#666">|</span>
+<span style="color:#666">+---------------------+</span>
+<span style="color:#666">|</span> <span style="color:#40a070">2019</span><span style="color:#666">-</span><span style="color:#40a070">04</span><span style="color:#666">-</span><span style="color:#40a070">26</span> <span style="color:#40a070">09</span>:<span style="color:#40a070">03</span>:<span style="color:#40a070">27</span> <span style="color:#666">|</span>
+<span style="color:#666">+---------------------+</span>
+<span style="color:#40a070">1</span> row <span style="color:#007020;font-weight:bold">in</span> <span style="color:#902000">set</span> (<span style="color:#40a070">0</span>.<span style="color:#40a070">00</span> sec)
 
-mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#a6e22e">now</span>(<span style="color:#ae81ff">3</span>);
-<span style="color:#f92672">+-------------------------+</span>
-<span style="color:#f92672">|</span> <span style="color:#a6e22e">now</span>(<span style="color:#ae81ff">3</span>)                  <span style="color:#f92672">|</span>
-<span style="color:#f92672">+-------------------------+</span>
-<span style="color:#f92672">|</span> <span style="color:#ae81ff">2019</span><span style="color:#f92672">-</span><span style="color:#ae81ff">04</span><span style="color:#f92672">-</span><span style="color:#ae81ff">26</span> <span style="color:#ae81ff">09</span>:<span style="color:#ae81ff">03</span>:<span style="color:#ae81ff">31</span>.<span style="color:#ae81ff">491</span> <span style="color:#f92672">|</span>
-<span style="color:#f92672">+-------------------------+</span>
-<span style="color:#ae81ff">1</span> row <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+mysql<span style="color:#666">&gt;</span> <span style="color:#007020;font-weight:bold">SELECT</span> <span style="color:#06287e">now</span>(<span style="color:#40a070">3</span>);
+<span style="color:#666">+-------------------------+</span>
+<span style="color:#666">|</span> <span style="color:#06287e">now</span>(<span style="color:#40a070">3</span>)                  <span style="color:#666">|</span>
+<span style="color:#666">+-------------------------+</span>
+<span style="color:#666">|</span> <span style="color:#40a070">2019</span><span style="color:#666">-</span><span style="color:#40a070">04</span><span style="color:#666">-</span><span style="color:#40a070">26</span> <span style="color:#40a070">09</span>:<span style="color:#40a070">03</span>:<span style="color:#40a070">31</span>.<span style="color:#40a070">491</span> <span style="color:#666">|</span>
+<span style="color:#666">+-------------------------+</span>
+<span style="color:#40a070">1</span> row <span style="color:#007020;font-weight:bold">in</span> <span style="color:#902000">set</span> (<span style="color:#40a070">0</span>.<span style="color:#40a070">00</span> sec)
 
-<span style="color:#75715e"># 加入 `sleep(1)` 是为了体现两个 now() 是同时产生效果的。
-</span><span style="color:#75715e"># 但并没有出现四舍五入的现象。从网上的源码看到 now(3) 对于毫秒级数据是额外附加的。
-</span><span style="color:#75715e"></span>mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#a6e22e">now</span>(), <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">1</span>), <span style="color:#a6e22e">now</span>(<span style="color:#ae81ff">3</span>);
-<span style="color:#f92672">+---------------------+----------+-------------------------+</span>
-<span style="color:#f92672">|</span> <span style="color:#a6e22e">now</span>()               <span style="color:#f92672">|</span> <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">1</span>) <span style="color:#f92672">|</span> <span style="color:#a6e22e">now</span>(<span style="color:#ae81ff">3</span>)                  <span style="color:#f92672">|</span>
-<span style="color:#f92672">+---------------------+----------+-------------------------+</span>
-<span style="color:#f92672">|</span> <span style="color:#ae81ff">2019</span><span style="color:#f92672">-</span><span style="color:#ae81ff">04</span><span style="color:#f92672">-</span><span style="color:#ae81ff">26</span> <span style="color:#ae81ff">09</span>:<span style="color:#ae81ff">04</span>:<span style="color:#ae81ff">58</span> <span style="color:#f92672">|</span>        <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">2019</span><span style="color:#f92672">-</span><span style="color:#ae81ff">04</span><span style="color:#f92672">-</span><span style="color:#ae81ff">26</span> <span style="color:#ae81ff">09</span>:<span style="color:#ae81ff">04</span>:<span style="color:#ae81ff">58</span>.<span style="color:#ae81ff">946</span> <span style="color:#f92672">|</span>
-<span style="color:#f92672">+---------------------+----------+-------------------------+</span>
-<span style="color:#ae81ff">1</span> row <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">1</span>.<span style="color:#ae81ff">00</span> sec)
+<span style="color:#60a0b0;font-style:italic"># 加入 `sleep(1)` 是为了体现两个 now() 是同时产生效果的。
+</span><span style="color:#60a0b0;font-style:italic"># 但并没有出现四舍五入的现象。从网上的源码看到 now(3) 对于毫秒级数据是额外附加的。
+</span><span style="color:#60a0b0;font-style:italic"></span>mysql<span style="color:#666">&gt;</span> <span style="color:#007020;font-weight:bold">SELECT</span> <span style="color:#06287e">now</span>(), <span style="color:#06287e">sleep</span>(<span style="color:#40a070">1</span>), <span style="color:#06287e">now</span>(<span style="color:#40a070">3</span>);
+<span style="color:#666">+---------------------+----------+-------------------------+</span>
+<span style="color:#666">|</span> <span style="color:#06287e">now</span>()               <span style="color:#666">|</span> <span style="color:#06287e">sleep</span>(<span style="color:#40a070">1</span>) <span style="color:#666">|</span> <span style="color:#06287e">now</span>(<span style="color:#40a070">3</span>)                  <span style="color:#666">|</span>
+<span style="color:#666">+---------------------+----------+-------------------------+</span>
+<span style="color:#666">|</span> <span style="color:#40a070">2019</span><span style="color:#666">-</span><span style="color:#40a070">04</span><span style="color:#666">-</span><span style="color:#40a070">26</span> <span style="color:#40a070">09</span>:<span style="color:#40a070">04</span>:<span style="color:#40a070">58</span> <span style="color:#666">|</span>        <span style="color:#40a070">0</span> <span style="color:#666">|</span> <span style="color:#40a070">2019</span><span style="color:#666">-</span><span style="color:#40a070">04</span><span style="color:#666">-</span><span style="color:#40a070">26</span> <span style="color:#40a070">09</span>:<span style="color:#40a070">04</span>:<span style="color:#40a070">58</span>.<span style="color:#40a070">946</span> <span style="color:#666">|</span>
+<span style="color:#666">+---------------------+----------+-------------------------+</span>
+<span style="color:#40a070">1</span> row <span style="color:#007020;font-weight:bold">in</span> <span style="color:#902000">set</span> (<span style="color:#40a070">1</span>.<span style="color:#40a070">00</span> sec)
 </code></pre></div><h2 id="结论">结论</h2>
 <p>综合 <code>now()</code> 和 <code>timestamp</code> 的表现，结论就是默认是按向下取整的方式进行的。因为 <code>UPDATE</code> 语句用了 <code>now()</code>。</p>
 <p>既然如此，还能够出现已经设置 <code>timeout = now()</code> 而 SELECT 得到的 <code>timeout &gt; System.currentTimeMillis()</code>。只能推断为数据库服务器和本机的系统时间不一致，而且数据库服务器的时间更快，但快的有限，不超过 1 秒。</p>
 <p>至于如何比较两台机器的时间差，<code>clockdiff</code> 是个好工具，但没找到 MacOS 下的替代品。具体计算时间差，只能暂时放弃了。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -291,6 +291,12 @@ mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">SELECT<
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

@@ -131,7 +131,7 @@
 <h3 id="jvm-指令">JVM 指令</h3>
 <p>通常，我们借助于 <code>javap</code> 命令来对 .class 文件的字节码内容进行查阅。</p>
 <p>类似于汇编代码，<code>javap</code> 打印的JVM 指令将以下列格式进行展示:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">&lt;index&gt; &lt;opcode&gt; [&lt;operand1&gt; [&lt;operand2&gt; ...]] [&lt;comment&gt;]
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">&lt;index&gt; &lt;opcode&gt; [&lt;operand1&gt; [&lt;operand2&gt; ...]] [&lt;comment&gt;]
 </code></pre></div><p>其中</p>
 <ul>
 <li><code>&lt;index&gt;</code> 指在 <code>code[]</code> 属性中这条指令的偏移量(从 0 开始计数)。</li>
@@ -142,23 +142,23 @@
 <h2 id="指令集概览">指令集概览</h2>
 <p>首先，Java 代码经编译后的所有指令都基于 <code>方法(Method)</code> 被定义在 <code>Code</code> 属性中。</p>
 <p>在 <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.3">ClassFile</a> 的 <code>Code</code> 属性，结构定义如下:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Code_attribute <span style="color:#f92672">{</span>
-    <span style="color:#75715e">// 其中 u1, u2, u4 分别表示这个变量所占的字节长度
-</span><span style="color:#75715e"></span>    u2 attribute_name_index<span style="color:#f92672">;</span>                    <span style="color:#75715e">// 属性名在常量池中的 index (执行常量池中 Code 的位置)
-</span><span style="color:#75715e"></span>    u4 attribute_length<span style="color:#f92672">;</span>                        <span style="color:#75715e">// 属性长度，不包括开始的六个字节
-</span><span style="color:#75715e"></span>    u2 max_stack<span style="color:#f92672">;</span>                               <span style="color:#75715e">// 运行时操作数栈的最大深度
-</span><span style="color:#75715e"></span>    u2 max_locals<span style="color:#f92672">;</span>                              <span style="color:#75715e">// 运行时所需的局部变量表的大小
-</span><span style="color:#75715e"></span>    u4 code_length<span style="color:#f92672">;</span>                             <span style="color:#75715e">// code 数组的长度
-</span><span style="color:#75715e"></span>    u1 code<span style="color:#f92672">[</span>code_length<span style="color:#f92672">];</span>                       <span style="color:#75715e">// code 数组，编译后方法体的内容都通过字节码指令存储在这里
-</span><span style="color:#75715e"></span>    u2 exception_table_length<span style="color:#f92672">;</span>                  <span style="color:#75715e">// 异常表的长度
-</span><span style="color:#75715e"></span>    <span style="color:#f92672">{</span>   u2 start_pc<span style="color:#f92672">;</span>
-        u2 end_pc<span style="color:#f92672">;</span>
-        u2 handler_pc<span style="color:#f92672">;</span>
-        u2 catch_type<span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span> exception_table<span style="color:#f92672">[</span>exception_table_length<span style="color:#f92672">];</span> <span style="color:#75715e">// 异常表，Java 代码中所有的 catch, finally 的捕获都将由此表进行实现
-</span><span style="color:#75715e"></span>    u2 attributes_count<span style="color:#f92672">;</span>                       <span style="color:#75715e">// 属性计数
-</span><span style="color:#75715e"></span>    attribute_info attributes<span style="color:#f92672">[</span>attributes_count<span style="color:#f92672">];</span>
-<span style="color:#f92672">}</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Code_attribute <span style="color:#666">{</span>
+    <span style="color:#60a0b0;font-style:italic">// 其中 u1, u2, u4 分别表示这个变量所占的字节长度
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2 attribute_name_index<span style="color:#666">;</span>                    <span style="color:#60a0b0;font-style:italic">// 属性名在常量池中的 index (执行常量池中 Code 的位置)
+</span><span style="color:#60a0b0;font-style:italic"></span>    u4 attribute_length<span style="color:#666">;</span>                        <span style="color:#60a0b0;font-style:italic">// 属性长度，不包括开始的六个字节
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2 max_stack<span style="color:#666">;</span>                               <span style="color:#60a0b0;font-style:italic">// 运行时操作数栈的最大深度
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2 max_locals<span style="color:#666">;</span>                              <span style="color:#60a0b0;font-style:italic">// 运行时所需的局部变量表的大小
+</span><span style="color:#60a0b0;font-style:italic"></span>    u4 code_length<span style="color:#666">;</span>                             <span style="color:#60a0b0;font-style:italic">// code 数组的长度
+</span><span style="color:#60a0b0;font-style:italic"></span>    u1 code<span style="color:#666">[</span>code_length<span style="color:#666">];</span>                       <span style="color:#60a0b0;font-style:italic">// code 数组，编译后方法体的内容都通过字节码指令存储在这里
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2 exception_table_length<span style="color:#666">;</span>                  <span style="color:#60a0b0;font-style:italic">// 异常表的长度
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#666">{</span>   u2 start_pc<span style="color:#666">;</span>
+        u2 end_pc<span style="color:#666">;</span>
+        u2 handler_pc<span style="color:#666">;</span>
+        u2 catch_type<span style="color:#666">;</span>
+    <span style="color:#666">}</span> exception_table<span style="color:#666">[</span>exception_table_length<span style="color:#666">];</span> <span style="color:#60a0b0;font-style:italic">// 异常表，Java 代码中所有的 catch, finally 的捕获都将由此表进行实现
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2 attributes_count<span style="color:#666">;</span>                       <span style="color:#60a0b0;font-style:italic">// 属性计数
+</span><span style="color:#60a0b0;font-style:italic"></span>    attribute_info attributes<span style="color:#666">[</span>attributes_count<span style="color:#666">];</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>Java 虚拟机的指令是由一个字节长度的 <code>操作码</code> 配合上其后的 0 个或多个 <code>操作数</code> 所构成的。</p>
 <p>其中，<code>操作数</code> 的数量取决于 <code>操作码</code>，不同的 <code>操作码</code> 需要不同数量的 <code>操作数</code>。</p>
 <p>按照类型划分，<code>操作数</code> 主要包括下列几类:</p>
@@ -187,20 +187,20 @@
 <h2 id="getter-setter-的指令代码">Getter, Setter 的指令代码</h2>
 <p>首先，有必要提及，想要得到 .class 可视且友好的展示结果，可以使用 JDK 自带的 <code>javap</code> 命令。</p>
 <p>本节要展示的内容是常见的 POJO 的 get, set 方法的指令代码。使用的示例代码如下:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Test</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Test</span> <span style="color:#666">{</span>
     
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> number<span style="color:#f92672">;</span>
+    <span style="color:#007020;font-weight:bold">private</span> <span style="color:#902000">int</span> number<span style="color:#666">;</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getNumber</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">return</span> number<span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#902000">int</span> <span style="color:#06287e">getNumber</span><span style="color:#666">()</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">return</span> number<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setNumber</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> number<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">number</span> <span style="color:#f92672">=</span> number<span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#902000">void</span> <span style="color:#06287e">setNumber</span><span style="color:#666">(</span><span style="color:#902000">int</span> number<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">.</span><span style="color:#4070a0">number</span> <span style="color:#666">=</span> number<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>在经过 <code>javac</code> 编译，<code>javap</code> 解析之后，我们将看到下列内容</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">Classfile /Users/fangfeng/WorkPkg/lab/src/main/java/me/fangfeng/asm/Test.class
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">Classfile /Users/fangfeng/WorkPkg/lab/src/main/java/me/fangfeng/asm/Test.class
   Last modified Jul 23, 2018; size 357 bytes
   MD5 checksum bb1940cc6534d789359295b8dc80233b
   Compiled from &#34;Test.java&#34;
@@ -268,7 +268,7 @@ Constant pool:
 SourceFile: &#34;Test.java&#34;
 </code></pre></div><p>打印出来的内容包括有 类的全限定名，访问控制权限，父类，接口，常量池以及各个方法。</p>
 <p>以 <code>getNumber</code> 为例:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">public int getNumber();
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">public int getNumber();
   descriptor: ()I
   flags: ACC_PUBLIC
   Code:
@@ -290,7 +290,7 @@ SourceFile: &#34;Test.java&#34;
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">0: aload_0              // 从局部变量表中加载 0 号元素到操作数栈中
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">0: aload_0              // 从局部变量表中加载 0 号元素到操作数栈中
 1: getfield #2          // 获取常量池中 2 号元素(即 Field number:I) 的值，并加载到操作数栈中
 4: ireturn              // 抛出当前操作数栈顶元素作为返回值
 </code></pre></div><p>其中，每条指令前的 0, 1, 4 指当前指令作为 <code>Code</code> 属性的内容的偏移量。</p>
@@ -309,7 +309,7 @@ SourceFile: &#34;Test.java&#34;
 而操作数栈顶的 <code>this</code> 恰恰是指明，需要使用当前方法所在的类的 number 变量。</p>
 <hr>
 <p>类似的，我们看一下 <code>setNumber</code> 方法</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">0: aload_0              // 从局部变量表中加载 0 号元素到操作数栈中 (用于确定字段所属的类)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">0: aload_0              // 从局部变量表中加载 0 号元素到操作数栈中 (用于确定字段所属的类)
 1: iload_1              // 从局部变量表中加载 1 号元素到操作数栈中 (用于确定将要给字段赋的值)
 2: putfield      #2     // 获取常量池中 2 号元素(即 Field number:I) 的地址，并赋值
 5: return               // 无返回值的 return 指令来结束当前栈帧的执行
@@ -324,7 +324,7 @@ SourceFile: &#34;Test.java&#34;
 <h2 id="控制结构">控制结构</h2>
 <p>作为一门图灵完备的语言，至少，控制结构是必不可少的元素。</p>
 <p>那么，类似 <code>for(int i=0;i&lt;10;i++)</code> 的 Java 代码编译成指令到底是什么样的呢？</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">0: iconst_0                     // 赋值指令，往操作数栈顶添加整数值 0
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">0: iconst_0                     // 赋值指令，往操作数栈顶添加整数值 0
 1: istore_1                     // 将操作数栈顶的元素存入局部变量表 1 号位置
 2: iload_1                      // 从局部变量表 1 号位置加载元素到操作数栈
 3: bipush        10             // 往操作数栈顶压入 byte 型值 10
@@ -344,12 +344,12 @@ SourceFile: &#34;Test.java&#34;
 </ul>
 <p>以执行 <code>System.out.println()</code> 为例
 假设常量池内容存在目标元素(具体以相应注释为准)</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
 invokevirtual #4                  // Method java/io/PrintStream.println:()V
 </code></pre></div><h2 id="more">More</h2>
 <p>更多内容，包括: 如何实例化一个对象，如何抛出及处理异常，代码同步声明等，暂且不表。</p>
 <p>有时间再做补充</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -360,6 +360,12 @@ invokevirtual #4                  // Method java/io/PrintStream.println:()V
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

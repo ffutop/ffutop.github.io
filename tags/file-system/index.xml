@@ -19,52 +19,52 @@
       <guid>https://www.ffutop.com/posts/2018-11-11-%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/&#34;&gt;前一篇&lt;/a&gt;已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。&lt;/p&gt;
 &lt;p&gt;首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;fcntl.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;sys/types.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;sys/stat.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
-&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;panic&lt;/span&gt;()
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#007020&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;&amp;lt;fcntl.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;&amp;lt;sys/types.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;&amp;lt;sys/stat.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;&lt;/span&gt;
+&lt;span style=&#34;color:#902000&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#06287e&#34;&gt;panic&lt;/span&gt;()
 {
-    fprintf(stderr, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%s (errno=%d)&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, strerror(errno), errno);
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+    fprintf(stderr, &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;%s (errno=%d)&lt;/span&gt;&lt;span style=&#34;color:#4070a0;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;&lt;/span&gt;, strerror(errno), errno);
+    &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;1&lt;/span&gt;;
 }
 
-&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;argv[])
+&lt;span style=&#34;color:#902000&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#06287e&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#902000&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color:#902000&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;argv[])
 {
-    &lt;span style=&#34;color:#75715e&#34;&gt;/* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */&lt;/span&gt;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; fd &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; open(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/root/frw.txt&amp;#34;&lt;/span&gt;, O_RDWR &lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt; O_CREAT);
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (fd &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; panic();
+    &lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;/* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */&lt;/span&gt;
+    &lt;span style=&#34;color:#902000&#34;&gt;int&lt;/span&gt; fd &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; open(&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;/root/frw.txt&amp;#34;&lt;/span&gt;, O_RDWR &lt;span style=&#34;color:#666&#34;&gt;|&lt;/span&gt; O_CREAT);
+    &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;if&lt;/span&gt; (fd &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;1&lt;/span&gt;)
+        &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;return&lt;/span&gt; panic();
 
-    &lt;span style=&#34;color:#75715e&#34;&gt;/* 向文件写入 Hello World! 共计 12 个字符 */&lt;/span&gt;
-    ssize_t wsize &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; write(fd, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hello World!&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt;);
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (wsize &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; panic();
+    &lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;/* 向文件写入 Hello World! 共计 12 个字符 */&lt;/span&gt;
+    ssize_t wsize &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; write(fd, &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;Hello World!&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#40a070&#34;&gt;12&lt;/span&gt;);
+    &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;if&lt;/span&gt; (wsize &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;1&lt;/span&gt;)
+        &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;return&lt;/span&gt; panic();
 
-    &lt;span style=&#34;color:#75715e&#34;&gt;/* 重定位文件读写指针 */&lt;/span&gt;
-    off_t off &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; lseek(fd, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, SEEK_SET);
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (off &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; panic();
+    &lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;/* 重定位文件读写指针 */&lt;/span&gt;
+    off_t off &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; lseek(fd, &lt;span style=&#34;color:#40a070&#34;&gt;0&lt;/span&gt;, SEEK_SET);
+    &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;if&lt;/span&gt; (off &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;1&lt;/span&gt;)
+        &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;return&lt;/span&gt; panic();
 
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; buf &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;) malloc(wsize);
-    &lt;span style=&#34;color:#75715e&#34;&gt;/* 读取文件内容 */&lt;/span&gt;
-    ssize_t rsize &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; read(fd, buf, wsize);
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (rsize &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; panic();
+    &lt;span style=&#34;color:#902000&#34;&gt;char&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt; buf &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#902000&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt;) malloc(wsize);
+    &lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;/* 读取文件内容 */&lt;/span&gt;
+    ssize_t rsize &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; read(fd, buf, wsize);
+    &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;if&lt;/span&gt; (rsize &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;1&lt;/span&gt;)
+        &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;return&lt;/span&gt; panic();
 
-    printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%s&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, buf);
+    printf(&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;%s&lt;/span&gt;&lt;span style=&#34;color:#4070a0;font-weight:bold&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;&lt;/span&gt;, buf);
     free(buf);
-    &lt;span style=&#34;color:#75715e&#34;&gt;/* 关闭文件 */&lt;/span&gt;
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; stat &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; close(fd);
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (stat &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
-        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; panic();
+    &lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;/* 关闭文件 */&lt;/span&gt;
+    &lt;span style=&#34;color:#902000&#34;&gt;int&lt;/span&gt; stat &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; close(fd);
+    &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;if&lt;/span&gt; (stat &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;1&lt;/span&gt;)
+        &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;return&lt;/span&gt; panic();
 
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+    &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#40a070&#34;&gt;0&lt;/span&gt;;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
@@ -76,7 +76,7 @@
       
       <guid>https://www.ffutop.com/posts/2018-10-14-%E7%90%86%E8%A7%A3-linux-kernel-5-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AE%8F%E8%A7%82%E6%8F%8F%E8%BF%B0/</guid>
       <description>&lt;p&gt;用惯了类 Unix 系统，应该说文件系统是日常最常接触的一个操作系统模块之一了。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;$ ls
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;$ ls
 Applications Network      Users        bin          data         etc          net          sbin         usr
 Library      System       Volumes      cores        dev          home         private      tmp          var
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;但是，究竟什么是文件系统? 为什么需要文件系统? 难道文件不是简单地存储到存储设备一块连续区域的吗?&lt;/p&gt;</description>

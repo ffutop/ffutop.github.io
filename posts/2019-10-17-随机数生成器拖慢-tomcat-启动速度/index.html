@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "随机数生成器拖慢 Tomcat 启动速度",
       "headline" : "随机数生成器拖慢 Tomcat 启动速度",
-      "description" : "\x3cp\x3e最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-plain\x22 data-lang=\x22plain\x22\x3e16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.\n...\n16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e\x3cp\x3e创建 \x3ccode\x3eSecureRandom\x3c\/code\x3e 竟然花了 6 分多钟，占了整个启动时间的 94% 。\x3c\/p\x3e",
+      "description" : "\x3cp\x3e最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-plain\x22 data-lang=\x22plain\x22\x3e16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.\n...\n16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e\x3cp\x3e创建 \x3ccode\x3eSecureRandom\x3c\/code\x3e 竟然花了 6 分多钟，占了整个启动时间的 94% 。\x3c\/p\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -110,56 +110,56 @@
         <div class="post-content markdown-body">
           
           <p>最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
 ...
 16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
 </code></pre></div><p>创建 <code>SecureRandom</code> 竟然花了 6 分多钟，占了整个启动时间的 94% 。</p>
 <h2 id="securerandom">SecureRandom</h2>
 <p><code>SessionIdGeneratorBase</code> 创建 SecureRandom 的核心代码可以归结为：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> java.security.NoSuchAlgorithmException<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> java.security.SecureRandom<span style="color:#f92672">;</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.security.NoSuchAlgorithmException</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.security.SecureRandom</span><span style="color:#666">;</span>
 
-<span style="color:#75715e">/**
-</span><span style="color:#75715e"> * @author ffutop
-</span><span style="color:#75715e"> * @since 2019/10/17
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Random</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        SecureRandom result <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * @author ffutop
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2019/10/17
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Random</span> <span style="color:#666">{</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#902000">void</span> <span style="color:#06287e">run</span><span style="color:#666">()</span> <span style="color:#666">{</span>
+        SecureRandom result <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
             
-        <span style="color:#66d9ef">long</span> t1 <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTimeMillis</span><span style="color:#f92672">();</span>
-        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-            result <span style="color:#f92672">=</span> SecureRandom<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;SHA1PRNG&#34;</span><span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>NoSuchAlgorithmException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
-        <span style="color:#f92672">}</span>
+        <span style="color:#902000">long</span> t1 <span style="color:#666">=</span> System<span style="color:#666">.</span><span style="color:#4070a0">currentTimeMillis</span><span style="color:#666">();</span>
+        <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+            result <span style="color:#666">=</span> SecureRandom<span style="color:#666">.</span><span style="color:#4070a0">getInstance</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;SHA1PRNG&#34;</span><span style="color:#666">);</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>NoSuchAlgorithmException e<span style="color:#666">)</span> <span style="color:#666">{</span>
+            e<span style="color:#666">.</span><span style="color:#4070a0">printStackTrace</span><span style="color:#666">();</span>
+        <span style="color:#666">}</span>
 
-        <span style="color:#75715e">// Force seeding to take place
-</span><span style="color:#75715e"></span>        result<span style="color:#f92672">.</span><span style="color:#a6e22e">nextInt</span><span style="color:#f92672">();</span>
+        <span style="color:#60a0b0;font-style:italic">// Force seeding to take place
+</span><span style="color:#60a0b0;font-style:italic"></span>        result<span style="color:#666">.</span><span style="color:#4070a0">nextInt</span><span style="color:#666">();</span>
 
-        <span style="color:#66d9ef">long</span> t2 <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTimeMillis</span><span style="color:#f92672">();</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>Long<span style="color:#f92672">.</span><span style="color:#a6e22e">valueOf</span><span style="color:#f92672">(</span>t2 <span style="color:#f92672">-</span> t1<span style="color:#f92672">)</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; ms&#34;</span><span style="color:#f92672">);</span>
-        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span>i<span style="color:#f92672">&lt;</span>10000<span style="color:#f92672">;</span>i<span style="color:#f92672">++)</span>
-            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>result<span style="color:#f92672">.</span><span style="color:#a6e22e">nextInt</span><span style="color:#f92672">());</span>
-        <span style="color:#66d9ef">long</span> t3 <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTimeMillis</span><span style="color:#f92672">();</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>Long<span style="color:#f92672">.</span><span style="color:#a6e22e">valueOf</span><span style="color:#f92672">(</span>t3 <span style="color:#f92672">-</span> t2<span style="color:#f92672">)</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; ms&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
+        <span style="color:#902000">long</span> t2 <span style="color:#666">=</span> System<span style="color:#666">.</span><span style="color:#4070a0">currentTimeMillis</span><span style="color:#666">();</span>
+        System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>Long<span style="color:#666">.</span><span style="color:#4070a0">valueOf</span><span style="color:#666">(</span>t2 <span style="color:#666">-</span> t1<span style="color:#666">)</span> <span style="color:#666">+</span> <span style="color:#4070a0">&#34; ms&#34;</span><span style="color:#666">);</span>
+        <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#902000">int</span> i<span style="color:#666">=</span>0<span style="color:#666">;</span>i<span style="color:#666">&lt;</span>10000<span style="color:#666">;</span>i<span style="color:#666">++)</span>
+            System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>result<span style="color:#666">.</span><span style="color:#4070a0">nextInt</span><span style="color:#666">());</span>
+        <span style="color:#902000">long</span> t3 <span style="color:#666">=</span> System<span style="color:#666">.</span><span style="color:#4070a0">currentTimeMillis</span><span style="color:#666">();</span>
+        System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>Long<span style="color:#666">.</span><span style="color:#4070a0">valueOf</span><span style="color:#666">(</span>t3 <span style="color:#666">-</span> t2<span style="color:#666">)</span> <span style="color:#666">+</span> <span style="color:#4070a0">&#34; ms&#34;</span><span style="color:#666">);</span>
+    <span style="color:#666">}</span>
     
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;start run()&#34;</span><span style="color:#f92672">);</span>
-        <span style="color:#66d9ef">new</span> Random<span style="color:#f92672">().</span><span style="color:#a6e22e">run</span><span style="color:#f92672">();</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;stop run()&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">main</span><span style="color:#666">(</span>String<span style="color:#666">[]</span> args<span style="color:#666">)</span> <span style="color:#666">{</span>
+        System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;start run()&#34;</span><span style="color:#666">);</span>
+        <span style="color:#007020;font-weight:bold">new</span> Random<span style="color:#666">().</span><span style="color:#4070a0">run</span><span style="color:#666">();</span>
+        System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;stop run()&#34;</span><span style="color:#666">);</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>执行结果直接表明了首次 <code>result.nextInt()</code> 花费的时间绝大于之后 10000 次 <code>nextInt()</code> 的时间。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">$ javac Random.java
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">$ javac Random.java
 $ java Random
 start run()
 210635 ms
 81 ms
 stop run()
 </code></pre></div><p>利用 jstack 与 strace 发现，<code>main</code> 线程应该是阻塞在生成随机数种子的过程。监控系统调用的结果是读操作阻塞在读取 <code>/dev/random</code> 数据。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">// jstack result (part)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">// jstack result (part)
 &#34;main&#34; #1 prio=5 os_prio=0 tid=0x00007f3b94010800 nid=0xda0 runnable  [0x00007f3b9ca57000]
    java.lang.Thread.State: RUNNABLE
 	at java.io.FileInputStream.readBytes(java.base@10.0.2/Native Method)
@@ -187,72 +187,72 @@ stop run()
 <p><img src="https://img.ffutop.com/F97E08F1-ADAB-42BF-AB3F-6AF3FD013958.png" alt=""></p>
 <p><code>/dev/random</code> 和 <code>/dev/urandom</code> 作为 Linux 系统内核向用户层提供的两个随机数生成接口，工作形式分别是阻塞式与非阻塞式。当熵池收集的噪音不足时，<code>/dev/random</code> 的策略是让当前任务主动陷入 Sleeping 状态。而 <code>/dev/urandom</code> 则通过牺牲一定程度的随机性来保证随机数的生成效率。</p>
 <p>从源代码来看，<code>random_read</code> 和 <code>urandom_read</code> 调用了相同的函数 <code>extract_entropy_user</code> 来从熵池中提取随机数。不过 <code>random</code> 通过循环从 <code>blocking_pool</code> 分多次提取，每次最多提取 <code>SEC_XFER_SIZE</code> (=512) 字节，而 <code>urandom</code> 则一次性从 <code>nonblocking_pool</code> 全量提取随机数。数据的流向见上图所示。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">static</span> ssize_t
-<span style="color:#a6e22e">random_read</span>(<span style="color:#66d9ef">struct</span> file <span style="color:#f92672">*</span>file, <span style="color:#66d9ef">char</span> __user <span style="color:#f92672">*</span>buf, size_t nbytes, loff_t <span style="color:#f92672">*</span>ppos)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">static</span> ssize_t
+<span style="color:#06287e">random_read</span>(<span style="color:#007020;font-weight:bold">struct</span> file <span style="color:#666">*</span>file, <span style="color:#902000">char</span> __user <span style="color:#666">*</span>buf, size_t nbytes, loff_t <span style="color:#666">*</span>ppos)
 {
-    ssize_t n, retval <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    ssize_t n, retval <span style="color:#666">=</span> <span style="color:#40a070">0</span>, count <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
 
-    <span style="color:#66d9ef">if</span> (nbytes <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
-        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#007020;font-weight:bold">if</span> (nbytes <span style="color:#666">==</span> <span style="color:#40a070">0</span>)
+        <span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
 
-    <span style="color:#66d9ef">while</span> (nbytes <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>) {
-        n <span style="color:#f92672">=</span> nbytes;
-        <span style="color:#75715e">/* 需求的字节数大于安全提取的阈值，则分多次提取。保证每次不超限 */</span>
-        <span style="color:#66d9ef">if</span> (n <span style="color:#f92672">&gt;</span> SEC_XFER_SIZE)
-            n <span style="color:#f92672">=</span> SEC_XFER_SIZE;
+    <span style="color:#007020;font-weight:bold">while</span> (nbytes <span style="color:#666">&gt;</span> <span style="color:#40a070">0</span>) {
+        n <span style="color:#666">=</span> nbytes;
+        <span style="color:#60a0b0;font-style:italic">/* 需求的字节数大于安全提取的阈值，则分多次提取。保证每次不超限 */</span>
+        <span style="color:#007020;font-weight:bold">if</span> (n <span style="color:#666">&gt;</span> SEC_XFER_SIZE)
+            n <span style="color:#666">=</span> SEC_XFER_SIZE;
 
-        DEBUG_ENT(<span style="color:#e6db74">&#34;reading %zu bits</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, n<span style="color:#f92672">*</span><span style="color:#ae81ff">8</span>);
+        DEBUG_ENT(<span style="color:#4070a0">&#34;reading %zu bits</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, n<span style="color:#666">*</span><span style="color:#40a070">8</span>);
 
-        <span style="color:#75715e">/* 提取熵，并拷贝到用户空间 */</span>
-        n <span style="color:#f92672">=</span> extract_entropy_user(<span style="color:#f92672">&amp;</span>blocking_pool, buf, n);
+        <span style="color:#60a0b0;font-style:italic">/* 提取熵，并拷贝到用户空间 */</span>
+        n <span style="color:#666">=</span> extract_entropy_user(<span style="color:#666">&amp;</span>blocking_pool, buf, n);
 
-        <span style="color:#66d9ef">if</span> (n <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) {
-            retval <span style="color:#f92672">=</span> n;
-            <span style="color:#66d9ef">break</span>;
+        <span style="color:#007020;font-weight:bold">if</span> (n <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span>) {
+            retval <span style="color:#666">=</span> n;
+            <span style="color:#007020;font-weight:bold">break</span>;
         }
 
-        DEBUG_ENT(<span style="color:#e6db74">&#34;read got %zd bits (%zd still needed)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,
-              n<span style="color:#f92672">*</span><span style="color:#ae81ff">8</span>, (nbytes<span style="color:#f92672">-</span>n)<span style="color:#f92672">*</span><span style="color:#ae81ff">8</span>);
+        DEBUG_ENT(<span style="color:#4070a0">&#34;read got %zd bits (%zd still needed)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>,
+              n<span style="color:#666">*</span><span style="color:#40a070">8</span>, (nbytes<span style="color:#666">-</span>n)<span style="color:#666">*</span><span style="color:#40a070">8</span>);
 
-        <span style="color:#66d9ef">if</span> (n <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
-            <span style="color:#75715e">/* 不支持非阻塞的文件标识 */</span>
-            <span style="color:#66d9ef">if</span> (file<span style="color:#f92672">-&gt;</span>f_flags <span style="color:#f92672">&amp;</span> O_NONBLOCK) {
-                retval <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>EAGAIN;
-                <span style="color:#66d9ef">break</span>;
+        <span style="color:#007020;font-weight:bold">if</span> (n <span style="color:#666">==</span> <span style="color:#40a070">0</span>) {
+            <span style="color:#60a0b0;font-style:italic">/* 不支持非阻塞的文件标识 */</span>
+            <span style="color:#007020;font-weight:bold">if</span> (file<span style="color:#666">-&gt;</span>f_flags <span style="color:#666">&amp;</span> O_NONBLOCK) {
+                retval <span style="color:#666">=</span> <span style="color:#666">-</span>EAGAIN;
+                <span style="color:#007020;font-weight:bold">break</span>;
             }
 
-            DEBUG_ENT(<span style="color:#e6db74">&#34;sleeping?</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+            DEBUG_ENT(<span style="color:#4070a0">&#34;sleeping?</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>);
 
-            <span style="color:#75715e">/* 主动 Sleeping，等待事件（熵池被填充达到一定的阈值）*/</span>
+            <span style="color:#60a0b0;font-style:italic">/* 主动 Sleeping，等待事件（熵池被填充达到一定的阈值）*/</span>
             wait_event_interruptible(random_read_wait,
-                input_pool.entropy_count <span style="color:#f92672">&gt;=</span>
+                input_pool.entropy_count <span style="color:#666">&gt;=</span>
                          random_read_wakeup_thresh);
 
-            DEBUG_ENT(<span style="color:#e6db74">&#34;awake</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+            DEBUG_ENT(<span style="color:#4070a0">&#34;awake</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>);
 
-            <span style="color:#66d9ef">if</span> (signal_pending(current)) {
-                retval <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>ERESTARTSYS;
-                <span style="color:#66d9ef">break</span>;
+            <span style="color:#007020;font-weight:bold">if</span> (signal_pending(current)) {
+                retval <span style="color:#666">=</span> <span style="color:#666">-</span>ERESTARTSYS;
+                <span style="color:#007020;font-weight:bold">break</span>;
             }
 
-            <span style="color:#66d9ef">continue</span>;
+            <span style="color:#007020;font-weight:bold">continue</span>;
         }
 
-        count <span style="color:#f92672">+=</span> n;
-        buf <span style="color:#f92672">+=</span> n;
-        nbytes <span style="color:#f92672">-=</span> n;
-        <span style="color:#66d9ef">break</span>;        <span style="color:#75715e">/* This break makes the device work */</span>
-                <span style="color:#75715e">/* like a named pipe */</span>
+        count <span style="color:#666">+=</span> n;
+        buf <span style="color:#666">+=</span> n;
+        nbytes <span style="color:#666">-=</span> n;
+        <span style="color:#007020;font-weight:bold">break</span>;        <span style="color:#60a0b0;font-style:italic">/* This break makes the device work */</span>
+                <span style="color:#60a0b0;font-style:italic">/* like a named pipe */</span>
     }
 
-    <span style="color:#66d9ef">return</span> (count <span style="color:#f92672">?</span> count : retval);
+    <span style="color:#007020;font-weight:bold">return</span> (count <span style="color:#666">?</span> <span style="color:#002070;font-weight:bold">count</span> : retval);
 }
 
-<span style="color:#66d9ef">static</span> ssize_t
-<span style="color:#a6e22e">urandom_read</span>(<span style="color:#66d9ef">struct</span> file <span style="color:#f92672">*</span>file, <span style="color:#66d9ef">char</span> __user <span style="color:#f92672">*</span>buf, size_t nbytes, loff_t <span style="color:#f92672">*</span>ppos)
+<span style="color:#007020;font-weight:bold">static</span> ssize_t
+<span style="color:#06287e">urandom_read</span>(<span style="color:#007020;font-weight:bold">struct</span> file <span style="color:#666">*</span>file, <span style="color:#902000">char</span> __user <span style="color:#666">*</span>buf, size_t nbytes, loff_t <span style="color:#666">*</span>ppos)
 {
-    <span style="color:#75715e">/* 提取熵，并拷贝到用户空间 */</span>
-    <span style="color:#66d9ef">return</span> extract_entropy_user(<span style="color:#f92672">&amp;</span>nonblocking_pool, buf, nbytes);
+    <span style="color:#60a0b0;font-style:italic">/* 提取熵，并拷贝到用户空间 */</span>
+    <span style="color:#007020;font-weight:bold">return</span> extract_entropy_user(<span style="color:#666">&amp;</span>nonblocking_pool, buf, nbytes);
 }
 </code></pre></div><p>从全流程来说，<code>random</code> 和 <code>urandom</code> 几乎都是一样的，最重要的区别在于 <code>random</code> 通过比较熵值计时器与预设阈值，来决定是否需要等待熵池收集到足够的随机因子后再进行随机数生成工作。而 <code>urandom</code> 的工作形式就是不设定阈值，非阻塞式直接生成随机数。从使用的角度来说，如果保持熵池充足，并且每次要求的随机数小于 512 字节，那么 <code>random</code> 和 <code>urandom</code> 的执行将是一致的（当然，这个一致是指执行的逻辑一致，不代表结果一致）。<em>大雾，熵池真的充足的话，又何必考虑 urandom 呢？</em></p>
 <h2 id="解决方案">解决方案</h2>
@@ -265,6 +265,12 @@ stop run()
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

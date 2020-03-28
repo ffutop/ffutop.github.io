@@ -111,312 +111,312 @@
 <h2 id="从实例开始">从实例开始&hellip;</h2>
 <p>下面，首先来了解一下 Java Proxy 的使用编码:</p>
 <p>ICodeFactory 接口, 作为将被 Java 动态代理增强的基本接口</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">ICodeFactory</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">interface</span> <span style="color:#0e84b5;font-weight:bold">ICodeFactory</span> <span style="color:#666">{</span>
 
-    Code <span style="color:#a6e22e">getCode</span><span style="color:#f92672">();</span>
+    Code <span style="color:#06287e">getCode</span><span style="color:#666">();</span>
 
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setCode</span><span style="color:#f92672">(</span>Code code<span style="color:#f92672">);</span>
+    <span style="color:#902000">void</span> <span style="color:#06287e">setCode</span><span style="color:#666">(</span>Code code<span style="color:#666">);</span>
 
-<span style="color:#f92672">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>CodeFactory 类, 作为 ICodeFactory 接口的实现类。被视为是真正被动态代理增强的内容，:) 因为接口方法并不存在方法体(当然，Java 8 及以上的 default 请容我忽视)</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CodeFactory</span> <span style="color:#66d9ef">implements</span> ICodeFactory <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">CodeFactory</span> <span style="color:#007020;font-weight:bold">implements</span> ICodeFactory <span style="color:#666">{</span>
 
-    <span style="color:#66d9ef">private</span> Code code<span style="color:#f92672">;</span>
+    <span style="color:#007020;font-weight:bold">private</span> Code code<span style="color:#666">;</span>
 
-    <span style="color:#66d9ef">public</span> Code <span style="color:#a6e22e">getCode</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Code<span style="color:#f92672">();</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> Code <span style="color:#06287e">getCode</span><span style="color:#666">()</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">return</span> <span style="color:#007020;font-weight:bold">new</span> Code<span style="color:#666">();</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setCode</span><span style="color:#f92672">(</span>Code code<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">code</span> <span style="color:#f92672">=</span> code<span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#555;font-weight:bold">@Override</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#902000">void</span> <span style="color:#06287e">setCode</span><span style="color:#666">(</span>Code code<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">.</span><span style="color:#4070a0">code</span> <span style="color:#666">=</span> code<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>辅助类 Code 的内容(简单写，请忽略不符合实际编程规范的一些内容):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Code</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Code</span> <span style="color:#666">{</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> codeA<span style="color:#f92672">;</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#902000">int</span> codeA<span style="color:#666">;</span>
 
-    <span style="color:#66d9ef">public</span> String codeB<span style="color:#f92672">;</span>
+    <span style="color:#007020;font-weight:bold">public</span> String codeB<span style="color:#666">;</span>
 
-<span style="color:#f92672">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>构建增强的代码逻辑:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// main(String[]) 方法
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#60a0b0;font-style:italic">// main(String[]) 方法
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">main</span><span style="color:#666">(</span>String<span style="color:#666">[]</span> args<span style="color:#666">)</span> <span style="color:#007020;font-weight:bold">throws</span> Exception <span style="color:#666">{</span>
 
-    <span style="color:#75715e">// 内部匿名类，用于动态代理生成类的构造方法及其它内容，后面讲。
-</span><span style="color:#75715e"></span>    InvocationHandler handler <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> InvocationHandler<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#60a0b0;font-style:italic">// 内部匿名类，用于动态代理生成类的构造方法及其它内容，后面讲。
+</span><span style="color:#60a0b0;font-style:italic"></span>    InvocationHandler handler <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> InvocationHandler<span style="color:#666">()</span> <span style="color:#666">{</span>
 
-        Object obj <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CodeFactory<span style="color:#f92672">();</span>
+        Object obj <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> CodeFactory<span style="color:#666">();</span>
 
-        <span style="color:#a6e22e">@Override</span>
-        <span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>Object proxy<span style="color:#f92672">,</span> Method method<span style="color:#f92672">,</span> Object<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Throwable <span style="color:#f92672">{</span>
+        <span style="color:#555;font-weight:bold">@Override</span>
+        <span style="color:#007020;font-weight:bold">public</span> Object <span style="color:#06287e">invoke</span><span style="color:#666">(</span>Object proxy<span style="color:#666">,</span> Method method<span style="color:#666">,</span> Object<span style="color:#666">[]</span> args<span style="color:#666">)</span> <span style="color:#007020;font-weight:bold">throws</span> Throwable <span style="color:#666">{</span>
 
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>method<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;getCode&#34;</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                Code code <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>Code<span style="color:#f92672">)</span> method<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>obj<span style="color:#f92672">,</span> args<span style="color:#f92672">);</span>
-                code<span style="color:#f92672">.</span><span style="color:#a6e22e">codeA</span> <span style="color:#f92672">=</span> code<span style="color:#f92672">.</span><span style="color:#a6e22e">codeA</span> <span style="color:#f92672">+</span> 100<span style="color:#f92672">;</span>
-                code<span style="color:#f92672">.</span><span style="color:#a6e22e">codeB</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Proxied: &#34;</span> <span style="color:#f92672">+</span> code<span style="color:#f92672">.</span><span style="color:#a6e22e">codeB</span><span style="color:#f92672">;</span>
-                <span style="color:#66d9ef">return</span> code<span style="color:#f92672">;</span>
-            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-                <span style="color:#66d9ef">return</span> method<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>obj<span style="color:#f92672">,</span> args<span style="color:#f92672">);</span>
-            <span style="color:#f92672">}</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">};</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>method<span style="color:#666">.</span><span style="color:#4070a0">getName</span><span style="color:#666">()</span> <span style="color:#666">==</span> <span style="color:#4070a0">&#34;getCode&#34;</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                Code code <span style="color:#666">=</span> <span style="color:#666">(</span>Code<span style="color:#666">)</span> method<span style="color:#666">.</span><span style="color:#4070a0">invoke</span><span style="color:#666">(</span>obj<span style="color:#666">,</span> args<span style="color:#666">);</span>
+                code<span style="color:#666">.</span><span style="color:#4070a0">codeA</span> <span style="color:#666">=</span> code<span style="color:#666">.</span><span style="color:#4070a0">codeA</span> <span style="color:#666">+</span> 100<span style="color:#666">;</span>
+                code<span style="color:#666">.</span><span style="color:#4070a0">codeB</span> <span style="color:#666">=</span> <span style="color:#4070a0">&#34;Proxied: &#34;</span> <span style="color:#666">+</span> code<span style="color:#666">.</span><span style="color:#4070a0">codeB</span><span style="color:#666">;</span>
+                <span style="color:#007020;font-weight:bold">return</span> code<span style="color:#666">;</span>
+            <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">else</span> <span style="color:#666">{</span>
+                <span style="color:#007020;font-weight:bold">return</span> method<span style="color:#666">.</span><span style="color:#4070a0">invoke</span><span style="color:#666">(</span>obj<span style="color:#666">,</span> args<span style="color:#666">);</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">};</span>
 
-    <span style="color:#75715e">// 构建生成类实例
-</span><span style="color:#75715e"></span>    Class<span style="color:#f92672">&lt;?&gt;</span> clazz <span style="color:#f92672">=</span> Proxy<span style="color:#f92672">.</span><span style="color:#a6e22e">getProxyClass</span><span style="color:#f92672">(</span>ICodeFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getClassLoader</span><span style="color:#f92672">(),</span> ICodeFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
-    <span style="color:#75715e">// 获取生成类对象
-</span><span style="color:#75715e"></span>    ICodeFactory factory <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>ICodeFactory<span style="color:#f92672">)</span> clazz<span style="color:#f92672">.</span><span style="color:#a6e22e">getConstructor</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Class<span style="color:#f92672">[]</span> <span style="color:#f92672">{</span> InvocationHandler<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span> <span style="color:#f92672">}).</span><span style="color:#a6e22e">newInstance</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Object<span style="color:#f92672">[]</span> <span style="color:#f92672">{</span> handler <span style="color:#f92672">});</span>
+    <span style="color:#60a0b0;font-style:italic">// 构建生成类实例
+</span><span style="color:#60a0b0;font-style:italic"></span>    Class<span style="color:#666">&lt;?&gt;</span> clazz <span style="color:#666">=</span> Proxy<span style="color:#666">.</span><span style="color:#4070a0">getProxyClass</span><span style="color:#666">(</span>ICodeFactory<span style="color:#666">.</span><span style="color:#4070a0">class</span><span style="color:#666">.</span><span style="color:#4070a0">getClassLoader</span><span style="color:#666">(),</span> ICodeFactory<span style="color:#666">.</span><span style="color:#4070a0">class</span><span style="color:#666">);</span>
+    <span style="color:#60a0b0;font-style:italic">// 获取生成类对象
+</span><span style="color:#60a0b0;font-style:italic"></span>    ICodeFactory factory <span style="color:#666">=</span> <span style="color:#666">(</span>ICodeFactory<span style="color:#666">)</span> clazz<span style="color:#666">.</span><span style="color:#4070a0">getConstructor</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">new</span> Class<span style="color:#666">[]</span> <span style="color:#666">{</span> InvocationHandler<span style="color:#666">.</span><span style="color:#4070a0">class</span> <span style="color:#666">}).</span><span style="color:#4070a0">newInstance</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">new</span> Object<span style="color:#666">[]</span> <span style="color:#666">{</span> handler <span style="color:#666">});</span>
 
-    <span style="color:#75715e">// 调用 getCode() 方法
-</span><span style="color:#75715e"></span>    Code code <span style="color:#f92672">=</span> factory<span style="color:#f92672">.</span><span style="color:#a6e22e">getCode</span><span style="color:#f92672">();</span>
-    <span style="color:#75715e">// 打印参数
-</span><span style="color:#75715e"></span>    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>code<span style="color:#f92672">.</span><span style="color:#a6e22e">codeA</span><span style="color:#f92672">);</span>
-    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>code<span style="color:#f92672">.</span><span style="color:#a6e22e">codeB</span><span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">// 调用 getCode() 方法
+</span><span style="color:#60a0b0;font-style:italic"></span>    Code code <span style="color:#666">=</span> factory<span style="color:#666">.</span><span style="color:#4070a0">getCode</span><span style="color:#666">();</span>
+    <span style="color:#60a0b0;font-style:italic">// 打印参数
+</span><span style="color:#60a0b0;font-style:italic"></span>    System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>code<span style="color:#666">.</span><span style="color:#4070a0">codeA</span><span style="color:#666">);</span>
+    System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>code<span style="color:#666">.</span><span style="color:#4070a0">codeB</span><span style="color:#666">);</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>从默认预期来讲，我们是对接口进行增强。接口方法不存在方法体，也许将在 <code>factory.getCode()</code> 时执行失败？
 或者结合已有的认知，成功调用 <code>CodeFactory.getCode()</code> 方法，并获得 <code>new Code()</code> 。</p>
 <p>那么，<code>code.codeA</code> <code>code.codeB</code> 的具体值将是什么？</p>
 <p>执行结果将是:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">100
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">100
 Proxied: null
 </code></pre></div><h2 id="了解-proxy-的内容逻辑">了解 Proxy 的内容逻辑</h2>
 <p>从 <code>Proxy.getProxyClass(ClassLoader, Class&lt;?&gt;...)</code> 入手，下面将展开对 <code>Proxy</code> 具体执行逻辑的探究。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Class<span style="color:#f92672">&lt;?&gt;</span> getProxyClass<span style="color:#f92672">(</span>ClassLoader loader<span style="color:#f92672">,</span> Class<span style="color:#f92672">&lt;?&gt;...</span> interfaces<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IllegalArgumentException <span style="color:#f92672">{</span>
-    <span style="color:#75715e">// 对 interfaces 数组的浅拷贝
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">final</span> Class<span style="color:#f92672">&lt;?&gt;[]</span> intfs <span style="color:#f92672">=</span> interfaces<span style="color:#f92672">.</span><span style="color:#a6e22e">clone</span><span style="color:#f92672">();</span>
-    <span style="color:#66d9ef">final</span> SecurityManager sm <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">getSecurityManager</span><span style="color:#f92672">();</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>sm <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// 如果配置了安全管理器，那么需要确认 Proxy 有创建新的代理类的许可
-</span><span style="color:#75715e"></span>        checkProxyAccess<span style="color:#f92672">(</span>Reflection<span style="color:#f92672">.</span><span style="color:#a6e22e">getCallerClass</span><span style="color:#f92672">(),</span> loader<span style="color:#f92672">,</span> intfs<span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> Class<span style="color:#666">&lt;?&gt;</span> getProxyClass<span style="color:#666">(</span>ClassLoader loader<span style="color:#666">,</span> Class<span style="color:#666">&lt;?&gt;...</span> interfaces<span style="color:#666">)</span> <span style="color:#007020;font-weight:bold">throws</span> IllegalArgumentException <span style="color:#666">{</span>
+    <span style="color:#60a0b0;font-style:italic">// 对 interfaces 数组的浅拷贝
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">final</span> Class<span style="color:#666">&lt;?&gt;[]</span> intfs <span style="color:#666">=</span> interfaces<span style="color:#666">.</span><span style="color:#4070a0">clone</span><span style="color:#666">();</span>
+    <span style="color:#007020;font-weight:bold">final</span> SecurityManager sm <span style="color:#666">=</span> System<span style="color:#666">.</span><span style="color:#4070a0">getSecurityManager</span><span style="color:#666">();</span>
+    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>sm <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">// 如果配置了安全管理器，那么需要确认 Proxy 有创建新的代理类的许可
+</span><span style="color:#60a0b0;font-style:italic"></span>        checkProxyAccess<span style="color:#666">(</span>Reflection<span style="color:#666">.</span><span style="color:#4070a0">getCallerClass</span><span style="color:#666">(),</span> loader<span style="color:#666">,</span> intfs<span style="color:#666">);</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#75715e">// 调用 
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> getProxyClass0<span style="color:#f92672">(</span>loader<span style="color:#f92672">,</span> intfs<span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Class<span style="color:#f92672">&lt;?&gt;</span> getProxyClass0<span style="color:#f92672">(</span>ClassLoader loader<span style="color:#f92672">,</span> Class<span style="color:#f92672">&lt;?&gt;...</span> interfaces<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#75715e">// 确认需要进行增强的接口数量少于等于 65535，详细原因请去了解 ClassFile 规范(规范中的接口上限)
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>interfaces<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;</span> 65535<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;interface limit exceeded&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">// 调用 
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">return</span> getProxyClass0<span style="color:#666">(</span>loader<span style="color:#666">,</span> intfs<span style="color:#666">);</span>
+<span style="color:#666">}</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> Class<span style="color:#666">&lt;?&gt;</span> getProxyClass0<span style="color:#666">(</span>ClassLoader loader<span style="color:#666">,</span> Class<span style="color:#666">&lt;?&gt;...</span> interfaces<span style="color:#666">)</span> <span style="color:#666">{</span>
+    <span style="color:#60a0b0;font-style:italic">// 确认需要进行增强的接口数量少于等于 65535，详细原因请去了解 ClassFile 规范(规范中的接口上限)
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>interfaces<span style="color:#666">.</span><span style="color:#4070a0">length</span> <span style="color:#666">&gt;</span> 65535<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> IllegalArgumentException<span style="color:#666">(</span><span style="color:#4070a0">&#34;interface limit exceeded&#34;</span><span style="color:#666">);</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#75715e">// 如果需要由指定 ClassLoader 加载, 实现给定 interfaces 的代理类已经存在, 
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 将直接返回已经缓存过的拷贝
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 否则，通过 ProxyClassFactory 创建新的代理类
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> proxyClassCache<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>loader<span style="color:#f92672">,</span> interfaces<span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">// 如果需要由指定 ClassLoader 加载, 实现给定 interfaces 的代理类已经存在, 
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic">// 将直接返回已经缓存过的拷贝
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic">// 否则，通过 ProxyClassFactory 创建新的代理类
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">return</span> proxyClassCache<span style="color:#666">.</span><span style="color:#4070a0">get</span><span style="color:#666">(</span>loader<span style="color:#666">,</span> interfaces<span style="color:#666">);</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>现在需要额外来考察一下 proxyClassCache 的具体类型。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> WeakCache<span style="color:#f92672">&lt;</span>ClassLoader<span style="color:#f92672">,</span> Class<span style="color:#f92672">&lt;?&gt;[],</span> Class<span style="color:#f92672">&lt;?&gt;&gt;</span>
-        proxyClassCache <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> WeakCache<span style="color:#f92672">&lt;&gt;(</span><span style="color:#66d9ef">new</span> KeyFactory<span style="color:#f92672">(),</span> <span style="color:#66d9ef">new</span> ProxyClassFactory<span style="color:#f92672">());</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#007020;font-weight:bold">final</span> WeakCache<span style="color:#666">&lt;</span>ClassLoader<span style="color:#666">,</span> Class<span style="color:#666">&lt;?&gt;[],</span> Class<span style="color:#666">&lt;?&gt;&gt;</span>
+        proxyClassCache <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> WeakCache<span style="color:#666">&lt;&gt;(</span><span style="color:#007020;font-weight:bold">new</span> KeyFactory<span style="color:#666">(),</span> <span style="color:#007020;font-weight:bold">new</span> ProxyClassFactory<span style="color:#666">());</span>
 </code></pre></div><p><code>WeakCache</code>, 从名称来将，是一个缓存，同时应该使用了 WeakReference 技术</p>
 <p>进入 <code>WeakCache.get(...)</code> 方法体</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> V <span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>K key<span style="color:#f92672">,</span> P parameter<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#75715e">// parameter 传入的是接口数组，要求不能为空
-</span><span style="color:#75715e"></span>    Objects<span style="color:#f92672">.</span><span style="color:#a6e22e">requireNonNull</span><span style="color:#f92672">(</span>parameter<span style="color:#f92672">);</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">public</span> V <span style="color:#06287e">get</span><span style="color:#666">(</span>K key<span style="color:#666">,</span> P parameter<span style="color:#666">)</span> <span style="color:#666">{</span>
+    <span style="color:#60a0b0;font-style:italic">// parameter 传入的是接口数组，要求不能为空
+</span><span style="color:#60a0b0;font-style:italic"></span>    Objects<span style="color:#666">.</span><span style="color:#4070a0">requireNonNull</span><span style="color:#666">(</span>parameter<span style="color:#666">);</span>
 
-    <span style="color:#75715e">// 删除过期元素
-</span><span style="color:#75715e"></span>    expungeStaleEntries<span style="color:#f92672">();</span>
+    <span style="color:#60a0b0;font-style:italic">// 删除过期元素
+</span><span style="color:#60a0b0;font-style:italic"></span>    expungeStaleEntries<span style="color:#666">();</span>
 
-    <span style="color:#75715e">// 构建一个 WeakReference 对象(key 表示 ClassLoader)
-</span><span style="color:#75715e"></span>    Object cacheKey <span style="color:#f92672">=</span> CacheKey<span style="color:#f92672">.</span><span style="color:#a6e22e">valueOf</span><span style="color:#f92672">(</span>key<span style="color:#f92672">,</span> refQueue<span style="color:#f92672">);</span>
+    <span style="color:#60a0b0;font-style:italic">// 构建一个 WeakReference 对象(key 表示 ClassLoader)
+</span><span style="color:#60a0b0;font-style:italic"></span>    Object cacheKey <span style="color:#666">=</span> CacheKey<span style="color:#666">.</span><span style="color:#4070a0">valueOf</span><span style="color:#666">(</span>key<span style="color:#666">,</span> refQueue<span style="color:#666">);</span>
 
-    <span style="color:#75715e">// lazily install the 2nd level valuesMap for the particular cacheKey
-</span><span style="color:#75715e"></span>    ConcurrentMap<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">,</span> Supplier<span style="color:#f92672">&lt;</span>V<span style="color:#f92672">&gt;&gt;</span> valuesMap <span style="color:#f92672">=</span> map<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>cacheKey<span style="color:#f92672">);</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>valuesMap <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        ConcurrentMap<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">,</span> Supplier<span style="color:#f92672">&lt;</span>V<span style="color:#f92672">&gt;&gt;</span> oldValuesMap
-                <span style="color:#f92672">=</span> map<span style="color:#f92672">.</span><span style="color:#a6e22e">putIfAbsent</span><span style="color:#f92672">(</span>cacheKey<span style="color:#f92672">,</span>
-                valuesMap <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ConcurrentHashMap<span style="color:#f92672">&lt;&gt;());</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>oldValuesMap <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            valuesMap <span style="color:#f92672">=</span> oldValuesMap<span style="color:#f92672">;</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">// lazily install the 2nd level valuesMap for the particular cacheKey
+</span><span style="color:#60a0b0;font-style:italic"></span>    ConcurrentMap<span style="color:#666">&lt;</span>Object<span style="color:#666">,</span> Supplier<span style="color:#666">&lt;</span>V<span style="color:#666">&gt;&gt;</span> valuesMap <span style="color:#666">=</span> map<span style="color:#666">.</span><span style="color:#4070a0">get</span><span style="color:#666">(</span>cacheKey<span style="color:#666">);</span>
+    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>valuesMap <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+        ConcurrentMap<span style="color:#666">&lt;</span>Object<span style="color:#666">,</span> Supplier<span style="color:#666">&lt;</span>V<span style="color:#666">&gt;&gt;</span> oldValuesMap
+                <span style="color:#666">=</span> map<span style="color:#666">.</span><span style="color:#4070a0">putIfAbsent</span><span style="color:#666">(</span>cacheKey<span style="color:#666">,</span>
+                valuesMap <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> ConcurrentHashMap<span style="color:#666">&lt;&gt;());</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>oldValuesMap <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            valuesMap <span style="color:#666">=</span> oldValuesMap<span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#75715e">// 创建次级 Key
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 同时检索是否存在过去有同一个 ClassLoader 加载的表示 Supplier&lt;V&gt;
-</span><span style="color:#75715e"></span>    Object subKey <span style="color:#f92672">=</span> Objects<span style="color:#f92672">.</span><span style="color:#a6e22e">requireNonNull</span><span style="color:#f92672">(</span>subKeyFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">apply</span><span style="color:#f92672">(</span>key<span style="color:#f92672">,</span> parameter<span style="color:#f92672">));</span>
-    Supplier<span style="color:#f92672">&lt;</span>V<span style="color:#f92672">&gt;</span> supplier <span style="color:#f92672">=</span> valuesMap<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>subKey<span style="color:#f92672">);</span>
-    Factory factory <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#60a0b0;font-style:italic">// 创建次级 Key
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic">// 同时检索是否存在过去有同一个 ClassLoader 加载的表示 Supplier&lt;V&gt;
+</span><span style="color:#60a0b0;font-style:italic"></span>    Object subKey <span style="color:#666">=</span> Objects<span style="color:#666">.</span><span style="color:#4070a0">requireNonNull</span><span style="color:#666">(</span>subKeyFactory<span style="color:#666">.</span><span style="color:#4070a0">apply</span><span style="color:#666">(</span>key<span style="color:#666">,</span> parameter<span style="color:#666">));</span>
+    Supplier<span style="color:#666">&lt;</span>V<span style="color:#666">&gt;</span> supplier <span style="color:#666">=</span> valuesMap<span style="color:#666">.</span><span style="color:#4070a0">get</span><span style="color:#666">(</span>subKey<span style="color:#666">);</span>
+    Factory factory <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
 
-    <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>supplier <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#75715e">// supplier might be a Factory or a CacheValue&lt;V&gt; instance
-</span><span style="color:#75715e"></span>            <span style="color:#75715e">// 最终 supplier 将非空，同时调用 .get() 方法获取 Class 类
-</span><span style="color:#75715e"></span>            V value <span style="color:#f92672">=</span> supplier<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>value <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                <span style="color:#66d9ef">return</span> value<span style="color:#f92672">;</span>
-            <span style="color:#f92672">}</span>
-        <span style="color:#f92672">}</span>
-        <span style="color:#75715e">// else no supplier in cache
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// or a supplier that returned null (could be a cleared CacheValue
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// or a Factory that wasn&#39;t successful in installing the CacheValue)
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 未找到过去加载的记录
-</span><span style="color:#75715e"></span>
-        <span style="color:#75715e">// 懒加载一个 Factory 
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>factory <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            factory <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Factory<span style="color:#f92672">(</span>key<span style="color:#f92672">,</span> parameter<span style="color:#f92672">,</span> subKey<span style="color:#f92672">,</span> valuesMap<span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">while</span> <span style="color:#666">(</span><span style="color:#007020;font-weight:bold">true</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>supplier <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#60a0b0;font-style:italic">// supplier might be a Factory or a CacheValue&lt;V&gt; instance
+</span><span style="color:#60a0b0;font-style:italic"></span>            <span style="color:#60a0b0;font-style:italic">// 最终 supplier 将非空，同时调用 .get() 方法获取 Class 类
+</span><span style="color:#60a0b0;font-style:italic"></span>            V value <span style="color:#666">=</span> supplier<span style="color:#666">.</span><span style="color:#4070a0">get</span><span style="color:#666">();</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>value <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                <span style="color:#007020;font-weight:bold">return</span> value<span style="color:#666">;</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span>
+        <span style="color:#60a0b0;font-style:italic">// else no supplier in cache
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#60a0b0;font-style:italic">// or a supplier that returned null (could be a cleared CacheValue
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#60a0b0;font-style:italic">// or a Factory that wasn&#39;t successful in installing the CacheValue)
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#60a0b0;font-style:italic">// 未找到过去加载的记录
+</span><span style="color:#60a0b0;font-style:italic"></span>
+        <span style="color:#60a0b0;font-style:italic">// 懒加载一个 Factory 
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>factory <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            factory <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> Factory<span style="color:#666">(</span>key<span style="color:#666">,</span> parameter<span style="color:#666">,</span> subKey<span style="color:#666">,</span> valuesMap<span style="color:#666">);</span>
+        <span style="color:#666">}</span>
 
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>supplier <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            supplier <span style="color:#f92672">=</span> valuesMap<span style="color:#f92672">.</span><span style="color:#a6e22e">putIfAbsent</span><span style="color:#f92672">(</span>subKey<span style="color:#f92672">,</span> factory<span style="color:#f92672">);</span>
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>supplier <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                <span style="color:#75715e">// successfully installed Factory
-</span><span style="color:#75715e"></span>                supplier <span style="color:#f92672">=</span> factory<span style="color:#f92672">;</span>
-            <span style="color:#f92672">}</span>
-            <span style="color:#75715e">// else retry with winning supplier
-</span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>valuesMap<span style="color:#f92672">.</span><span style="color:#a6e22e">replace</span><span style="color:#f92672">(</span>subKey<span style="color:#f92672">,</span> supplier<span style="color:#f92672">,</span> factory<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-                <span style="color:#75715e">// successfully replaced
-</span><span style="color:#75715e"></span>                <span style="color:#75715e">// cleared CacheEntry / unsuccessful Factory
-</span><span style="color:#75715e"></span>                <span style="color:#75715e">// with our Factory
-</span><span style="color:#75715e"></span>                supplier <span style="color:#f92672">=</span> factory<span style="color:#f92672">;</span>
-            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-                <span style="color:#75715e">// retry with current supplier
-</span><span style="color:#75715e"></span>                supplier <span style="color:#f92672">=</span> valuesMap<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>subKey<span style="color:#f92672">);</span>
-            <span style="color:#f92672">}</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">synchronized</span> V <span style="color:#a6e22e">get</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span> <span style="color:#75715e">// serialize access
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// re-check
-</span><span style="color:#75715e"></span>    Supplier<span style="color:#f92672">&lt;</span>V<span style="color:#f92672">&gt;</span> supplier <span style="color:#f92672">=</span> valuesMap<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>subKey<span style="color:#f92672">);</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>supplier <span style="color:#f92672">!=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// something changed while we were waiting:
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// might be that we were replaced by a CacheValue
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// or were removed because of failure -&gt;
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// return null to signal WeakCache.get() to retry
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// the loop
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-    <span style="color:#75715e">// else still us (supplier == this)
-</span><span style="color:#75715e"></span>
-    <span style="color:#75715e">// create new value
-</span><span style="color:#75715e"></span>    V value <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// 触发 valueFactory.apply() 真正的构建
-</span><span style="color:#75715e"></span>        value <span style="color:#f92672">=</span> Objects<span style="color:#f92672">.</span><span style="color:#a6e22e">requireNonNull</span><span style="color:#f92672">(</span>valueFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">apply</span><span style="color:#f92672">(</span>key<span style="color:#f92672">,</span> parameter<span style="color:#f92672">));</span>
-    <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>value <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#75715e">// remove us on failure
-</span><span style="color:#75715e"></span>            valuesMap<span style="color:#f92672">.</span><span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>subKey<span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
-    <span style="color:#75715e">// the only path to reach here is with non-null value
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">assert</span> value <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>supplier <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            supplier <span style="color:#666">=</span> valuesMap<span style="color:#666">.</span><span style="color:#4070a0">putIfAbsent</span><span style="color:#666">(</span>subKey<span style="color:#666">,</span> factory<span style="color:#666">);</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>supplier <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                <span style="color:#60a0b0;font-style:italic">// successfully installed Factory
+</span><span style="color:#60a0b0;font-style:italic"></span>                supplier <span style="color:#666">=</span> factory<span style="color:#666">;</span>
+            <span style="color:#666">}</span>
+            <span style="color:#60a0b0;font-style:italic">// else retry with winning supplier
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">else</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>valuesMap<span style="color:#666">.</span><span style="color:#4070a0">replace</span><span style="color:#666">(</span>subKey<span style="color:#666">,</span> supplier<span style="color:#666">,</span> factory<span style="color:#666">))</span> <span style="color:#666">{</span>
+                <span style="color:#60a0b0;font-style:italic">// successfully replaced
+</span><span style="color:#60a0b0;font-style:italic"></span>                <span style="color:#60a0b0;font-style:italic">// cleared CacheEntry / unsuccessful Factory
+</span><span style="color:#60a0b0;font-style:italic"></span>                <span style="color:#60a0b0;font-style:italic">// with our Factory
+</span><span style="color:#60a0b0;font-style:italic"></span>                supplier <span style="color:#666">=</span> factory<span style="color:#666">;</span>
+            <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">else</span> <span style="color:#666">{</span>
+                <span style="color:#60a0b0;font-style:italic">// retry with current supplier
+</span><span style="color:#60a0b0;font-style:italic"></span>                supplier <span style="color:#666">=</span> valuesMap<span style="color:#666">.</span><span style="color:#4070a0">get</span><span style="color:#666">(</span>subKey<span style="color:#666">);</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#555;font-weight:bold">@Override</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">synchronized</span> V <span style="color:#06287e">get</span><span style="color:#666">()</span> <span style="color:#666">{</span> <span style="color:#60a0b0;font-style:italic">// serialize access
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic">// re-check
+</span><span style="color:#60a0b0;font-style:italic"></span>    Supplier<span style="color:#666">&lt;</span>V<span style="color:#666">&gt;</span> supplier <span style="color:#666">=</span> valuesMap<span style="color:#666">.</span><span style="color:#4070a0">get</span><span style="color:#666">(</span>subKey<span style="color:#666">);</span>
+    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>supplier <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">// something changed while we were waiting:
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#60a0b0;font-style:italic">// might be that we were replaced by a CacheValue
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#60a0b0;font-style:italic">// or were removed because of failure -&gt;
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#60a0b0;font-style:italic">// return null to signal WeakCache.get() to retry
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#60a0b0;font-style:italic">// the loop
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#007020;font-weight:bold">return</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+    <span style="color:#60a0b0;font-style:italic">// else still us (supplier == this)
+</span><span style="color:#60a0b0;font-style:italic"></span>
+    <span style="color:#60a0b0;font-style:italic">// create new value
+</span><span style="color:#60a0b0;font-style:italic"></span>    V value <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
+    <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">// 触发 valueFactory.apply() 真正的构建
+</span><span style="color:#60a0b0;font-style:italic"></span>        value <span style="color:#666">=</span> Objects<span style="color:#666">.</span><span style="color:#4070a0">requireNonNull</span><span style="color:#666">(</span>valueFactory<span style="color:#666">.</span><span style="color:#4070a0">apply</span><span style="color:#666">(</span>key<span style="color:#666">,</span> parameter<span style="color:#666">));</span>
+    <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">finally</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>value <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span> <span style="color:#60a0b0;font-style:italic">// remove us on failure
+</span><span style="color:#60a0b0;font-style:italic"></span>            valuesMap<span style="color:#666">.</span><span style="color:#4070a0">remove</span><span style="color:#666">(</span>subKey<span style="color:#666">,</span> <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">);</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
+    <span style="color:#60a0b0;font-style:italic">// the only path to reach here is with non-null value
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">assert</span> value <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
 
-    <span style="color:#75715e">// wrap value with CacheValue (WeakReference)
-</span><span style="color:#75715e"></span>    CacheValue<span style="color:#f92672">&lt;</span>V<span style="color:#f92672">&gt;</span> cacheValue <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CacheValue<span style="color:#f92672">&lt;&gt;(</span>value<span style="color:#f92672">);</span>
+    <span style="color:#60a0b0;font-style:italic">// wrap value with CacheValue (WeakReference)
+</span><span style="color:#60a0b0;font-style:italic"></span>    CacheValue<span style="color:#666">&lt;</span>V<span style="color:#666">&gt;</span> cacheValue <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> CacheValue<span style="color:#666">&lt;&gt;(</span>value<span style="color:#666">);</span>
 
-    <span style="color:#75715e">// put into reverseMap
-</span><span style="color:#75715e"></span>    reverseMap<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>cacheValue<span style="color:#f92672">,</span> Boolean<span style="color:#f92672">.</span><span style="color:#a6e22e">TRUE</span><span style="color:#f92672">);</span>
+    <span style="color:#60a0b0;font-style:italic">// put into reverseMap
+</span><span style="color:#60a0b0;font-style:italic"></span>    reverseMap<span style="color:#666">.</span><span style="color:#4070a0">put</span><span style="color:#666">(</span>cacheValue<span style="color:#666">,</span> Boolean<span style="color:#666">.</span><span style="color:#4070a0">TRUE</span><span style="color:#666">);</span>
 
-    <span style="color:#75715e">// try replacing us with CacheValue (this should always succeed)
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>valuesMap<span style="color:#f92672">.</span><span style="color:#a6e22e">replace</span><span style="color:#f92672">(</span>subKey<span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">,</span> cacheValue<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> AssertionError<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Should not reach here&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">// try replacing us with CacheValue (this should always succeed)
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(!</span>valuesMap<span style="color:#666">.</span><span style="color:#4070a0">replace</span><span style="color:#666">(</span>subKey<span style="color:#666">,</span> <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">,</span> cacheValue<span style="color:#666">))</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> AssertionError<span style="color:#666">(</span><span style="color:#4070a0">&#34;Should not reach here&#34;</span><span style="color:#666">);</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#75715e">// successfully replaced us with new CacheValue -&gt; return the value
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// wrapped by it
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> value<span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">// successfully replaced us with new CacheValue -&gt; return the value
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic">// wrapped by it
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">return</span> value<span style="color:#666">;</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>上面两段代码的内容，都是在反复确认将要构建的生成类是否在过去曾经创建过，如果是，则直接返回过去构建的类实例;
 否则才会尝试创建，并最终将这个构建的类也进行缓存。</p>
 <p>下面这段代码来自于 <code>Proxy</code> 的内部类 <code>ProxyClassFactory</code>
 这部分，也终于开始了对代理类字节码的统筹性构造的内容。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> Class<span style="color:#f92672">&lt;?&gt;</span> apply<span style="color:#f92672">(</span>ClassLoader loader<span style="color:#f92672">,</span> Class<span style="color:#f92672">&lt;?&gt;[]</span> interfaces<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">public</span> Class<span style="color:#666">&lt;?&gt;</span> apply<span style="color:#666">(</span>ClassLoader loader<span style="color:#666">,</span> Class<span style="color:#666">&lt;?&gt;[]</span> interfaces<span style="color:#666">)</span> <span style="color:#666">{</span>
 
-    Map<span style="color:#f92672">&lt;</span>Class<span style="color:#f92672">&lt;?&gt;,</span> Boolean<span style="color:#f92672">&gt;</span> interfaceSet <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> IdentityHashMap<span style="color:#f92672">&lt;&gt;(</span>interfaces<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">);</span>
-    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Class<span style="color:#f92672">&lt;?&gt;</span> intf <span style="color:#f92672">:</span> interfaces<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">/*
-</span><span style="color:#75715e">         * 校验当前接口是由同一个 ClassLoader (将要用来加载新的代理类)加载的
-</span><span style="color:#75715e">         */</span>
-        Class<span style="color:#f92672">&lt;?&gt;</span> interfaceClass <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-            interfaceClass <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span>intf<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(),</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">,</span> loader<span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>ClassNotFoundException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#f92672">}</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>interfaceClass <span style="color:#f92672">!=</span> intf<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">(</span>
-                    intf <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; is not visible from class loader&#34;</span><span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
-        <span style="color:#75715e">/*
-</span><span style="color:#75715e">         * 校验当前 Class 对象确实是一个接口
-</span><span style="color:#75715e">         */</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>interfaceClass<span style="color:#f92672">.</span><span style="color:#a6e22e">isInterface</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">(</span>
-                    interfaceClass<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">()</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; is not an interface&#34;</span><span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
-        <span style="color:#75715e">/*
-</span><span style="color:#75715e">         * 校验当前接口没有被要求重复进行代理增强
-</span><span style="color:#75715e">         */</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>interfaceSet<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>interfaceClass<span style="color:#f92672">,</span> Boolean<span style="color:#f92672">.</span><span style="color:#a6e22e">TRUE</span><span style="color:#f92672">)</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">(</span>
-                    <span style="color:#e6db74">&#34;repeated interface: &#34;</span> <span style="color:#f92672">+</span> interfaceClass<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">());</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+    Map<span style="color:#666">&lt;</span>Class<span style="color:#666">&lt;?&gt;,</span> Boolean<span style="color:#666">&gt;</span> interfaceSet <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> IdentityHashMap<span style="color:#666">&lt;&gt;(</span>interfaces<span style="color:#666">.</span><span style="color:#4070a0">length</span><span style="color:#666">);</span>
+    <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(</span>Class<span style="color:#666">&lt;?&gt;</span> intf <span style="color:#666">:</span> interfaces<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">         * 校验当前接口是由同一个 ClassLoader (将要用来加载新的代理类)加载的
+</span><span style="color:#60a0b0;font-style:italic">         */</span>
+        Class<span style="color:#666">&lt;?&gt;</span> interfaceClass <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
+        <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+            interfaceClass <span style="color:#666">=</span> Class<span style="color:#666">.</span><span style="color:#4070a0">forName</span><span style="color:#666">(</span>intf<span style="color:#666">.</span><span style="color:#4070a0">getName</span><span style="color:#666">(),</span> <span style="color:#007020;font-weight:bold">false</span><span style="color:#666">,</span> loader<span style="color:#666">);</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>ClassNotFoundException e<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#666">}</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>interfaceClass <span style="color:#666">!=</span> intf<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> IllegalArgumentException<span style="color:#666">(</span>
+                    intf <span style="color:#666">+</span> <span style="color:#4070a0">&#34; is not visible from class loader&#34;</span><span style="color:#666">);</span>
+        <span style="color:#666">}</span>
+        <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">         * 校验当前 Class 对象确实是一个接口
+</span><span style="color:#60a0b0;font-style:italic">         */</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(!</span>interfaceClass<span style="color:#666">.</span><span style="color:#4070a0">isInterface</span><span style="color:#666">())</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> IllegalArgumentException<span style="color:#666">(</span>
+                    interfaceClass<span style="color:#666">.</span><span style="color:#4070a0">getName</span><span style="color:#666">()</span> <span style="color:#666">+</span> <span style="color:#4070a0">&#34; is not an interface&#34;</span><span style="color:#666">);</span>
+        <span style="color:#666">}</span>
+        <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">         * 校验当前接口没有被要求重复进行代理增强
+</span><span style="color:#60a0b0;font-style:italic">         */</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>interfaceSet<span style="color:#666">.</span><span style="color:#4070a0">put</span><span style="color:#666">(</span>interfaceClass<span style="color:#666">,</span> Boolean<span style="color:#666">.</span><span style="color:#4070a0">TRUE</span><span style="color:#666">)</span> <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> IllegalArgumentException<span style="color:#666">(</span>
+                    <span style="color:#4070a0">&#34;repeated interface: &#34;</span> <span style="color:#666">+</span> interfaceClass<span style="color:#666">.</span><span style="color:#4070a0">getName</span><span style="color:#666">());</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
 
-    String proxyPkg <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>     <span style="color:#75715e">// 生成的代理类所属的 package
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> accessFlags <span style="color:#f92672">=</span> Modifier<span style="color:#f92672">.</span><span style="color:#a6e22e">PUBLIC</span> <span style="color:#f92672">|</span> Modifier<span style="color:#f92672">.</span><span style="color:#a6e22e">FINAL</span><span style="color:#f92672">;</span>
+    String proxyPkg <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>     <span style="color:#60a0b0;font-style:italic">// 生成的代理类所属的 package
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#902000">int</span> accessFlags <span style="color:#666">=</span> Modifier<span style="color:#666">.</span><span style="color:#4070a0">PUBLIC</span> <span style="color:#666">|</span> Modifier<span style="color:#666">.</span><span style="color:#4070a0">FINAL</span><span style="color:#666">;</span>
 
-    <span style="color:#75715e">/*
-</span><span style="color:#75715e">     * 如果代理的接口是非 PUBLIC ，那么生成的代理类的接口将与这个非 PUBLIC 接口
-</span><span style="color:#75715e">     * 在同一个包下。
-</span><span style="color:#75715e">     * 如果代理的接口有多个非 PUBLIC ，且分别位于不同的包下，那么抛出异常
-</span><span style="color:#75715e">     */</span>
-    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Class<span style="color:#f92672">&lt;?&gt;</span> intf <span style="color:#f92672">:</span> interfaces<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">int</span> flags <span style="color:#f92672">=</span> intf<span style="color:#f92672">.</span><span style="color:#a6e22e">getModifiers</span><span style="color:#f92672">();</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>Modifier<span style="color:#f92672">.</span><span style="color:#a6e22e">isPublic</span><span style="color:#f92672">(</span>flags<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-            accessFlags <span style="color:#f92672">=</span> Modifier<span style="color:#f92672">.</span><span style="color:#a6e22e">FINAL</span><span style="color:#f92672">;</span>
-            String name <span style="color:#f92672">=</span> intf<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">();</span>
-            <span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> name<span style="color:#f92672">.</span><span style="color:#a6e22e">lastIndexOf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#39;.&#39;</span><span style="color:#f92672">);</span>
-            String pkg <span style="color:#f92672">=</span> <span style="color:#f92672">((</span>n <span style="color:#f92672">==</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">)</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">:</span> name<span style="color:#f92672">.</span><span style="color:#a6e22e">substring</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> n <span style="color:#f92672">+</span> 1<span style="color:#f92672">));</span>
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>proxyPkg <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                proxyPkg <span style="color:#f92672">=</span> pkg<span style="color:#f92672">;</span>
-            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>pkg<span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>proxyPkg<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-                <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">(</span>
-                        <span style="color:#e6db74">&#34;non-public interfaces from different packages&#34;</span><span style="color:#f92672">);</span>
-            <span style="color:#f92672">}</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">     * 如果代理的接口是非 PUBLIC ，那么生成的代理类的接口将与这个非 PUBLIC 接口
+</span><span style="color:#60a0b0;font-style:italic">     * 在同一个包下。
+</span><span style="color:#60a0b0;font-style:italic">     * 如果代理的接口有多个非 PUBLIC ，且分别位于不同的包下，那么抛出异常
+</span><span style="color:#60a0b0;font-style:italic">     */</span>
+    <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(</span>Class<span style="color:#666">&lt;?&gt;</span> intf <span style="color:#666">:</span> interfaces<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#902000">int</span> flags <span style="color:#666">=</span> intf<span style="color:#666">.</span><span style="color:#4070a0">getModifiers</span><span style="color:#666">();</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(!</span>Modifier<span style="color:#666">.</span><span style="color:#4070a0">isPublic</span><span style="color:#666">(</span>flags<span style="color:#666">))</span> <span style="color:#666">{</span>
+            accessFlags <span style="color:#666">=</span> Modifier<span style="color:#666">.</span><span style="color:#4070a0">FINAL</span><span style="color:#666">;</span>
+            String name <span style="color:#666">=</span> intf<span style="color:#666">.</span><span style="color:#4070a0">getName</span><span style="color:#666">();</span>
+            <span style="color:#902000">int</span> n <span style="color:#666">=</span> name<span style="color:#666">.</span><span style="color:#4070a0">lastIndexOf</span><span style="color:#666">(</span><span style="color:#4070a0">&#39;.&#39;</span><span style="color:#666">);</span>
+            String pkg <span style="color:#666">=</span> <span style="color:#666">((</span>n <span style="color:#666">==</span> <span style="color:#666">-</span>1<span style="color:#666">)</span> <span style="color:#666">?</span> <span style="color:#4070a0">&#34;&#34;</span> <span style="color:#666">:</span> name<span style="color:#666">.</span><span style="color:#4070a0">substring</span><span style="color:#666">(</span>0<span style="color:#666">,</span> n <span style="color:#666">+</span> 1<span style="color:#666">));</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>proxyPkg <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                proxyPkg <span style="color:#666">=</span> pkg<span style="color:#666">;</span>
+            <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">else</span> <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(!</span>pkg<span style="color:#666">.</span><span style="color:#4070a0">equals</span><span style="color:#666">(</span>proxyPkg<span style="color:#666">))</span> <span style="color:#666">{</span>
+                <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> IllegalArgumentException<span style="color:#666">(</span>
+                        <span style="color:#4070a0">&#34;non-public interfaces from different packages&#34;</span><span style="color:#666">);</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#75715e">// 如果代理的接口全是 PUBLIC 的，那么使用默认的包 com.sun.proxy
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>proxyPkg <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// if no non-public proxy interfaces, use com.sun.proxy package
-</span><span style="color:#75715e"></span>        proxyPkg <span style="color:#f92672">=</span> ReflectUtil<span style="color:#f92672">.</span><span style="color:#a6e22e">PROXY_PACKAGE</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;.&#34;</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">// 如果代理的接口全是 PUBLIC 的，那么使用默认的包 com.sun.proxy
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>proxyPkg <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">// if no non-public proxy interfaces, use com.sun.proxy package
+</span><span style="color:#60a0b0;font-style:italic"></span>        proxyPkg <span style="color:#666">=</span> ReflectUtil<span style="color:#666">.</span><span style="color:#4070a0">PROXY_PACKAGE</span> <span style="color:#666">+</span> <span style="color:#4070a0">&#34;.&#34;</span><span style="color:#666">;</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#75715e">/*
-</span><span style="color:#75715e">     * 为将要生成的代理类选择一个全限定名
-</span><span style="color:#75715e">     * 规则是 包名 + &#34;$Proxy&#34; + &lt;唯一递增的id, 从0开始编号&gt;
-</span><span style="color:#75715e">     */</span>
-    <span style="color:#66d9ef">long</span> num <span style="color:#f92672">=</span> nextUniqueNumber<span style="color:#f92672">.</span><span style="color:#a6e22e">getAndIncrement</span><span style="color:#f92672">();</span>
-    String proxyName <span style="color:#f92672">=</span> proxyPkg <span style="color:#f92672">+</span> proxyClassNamePrefix <span style="color:#f92672">+</span> num<span style="color:#f92672">;</span>
+    <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">     * 为将要生成的代理类选择一个全限定名
+</span><span style="color:#60a0b0;font-style:italic">     * 规则是 包名 + &#34;$Proxy&#34; + &lt;唯一递增的id, 从0开始编号&gt;
+</span><span style="color:#60a0b0;font-style:italic">     */</span>
+    <span style="color:#902000">long</span> num <span style="color:#666">=</span> nextUniqueNumber<span style="color:#666">.</span><span style="color:#4070a0">getAndIncrement</span><span style="color:#666">();</span>
+    String proxyName <span style="color:#666">=</span> proxyPkg <span style="color:#666">+</span> proxyClassNamePrefix <span style="color:#666">+</span> num<span style="color:#666">;</span>
 
-    <span style="color:#75715e">/*
-</span><span style="color:#75715e">     * 生成一个特殊的代理类的字节码
-</span><span style="color:#75715e">     * byte[] proxyClassFile 就等同于 .class 文件的全部二进制内容。
-</span><span style="color:#75715e">     * 与 .class 文件的区别就在于一个写在了外存上，另一个完全在内存中创建
-</span><span style="color:#75715e">     */</span>
-    <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> proxyClassFile <span style="color:#f92672">=</span> ProxyGenerator<span style="color:#f92672">.</span><span style="color:#a6e22e">generateProxyClass</span><span style="color:#f92672">(</span>
-            proxyName<span style="color:#f92672">,</span> interfaces<span style="color:#f92672">,</span> accessFlags<span style="color:#f92672">);</span>
-    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">/**
-</span><span style="color:#75715e">          * 调用 ClassLoader 的 defineClass0(...) 方法加载字节码内容，构造 Class 对象
-</span><span style="color:#75715e">          * 本来 defineClass0(...) 方法是定义在 ClassLoader 中，但这里额外声明了一个本地方法 defineClass0(...)
-</span><span style="color:#75715e">          * 想来实现也是类似的，最终的目的也是加载 Class 
-</span><span style="color:#75715e">          */</span>
-        <span style="color:#66d9ef">return</span> defineClass0<span style="color:#f92672">(</span>loader<span style="color:#f92672">,</span> proxyName<span style="color:#f92672">,</span>
-                proxyClassFile<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> proxyClassFile<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>ClassFormatError e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">/*
-</span><span style="color:#75715e">         * A ClassFormatError here means that (barring bugs in the
-</span><span style="color:#75715e">         * proxy class generation code) there was some other
-</span><span style="color:#75715e">         * invalid aspect of the arguments supplied to the proxy
-</span><span style="color:#75715e">         * class creation (such as virtual machine limitations
-</span><span style="color:#75715e">         * exceeded).
-</span><span style="color:#75715e">         */</span>
-        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">(</span>e<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">());</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">     * 生成一个特殊的代理类的字节码
+</span><span style="color:#60a0b0;font-style:italic">     * byte[] proxyClassFile 就等同于 .class 文件的全部二进制内容。
+</span><span style="color:#60a0b0;font-style:italic">     * 与 .class 文件的区别就在于一个写在了外存上，另一个完全在内存中创建
+</span><span style="color:#60a0b0;font-style:italic">     */</span>
+    <span style="color:#902000">byte</span><span style="color:#666">[]</span> proxyClassFile <span style="color:#666">=</span> ProxyGenerator<span style="color:#666">.</span><span style="color:#4070a0">generateProxyClass</span><span style="color:#666">(</span>
+            proxyName<span style="color:#666">,</span> interfaces<span style="color:#666">,</span> accessFlags<span style="color:#666">);</span>
+    <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic">          * 调用 ClassLoader 的 defineClass0(...) 方法加载字节码内容，构造 Class 对象
+</span><span style="color:#60a0b0;font-style:italic">          * 本来 defineClass0(...) 方法是定义在 ClassLoader 中，但这里额外声明了一个本地方法 defineClass0(...)
+</span><span style="color:#60a0b0;font-style:italic">          * 想来实现也是类似的，最终的目的也是加载 Class 
+</span><span style="color:#60a0b0;font-style:italic">          */</span>
+        <span style="color:#007020;font-weight:bold">return</span> defineClass0<span style="color:#666">(</span>loader<span style="color:#666">,</span> proxyName<span style="color:#666">,</span>
+                proxyClassFile<span style="color:#666">,</span> 0<span style="color:#666">,</span> proxyClassFile<span style="color:#666">.</span><span style="color:#4070a0">length</span><span style="color:#666">);</span>
+    <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>ClassFormatError e<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">         * A ClassFormatError here means that (barring bugs in the
+</span><span style="color:#60a0b0;font-style:italic">         * proxy class generation code) there was some other
+</span><span style="color:#60a0b0;font-style:italic">         * invalid aspect of the arguments supplied to the proxy
+</span><span style="color:#60a0b0;font-style:italic">         * class creation (such as virtual machine limitations
+</span><span style="color:#60a0b0;font-style:italic">         * exceeded).
+</span><span style="color:#60a0b0;font-style:italic">         */</span>
+        <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> IllegalArgumentException<span style="color:#666">(</span>e<span style="color:#666">.</span><span style="color:#4070a0">toString</span><span style="color:#666">());</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>在完成基础性的校验，并构造了生成类的类名等内容后，
 <code>ProxyGenerator.generateProxyClass</code> 将开始构造 <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html">ClassFile</a> 的具体内容。</p>
 <p>关于这部分生成字节码的内容，请在了解了 ClassFile 的基础性内容之后，在自行学习，内容全部在 ProxyGenerator 类中。</p>
@@ -432,20 +432,20 @@ Proxied: null
 <p>想必上了上一节，虽然对 Java 动态代理的调用链有了一定的了解。</p>
 <p>但是，究竟 Proxy 是如何完成对实现类方法的增强呢？</p>
 <p>也许我们需要先看一下生成类 .class 文件的一些内容来对这个命题形成基础性的影响。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> Code <span style="color:#a6e22e">getCode</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span>  <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>Code<span style="color:#f92672">)</span><span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">h</span><span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">,</span> m4<span style="color:#f92672">,</span> <span style="color:#f92672">(</span>Object<span style="color:#f92672">[])</span><span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>RuntimeException <span style="color:#f92672">|</span> Error var2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">throw</span> var2<span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable var3<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> UndeclaredThrowableException<span style="color:#f92672">(</span>var3<span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">final</span> Code <span style="color:#06287e">getCode</span><span style="color:#666">()</span> <span style="color:#007020;font-weight:bold">throws</span>  <span style="color:#666">{</span>
+    <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">(</span>Code<span style="color:#666">)</span><span style="color:#007020;font-weight:bold">super</span><span style="color:#666">.</span><span style="color:#4070a0">h</span><span style="color:#666">.</span><span style="color:#4070a0">invoke</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">this</span><span style="color:#666">,</span> m4<span style="color:#666">,</span> <span style="color:#666">(</span>Object<span style="color:#666">[])</span><span style="color:#007020;font-weight:bold">null</span><span style="color:#666">);</span>
+    <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>RuntimeException <span style="color:#666">|</span> Error var2<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">throw</span> var2<span style="color:#666">;</span>
+    <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>Throwable var3<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> UndeclaredThrowableException<span style="color:#666">(</span>var3<span style="color:#666">);</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>可以看到，生成类的 <code>getCode()</code> 方法几乎没有什么实质性的内容, 只是 <code>super.h.invoke(...)</code> 。</p>
 <p><code>h</code> 实例变量是什么？<code>InvocationHandler</code> 的一个实例对象。</p>
 <p>事实上，Java Proxy 生成类的每个方法结构几乎都是类似的。方法体的内容就是通过实例持有的 <code>h</code> 变量分发实际的操作指令</p>
 <p>至于 h 的具体内容。:) 有编程者自定义，并在 Proxy 生成字节码，并被 ClassLoader 加载后，在准备实例化的时候作为构造参数进行传入。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">ICodeFactory factory <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>ICodeFactory<span style="color:#f92672">)</span> clazz<span style="color:#f92672">.</span><span style="color:#a6e22e">getConstructor</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Class<span style="color:#f92672">[]</span> <span style="color:#f92672">{</span> InvocationHandler<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span> <span style="color:#f92672">}).</span><span style="color:#a6e22e">newInstance</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Object<span style="color:#f92672">[]</span> <span style="color:#f92672">{</span> handler <span style="color:#f92672">});</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">ICodeFactory factory <span style="color:#666">=</span> <span style="color:#666">(</span>ICodeFactory<span style="color:#666">)</span> clazz<span style="color:#666">.</span><span style="color:#4070a0">getConstructor</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">new</span> Class<span style="color:#666">[]</span> <span style="color:#666">{</span> InvocationHandler<span style="color:#666">.</span><span style="color:#4070a0">class</span> <span style="color:#666">}).</span><span style="color:#4070a0">newInstance</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">new</span> Object<span style="color:#666">[]</span> <span style="color:#666">{</span> handler <span style="color:#666">});</span>
 </code></pre></div><p>至于具体将做哪些增强，调用例如上例的 <code>ICodeFactory</code> 的那个实现类的方法，全部有使用者自定义。</p>
 <h2 id="生成类的反编译结果">生成类的反编译结果</h2>
 <p>仍然以本文开始的 ICodeFactory 的增强为例，看一下究竟通过 Java Proxy 动态代理生成的字节码的反编译结果究竟是什么？
@@ -453,96 +453,96 @@ Proxied: null
 <p>在 Java 源代码中，虽然默认不会输出生成类的二进制内容，但是，仍然预留了打印 .class 文件的可选项。</p>
 <p>有兴趣的同学可以看一下 <code>ProxyGenerator.saveGeneratedFiles</code> 字段的内容，这就决定是在构造代理类后是否存储到外存中。</p>
 <p>想要看到代理类的字节码，直接通过在 Java 执行程序中添加一行代码</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">System<span style="color:#f92672">.</span><span style="color:#a6e22e">setProperty</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;sun.misc.ProxyGenerator.saveGeneratedFiles&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">);</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">System<span style="color:#666">.</span><span style="color:#4070a0">setProperty</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;sun.misc.ProxyGenerator.saveGeneratedFiles&#34;</span><span style="color:#666">,</span> <span style="color:#4070a0">&#34;true&#34;</span><span style="color:#666">);</span>
 </code></pre></div><p>或者在启动程序的 <code>java</code> 命令下添加参数</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">-Dsun.misc.ProxyGenerator.saveGeneratedFiles<span style="color:#f92672">=</span>true<span style="color:#e6db74">`</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">-Dsun.misc.ProxyGenerator.saveGeneratedFiles<span style="color:#666">=</span><span style="color:#007020">true</span><span style="color:#4070a0">`</span>
 </code></pre></div><p>至于生成类将打印在哪，首先必然是在项目所属的目录下。有上一节中构造生成类全限定名的内容，根据包名的规则去寻找即可。(具体不再详述)</p>
 <p>直接通过 IDEA, Eclipse 或者其它工具，对生成类 .class 文件进行反编译可以查看到整个生成类的内容。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.sun.proxy<span style="color:#f92672">;</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">com.sun.proxy</span><span style="color:#666">;</span>
 
-<span style="color:#f92672">import</span> java.lang.reflect.InvocationHandler<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> java.lang.reflect.Method<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> java.lang.reflect.Proxy<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> java.lang.reflect.UndeclaredThrowableException<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> me.fangfeng.jdk.proxy.Code<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> me.fangfeng.jdk.proxy.ICodeFactory<span style="color:#f92672">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.lang.reflect.InvocationHandler</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.lang.reflect.Method</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.lang.reflect.Proxy</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.lang.reflect.UndeclaredThrowableException</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">me.fangfeng.jdk.proxy.Code</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">me.fangfeng.jdk.proxy.ICodeFactory</span><span style="color:#666">;</span>
 
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">$Proxy0</span> <span style="color:#66d9ef">extends</span> Proxy <span style="color:#66d9ef">implements</span> ICodeFactory <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Method m1<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Method m2<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Method m4<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Method m3<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Method m0<span style="color:#f92672">;</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">final</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">$Proxy0</span> <span style="color:#007020;font-weight:bold">extends</span> Proxy <span style="color:#007020;font-weight:bold">implements</span> ICodeFactory <span style="color:#666">{</span>
+    <span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> Method m1<span style="color:#666">;</span>
+    <span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> Method m2<span style="color:#666">;</span>
+    <span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> Method m4<span style="color:#666">;</span>
+    <span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> Method m3<span style="color:#666">;</span>
+    <span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> Method m0<span style="color:#666">;</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">$Proxy0</span><span style="color:#f92672">(</span>InvocationHandler var1<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span>  <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">super</span><span style="color:#f92672">(</span>var1<span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#06287e">$Proxy0</span><span style="color:#666">(</span>InvocationHandler var1<span style="color:#666">)</span> <span style="color:#007020;font-weight:bold">throws</span>  <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">super</span><span style="color:#666">(</span>var1<span style="color:#666">);</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>Object var1<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span>  <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>Boolean<span style="color:#f92672">)</span><span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">h</span><span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">,</span> m1<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">[]{</span>var1<span style="color:#f92672">});</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>RuntimeException <span style="color:#f92672">|</span> Error var3<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> var3<span style="color:#f92672">;</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable var4<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> UndeclaredThrowableException<span style="color:#f92672">(</span>var4<span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">final</span> <span style="color:#902000">boolean</span> <span style="color:#06287e">equals</span><span style="color:#666">(</span>Object var1<span style="color:#666">)</span> <span style="color:#007020;font-weight:bold">throws</span>  <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">(</span>Boolean<span style="color:#666">)</span><span style="color:#007020;font-weight:bold">super</span><span style="color:#666">.</span><span style="color:#4070a0">h</span><span style="color:#666">.</span><span style="color:#4070a0">invoke</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">this</span><span style="color:#666">,</span> m1<span style="color:#666">,</span> <span style="color:#007020;font-weight:bold">new</span> Object<span style="color:#666">[]{</span>var1<span style="color:#666">});</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>RuntimeException <span style="color:#666">|</span> Error var3<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> var3<span style="color:#666">;</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>Throwable var4<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> UndeclaredThrowableException<span style="color:#666">(</span>var4<span style="color:#666">);</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> String <span style="color:#a6e22e">toString</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span>  <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>String<span style="color:#f92672">)</span><span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">h</span><span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">,</span> m2<span style="color:#f92672">,</span> <span style="color:#f92672">(</span>Object<span style="color:#f92672">[])</span><span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>RuntimeException <span style="color:#f92672">|</span> Error var2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> var2<span style="color:#f92672">;</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable var3<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> UndeclaredThrowableException<span style="color:#f92672">(</span>var3<span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">final</span> String <span style="color:#06287e">toString</span><span style="color:#666">()</span> <span style="color:#007020;font-weight:bold">throws</span>  <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">(</span>String<span style="color:#666">)</span><span style="color:#007020;font-weight:bold">super</span><span style="color:#666">.</span><span style="color:#4070a0">h</span><span style="color:#666">.</span><span style="color:#4070a0">invoke</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">this</span><span style="color:#666">,</span> m2<span style="color:#666">,</span> <span style="color:#666">(</span>Object<span style="color:#666">[])</span><span style="color:#007020;font-weight:bold">null</span><span style="color:#666">);</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>RuntimeException <span style="color:#666">|</span> Error var2<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> var2<span style="color:#666">;</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>Throwable var3<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> UndeclaredThrowableException<span style="color:#666">(</span>var3<span style="color:#666">);</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> Code <span style="color:#a6e22e">getCode</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span>  <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>Code<span style="color:#f92672">)</span><span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">h</span><span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">,</span> m4<span style="color:#f92672">,</span> <span style="color:#f92672">(</span>Object<span style="color:#f92672">[])</span><span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>RuntimeException <span style="color:#f92672">|</span> Error var2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> var2<span style="color:#f92672">;</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable var3<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> UndeclaredThrowableException<span style="color:#f92672">(</span>var3<span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">final</span> Code <span style="color:#06287e">getCode</span><span style="color:#666">()</span> <span style="color:#007020;font-weight:bold">throws</span>  <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">(</span>Code<span style="color:#666">)</span><span style="color:#007020;font-weight:bold">super</span><span style="color:#666">.</span><span style="color:#4070a0">h</span><span style="color:#666">.</span><span style="color:#4070a0">invoke</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">this</span><span style="color:#666">,</span> m4<span style="color:#666">,</span> <span style="color:#666">(</span>Object<span style="color:#666">[])</span><span style="color:#007020;font-weight:bold">null</span><span style="color:#666">);</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>RuntimeException <span style="color:#666">|</span> Error var2<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> var2<span style="color:#666">;</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>Throwable var3<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> UndeclaredThrowableException<span style="color:#666">(</span>var3<span style="color:#666">);</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setCode</span><span style="color:#f92672">(</span>Code var1<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span>  <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">h</span><span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">,</span> m3<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">[]{</span>var1<span style="color:#f92672">});</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>RuntimeException <span style="color:#f92672">|</span> Error var3<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> var3<span style="color:#f92672">;</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable var4<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> UndeclaredThrowableException<span style="color:#f92672">(</span>var4<span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">final</span> <span style="color:#902000">void</span> <span style="color:#06287e">setCode</span><span style="color:#666">(</span>Code var1<span style="color:#666">)</span> <span style="color:#007020;font-weight:bold">throws</span>  <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">super</span><span style="color:#666">.</span><span style="color:#4070a0">h</span><span style="color:#666">.</span><span style="color:#4070a0">invoke</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">this</span><span style="color:#666">,</span> m3<span style="color:#666">,</span> <span style="color:#007020;font-weight:bold">new</span> Object<span style="color:#666">[]{</span>var1<span style="color:#666">});</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>RuntimeException <span style="color:#666">|</span> Error var3<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> var3<span style="color:#666">;</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>Throwable var4<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> UndeclaredThrowableException<span style="color:#666">(</span>var4<span style="color:#666">);</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">hashCode</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span>  <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>Integer<span style="color:#f92672">)</span><span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">h</span><span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">,</span> m0<span style="color:#f92672">,</span> <span style="color:#f92672">(</span>Object<span style="color:#f92672">[])</span><span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>RuntimeException <span style="color:#f92672">|</span> Error var2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> var2<span style="color:#f92672">;</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable var3<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> UndeclaredThrowableException<span style="color:#f92672">(</span>var3<span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">final</span> <span style="color:#902000">int</span> <span style="color:#06287e">hashCode</span><span style="color:#666">()</span> <span style="color:#007020;font-weight:bold">throws</span>  <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">(</span>Integer<span style="color:#666">)</span><span style="color:#007020;font-weight:bold">super</span><span style="color:#666">.</span><span style="color:#4070a0">h</span><span style="color:#666">.</span><span style="color:#4070a0">invoke</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">this</span><span style="color:#666">,</span> m0<span style="color:#666">,</span> <span style="color:#666">(</span>Object<span style="color:#666">[])</span><span style="color:#007020;font-weight:bold">null</span><span style="color:#666">);</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>RuntimeException <span style="color:#666">|</span> Error var2<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> var2<span style="color:#666">;</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>Throwable var3<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> UndeclaredThrowableException<span style="color:#666">(</span>var3<span style="color:#666">);</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#66d9ef">static</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-            m1 <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;java.lang.Object&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">getMethod</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;equals&#34;</span><span style="color:#f92672">,</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;java.lang.Object&#34;</span><span style="color:#f92672">));</span>
-            m2 <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;java.lang.Object&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">getMethod</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;toString&#34;</span><span style="color:#f92672">);</span>
-            m4 <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;me.fangfeng.jdk.proxy.ICodeFactory&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">getMethod</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;getCode&#34;</span><span style="color:#f92672">);</span>
-            m3 <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;me.fangfeng.jdk.proxy.ICodeFactory&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">getMethod</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;setCode&#34;</span><span style="color:#f92672">,</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;me.fangfeng.jdk.proxy.Code&#34;</span><span style="color:#f92672">));</span>
-            m0 <span style="color:#f92672">=</span> Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;java.lang.Object&#34;</span><span style="color:#f92672">).</span><span style="color:#a6e22e">getMethod</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;hashCode&#34;</span><span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>NoSuchMethodException var2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> NoSuchMethodError<span style="color:#f92672">(</span>var2<span style="color:#f92672">.</span><span style="color:#a6e22e">getMessage</span><span style="color:#f92672">());</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>ClassNotFoundException var3<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> NoClassDefFoundError<span style="color:#f92672">(</span>var3<span style="color:#f92672">.</span><span style="color:#a6e22e">getMessage</span><span style="color:#f92672">());</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+    <span style="color:#007020;font-weight:bold">static</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+            m1 <span style="color:#666">=</span> Class<span style="color:#666">.</span><span style="color:#4070a0">forName</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;java.lang.Object&#34;</span><span style="color:#666">).</span><span style="color:#4070a0">getMethod</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;equals&#34;</span><span style="color:#666">,</span> Class<span style="color:#666">.</span><span style="color:#4070a0">forName</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;java.lang.Object&#34;</span><span style="color:#666">));</span>
+            m2 <span style="color:#666">=</span> Class<span style="color:#666">.</span><span style="color:#4070a0">forName</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;java.lang.Object&#34;</span><span style="color:#666">).</span><span style="color:#4070a0">getMethod</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;toString&#34;</span><span style="color:#666">);</span>
+            m4 <span style="color:#666">=</span> Class<span style="color:#666">.</span><span style="color:#4070a0">forName</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;me.fangfeng.jdk.proxy.ICodeFactory&#34;</span><span style="color:#666">).</span><span style="color:#4070a0">getMethod</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;getCode&#34;</span><span style="color:#666">);</span>
+            m3 <span style="color:#666">=</span> Class<span style="color:#666">.</span><span style="color:#4070a0">forName</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;me.fangfeng.jdk.proxy.ICodeFactory&#34;</span><span style="color:#666">).</span><span style="color:#4070a0">getMethod</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;setCode&#34;</span><span style="color:#666">,</span> Class<span style="color:#666">.</span><span style="color:#4070a0">forName</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;me.fangfeng.jdk.proxy.Code&#34;</span><span style="color:#666">));</span>
+            m0 <span style="color:#666">=</span> Class<span style="color:#666">.</span><span style="color:#4070a0">forName</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;java.lang.Object&#34;</span><span style="color:#666">).</span><span style="color:#4070a0">getMethod</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;hashCode&#34;</span><span style="color:#666">);</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>NoSuchMethodException var2<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> NoSuchMethodError<span style="color:#666">(</span>var2<span style="color:#666">.</span><span style="color:#4070a0">getMessage</span><span style="color:#666">());</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>ClassNotFoundException var3<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> NoClassDefFoundError<span style="color:#666">(</span>var3<span style="color:#666">.</span><span style="color:#4070a0">getMessage</span><span style="color:#666">());</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -553,6 +553,12 @@ Proxied: null
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

@@ -110,58 +110,58 @@
 <p>想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把<code>void add(int)</code> API 改写成 <code>int add(int)</code>，可能得到的大多数回答都是可以。</p>
 <h2 id="看山是山">看山是山</h2>
 <p>首先举一个具体点的例子来描述（为了方便，就不定义<code>CountService</code>的接口类了）</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.ffutop.signature<span style="color:#f92672">;</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">com.ffutop.signature</span><span style="color:#666">;</span>
 
-<span style="color:#75715e">/**
-</span><span style="color:#75715e"> * 主类
-</span><span style="color:#75715e"> * @author fangfeng
-</span><span style="color:#75715e"> * @since 2019-02-26
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Main</span> <span style="color:#f92672">{</span>
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * 主类
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2019-02-26
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Main</span> <span style="color:#666">{</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        CountService countService <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CountService<span style="color:#f92672">();</span>
-        countService<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>1<span style="color:#f92672">);</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;currentValue = %d&#34;</span><span style="color:#f92672">,</span> countService<span style="color:#f92672">.</span><span style="color:#a6e22e">getCurrentValue</span><span style="color:#f92672">()));</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.ffutop.signature<span style="color:#f92672">;</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">main</span><span style="color:#666">(</span>String<span style="color:#666">[]</span> args<span style="color:#666">)</span> <span style="color:#666">{</span>
+        CountService countService <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> CountService<span style="color:#666">();</span>
+        countService<span style="color:#666">.</span><span style="color:#4070a0">add</span><span style="color:#666">(</span>1<span style="color:#666">);</span>
+        System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>String<span style="color:#666">.</span><span style="color:#4070a0">format</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;currentValue = %d&#34;</span><span style="color:#666">,</span> countService<span style="color:#666">.</span><span style="color:#4070a0">getCurrentValue</span><span style="color:#666">()));</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">com.ffutop.signature</span><span style="color:#666">;</span>
 
-<span style="color:#75715e">/**
-</span><span style="color:#75715e"> * @author fangfeng
-</span><span style="color:#75715e"> * @since 2019-02-26
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CountService</span> <span style="color:#f92672">{</span>
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2019-02-26
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">CountService</span> <span style="color:#666">{</span>
 
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> currentValue <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#007020;font-weight:bold">private</span> <span style="color:#902000">int</span> currentValue <span style="color:#666">=</span> 0<span style="color:#666">;</span>
 
-    <span style="color:#75715e">/**
-</span><span style="color:#75715e">     * 请把 add(int) 理解成 API
-</span><span style="color:#75715e">     * 虽然已经做了实现
-</span><span style="color:#75715e">     */</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> addend<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        currentValue <span style="color:#f92672">+=</span> addend<span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic">     * 请把 add(int) 理解成 API
+</span><span style="color:#60a0b0;font-style:italic">     * 虽然已经做了实现
+</span><span style="color:#60a0b0;font-style:italic">     */</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#902000">void</span> <span style="color:#06287e">add</span><span style="color:#666">(</span><span style="color:#902000">int</span> addend<span style="color:#666">)</span> <span style="color:#666">{</span>
+        currentValue <span style="color:#666">+=</span> addend<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getCurrentValue</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">return</span> currentValue<span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#902000">int</span> <span style="color:#06287e">getCurrentValue</span><span style="color:#666">()</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">return</span> currentValue<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>现在已经有 <code>void add(int)</code> 方法，完成的工作是累加。现在要把 API 改成 <code>int add(int)</code>，是否可以呢？看似本来没有返回值，现在只是加上一个返回值，对于原来的代码没有任何问题，而新代码又能拿到int类型的返回值，皆大欢喜啊。</p>
 <h2 id="看山不是山">看山不是山</h2>
 <p>先给大家执行下代码吧！（请严格按照顺序，且避免使用IDE，否则将得不到预想的结果）</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#75715e"># 准备好两个类的代码（CountService的API是 `void add(int)`）</span>
-$ <span style="color:#75715e"># 编译Main类</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#60a0b0;font-style:italic"># 准备好两个类的代码（CountService的API是 `void add(int)`）</span>
+$ <span style="color:#60a0b0;font-style:italic"># 编译Main类</span>
 $ javac com/ffutop/signature/Main.java
 $  
-$ <span style="color:#75715e"># 修改CountService的API为`int add(int)`</span>
-$ <span style="color:#75715e"># 编译 CountService 类</span>
+$ <span style="color:#60a0b0;font-style:italic"># 修改CountService的API为`int add(int)`</span>
+$ <span style="color:#60a0b0;font-style:italic"># 编译 CountService 类</span>
 $ javac com/ffutop/signature/CountService.java
 $ 
-$ <span style="color:#75715e"># 执行主程序</span>
+$ <span style="color:#60a0b0;font-style:italic"># 执行主程序</span>
 $ java com.ffutop.signature.Main
-Exception in thread <span style="color:#e6db74">&#34;main&#34;</span> java.lang.NoSuchMethodError: com.ffutop.signature.CountService.add<span style="color:#f92672">(</span>I<span style="color:#f92672">)</span>V
-	at com.ffutop.signature.Main.main<span style="color:#f92672">(</span>Main.java:11<span style="color:#f92672">)</span>
+Exception in thread <span style="color:#4070a0">&#34;main&#34;</span> java.lang.NoSuchMethodError: com.ffutop.signature.CountService.add<span style="color:#666">(</span>I<span style="color:#666">)</span>V
+	at com.ffutop.signature.Main.main<span style="color:#666">(</span>Main.java:11<span style="color:#666">)</span>
 </code></pre></div><p>很遗憾，执行失败了，报了个Error（没有这样的方法）。方法写的是 <code>com.ffutop.signature.CountService.add(I)V</code> 。简单的翻译一下就是需要<code>类名+方法名=x.y.CountService.add</code>，且入参为int，出参为void的方法（想了解更多请优先学习<a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.4">Java ClassFile Format</a>）。</p>
 <p>那么，现在得到的结论是不行。</p>
 <h2 id="看山还是山">看山还是山</h2>
@@ -171,53 +171,53 @@ Exception in thread <span style="color:#e6db74">&#34;main&#34;</span> java.lang.
 <p>什么意思呢？我们都知道建立在 JVM 之上的语言不只有 Java。像 Groovy、Kotlin 等语言都实现了各自的区别于 Java 独有的特征。这些特征的实现都是依赖于 JVM，但为什么 Java 没有呢？只能说 Java 语言的规范是 JVM 的子集（好像这话有点不严谨啊）</p>
 <p>通过直接操作字节码，就能够达到在同一个类中建立两个同名、相同入参，但返回值不同的方法。
 先通过<code>javap</code>命令看看最终提供的<code>CountService.class</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ javap com.ffutop.signature.CountService
-public class com.ffutop.signature.CountService <span style="color:#f92672">{</span>
-  public int add<span style="color:#f92672">(</span>int<span style="color:#f92672">)</span>;
-  public com.ffutop.signature.CountService<span style="color:#f92672">()</span>;
-  public void add<span style="color:#f92672">(</span>int<span style="color:#f92672">)</span>;
-  public int getCurrentValue<span style="color:#f92672">()</span>;
-<span style="color:#f92672">}</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ javap com.ffutop.signature.CountService
+public class com.ffutop.signature.CountService <span style="color:#666">{</span>
+  public int add<span style="color:#666">(</span>int<span style="color:#666">)</span>;
+  public com.ffutop.signature.CountService<span style="color:#666">()</span>;
+  public void add<span style="color:#666">(</span>int<span style="color:#666">)</span>;
+  public int getCurrentValue<span style="color:#666">()</span>;
+<span style="color:#666">}</span>
 </code></pre></div><p>有两个同名的方法<code>add(int)</code>，至于执行，也会相当顺利。</p>
 <p>还是写个程序来说明，在原有 <code>Main.java</code> 的基础上，再创建一个全限定名为 <code>com.ffutop.signature.other.Main2</code> 的类</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> com.ffutop.signature.other<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> com.ffutop.signature.CountService<span style="color:#f92672">;</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">com.ffutop.signature.other</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">com.ffutop.signature.CountService</span><span style="color:#666">;</span>
 
-<span style="color:#75715e">/**
-</span><span style="color:#75715e"> * @author fangfeng
-</span><span style="color:#75715e"> * @since 2019-02-27
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Main2</span> <span style="color:#f92672">{</span>
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2019-02-27
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Main2</span> <span style="color:#666">{</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        CountService countService <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CountService<span style="color:#f92672">();</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;currentValue = %d&#34;</span><span style="color:#f92672">,</span> countService<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>1<span style="color:#f92672">)));</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">main</span><span style="color:#666">(</span>String<span style="color:#666">[]</span> args<span style="color:#666">)</span> <span style="color:#666">{</span>
+        CountService countService <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> CountService<span style="color:#666">();</span>
+        System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>String<span style="color:#666">.</span><span style="color:#4070a0">format</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;currentValue = %d&#34;</span><span style="color:#666">,</span> countService<span style="color:#666">.</span><span style="color:#4070a0">add</span><span style="color:#666">(</span>1<span style="color:#666">)));</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>与 Main.java 比较，很明显的就是一个调用了 <code>CountService</code> 的 <code>int add(int)</code> 方法，而另一个调用 <code>void add(int)</code> 方法。</p>
 <p>那么是否有效呢？先来验证一下（这里要模拟的一个场景是，CountService 类(只有 <code>void add(int)</code> 方法)作为二方库C.jar version 1.0 的主要服务类。CountService 类(同时有 <code>void add(int)</code> 和 <code>int add(int)</code> 方法)作为二方库C.jar version 2.0 的主要服务类。Main 类根据 C.jar version 1.0 做的编译，而 Main2 类根据 C.jar version 2.0 做的编译。在 Main 和 Main2 类运行时只提供 C.jar version 2.0）</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#75715e"># 编译 Main 类和 CountService 类</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ <span style="color:#60a0b0;font-style:italic"># 编译 Main 类和 CountService 类</span>
 $ javac com/ffutop/signature/Main.java
 $
-$ <span style="color:#75715e"># 操作 CountService.class 字节码，增加方法 `int add(int)`</span> 
-$ <span style="color:#75715e"># 通过 ASM 实现，详见附录源码 com/ffutop/signature/support/Generator.java</span>
+$ <span style="color:#60a0b0;font-style:italic"># 操作 CountService.class 字节码，增加方法 `int add(int)`</span> 
+$ <span style="color:#60a0b0;font-style:italic"># 通过 ASM 实现，详见附录源码 com/ffutop/signature/support/Generator.java</span>
 $ 
-$ <span style="color:#75715e"># 编译 Main2 类 (提供 classpath，即根据 CountService.class 编译)</span>
+$ <span style="color:#60a0b0;font-style:italic"># 编译 Main2 类 (提供 classpath，即根据 CountService.class 编译)</span>
 $ javac com/ffutop/signature/other/Main2.java -classpath .
 $
-$ <span style="color:#75715e"># 验证</span>
+$ <span style="color:#60a0b0;font-style:italic"># 验证</span>
 $ java com.ffutop.signature.Main
-currentValue <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+<span style="color:#bb60d5">currentValue</span> <span style="color:#666">=</span> <span style="color:#40a070">1</span>
 $ java com.ffutop.signature.other.Main2
-currentValue <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
-$ <span style="color:#75715e"># OK，验证通过</span>
+<span style="color:#bb60d5">currentValue</span> <span style="color:#666">=</span> <span style="color:#40a070">1</span>
+$ <span style="color:#60a0b0;font-style:italic"># OK，验证通过</span>
 </code></pre></div><h2 id="总结">总结</h2>
 <p>一旦 API 定义错误，并已经作为二方库提供给调用方。后果必然是灾难性的。至少，只能重新定义 API 。如果对于入参定义错误，Java 语言级别也能够支持。但如果是返回值，如果非要保持方法名一致，那就不得不下沉到 JVM 级别来进行处理了。当然，在工程项目中是否应该直接操作字节码？至少个人还没直接接触过。</p>
 <p>做个记录，未来可以翻一翻，至少是一种可行的解决方案。</p>
 <p>Update: 如果直接操作字节码为添加了不同返回值的同名同参数方法，可能引起调用方静态编译失败。此操作需慎之又慎。也许提供类加载器加载时的字节码操作能更加完美地解决这个问题。</p>
 <h2 id="参考">参考</h2>
 <p><a href="https://raw.githubusercontent.com/DorMOUSE-None/Repo/master/signature.zip">源码.zip</a></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -228,6 +228,12 @@ $ <span style="color:#75715e"># OK，验证通过</span>
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

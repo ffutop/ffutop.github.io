@@ -184,47 +184,47 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
 <p>拿到了进程虚拟内存分布，又如何获取其中的内容。<code>ptrace</code> 总算是派上用场了。之前在阅读内核源码的时候，任务数据结构 <code>struct task</code> 专门为此预留了一些字段来加以描述，但始终找不到其用途。现在总算对其有了初步的了解。</p>
 <p>一般来说，进程彼此之间应该相互独立，虽然运行在同一台机器上，但应该是相互间不知道其他进程的存在。那又如何能够通过一个进程的代码来获取另一个进程的堆栈数据呢？<code>ptrace</code> 提供的就是这么一种可能性。通过 <code>PTRACE_ATTACH</code> 和 <code>PTRACE_DETACH</code>，A进程会使得目标进程B陷入Sleeping状态，而等待A继续通过其他命令来获取其数据。至于为什么会是陷入Sleeping呢？一旦B进程的在运行，数据等随时可能改变，显然不适合读取数据啊。</p>
 <p>如何读取？<code>PTRACE_PEEKTEXT</code> 就是这样一个实现进程间交互的好工具。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">attach</span>()
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#902000">void</span> <span style="color:#06287e">attach</span>()
 {
-    <span style="color:#66d9ef">if</span> (ptrace(PTRACE_ATTACH, options.pid, NULL, NULL) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+    <span style="color:#007020;font-weight:bold">if</span> (ptrace(PTRACE_ATTACH, options.pid, <span style="color:#007020">NULL</span>, <span style="color:#007020">NULL</span>) <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
     {
-        fprintf(stderr, <span style="color:#e6db74">&#34;ptract attach failed. %s(errno: %d)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, strerror(errno), errno);
-        exit(<span style="color:#ae81ff">0</span>);
+        fprintf(stderr, <span style="color:#4070a0">&#34;ptract attach failed. %s(errno: %d)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, strerror(errno), errno);
+        exit(<span style="color:#40a070">0</span>);
     }
-    fprintf(stderr, <span style="color:#e6db74">&#34;attach to %d success!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, options.pid);
-    wait(NULL);
+    fprintf(stderr, <span style="color:#4070a0">&#34;attach to %d success!</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, options.pid);
+    wait(<span style="color:#007020">NULL</span>);
 }
 
-<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">peek</span>()
+<span style="color:#902000">void</span> <span style="color:#06287e">peek</span>()
 {
-    <span style="color:#66d9ef">char</span> maps[<span style="color:#ae81ff">17</span>];
-    sprintf(maps, <span style="color:#e6db74">&#34;/proc/%d/maps&#34;</span>, options.pid);
-    FILE <span style="color:#f92672">*</span>fd <span style="color:#f92672">=</span> fopen(maps, <span style="color:#e6db74">&#34;r&#34;</span>);
-    <span style="color:#66d9ef">if</span> (fd <span style="color:#f92672">==</span> NULL)
+    <span style="color:#902000">char</span> maps[<span style="color:#40a070">17</span>];
+    sprintf(maps, <span style="color:#4070a0">&#34;/proc/%d/maps&#34;</span>, options.pid);
+    FILE <span style="color:#666">*</span>fd <span style="color:#666">=</span> fopen(maps, <span style="color:#4070a0">&#34;r&#34;</span>);
+    <span style="color:#007020;font-weight:bold">if</span> (fd <span style="color:#666">==</span> <span style="color:#007020">NULL</span>)
     {
-        fprintf(stderr, <span style="color:#e6db74">&#34;open /proc/%d/maps failed. %s(errno: %d)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, strerror(errno), errno);
-        exit(<span style="color:#ae81ff">0</span>);
+        fprintf(stderr, <span style="color:#4070a0">&#34;open /proc/%d/maps failed. %s(errno: %d)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, strerror(errno), errno);
+        exit(<span style="color:#40a070">0</span>);
     }
 
-    <span style="color:#66d9ef">struct</span> map <span style="color:#f92672">*</span>map <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> map <span style="color:#f92672">*</span>) malloc(<span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> map <span style="color:#f92672">*</span>));
+    <span style="color:#007020;font-weight:bold">struct</span> map <span style="color:#666">*</span>map <span style="color:#666">=</span> (<span style="color:#007020;font-weight:bold">struct</span> map <span style="color:#666">*</span>) malloc(<span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#007020;font-weight:bold">struct</span> map <span style="color:#666">*</span>));
 
-    <span style="color:#66d9ef">long</span> word;
-    <span style="color:#66d9ef">while</span> (fscanf(fd, <span style="color:#e6db74">&#34;%llx-%llx %s %lx %*s %*s%*[^</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">]&#34;</span>, <span style="color:#f92672">&amp;</span>map<span style="color:#f92672">-&gt;</span>start_addr, <span style="color:#f92672">&amp;</span>map<span style="color:#f92672">-&gt;</span>end_addr, map<span style="color:#f92672">-&gt;</span>op_flag, <span style="color:#f92672">&amp;</span>map<span style="color:#f92672">-&gt;</span>offset) <span style="color:#f92672">!=</span> EOF)
+    <span style="color:#902000">long</span> word;
+    <span style="color:#007020;font-weight:bold">while</span> (fscanf(fd, <span style="color:#4070a0">&#34;%llx-%llx %s %lx %*s %*s%*[^</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">]&#34;</span>, <span style="color:#666">&amp;</span>map<span style="color:#666">-&gt;</span>start_addr, <span style="color:#666">&amp;</span>map<span style="color:#666">-&gt;</span>end_addr, map<span style="color:#666">-&gt;</span>op_flag, <span style="color:#666">&amp;</span>map<span style="color:#666">-&gt;</span>offset) <span style="color:#666">!=</span> EOF)
     {
-        <span style="color:#66d9ef">if</span> (map<span style="color:#f92672">-&gt;</span>op_flag[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;-&#39;</span>)
-            <span style="color:#66d9ef">continue</span>;
-        fprintf(stderr, <span style="color:#e6db74">&#34;peek from [%llx-%llx]</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, map<span style="color:#f92672">-&gt;</span>start_addr, map<span style="color:#f92672">-&gt;</span>end_addr);
-        <span style="color:#66d9ef">long</span> mem_len <span style="color:#f92672">=</span> map<span style="color:#f92672">-&gt;</span>end_addr <span style="color:#f92672">-</span> map<span style="color:#f92672">-&gt;</span>start_addr;
-        <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>data <span style="color:#f92672">=</span> malloc(mem_len <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
-        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">long</span> cursor <span style="color:#f92672">=</span> map<span style="color:#f92672">-&gt;</span>start_addr;cursor <span style="color:#f92672">&lt;</span> map<span style="color:#f92672">-&gt;</span>end_addr;cursor <span style="color:#f92672">+=</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">long</span>))
+        <span style="color:#007020;font-weight:bold">if</span> (map<span style="color:#666">-&gt;</span>op_flag[<span style="color:#40a070">0</span>] <span style="color:#666">==</span> <span style="color:#4070a0">&#39;-&#39;</span>)
+            <span style="color:#007020;font-weight:bold">continue</span>;
+        fprintf(stderr, <span style="color:#4070a0">&#34;peek from [%llx-%llx]</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, map<span style="color:#666">-&gt;</span>start_addr, map<span style="color:#666">-&gt;</span>end_addr);
+        <span style="color:#902000">long</span> mem_len <span style="color:#666">=</span> map<span style="color:#666">-&gt;</span>end_addr <span style="color:#666">-</span> map<span style="color:#666">-&gt;</span>start_addr;
+        <span style="color:#902000">char</span> <span style="color:#666">*</span>data <span style="color:#666">=</span> malloc(mem_len <span style="color:#666">+</span> <span style="color:#40a070">1</span>);
+        <span style="color:#007020;font-weight:bold">for</span> (<span style="color:#902000">long</span> cursor <span style="color:#666">=</span> map<span style="color:#666">-&gt;</span>start_addr;cursor <span style="color:#666">&lt;</span> map<span style="color:#666">-&gt;</span>end_addr;cursor <span style="color:#666">+=</span> <span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#902000">long</span>))
         {
-            <span style="color:#66d9ef">if</span> ((word <span style="color:#f92672">=</span> ptrace(PTRACE_PEEKTEXT, options.pid, cursor, NULL)) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">&amp;&amp;</span> errno)
+            <span style="color:#007020;font-weight:bold">if</span> ((word <span style="color:#666">=</span> ptrace(PTRACE_PEEKTEXT, options.pid, cursor, <span style="color:#007020">NULL</span>)) <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span> <span style="color:#666">&amp;&amp;</span> errno)
             {
-                fprintf(stderr, <span style="color:#e6db74">&#34;peek failed. %s(errno: %d)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, strerror(errno), errno);
+                fprintf(stderr, <span style="color:#4070a0">&#34;peek failed. %s(errno: %d)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, strerror(errno), errno);
                 free(data);
-                exit(<span style="color:#ae81ff">0</span>);
+                exit(<span style="color:#40a070">0</span>);
             }
-            memcpy(data<span style="color:#f92672">+</span>cursor<span style="color:#f92672">-</span>map<span style="color:#f92672">-&gt;</span>start_addr, <span style="color:#f92672">&amp;</span>word, <span style="color:#66d9ef">sizeof</span>(word));
+            memcpy(data<span style="color:#666">+</span>cursor<span style="color:#666">-</span>map<span style="color:#666">-&gt;</span>start_addr, <span style="color:#666">&amp;</span>word, <span style="color:#007020;font-weight:bold">sizeof</span>(word));
         }
         dump(data, mem_len);
 
@@ -234,20 +234,20 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
     free(map);
 }
 
-<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">detach</span>()
+<span style="color:#902000">void</span> <span style="color:#06287e">detach</span>()
 {
-    <span style="color:#66d9ef">if</span> (ptrace(PTRACE_DETACH, options.pid, NULL, NULL) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+    <span style="color:#007020;font-weight:bold">if</span> (ptrace(PTRACE_DETACH, options.pid, <span style="color:#007020">NULL</span>, <span style="color:#007020">NULL</span>) <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
     {
-        fprintf(<span style="color:#e6db74">&#34;ptract detach failed. %s(errno: %d)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, strerror(errno), errno);
-        exit(<span style="color:#ae81ff">0</span>);
+        fprintf(<span style="color:#4070a0">&#34;ptract detach failed. %s(errno: %d)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, strerror(errno), errno);
+        exit(<span style="color:#40a070">0</span>);
     }
-    fprintf(stderr, <span style="color:#e6db74">&#34;detach from %d success!&#34;</span>, options.pid);
+    fprintf(stderr, <span style="color:#4070a0">&#34;detach from %d success!&#34;</span>, options.pid);
 }
 
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv)
+<span style="color:#902000">int</span> <span style="color:#06287e">main</span>(<span style="color:#902000">int</span> argc, <span style="color:#902000">char</span> <span style="color:#666">**</span>argv)
 {
-    <span style="color:#75715e">// ...
-</span><span style="color:#75715e"></span>
+    <span style="color:#60a0b0;font-style:italic">// ...
+</span><span style="color:#60a0b0;font-style:italic"></span>
     attach();
     peek();
     detach();
@@ -255,7 +255,7 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
 </code></pre></div><p>此处的代码片段就能完成dump堆栈的工作了（当然，由于没有对其它内容进行处理，同时会dump下ELF数据等）。<a href="https://github.com/DorMOUSE-None/ffDump">完整代码</a></p>
 <h2 id="小结">小结</h2>
 <p>当然，之后才发现 GDB 的实现借用的也正是这样一套机制。同时也意味着上面这段代码的实现在 GDB 中有现成的工具了:&lt;</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -266,6 +266,12 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

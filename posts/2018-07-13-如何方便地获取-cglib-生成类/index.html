@@ -120,23 +120,23 @@
 <p>通过 <strong>配置参数</strong> 一节的内容，你就可以在你理想的目录 <code>&lt;Custom Path&gt;</code> 下看到<strong>所谓黑盒</strong>中生成类的完成内容了。</p>
 <p>下面的内容，将简单地介绍如何配合 CGlib 生成类的内容实现: 保证 Debug 的每一步骤可见; 保证 Debug 的过程不会出现<em>黑盒</em>。</p>
 <h3 id="确定-custom-path-下哪个文件是原有-java-类的生成类">确定 <code>&lt;Custom Path&gt;</code> 下哪个文件是原有 Java 类的生成类</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">getClassName</span><span style="color:#f92672">(</span>String prefix<span style="color:#f92672">,</span> String source<span style="color:#f92672">,</span> Object key<span style="color:#f92672">,</span> Predicate names<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>prefix <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        prefix <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;net.sf.cglib.empty.Object&#34;</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>prefix<span style="color:#f92672">.</span><span style="color:#a6e22e">startsWith</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;java&#34;</span><span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-        prefix <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;$&#34;</span> <span style="color:#f92672">+</span> prefix<span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-    String base <span style="color:#f92672">=</span>
-        prefix <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;$$&#34;</span> <span style="color:#f92672">+</span>
-        source<span style="color:#f92672">.</span><span style="color:#a6e22e">substring</span><span style="color:#f92672">(</span>source<span style="color:#f92672">.</span><span style="color:#a6e22e">lastIndexOf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#39;.&#39;</span><span style="color:#f92672">)</span> <span style="color:#f92672">+</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">+</span>
-        getTag<span style="color:#f92672">()</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;$$&#34;</span> <span style="color:#f92672">+</span>
-        Integer<span style="color:#f92672">.</span><span style="color:#a6e22e">toHexString</span><span style="color:#f92672">(</span>STRESS_HASH_CODE <span style="color:#f92672">?</span> 0 <span style="color:#f92672">:</span> key<span style="color:#f92672">.</span><span style="color:#a6e22e">hashCode</span><span style="color:#f92672">());</span>
-    String attempt <span style="color:#f92672">=</span> base<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">int</span> index <span style="color:#f92672">=</span> 2<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>names<span style="color:#f92672">.</span><span style="color:#a6e22e">evaluate</span><span style="color:#f92672">(</span>attempt<span style="color:#f92672">))</span>
-        attempt <span style="color:#f92672">=</span> base <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;_&#34;</span> <span style="color:#f92672">+</span> index<span style="color:#f92672">++;</span>
-    <span style="color:#66d9ef">return</span> attempt<span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">public</span> String <span style="color:#06287e">getClassName</span><span style="color:#666">(</span>String prefix<span style="color:#666">,</span> String source<span style="color:#666">,</span> Object key<span style="color:#666">,</span> Predicate names<span style="color:#666">)</span> <span style="color:#666">{</span>
+    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>prefix <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+        prefix <span style="color:#666">=</span> <span style="color:#4070a0">&#34;net.sf.cglib.empty.Object&#34;</span><span style="color:#666">;</span>
+    <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">else</span> <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>prefix<span style="color:#666">.</span><span style="color:#4070a0">startsWith</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;java&#34;</span><span style="color:#666">))</span> <span style="color:#666">{</span>
+        prefix <span style="color:#666">=</span> <span style="color:#4070a0">&#34;$&#34;</span> <span style="color:#666">+</span> prefix<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+    String base <span style="color:#666">=</span>
+        prefix <span style="color:#666">+</span> <span style="color:#4070a0">&#34;$$&#34;</span> <span style="color:#666">+</span>
+        source<span style="color:#666">.</span><span style="color:#4070a0">substring</span><span style="color:#666">(</span>source<span style="color:#666">.</span><span style="color:#4070a0">lastIndexOf</span><span style="color:#666">(</span><span style="color:#4070a0">&#39;.&#39;</span><span style="color:#666">)</span> <span style="color:#666">+</span> 1<span style="color:#666">)</span> <span style="color:#666">+</span>
+        getTag<span style="color:#666">()</span> <span style="color:#666">+</span> <span style="color:#4070a0">&#34;$$&#34;</span> <span style="color:#666">+</span>
+        Integer<span style="color:#666">.</span><span style="color:#4070a0">toHexString</span><span style="color:#666">(</span>STRESS_HASH_CODE <span style="color:#666">?</span> 0 <span style="color:#666">:</span> key<span style="color:#666">.</span><span style="color:#4070a0">hashCode</span><span style="color:#666">());</span>
+    String attempt <span style="color:#666">=</span> base<span style="color:#666">;</span>
+    <span style="color:#902000">int</span> index <span style="color:#666">=</span> 2<span style="color:#666">;</span>
+    <span style="color:#007020;font-weight:bold">while</span> <span style="color:#666">(</span>names<span style="color:#666">.</span><span style="color:#4070a0">evaluate</span><span style="color:#666">(</span>attempt<span style="color:#666">))</span>
+        attempt <span style="color:#666">=</span> base <span style="color:#666">+</span> <span style="color:#4070a0">&#34;_&#34;</span> <span style="color:#666">+</span> index<span style="color:#666">++;</span>
+    <span style="color:#007020;font-weight:bold">return</span> attempt<span style="color:#666">;</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>CGlib 默认的类名生成策略下，生成类的全限定名将结合原文件的全限定名决定。</p>
 <p>通常命名如下: <code>&lt;原 Java 类全限定名&gt;$$&lt;类似 EnhancerByCGlib&gt;$$&lt;生成类核心内容的 hash 值&gt;_&lt;index[可能存在]&gt;</code></p>
 <p>例如: 原有 Java 类全限定名为 me.fangfeng.Test ，则生成类名可能为 <code>me.fangfeng.Test$$EnhancerByCGlib$$ab1203aa</code></p>
@@ -179,7 +179,7 @@
 <ol start="6">
 <li>继续 Debug ，对于生成类的内容，人肉了解并定位到触发的 Callback 实例或者 super.Xxx() 方法。</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -190,6 +190,12 @@
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

@@ -133,37 +133,37 @@
 +-----------------------+
 </code></pre><p>宿主机侧的 veth 被命名成了 cali96417d7dcac ，容器侧的 veth 被重命名成 eth0 。容器侧的网络包又将如何发送到宿主机呢？默认路由规则将容器内发起的 IP 数据报导向网关 169.254.1.1 。那么 169.254.1.1 是哪台机器呢？整个 Kubernetes 集群中都是找不到 169.254.1.1 这个 IP 。</p>
 <p>事实上，无需关注 IP 169.254.1.1 ，这就是一个莫须有的私网 IP ，仅仅是为了给 eth0 &ndash;&gt; cali.xyz 建立路由关系。IP 报文装填上源 IP 地址和目的 IP 地址之后，交由二层协议继续装填上源 MAC 和目的 MAC 。重新整理下目标，网络包需要从容器的 eth0 发送到宿主机的 cali.xyz 。由于三层路由表明下一跳是 169.254.1.1 ，而目标是给二层协议的目的 MAC 装上 cali.xyz 的 MAC 地址。如何实现 IP -&gt; MAC 解析呢？<code>ARP</code> 协议专业做这件事，唯一的问题是 cali.xyz 的 IP 不是 169.254.1.1 ，不过没关系，配置上 <code>proxy_arp</code> 就可以让 cali.xyz 不关心 ARP 请求的 <code>who-is 169.254.1.1</code>，对任何 ARP 请求都直接响应自己的 MAC 地址 ee:ee:ee:ee:ee:ee。至于所有 cali* 网卡的 MAC 地址都是 ee:ee:ee:ee:ee:ee 潜在的冲突问题？其实根本不存在，网络包到达宿主机后，该目的 MAC 地址即被卸下，准备装填一个新的下一跳继续转发。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 宿主机侧网卡 cali.xyz</span> 
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#60a0b0;font-style:italic"># 宿主机侧网卡 cali.xyz</span> 
 $ ip addr
-14: cali96417d7dcac@if4: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UP
-    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#ae81ff">2</span>
+14: cali96417d7dcac@if4: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#40a070">1500</span> qdisc noqueue state UP
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#40a070">2</span>
     inet6 fe80::ecee:eeff:feee:eeee/64 scope link
        valid_lft forever preferred_lft forever
-<span style="color:#75715e"># 宿主机侧网卡 cali.xyz 配置</span>
+<span style="color:#60a0b0;font-style:italic"># 宿主机侧网卡 cali.xyz 配置</span>
 $ cat /proc/sys/net/ipv4/conf/cali96417d7dcac/proxy_arp
-<span style="color:#ae81ff">1</span>
+<span style="color:#40a070">1</span>
 
-<span style="color:#75715e"># 容器侧网卡 eth0</span>
+<span style="color:#60a0b0;font-style:italic"># 容器侧网卡 eth0</span>
 $ ip addr
-eth0@if14: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue
+eth0@if14: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu <span style="color:#40a070">1500</span> qdisc noqueue
     link/ether 8e:f0:89:10:19:9e brd ff:ff:ff:ff:ff:ff
     inet 172.20.250.3/32 scope global eth0
        valid_lft forever preferred_lft forever
 
-<span style="color:#75715e"># 容器侧路由</span>
+<span style="color:#60a0b0;font-style:italic"># 容器侧路由</span>
 $ ip route 
 default via 169.254.1.1 dev eth0
 169.254.1.1 dev eth0 scope link
 </code></pre></div><h2 id="容器间通信">容器间通信</h2>
 <p>虽然容器侧发送的网络包已经达到了宿主机，但容器与容器通信尚未完成？继续跟踪达到宿主机的网络包。容器 A 向容器 B 发出的网络包已经到达了宿主机，因为未达到目的地，还需要寻找下一跳。还是走三层路由协议，宿主机侧有关于该物理主机上所有容器的路由信息，其中一条 <code>172.20.251.4 dev calib7124528292 scope link</code> 为这个网络包指明了下一跳的方向，走 <code>calib7124528292</code> 网卡，具体的二层封包 MAC 地址已经被 Calico 永久写了一条邻接条目。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 容器 B 侧网卡 eth0</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#60a0b0;font-style:italic"># 容器 B 侧网卡 eth0</span>
 $ ip addr
-eth0@if15: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue
+eth0@if15: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu <span style="color:#40a070">1500</span> qdisc noqueue
     link/ether 5e:83:d9:f7:e1:aa brd ff:ff:ff:ff:ff:ff
     inet 172.20.250.4/32 scope global eth0
        valid_lft forever preferred_lft forever
 
-<span style="color:#75715e"># 宿主机侧路由信息 &amp; 邻接条目</span>
+<span style="color:#60a0b0;font-style:italic"># 宿主机侧路由信息 &amp; 邻接条目</span>
 $ ip route
 172.20.250.4 dev cali6a4afa28fb1 scope link
 $ ip neigh
@@ -202,6 +202,12 @@ $ ip neigh
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

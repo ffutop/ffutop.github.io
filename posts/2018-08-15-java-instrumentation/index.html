@@ -172,112 +172,112 @@ java.lang.instrument.Instrumentation 类为提供直接操作 Java 字节码的�
 <h3 id="随-jvm-一起启动">随 JVM 一起启动</h3>
 <p>基本实例: 将对特定包 <code>me.fangfeng.client</code> 下的每个方法执行计时</p>
 <p>首先了解一下 client 包的内容:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> me.fangfeng.client<span style="color:#f92672">;</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">me.fangfeng.client</span><span style="color:#666">;</span>
 
-<span style="color:#75715e">/**
-</span><span style="color:#75715e"> * Main.java
-</span><span style="color:#75715e"> * 执行两个方法，rand() &amp; sleep() 
-</span><span style="color:#75715e"> *
-</span><span style="color:#75715e"> * @author fangfeng
-</span><span style="color:#75715e"> * @since 2018/8/7
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Main</span> <span style="color:#f92672">{</span>
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * Main.java
+</span><span style="color:#60a0b0;font-style:italic"> * 执行两个方法，rand() &amp; sleep() 
+</span><span style="color:#60a0b0;font-style:italic"> *
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2018/8/7
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Main</span> <span style="color:#666">{</span>
 
-    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sleep</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>5000<span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">sleep</span><span style="color:#666">()</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+            Thread<span style="color:#666">.</span><span style="color:#4070a0">sleep</span><span style="color:#666">(</span>5000<span style="color:#666">);</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>InterruptedException e<span style="color:#666">)</span> <span style="color:#666">{</span>
+            e<span style="color:#666">.</span><span style="color:#4070a0">printStackTrace</span><span style="color:#666">();</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">main</span><span style="color:#666">(</span>String<span style="color:#666">[]</span> args<span style="color:#666">)</span> <span style="color:#666">{</span>
 
-        Rand rand <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Rand<span style="color:#f92672">();</span>
+        Rand rand <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> Rand<span style="color:#666">();</span>
 
-        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span>i<span style="color:#f92672">&lt;</span>10<span style="color:#f92672">;</span>i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
-            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&gt;&gt;&gt; start Rand.run() &lt;&lt;&lt;&#34;</span><span style="color:#f92672">);</span>
-            rand<span style="color:#f92672">.</span><span style="color:#a6e22e">run</span><span style="color:#f92672">();</span>
-            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&gt;&gt;&gt; end Rand.run() &lt;&lt;&lt;&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#902000">int</span> i<span style="color:#666">=</span>0<span style="color:#666">;</span>i<span style="color:#666">&lt;</span>10<span style="color:#666">;</span>i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+            System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;&gt;&gt;&gt; start Rand.run() &lt;&lt;&lt;&#34;</span><span style="color:#666">);</span>
+            rand<span style="color:#666">.</span><span style="color:#4070a0">run</span><span style="color:#666">();</span>
+            System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;&gt;&gt;&gt; end Rand.run() &lt;&lt;&lt;&#34;</span><span style="color:#666">);</span>
 
-            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">();</span>
+            System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">();</span>
 
-            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&gt;&gt;&gt; start Main.sleep() &lt;&lt;&lt;&#34;</span><span style="color:#f92672">);</span>
-            Main<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">();</span>
-            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&gt;&gt;&gt; end MAin.sleep() &lt;&lt;&lt;&#34;</span><span style="color:#f92672">);</span>
+            System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;&gt;&gt;&gt; start Main.sleep() &lt;&lt;&lt;&#34;</span><span style="color:#666">);</span>
+            Main<span style="color:#666">.</span><span style="color:#4070a0">sleep</span><span style="color:#666">();</span>
+            System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;&gt;&gt;&gt; end MAin.sleep() &lt;&lt;&lt;&#34;</span><span style="color:#666">);</span>
 
-            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">();</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> me.fangfeng.client<span style="color:#f92672">;</span>
+            System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">();</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">me.fangfeng.client</span><span style="color:#666">;</span>
 
-<span style="color:#75715e">/**
-</span><span style="color:#75715e"> * Rand.java
-</span><span style="color:#75715e"> * @author fangfeng
-</span><span style="color:#75715e"> * @since 2018/8/7
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Rand</span> <span style="color:#f92672">{</span>
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * Rand.java
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2018/8/7
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Rand</span> <span style="color:#666">{</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">double</span> rand <span style="color:#f92672">=</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">random</span><span style="color:#f92672">();</span>
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>rand <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">.</span><span style="color:#a6e22e">995</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;get random, values %f&#34;</span><span style="color:#f92672">,</span> rand<span style="color:#f92672">));</span>
-                <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
-            <span style="color:#f92672">}</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#902000">void</span> <span style="color:#06287e">run</span><span style="color:#666">()</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">while</span> <span style="color:#666">(</span><span style="color:#007020;font-weight:bold">true</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#902000">double</span> rand <span style="color:#666">=</span> Math<span style="color:#666">.</span><span style="color:#4070a0">random</span><span style="color:#666">();</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>rand <span style="color:#666">&gt;</span> 0<span style="color:#666">.</span><span style="color:#4070a0">995</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>String<span style="color:#666">.</span><span style="color:#4070a0">format</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;get random, values %f&#34;</span><span style="color:#666">,</span> rand<span style="color:#666">));</span>
+                <span style="color:#007020;font-weight:bold">return</span><span style="color:#666">;</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>接着，来构造一个代理类，以及最重要的 <code>premain</code> 方法</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> me.fangfeng.javaagent<span style="color:#f92672">;</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">me.fangfeng.javaagent</span><span style="color:#666">;</span>
 
-<span style="color:#f92672">import</span> java.lang.instrument.Instrumentation<span style="color:#f92672">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.lang.instrument.Instrumentation</span><span style="color:#666">;</span>
 
-<span style="color:#75715e">/**
-</span><span style="color:#75715e"> * Agent - 代理
-</span><span style="color:#75715e"> * 基于 JVM TI (JVM Tool Interface) 实现的 Java ClassFile 的增强
-</span><span style="color:#75715e"> * @author fangfeng
-</span><span style="color:#75715e"> * @since 2018/8/7
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Agent</span> <span style="color:#f92672">{</span>
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * Agent - 代理
+</span><span style="color:#60a0b0;font-style:italic"> * 基于 JVM TI (JVM Tool Interface) 实现的 Java ClassFile 的增强
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2018/8/7
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Agent</span> <span style="color:#666">{</span>
 
-    <span style="color:#75715e">// premain 将 JVM 初始化后，main(String... ) 执行前调用
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">premain</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">,</span> Instrumentation instrumentation<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// new 一个转换器实例
-</span><span style="color:#75715e"></span>        ClassTimer transformer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ClassTimer<span style="color:#f92672">();</span>
-        instrumentation<span style="color:#f92672">.</span><span style="color:#a6e22e">addTransformer</span><span style="color:#f92672">(</span>transformer<span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">// premain 将 JVM 初始化后，main(String... ) 执行前调用
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">premain</span><span style="color:#666">(</span>String args<span style="color:#666">,</span> Instrumentation instrumentation<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">// new 一个转换器实例
+</span><span style="color:#60a0b0;font-style:italic"></span>        ClassTimer transformer <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> ClassTimer<span style="color:#666">();</span>
+        instrumentation<span style="color:#666">.</span><span style="color:#4070a0">addTransformer</span><span style="color:#666">(</span>transformer<span style="color:#666">);</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#75715e">// 之后的 agentmain(...) 将在这里提供，暂时隐去，避免对对读者产生干扰
-</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> me.fangfeng.javaagent<span style="color:#f92672">;</span>
+    <span style="color:#60a0b0;font-style:italic">// 之后的 agentmain(...) 将在这里提供，暂时隐去，避免对对读者产生干扰
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#666">}</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">me.fangfeng.javaagent</span><span style="color:#666">;</span>
 
-<span style="color:#f92672">import</span> org.objectweb.asm.ClassReader<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> org.objectweb.asm.ClassWriter<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> org.objectweb.asm.Opcodes<span style="color:#f92672">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">org.objectweb.asm.ClassReader</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">org.objectweb.asm.ClassWriter</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">org.objectweb.asm.Opcodes</span><span style="color:#666">;</span>
 
-<span style="color:#f92672">import</span> java.lang.instrument.ClassFileTransformer<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> java.security.ProtectionDomain<span style="color:#f92672">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.lang.instrument.ClassFileTransformer</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.security.ProtectionDomain</span><span style="color:#666">;</span>
 
-<span style="color:#75715e">/**
-</span><span style="color:#75715e"> * @author fangfeng
-</span><span style="color:#75715e"> * @since 2018/8/7
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ClassTimer</span> <span style="color:#66d9ef">implements</span> ClassFileTransformer <span style="color:#f92672">{</span>
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2018/8/7
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">ClassTimer</span> <span style="color:#007020;font-weight:bold">implements</span> ClassFileTransformer <span style="color:#666">{</span>
 
-    <span style="color:#a6e22e">@Override</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> <span style="color:#a6e22e">transform</span><span style="color:#f92672">(</span>ClassLoader loader<span style="color:#f92672">,</span> String className<span style="color:#f92672">,</span> Class<span style="color:#f92672">&lt;?&gt;</span> classBeingRedefined<span style="color:#f92672">,</span> ProtectionDomain protectionDomain<span style="color:#f92672">,</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> classfileBuffer<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// 这里涉及到了 ASM 的内容，主要目的是向每个方法块的开始及方法块的结束部分插入与计时器有关的代码
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 如果想了解 ASM 的内容，请参阅 https://dormouse-none.github.io/2018-06-25-ASM-Core/  提供了一些基础性的内容，更多的请自行学习
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 不了解具体内容将不影响对主体内容的理解
-</span><span style="color:#75715e"></span>        ClassReader cr <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ClassReader<span style="color:#f92672">(</span>classfileBuffer<span style="color:#f92672">);</span>
-        ClassWriter cw <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ClassWriter<span style="color:#f92672">(</span>ClassWriter<span style="color:#f92672">.</span><span style="color:#a6e22e">COMPUTE_FRAMES</span><span style="color:#f92672">);</span>
-        MyClassWriter mcw <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> MyClassWriter<span style="color:#f92672">(</span>Opcodes<span style="color:#f92672">.</span><span style="color:#a6e22e">ASM6</span><span style="color:#f92672">,</span> cw<span style="color:#f92672">);</span>
-        cr<span style="color:#f92672">.</span><span style="color:#a6e22e">accept</span><span style="color:#f92672">(</span>mcw<span style="color:#f92672">,</span> ClassReader<span style="color:#f92672">.</span><span style="color:#a6e22e">EXPAND_FRAMES</span><span style="color:#f92672">);</span>
-        <span style="color:#66d9ef">return</span> cw<span style="color:#f92672">.</span><span style="color:#a6e22e">toByteArray</span><span style="color:#f92672">();</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#555;font-weight:bold">@Override</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#902000">byte</span><span style="color:#666">[]</span> <span style="color:#06287e">transform</span><span style="color:#666">(</span>ClassLoader loader<span style="color:#666">,</span> String className<span style="color:#666">,</span> Class<span style="color:#666">&lt;?&gt;</span> classBeingRedefined<span style="color:#666">,</span> ProtectionDomain protectionDomain<span style="color:#666">,</span> <span style="color:#902000">byte</span><span style="color:#666">[]</span> classfileBuffer<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">// 这里涉及到了 ASM 的内容，主要目的是向每个方法块的开始及方法块的结束部分插入与计时器有关的代码
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#60a0b0;font-style:italic">// 如果想了解 ASM 的内容，请参阅 https://dormouse-none.github.io/2018-06-25-ASM-Core/  提供了一些基础性的内容，更多的请自行学习
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#60a0b0;font-style:italic">// 不了解具体内容将不影响对主体内容的理解
+</span><span style="color:#60a0b0;font-style:italic"></span>        ClassReader cr <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> ClassReader<span style="color:#666">(</span>classfileBuffer<span style="color:#666">);</span>
+        ClassWriter cw <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> ClassWriter<span style="color:#666">(</span>ClassWriter<span style="color:#666">.</span><span style="color:#4070a0">COMPUTE_FRAMES</span><span style="color:#666">);</span>
+        MyClassWriter mcw <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> MyClassWriter<span style="color:#666">(</span>Opcodes<span style="color:#666">.</span><span style="color:#4070a0">ASM6</span><span style="color:#666">,</span> cw<span style="color:#666">);</span>
+        cr<span style="color:#666">.</span><span style="color:#4070a0">accept</span><span style="color:#666">(</span>mcw<span style="color:#666">,</span> ClassReader<span style="color:#666">.</span><span style="color:#4070a0">EXPAND_FRAMES</span><span style="color:#666">);</span>
+        <span style="color:#007020;font-weight:bold">return</span> cw<span style="color:#666">.</span><span style="color:#4070a0">toByteArray</span><span style="color:#666">();</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>其它代码略，详见附件。</p>
 <p>Java 这种对操作字节码的支持有个坑爹的地方，就是不得不打包成 Jar 来使用。</p>
 <p>具体来看一下</p>
@@ -290,18 +290,18 @@ Class-Path: /Users/fangfeng/.m2/repository/org/ow2/asm/asm/6.1.1/asm-6.1.1.jar
 Premain-Class: me.fangfeng.javaagent.Agent
 Can-Retransform-Classes: true
 </code></pre><p>再来个 SHELL 脚本，用来给打包这个 Jar</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e">#!/bin/bash
-</span><span style="color:#75715e"></span>
-<span style="color:#75715e"># 编译 me.fangfeng.javaagent 包下的类</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#007020">#!/bin/bash
+</span><span style="color:#007020"></span>
+<span style="color:#60a0b0;font-style:italic"># 编译 me.fangfeng.javaagent 包下的类</span>
 javac -cp .:/Users/fangfeng/.m2/repository/org/ow2/asm/asm/6.1.1/asm-6.1.1.jar me/fangfeng/javaagent/Agent.java me/fangfeng/javaagent/ClassTimer.java me/fangfeng/javaagent/MyClassWriter.java me/fangfeng/javaagent/MyMethodWriter.java me/fangfeng/javaagent/StaticTimer.java
 
-<span style="color:#75715e"># 打包 me.fangfeng.javaagent 的 .class -&gt; agent.jar</span>
+<span style="color:#60a0b0;font-style:italic"># 打包 me.fangfeng.javaagent 的 .class -&gt; agent.jar</span>
 jar cvfm agent.jar MANIFEST-agent.MF me/fangfeng/javaagent/Agent.class me/fangfeng/javaagent/ClassTimer.class me/fangfeng/javaagent/MyClassWriter.class me/fangfeng/javaagent/MyMethodWriter.class me/fangfeng/javaagent/StaticTimer.class
 
-<span style="color:#75715e"># 编译 me.fangfeng.client 包下的类</span>
+<span style="color:#60a0b0;font-style:italic"># 编译 me.fangfeng.client 包下的类</span>
 javac me/fangfeng/client/Main.java me/fangfeng/client/Rand.java
 
-<span style="color:#75715e"># 以 me.fangfeng.client.Main 作为主类启动</span>
+<span style="color:#60a0b0;font-style:italic"># 以 me.fangfeng.client.Main 作为主类启动</span>
 java -javaagent:agent.jar me.fangfeng.client.Main
 </code></pre></div><p>执行后，可以看到类似如下内容:</p>
 <p><img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fubmp354ejj30tq0rmtdp.jpg" alt=""></p>
@@ -317,51 +317,51 @@ java -javaagent:agent.jar me.fangfeng.client.Main
 <p>启动一个新的进程来连接到 正在运行中的进程，并令其加载 java agent。</p>
 <p>基本的类与上一节的描述相同，主要是包 <code>me.fangfeng.javaagent.*</code> 和 <code>me.fangfeng.client.*</code></p>
 <p>新增一个类 <code>me.fangfeng.javaagent.Main</code> 用来启动另一个进程，并要求运行中的 java 进程加载 agent.jar 来进行增强。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> me.fangfeng.javaagent<span style="color:#f92672">;</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">me.fangfeng.javaagent</span><span style="color:#666">;</span>
 
-<span style="color:#f92672">import</span> com.sun.tools.attach.AgentInitializationException<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> com.sun.tools.attach.AgentLoadException<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> com.sun.tools.attach.AttachNotSupportedException<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> com.sun.tools.attach.VirtualMachine<span style="color:#f92672">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">com.sun.tools.attach.AgentInitializationException</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">com.sun.tools.attach.AgentLoadException</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">com.sun.tools.attach.AttachNotSupportedException</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">com.sun.tools.attach.VirtualMachine</span><span style="color:#666">;</span>
 
-<span style="color:#f92672">import</span> java.io.IOException<span style="color:#f92672">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.io.IOException</span><span style="color:#666">;</span>
 
-<span style="color:#75715e">/**
-</span><span style="color:#75715e"> * @author fangfeng
-</span><span style="color:#75715e"> * @since 2018/8/7
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Main</span> <span style="color:#f92672">{</span>
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2018/8/7
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Main</span> <span style="color:#666">{</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException<span style="color:#f92672">,</span> AttachNotSupportedException<span style="color:#f92672">,</span> AgentLoadException<span style="color:#f92672">,</span> AgentInitializationException <span style="color:#f92672">{</span>
-        VirtualMachine vm <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-            <span style="color:#75715e">// 通过 VirtualMachine 连接到 运行中的进程 (可以通过 jps 找到进程号)
-</span><span style="color:#75715e"></span>            vm <span style="color:#f92672">=</span> VirtualMachine<span style="color:#f92672">.</span><span style="color:#a6e22e">attach</span><span style="color:#f92672">(&lt;</span>PID<span style="color:#f92672">&gt;);</span>
-            vm<span style="color:#f92672">.</span><span style="color:#a6e22e">loadAgent</span><span style="color:#f92672">(&lt;</span>agent<span style="color:#f92672">.</span><span style="color:#a6e22e">jar</span> 的路径<span style="color:#f92672">&gt;);</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>vm <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                vm<span style="color:#f92672">.</span><span style="color:#a6e22e">detach</span><span style="color:#f92672">();</span>
-            <span style="color:#f92672">}</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Agent</span> <span style="color:#f92672">{</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">main</span><span style="color:#666">(</span>String<span style="color:#666">[]</span> args<span style="color:#666">)</span> <span style="color:#007020;font-weight:bold">throws</span> IOException<span style="color:#666">,</span> AttachNotSupportedException<span style="color:#666">,</span> AgentLoadException<span style="color:#666">,</span> AgentInitializationException <span style="color:#666">{</span>
+        VirtualMachine vm <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
+        <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+            <span style="color:#60a0b0;font-style:italic">// 通过 VirtualMachine 连接到 运行中的进程 (可以通过 jps 找到进程号)
+</span><span style="color:#60a0b0;font-style:italic"></span>            vm <span style="color:#666">=</span> VirtualMachine<span style="color:#666">.</span><span style="color:#4070a0">attach</span><span style="color:#666">(&lt;</span>PID<span style="color:#666">&gt;);</span>
+            vm<span style="color:#666">.</span><span style="color:#4070a0">loadAgent</span><span style="color:#666">(&lt;</span>agent<span style="color:#666">.</span><span style="color:#4070a0">jar</span> 的路径<span style="color:#666">&gt;);</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">finally</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>vm <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                vm<span style="color:#666">.</span><span style="color:#4070a0">detach</span><span style="color:#666">();</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Agent</span> <span style="color:#666">{</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">premain</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">,</span> Instrumentation instrumentation<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        ClassTimer transformer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ClassTimer<span style="color:#f92672">();</span>
-        instrumentation<span style="color:#f92672">.</span><span style="color:#a6e22e">addTransformer</span><span style="color:#f92672">(</span>transformer<span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">premain</span><span style="color:#666">(</span>String args<span style="color:#666">,</span> Instrumentation instrumentation<span style="color:#666">)</span> <span style="color:#666">{</span>
+        ClassTimer transformer <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> ClassTimer<span style="color:#666">();</span>
+        instrumentation<span style="color:#666">.</span><span style="color:#4070a0">addTransformer</span><span style="color:#666">(</span>transformer<span style="color:#666">);</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#75715e">// 现在在 Agent.java 上补上 agentmain(...) 的具体实现
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">agentmain</span><span style="color:#f92672">(</span>String args<span style="color:#f92672">,</span> Instrumentation instrumentation<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> UnmodifiableClassException <span style="color:#f92672">{</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;SUCCESS AGENTMAIN&#34;</span><span style="color:#f92672">);</span>
-        ClassTimer transformer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ClassTimer<span style="color:#f92672">();</span>
-        <span style="color:#75715e">// add Transformer
-</span><span style="color:#75715e"></span>        instrumentation<span style="color:#f92672">.</span><span style="color:#a6e22e">addTransformer</span><span style="color:#f92672">(</span>transformer<span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
-        <span style="color:#75715e">// 对 Rand.class 进行重新转换
-</span><span style="color:#75715e"></span>        instrumentation<span style="color:#f92672">.</span><span style="color:#a6e22e">retransformClasses</span><span style="color:#f92672">(</span>Rand<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">// 现在在 Agent.java 上补上 agentmain(...) 的具体实现
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">agentmain</span><span style="color:#666">(</span>String args<span style="color:#666">,</span> Instrumentation instrumentation<span style="color:#666">)</span> <span style="color:#007020;font-weight:bold">throws</span> UnmodifiableClassException <span style="color:#666">{</span>
+        System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;SUCCESS AGENTMAIN&#34;</span><span style="color:#666">);</span>
+        ClassTimer transformer <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> ClassTimer<span style="color:#666">();</span>
+        <span style="color:#60a0b0;font-style:italic">// add Transformer
+</span><span style="color:#60a0b0;font-style:italic"></span>        instrumentation<span style="color:#666">.</span><span style="color:#4070a0">addTransformer</span><span style="color:#666">(</span>transformer<span style="color:#666">,</span> <span style="color:#007020;font-weight:bold">true</span><span style="color:#666">);</span>
+        <span style="color:#60a0b0;font-style:italic">// 对 Rand.class 进行重新转换
+</span><span style="color:#60a0b0;font-style:italic"></span>        instrumentation<span style="color:#666">.</span><span style="color:#4070a0">retransformClasses</span><span style="color:#666">(</span>Rand<span style="color:#666">.</span><span style="color:#4070a0">class</span><span style="color:#666">);</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>其它内容基本相同</p>
 <p>首先需要先打包 agent.jar 。当然，如果是顺着本文的顺序进行本机实验，则 agent.jar 已经存在</p>
 <p>先启动进程 <code>java me.fangfeng.client.Main</code></p>
@@ -380,7 +380,7 @@ java -javaagent:agent.jar me.fangfeng.client.Main
 <p>[1]. 示例代码: <a href="https://github.com/DorMOUSE-None/Repo/raw/master/instru.zip">instru.zip</a>
 [2]. <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/instrument/Instrumentation.html">java.lang.instrument.Instrumentation</a>
 [3]. <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/instrument/package-summary.html">Package java.lang.instrument</a></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -391,6 +391,12 @@ java -javaagent:agent.jar me.fangfeng.client.Main
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "正则表达式指数爆炸",
       "headline" : "正则表达式指数爆炸",
-      "description" : "\x3ch2 id=\x22背景\x22\x3e背景\x3c\/h2\x3e\n\x3cp\x3e昨天接触到一个很有意思的问题, 公司测试环境一台机器 CPU 跑到了 400%，导致该机器上的所有服务都挂掉了。\x3c\/p\x3e\n\x3cp\x3e最后查到的原因竟然是正则表达式所引起的，大大出乎意料啊。虽然早就知道正则效率很差，但绝对没有想到会导致整个机器上服务崩溃的情况。\x3c\/p\x3e\n\x3cp\x3e先简单展示下问题正则:\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-java\x22 data-lang=\x22java\x22\x3eString regex \x3cspan style=\x22color:#f92672\x22\x3e=\x3c\/span\x3e \x3cspan style=\x22color:#e6db74\x22\x3e\x26#34;(\\\\w\x2b,?)\x2b\x26#34;\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e;\x3c\/span\x3e\nString val \x3cspan style=\x22color:#f92672\x22\x3e=\x3c\/span\x3e \x3cspan style=\x22color:#e6db74\x22\x3e\x26#34;abcdefghijklmno,abcdefghijklmno\x2b\x26#34;\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e;\x3c\/span\x3e\nSystem\x3cspan style=\x22color:#f92672\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#a6e22e\x22\x3eout\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#a6e22e\x22\x3eprintln\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e(\x3c\/span\x3eval\x3cspan style=\x22color:#f92672\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#a6e22e\x22\x3ematches\x3c\/span\x3e\x3cspan style=\x22color:#f92672\x22\x3e(\x3c\/span\x3eregex\x3cspan style=\x22color:#f92672\x22\x3e));\x3c\/span\x3e\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e\x3cp\x3e最终的执行时间是 17s 左右。\x3c\/p\x3e\n\x3cp\x3e相反，如果改成 \x3ccode\x3eString val = \x26quot;abcdefghijklmno,abcdefghijklmno\x26quot;\x3c\/code\x3e ，实际执行时间 1ms 左右。\x3c\/p\x3e\n\x3cp\x3e哈哈，完全不是一个量级的结果。\x3c\/p\x3e\n\x3cp\x3e最后，当然是要找原因了:\x26lt; 当然，有其它重要的事在耽搁，没时间去看 Java Regex 源码。不过，从正则本身下手反而是个好事情。毕竟几乎所有的编程语言都有对正则的支持。而同样的，都存在着这样的问题。那就可以大胆猜想其实是和语言本身无关，而在于正则规范本身了。\x3c\/p\x3e\n\x3cp\x3e先给个结果，罪魁祸首就是\x3ccode\x3e指数爆炸\x3c\/code\x3e\x3c\/p\x3e",
+      "description" : "\x3ch2 id=\x22背景\x22\x3e背景\x3c\/h2\x3e\n\x3cp\x3e昨天接触到一个很有意思的问题, 公司测试环境一台机器 CPU 跑到了 400%，导致该机器上的所有服务都挂掉了。\x3c\/p\x3e\n\x3cp\x3e最后查到的原因竟然是正则表达式所引起的，大大出乎意料啊。虽然早就知道正则效率很差，但绝对没有想到会导致整个机器上服务崩溃的情况。\x3c\/p\x3e\n\x3cp\x3e先简单展示下问题正则:\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-java\x22 data-lang=\x22java\x22\x3eString regex \x3cspan style=\x22color:#666\x22\x3e=\x3c\/span\x3e \x3cspan style=\x22color:#4070a0\x22\x3e\x26#34;(\\\\w\x2b,?)\x2b\x26#34;\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e;\x3c\/span\x3e\nString val \x3cspan style=\x22color:#666\x22\x3e=\x3c\/span\x3e \x3cspan style=\x22color:#4070a0\x22\x3e\x26#34;abcdefghijklmno,abcdefghijklmno\x2b\x26#34;\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e;\x3c\/span\x3e\nSystem\x3cspan style=\x22color:#666\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3eout\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3eprintln\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e(\x3c\/span\x3eval\x3cspan style=\x22color:#666\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3ematches\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e(\x3c\/span\x3eregex\x3cspan style=\x22color:#666\x22\x3e));\x3c\/span\x3e\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e\x3cp\x3e最终的执行时间是 17s 左右。\x3c\/p\x3e\n\x3cp\x3e相反，如果改成 \x3ccode\x3eString val = \x26quot;abcdefghijklmno,abcdefghijklmno\x26quot;\x3c\/code\x3e ，实际执行时间 1ms 左右。\x3c\/p\x3e\n\x3cp\x3e哈哈，完全不是一个量级的结果。\x3c\/p\x3e\n\x3cp\x3e最后，当然是要找原因了:\x26lt; 当然，有其它重要的事在耽搁，没时间去看 Java Regex 源码。不过，从正则本身下手反而是个好事情。毕竟几乎所有的编程语言都有对正则的支持。而同样的，都存在着这样的问题。那就可以大胆猜想其实是和语言本身无关，而在于正则规范本身了。\x3c\/p\x3e\n\x3cp\x3e先给个结果，罪魁祸首就是\x3ccode\x3e指数爆炸\x3c\/code\x3e\x3c\/p\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -127,9 +127,9 @@ System.out.println(val.matches(regex));
 <p>昨天接触到一个很有意思的问题, 公司测试环境一台机器 CPU 跑到了 400%，导致该机器上的所有服务都挂掉了。</p>
 <p>最后查到的原因竟然是正则表达式所引起的，大大出乎意料啊。虽然早就知道正则效率很差，但绝对没有想到会导致整个机器上服务崩溃的情况。</p>
 <p>先简单展示下问题正则:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">String regex <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;(\\w+,?)+&#34;</span><span style="color:#f92672">;</span>
-String val <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;abcdefghijklmno,abcdefghijklmno+&#34;</span><span style="color:#f92672">;</span>
-System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>val<span style="color:#f92672">.</span><span style="color:#a6e22e">matches</span><span style="color:#f92672">(</span>regex<span style="color:#f92672">));</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">String regex <span style="color:#666">=</span> <span style="color:#4070a0">&#34;(\\w+,?)+&#34;</span><span style="color:#666">;</span>
+String val <span style="color:#666">=</span> <span style="color:#4070a0">&#34;abcdefghijklmno,abcdefghijklmno+&#34;</span><span style="color:#666">;</span>
+System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>val<span style="color:#666">.</span><span style="color:#4070a0">matches</span><span style="color:#666">(</span>regex<span style="color:#666">));</span>
 </code></pre></div><p>最终的执行时间是 17s 左右。</p>
 <p>相反，如果改成 <code>String val = &quot;abcdefghijklmno,abcdefghijklmno&quot;</code> ，实际执行时间 1ms 左右。</p>
 <p>哈哈，完全不是一个量级的结果。</p>
@@ -195,7 +195,7 @@ System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span>
 <p>写得仓促，如有根源性错误，欢迎指正。</p>
 <h2 id="参考">参考</h2>
 <p><a href="https://www.regular-expressions.info/catastrophic.html">Catastrophic Backtracking(灾难性回溯)</a></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -206,6 +206,12 @@ System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span>
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

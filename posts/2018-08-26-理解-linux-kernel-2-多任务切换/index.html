@@ -425,43 +425,43 @@ usr_stk1:
 <li>GNU ld : GNU ld 2.26.1
 其它内容详见 <a href="https://dormouse-none.github.io/2018-08-19-understand-Kernel-0/">理解 Linux Kernel (0)</a></li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#75715e"># Makefile for the simple example kernel.
-</span><span style="color:#75715e"></span>AS86	<span style="color:#f92672">=</span>as86 -0 -a
-LD86	<span style="color:#f92672">=</span>ld86 -0
-AS	<span style="color:#f92672">=</span>as
-ASFLAGS <span style="color:#f92672">=</span>-32
-LD	<span style="color:#f92672">=</span>ld
-LDFLAGS	<span style="color:#f92672">=</span>-s -x -M -m elf_i386 -e startup_32 -Ttext 0x0
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-makefile" data-lang="makefile"><span style="color:#60a0b0;font-style:italic"># Makefile for the simple example kernel.
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#bb60d5">AS86</span>	<span style="color:#666">=</span>as86 -0 -a
+<span style="color:#bb60d5">LD86</span>	<span style="color:#666">=</span>ld86 -0
+<span style="color:#bb60d5">AS</span>	<span style="color:#666">=</span>as
+<span style="color:#bb60d5">ASFLAGS</span> <span style="color:#666">=</span>-32
+<span style="color:#bb60d5">LD</span>	<span style="color:#666">=</span>ld
+<span style="color:#bb60d5">LDFLAGS</span>	<span style="color:#666">=</span>-s -x -M -m elf_i386 -e startup_32 -Ttext 0x0
 
-<span style="color:#a6e22e">all</span><span style="color:#f92672">:</span>	Image
+<span style="color:#06287e">all</span><span style="color:#666">:</span>	Image
 
-<span style="color:#a6e22e">Image</span><span style="color:#f92672">:</span> boot system
-	dd bs<span style="color:#f92672">=</span><span style="color:#ae81ff">32</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>boot of<span style="color:#f92672">=</span>Image skip<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
-	dd bs<span style="color:#f92672">=</span><span style="color:#ae81ff">512</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>system of<span style="color:#f92672">=</span>Image skip<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span> seek<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+<span style="color:#06287e">Image</span><span style="color:#666">:</span> boot system
+	dd <span style="color:#bb60d5">bs</span><span style="color:#666">=</span><span style="color:#40a070">32</span> <span style="color:#007020;font-weight:bold">if</span><span style="color:#666">=</span>boot <span style="color:#bb60d5">of</span><span style="color:#666">=</span>Image <span style="color:#bb60d5">skip</span><span style="color:#666">=</span><span style="color:#40a070">1</span>
+	dd <span style="color:#bb60d5">bs</span><span style="color:#666">=</span><span style="color:#40a070">512</span> <span style="color:#007020;font-weight:bold">if</span><span style="color:#666">=</span>system <span style="color:#bb60d5">of</span><span style="color:#666">=</span>Image <span style="color:#bb60d5">skip</span><span style="color:#666">=</span><span style="color:#40a070">8</span> <span style="color:#bb60d5">seek</span><span style="color:#666">=</span><span style="color:#40a070">1</span>
 	sync
 
-<span style="color:#a6e22e">disk</span><span style="color:#f92672">:</span> Image
-	dd bs<span style="color:#f92672">=</span><span style="color:#ae81ff">8192</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>Image of<span style="color:#f92672">=</span>/dev/fd0
+<span style="color:#06287e">disk</span><span style="color:#666">:</span> Image
+	dd <span style="color:#bb60d5">bs</span><span style="color:#666">=</span><span style="color:#40a070">8192</span> <span style="color:#007020;font-weight:bold">if</span><span style="color:#666">=</span>Image <span style="color:#bb60d5">of</span><span style="color:#666">=</span>/dev/fd0
 	sync;sync;sync
 
-<span style="color:#a6e22e">head.o</span><span style="color:#f92672">:</span> 
-	<span style="color:#66d9ef">$(</span>AS<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>ASFLAGS<span style="color:#66d9ef">)</span> -o head.o head.s
+<span style="color:#06287e">head.o</span><span style="color:#666">:</span> 
+	<span style="color:#007020;font-weight:bold">$(</span>AS<span style="color:#007020;font-weight:bold">)</span> <span style="color:#007020;font-weight:bold">$(</span>ASFLAGS<span style="color:#007020;font-weight:bold">)</span> -o head.o head.s
 
-<span style="color:#a6e22e">system</span><span style="color:#f92672">:</span>	head.o 
-	<span style="color:#66d9ef">$(</span>LD<span style="color:#66d9ef">)</span> <span style="color:#66d9ef">$(</span>LDFLAGS<span style="color:#66d9ef">)</span> head.o  -o system &gt; System.map
+<span style="color:#06287e">system</span><span style="color:#666">:</span>	head.o 
+	<span style="color:#007020;font-weight:bold">$(</span>LD<span style="color:#007020;font-weight:bold">)</span> <span style="color:#007020;font-weight:bold">$(</span>LDFLAGS<span style="color:#007020;font-weight:bold">)</span> head.o  -o system &gt; System.map
 
-<span style="color:#a6e22e">boot</span><span style="color:#f92672">:</span>	boot.s
-	<span style="color:#66d9ef">$(</span>AS86<span style="color:#66d9ef">)</span> -o boot.o boot.s
-	<span style="color:#66d9ef">$(</span>LD86<span style="color:#66d9ef">)</span> -s -o boot boot.o
+<span style="color:#06287e">boot</span><span style="color:#666">:</span>	boot.s
+	<span style="color:#007020;font-weight:bold">$(</span>AS86<span style="color:#007020;font-weight:bold">)</span> -o boot.o boot.s
+	<span style="color:#007020;font-weight:bold">$(</span>LD86<span style="color:#007020;font-weight:bold">)</span> -s -o boot boot.o
 
-<span style="color:#a6e22e">clean</span><span style="color:#f92672">:</span>
+<span style="color:#06287e">clean</span><span style="color:#666">:</span>
 	rm -f Image System.map core boot *.o system
 </code></pre></div><h2 id="运行结果">运行结果</h2>
 <p>想了解更多细节的请自行实操查看吧!</p>
 <p><img src="https://ws1.sinaimg.cn/large/006tNbRwgy1fun1fvafhwg30k40d4x6p.gif" alt=""></p>
 <h2 id="附件">附件</h2>
 <p><a href="https://raw.githubusercontent.com/DorMOUSE-None/Repo/master/understand-kernel-2.zip">程序源码</a></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -472,6 +472,12 @@ LDFLAGS	<span style="color:#f92672">=</span>-s -x -M -m elf_i386 -e startup_32 -
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

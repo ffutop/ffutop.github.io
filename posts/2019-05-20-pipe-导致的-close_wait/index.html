@@ -142,36 +142,36 @@ Python 服务 A，用于接收心跳包确认其他服务是否存活。其他�
 <p>大量 <code>CLOSE_WAIT</code> 状态的 TCP 连接，<code>Recv-Q</code> 数据大小平均在 300 Bytes 左右。对比实际的 HTTP 包大小，恰好是一次 HTTP Request 请求大小。同时参考 Nginx 打印的日志，确定是一次 HTTP 请求的数据包大小，同时都以 Timeout 为结束。</p>
 <p>OK，简单地建立起了第一个印象，TCP 断开连接的 FIN 包由 Nginx 请求超时后发起(<code>proxy_read_timeout 300s</code>) 。A 服务所在的 Linux 机器接收到 FIN 包，并由内核线程直接将套接字状态置位为 <code>CLOSE_WAIT</code> 。</p>
 <p>A 服务没意识到 FIN 包？当然，接收了 FIN 包之后，再回应 ACK 包，这“四次挥手”的第二个数据包并不会被 A 服务所认知，而是由内核的 <code>[ksoftirqd]</code> 内核线程直接处理。看下内核处理 FIN 包的代码 (from <code>net/ipv4/tcp_input.c</code>)。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/*
-</span><span style="color:#75715e"> * 处理 FIN 包
-</span><span style="color:#75715e"> *
-</span><span style="color:#75715e"> * 如果当前套接字是 ESTABLISHED 状态，则接收 FIN 包，进入 CLOSE-WAIT
-</span><span style="color:#75715e"> * 状态 
-</span><span style="color:#75715e"> * ...
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">tcp_fin</span>(<span style="color:#66d9ef">struct</span> sock <span style="color:#f92672">*</span>sk)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic"> * 处理 FIN 包
+</span><span style="color:#60a0b0;font-style:italic"> *
+</span><span style="color:#60a0b0;font-style:italic"> * 如果当前套接字是 ESTABLISHED 状态，则接收 FIN 包，进入 CLOSE-WAIT
+</span><span style="color:#60a0b0;font-style:italic"> * 状态 
+</span><span style="color:#60a0b0;font-style:italic"> * ...
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#902000">void</span> <span style="color:#06287e">tcp_fin</span>(<span style="color:#007020;font-weight:bold">struct</span> sock <span style="color:#666">*</span>sk)
 {
-	<span style="color:#66d9ef">struct</span> tcp_sock <span style="color:#f92672">*</span>tp <span style="color:#f92672">=</span> tcp_sk(sk);
+	<span style="color:#007020;font-weight:bold">struct</span> tcp_sock <span style="color:#666">*</span>tp <span style="color:#666">=</span> tcp_sk(sk);
 
 	inet_csk_schedule_ack(sk);
 
-	sk<span style="color:#f92672">-&gt;</span>sk_shutdown <span style="color:#f92672">|=</span> RCV_SHUTDOWN;
+	sk<span style="color:#666">-&gt;</span>sk_shutdown <span style="color:#666">|=</span> RCV_SHUTDOWN;
 	sock_set_flag(sk, SOCK_DONE);
 
-	<span style="color:#66d9ef">switch</span> (sk<span style="color:#f92672">-&gt;</span>sk_state) {
-	<span style="color:#66d9ef">case</span> TCP_SYN_RECV:
-	<span style="color:#66d9ef">case</span> TCP_ESTABLISHED:
-        <span style="color:#75715e">/* 当前为 ESTABLISHED 状态，进入 CLOSE_WAIT */</span>
+	<span style="color:#007020;font-weight:bold">switch</span> (sk<span style="color:#666">-&gt;</span>sk_state) {
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">TCP_SYN_RECV</span>:
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">TCP_ESTABLISHED</span>:
+        <span style="color:#60a0b0;font-style:italic">/* 当前为 ESTABLISHED 状态，进入 CLOSE_WAIT */</span>
 		tcp_set_state(sk, TCP_CLOSE_WAIT);
-		inet_csk(sk)<span style="color:#f92672">-&gt;</span>icsk_ack.pingpong <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
-		<span style="color:#66d9ef">break</span>;
+		inet_csk(sk)<span style="color:#666">-&gt;</span>icsk_ack.pingpong <span style="color:#666">=</span> <span style="color:#40a070">1</span>;
+		<span style="color:#007020;font-weight:bold">break</span>;
 
-    <span style="color:#75715e">// ... more omitted 
-</span><span style="color:#75715e"></span>
+    <span style="color:#60a0b0;font-style:italic">// ... more omitted 
+</span><span style="color:#60a0b0;font-style:italic"></span>
     }
 
-    <span style="color:#75715e">// ... more omitted 
-</span><span style="color:#75715e"></span>}
+    <span style="color:#60a0b0;font-style:italic">// ... more omitted 
+</span><span style="color:#60a0b0;font-style:italic"></span>}
 </code></pre></div><p>更多关于网络相关的内核实现请参考 <a href="https://www.ffutop.com/2019-01-15-understand-Kernel-8/">理解 Linux Kernel (8) - 网络</a></p>
 <p>再结合 <code>Recv-Q</code> 恰好等于一次完整 HTTP 请求的条件，可以认识到 Python 线程根本没有 <code>recv</code> 请求数据。更别提意识到远端发出来 FIN 包。</p>
 <p>到此为止，由前两次的问题得到的线索，只能认为 Python 服务 A 的所有工作线程都在哪段代码阻塞了。而我所能认知的唯一条件就是事务死锁（当然，我犯了比较大的错误）。事实上看代码根本就没有任何死锁代码。暂时无果。</p>
@@ -183,103 +183,103 @@ Python 服务 A，用于接收心跳包确认其他服务是否存活。其他�
 <p>可怕的是，之前竟然一直没有意识到信号值在不同的 CPU 架构下是不同的。USR1 在 x86 平台下是 10，在 平台下是 30 。而 BSD 又与 Linux 的编号方案不同。</p>
 <p>Linux  supports  the standard signals listed below.  Several signal numbers are architecture-dependent, as indicated in the &ldquo;Value&rdquo; column.  (Where three values are given, the first one is usually valid for alpha and sparc, the middle one for x86, arm, and most other architectures, and the last one for mips.  (Values for parisc are not shown; see the Linux kernel source for signal numbering on that architecture.)  A dash (-) denotes that a signal is absent on the corresponding architecture.</p>
 <p>Linux 支持的标准信号如下。一些信号值是平台相关的（Value 列，第一个值用于 alpha 和 sparc 平台，中间的值用于 x86、arm 和大量其他架构，最后一个值用于 mips 平台）</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">Signal     Value     Action   Comment
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">Signal     Value     Action   Comment
 ----------------------------------------------------------------------
-SIGHUP        <span style="color:#ae81ff">1</span>       Term    Hangup detected on controlling terminal or death of controlling process
-SIGINT        <span style="color:#ae81ff">2</span>       Term    Interrupt from keyboard
-SIGQUIT       <span style="color:#ae81ff">3</span>       Core    Quit from keyboard
-SIGKILL       <span style="color:#ae81ff">9</span>       Term    Kill signal
-SIGUSR1   30,10,16    Term    User-defined signal <span style="color:#ae81ff">1</span>
-SIGUSR2   31,12,17    Term    User-defined signal <span style="color:#ae81ff">2</span>
+SIGHUP        <span style="color:#40a070">1</span>       Term    Hangup detected on controlling terminal or death of controlling process
+SIGINT        <span style="color:#40a070">2</span>       Term    Interrupt from keyboard
+SIGQUIT       <span style="color:#40a070">3</span>       Core    Quit from keyboard
+SIGKILL       <span style="color:#40a070">9</span>       Term    Kill signal
+SIGUSR1   30,10,16    Term    User-defined signal <span style="color:#40a070">1</span>
+SIGUSR2   31,12,17    Term    User-defined signal <span style="color:#40a070">2</span>
 </code></pre></div><p>总结下，最靠谱的写法就是直接用信号的字符描述啦。<code>kill -s USR1 &lt;PID&gt;</code></p>
 <hr>
 <h3 id="打印线程调用栈">打印线程调用栈</h3>
 <p>19 日下午再次重现，等到 20 日周一上班，总是成功地拿到了线程的调用栈。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#e6db74">&#34;CP Server Thread-10&#34;</span> tid<span style="color:#f92672">=</span><span style="color:#ae81ff">139694658537216</span>
-    at self.__bootstrap_inner<span style="color:#f92672">()(</span>threading.py:785<span style="color:#f92672">)</span>
-    at self.run<span style="color:#f92672">()(</span>threading.py:812<span style="color:#f92672">)</span>
-    at conn.communicate<span style="color:#f92672">()(</span>wsgiserver2.py:1532<span style="color:#f92672">)</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#4070a0">&#34;CP Server Thread-10&#34;</span> <span style="color:#bb60d5">tid</span><span style="color:#666">=</span><span style="color:#40a070">139694658537216</span>
+    at self.__bootstrap_inner<span style="color:#666">()(</span>threading.py:785<span style="color:#666">)</span>
+    at self.run<span style="color:#666">()(</span>threading.py:812<span style="color:#666">)</span>
+    at conn.communicate<span style="color:#666">()(</span>wsgiserver2.py:1532<span style="color:#666">)</span>
     ... more omitted
-    at instances <span style="color:#f92672">=</span> list<span style="color:#f92672">(</span>db.select<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;instance&#39;</span>, vars, where<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;app_name=$app_name and host=$host and port=$port&#39;</span><span style="color:#f92672">))(</span>xxx.py:233<span style="color:#f92672">)</span>
-    at <span style="color:#66d9ef">return</span> self.query<span style="color:#f92672">(</span>qout, processed<span style="color:#f92672">=</span>True<span style="color:#f92672">)(</span>db.py:720<span style="color:#f92672">)</span>
-    at self._db_execute<span style="color:#f92672">(</span>db_cursor, sql_query<span style="color:#f92672">)(</span>db.py:680<span style="color:#f92672">)</span>
-    at print<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;%s (%s): %s&#39;</span> % <span style="color:#f92672">(</span>round<span style="color:#f92672">(</span>b-a, 2<span style="color:#f92672">)</span>, self.ctx.dbq_count, str<span style="color:#f92672">(</span>sql_query<span style="color:#f92672">))</span>, file<span style="color:#f92672">=</span>debug<span style="color:#f92672">)(</span>db.py:623<span style="color:#f92672">)</span>
-    at out.write<span style="color:#f92672">(</span>x<span style="color:#f92672">)(</span>webapi.py:512<span style="color:#f92672">)</span>
+    at <span style="color:#bb60d5">instances</span> <span style="color:#666">=</span> list<span style="color:#666">(</span>db.select<span style="color:#666">(</span><span style="color:#4070a0">&#39;instance&#39;</span>, vars, <span style="color:#bb60d5">where</span><span style="color:#666">=</span><span style="color:#4070a0">&#39;app_name=$app_name and host=$host and port=$port&#39;</span><span style="color:#666">))(</span>xxx.py:233<span style="color:#666">)</span>
+    at <span style="color:#007020;font-weight:bold">return</span> self.query<span style="color:#666">(</span>qout, <span style="color:#bb60d5">processed</span><span style="color:#666">=</span>True<span style="color:#666">)(</span>db.py:720<span style="color:#666">)</span>
+    at self._db_execute<span style="color:#666">(</span>db_cursor, sql_query<span style="color:#666">)(</span>db.py:680<span style="color:#666">)</span>
+    at print<span style="color:#666">(</span><span style="color:#4070a0">&#39;%s (%s): %s&#39;</span> % <span style="color:#666">(</span>round<span style="color:#666">(</span>b-a, 2<span style="color:#666">)</span>, self.ctx.dbq_count, str<span style="color:#666">(</span>sql_query<span style="color:#666">))</span>, <span style="color:#bb60d5">file</span><span style="color:#666">=</span>debug<span style="color:#666">)(</span>db.py:623<span style="color:#666">)</span>
+    at out.write<span style="color:#666">(</span>x<span style="color:#666">)(</span>webapi.py:512<span style="color:#666">)</span>
 
-<span style="color:#e6db74">&#34;CP Server Thread-9&#34;</span> tid<span style="color:#f92672">=</span><span style="color:#ae81ff">139694666929920</span>
-    at self.__bootstrap_inner<span style="color:#f92672">()(</span>threading.py:785<span style="color:#f92672">)</span>
-    at self.run<span style="color:#f92672">()(</span>threading.py:812<span style="color:#f92672">)</span>
-    at conn.communicate<span style="color:#f92672">()(</span>wsgiserver2.py:1532<span style="color:#f92672">)</span>
+<span style="color:#4070a0">&#34;CP Server Thread-9&#34;</span> <span style="color:#bb60d5">tid</span><span style="color:#666">=</span><span style="color:#40a070">139694666929920</span>
+    at self.__bootstrap_inner<span style="color:#666">()(</span>threading.py:785<span style="color:#666">)</span>
+    at self.run<span style="color:#666">()(</span>threading.py:812<span style="color:#666">)</span>
+    at conn.communicate<span style="color:#666">()(</span>wsgiserver2.py:1532<span style="color:#666">)</span>
     ... more omitted 
-    at apps <span style="color:#f92672">=</span> list<span style="color:#f92672">(</span>db.select<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;application&#39;</span>, vars, where<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;name=$name&#39;</span><span style="color:#f92672">))(</span>xxx.py:149<span style="color:#f92672">)</span>
-    at <span style="color:#66d9ef">return</span> self.query<span style="color:#f92672">(</span>qout, processed<span style="color:#f92672">=</span>True<span style="color:#f92672">)(</span>db.py:720<span style="color:#f92672">)</span>
-    at self._db_execute<span style="color:#f92672">(</span>db_cursor, sql_query<span style="color:#f92672">)(</span>db.py:680<span style="color:#f92672">)</span>
-    at print<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;%s (%s): %s&#39;</span> % <span style="color:#f92672">(</span>round<span style="color:#f92672">(</span>b-a, 2<span style="color:#f92672">)</span>, self.ctx.dbq_count, str<span style="color:#f92672">(</span>sql_query<span style="color:#f92672">))</span>, file<span style="color:#f92672">=</span>debug<span style="color:#f92672">)(</span>db.py:623<span style="color:#f92672">)</span>
-    at out.write<span style="color:#f92672">(</span>x<span style="color:#f92672">)(</span>webapi.py:512<span style="color:#f92672">)</span>
+    at <span style="color:#bb60d5">apps</span> <span style="color:#666">=</span> list<span style="color:#666">(</span>db.select<span style="color:#666">(</span><span style="color:#4070a0">&#39;application&#39;</span>, vars, <span style="color:#bb60d5">where</span><span style="color:#666">=</span><span style="color:#4070a0">&#39;name=$name&#39;</span><span style="color:#666">))(</span>xxx.py:149<span style="color:#666">)</span>
+    at <span style="color:#007020;font-weight:bold">return</span> self.query<span style="color:#666">(</span>qout, <span style="color:#bb60d5">processed</span><span style="color:#666">=</span>True<span style="color:#666">)(</span>db.py:720<span style="color:#666">)</span>
+    at self._db_execute<span style="color:#666">(</span>db_cursor, sql_query<span style="color:#666">)(</span>db.py:680<span style="color:#666">)</span>
+    at print<span style="color:#666">(</span><span style="color:#4070a0">&#39;%s (%s): %s&#39;</span> % <span style="color:#666">(</span>round<span style="color:#666">(</span>b-a, 2<span style="color:#666">)</span>, self.ctx.dbq_count, str<span style="color:#666">(</span>sql_query<span style="color:#666">))</span>, <span style="color:#bb60d5">file</span><span style="color:#666">=</span>debug<span style="color:#666">)(</span>db.py:623<span style="color:#666">)</span>
+    at out.write<span style="color:#666">(</span>x<span style="color:#666">)(</span>webapi.py:512<span style="color:#666">)</span>
 
-<span style="color:#e6db74">&#34;MainThread&#34;</span> tid<span style="color:#f92672">=</span><span style="color:#ae81ff">139695478638400</span>
-    at app.run<span style="color:#f92672">()(</span>xxx.py:326<span style="color:#f92672">)</span>
-    at <span style="color:#66d9ef">return</span> wsgi.runwsgi<span style="color:#f92672">(</span>self.wsgifunc<span style="color:#f92672">(</span>*middleware<span style="color:#f92672">))(</span>application.py:341<span style="color:#f92672">)</span>
-    at <span style="color:#66d9ef">return</span> httpserver.runsimple<span style="color:#f92672">(</span>func, server_addr<span style="color:#f92672">)(</span>wsgi.py:59<span style="color:#f92672">)</span>
-    at server.start<span style="color:#f92672">()(</span>httpserver.py:177<span style="color:#f92672">)</span>
-    at self.tick<span style="color:#f92672">()(</span>wsgiserver2.py:1956<span style="color:#f92672">)</span>
-    at s, addr <span style="color:#f92672">=</span> self.socket.accept<span style="color:#f92672">()(</span>wsgiserver2.py:2008<span style="color:#f92672">)</span>
-    at sock, addr <span style="color:#f92672">=</span> self._sock.accept<span style="color:#f92672">()(</span>socket.py:202<span style="color:#f92672">)</span>
-    at pystack<span style="color:#f92672">()(</span>pdbx.py:181<span style="color:#f92672">)</span>
-    at <span style="color:#66d9ef">for</span> filename, lineno, _, line in traceback.extract_stack<span style="color:#f92672">(</span>stack<span style="color:#f92672">)</span>:<span style="color:#f92672">(</span>pdbx.py:169<span style="color:#f92672">)</span>
+<span style="color:#4070a0">&#34;MainThread&#34;</span> <span style="color:#bb60d5">tid</span><span style="color:#666">=</span><span style="color:#40a070">139695478638400</span>
+    at app.run<span style="color:#666">()(</span>xxx.py:326<span style="color:#666">)</span>
+    at <span style="color:#007020;font-weight:bold">return</span> wsgi.runwsgi<span style="color:#666">(</span>self.wsgifunc<span style="color:#666">(</span>*middleware<span style="color:#666">))(</span>application.py:341<span style="color:#666">)</span>
+    at <span style="color:#007020;font-weight:bold">return</span> httpserver.runsimple<span style="color:#666">(</span>func, server_addr<span style="color:#666">)(</span>wsgi.py:59<span style="color:#666">)</span>
+    at server.start<span style="color:#666">()(</span>httpserver.py:177<span style="color:#666">)</span>
+    at self.tick<span style="color:#666">()(</span>wsgiserver2.py:1956<span style="color:#666">)</span>
+    at s, <span style="color:#bb60d5">addr</span> <span style="color:#666">=</span> self.socket.accept<span style="color:#666">()(</span>wsgiserver2.py:2008<span style="color:#666">)</span>
+    at sock, <span style="color:#bb60d5">addr</span> <span style="color:#666">=</span> self._sock.accept<span style="color:#666">()(</span>socket.py:202<span style="color:#666">)</span>
+    at pystack<span style="color:#666">()(</span>pdbx.py:181<span style="color:#666">)</span>
+    at <span style="color:#007020;font-weight:bold">for</span> filename, lineno, _, line in traceback.extract_stack<span style="color:#666">(</span>stack<span style="color:#666">)</span>:<span style="color:#666">(</span>pdbx.py:169<span style="color:#666">)</span>
 
 ... omit CP Server Thread-1 / Thread-2 / Thread-6 / Thread-7 / Thread-8
 ... same as other thread
 
-<span style="color:#e6db74">&#34;CP Server Thread-4&#34;</span> tid<span style="color:#f92672">=</span><span style="color:#ae81ff">139695180908288</span>
-    at self.__bootstrap_inner<span style="color:#f92672">()(</span>threading.py:785<span style="color:#f92672">)</span>
-    at self.run<span style="color:#f92672">()(</span>threading.py:812<span style="color:#f92672">)</span>
-    at conn.communicate<span style="color:#f92672">()(</span>wsgiserver2.py:1532<span style="color:#f92672">)</span>
+<span style="color:#4070a0">&#34;CP Server Thread-4&#34;</span> <span style="color:#bb60d5">tid</span><span style="color:#666">=</span><span style="color:#40a070">139695180908288</span>
+    at self.__bootstrap_inner<span style="color:#666">()(</span>threading.py:785<span style="color:#666">)</span>
+    at self.run<span style="color:#666">()(</span>threading.py:812<span style="color:#666">)</span>
+    at conn.communicate<span style="color:#666">()(</span>wsgiserver2.py:1532<span style="color:#666">)</span>
     ... more omitted 
-    at instances <span style="color:#f92672">=</span> list<span style="color:#f92672">(</span>db.select<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;instance&#39;</span>, vars, where<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;app_name=$app_name and host=$host and port=$port&#39;</span><span style="color:#f92672">))(</span>xxx.py:233<span style="color:#f92672">)</span>
-    at <span style="color:#66d9ef">return</span> self.query<span style="color:#f92672">(</span>qout, processed<span style="color:#f92672">=</span>True<span style="color:#f92672">)(</span>db.py:720<span style="color:#f92672">)</span>
-    at self._db_execute<span style="color:#f92672">(</span>db_cursor, sql_query<span style="color:#f92672">)(</span>db.py:680<span style="color:#f92672">)</span>
-    at print<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;%s (%s): %s&#39;</span> % <span style="color:#f92672">(</span>round<span style="color:#f92672">(</span>b-a, 2<span style="color:#f92672">)</span>, self.ctx.dbq_count, str<span style="color:#f92672">(</span>sql_query<span style="color:#f92672">))</span>, file<span style="color:#f92672">=</span>debug<span style="color:#f92672">)(</span>db.py:623<span style="color:#f92672">)</span>
-    at out.write<span style="color:#f92672">(</span>x<span style="color:#f92672">)(</span>webapi.py:512<span style="color:#f92672">)</span>
+    at <span style="color:#bb60d5">instances</span> <span style="color:#666">=</span> list<span style="color:#666">(</span>db.select<span style="color:#666">(</span><span style="color:#4070a0">&#39;instance&#39;</span>, vars, <span style="color:#bb60d5">where</span><span style="color:#666">=</span><span style="color:#4070a0">&#39;app_name=$app_name and host=$host and port=$port&#39;</span><span style="color:#666">))(</span>xxx.py:233<span style="color:#666">)</span>
+    at <span style="color:#007020;font-weight:bold">return</span> self.query<span style="color:#666">(</span>qout, <span style="color:#bb60d5">processed</span><span style="color:#666">=</span>True<span style="color:#666">)(</span>db.py:720<span style="color:#666">)</span>
+    at self._db_execute<span style="color:#666">(</span>db_cursor, sql_query<span style="color:#666">)(</span>db.py:680<span style="color:#666">)</span>
+    at print<span style="color:#666">(</span><span style="color:#4070a0">&#39;%s (%s): %s&#39;</span> % <span style="color:#666">(</span>round<span style="color:#666">(</span>b-a, 2<span style="color:#666">)</span>, self.ctx.dbq_count, str<span style="color:#666">(</span>sql_query<span style="color:#666">))</span>, <span style="color:#bb60d5">file</span><span style="color:#666">=</span>debug<span style="color:#666">)(</span>db.py:623<span style="color:#666">)</span>
+    at out.write<span style="color:#666">(</span>x<span style="color:#666">)(</span>webapi.py:512<span style="color:#666">)</span>
 
-<span style="color:#e6db74">&#34;APScheduler&#34;</span> tid<span style="color:#f92672">=</span><span style="color:#ae81ff">139695219828480</span>
-    at self.__bootstrap_inner<span style="color:#f92672">()(</span>threading.py:785<span style="color:#f92672">)</span>
-    at self.run<span style="color:#f92672">()(</span>threading.py:812<span style="color:#f92672">)</span>
-    at self.__target<span style="color:#f92672">(</span>*self.__args, **self.__kwargs<span style="color:#f92672">)(</span>threading.py:765<span style="color:#f92672">)</span>
-    at self._event.wait<span style="color:#f92672">(</span>wait_seconds<span style="color:#f92672">)(</span>blocking.py:28<span style="color:#f92672">)</span>
-    at self.__cond.wait<span style="color:#f92672">(</span>timeout, balancing<span style="color:#f92672">)(</span>threading.py:622<span style="color:#f92672">)</span>
-    at waiter.acquire<span style="color:#f92672">()(</span>threading.py:339<span style="color:#f92672">)</span>
+<span style="color:#4070a0">&#34;APScheduler&#34;</span> <span style="color:#bb60d5">tid</span><span style="color:#666">=</span><span style="color:#40a070">139695219828480</span>
+    at self.__bootstrap_inner<span style="color:#666">()(</span>threading.py:785<span style="color:#666">)</span>
+    at self.run<span style="color:#666">()(</span>threading.py:812<span style="color:#666">)</span>
+    at self.__target<span style="color:#666">(</span>*self.__args, **self.__kwargs<span style="color:#666">)(</span>threading.py:765<span style="color:#666">)</span>
+    at self._event.wait<span style="color:#666">(</span>wait_seconds<span style="color:#666">)(</span>blocking.py:28<span style="color:#666">)</span>
+    at self.__cond.wait<span style="color:#666">(</span>timeout, balancing<span style="color:#666">)(</span>threading.py:622<span style="color:#666">)</span>
+    at waiter.acquire<span style="color:#666">()(</span>threading.py:339<span style="color:#666">)</span>
 
-<span style="color:#e6db74">&#34;CP Server Thread-3&#34;</span> tid<span style="color:#f92672">=</span><span style="color:#ae81ff">139695189300992</span>
-    at self.__bootstrap_inner<span style="color:#f92672">()(</span>threading.py:785<span style="color:#f92672">)</span>
-    at self.run<span style="color:#f92672">()(</span>threading.py:812<span style="color:#f92672">)</span>
-    at conn.communicate<span style="color:#f92672">()(</span>wsgiserver2.py:1532<span style="color:#f92672">)</span>
+<span style="color:#4070a0">&#34;CP Server Thread-3&#34;</span> <span style="color:#bb60d5">tid</span><span style="color:#666">=</span><span style="color:#40a070">139695189300992</span>
+    at self.__bootstrap_inner<span style="color:#666">()(</span>threading.py:785<span style="color:#666">)</span>
+    at self.run<span style="color:#666">()(</span>threading.py:812<span style="color:#666">)</span>
+    at conn.communicate<span style="color:#666">()(</span>wsgiserver2.py:1532<span style="color:#666">)</span>
     ... more omitted 
-    at instances <span style="color:#f92672">=</span> list<span style="color:#f92672">(</span>db.select<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;instance&#39;</span>, vars, where<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;app_name=$app_name and host=$host and port=$port&#39;</span><span style="color:#f92672">))(</span>xxx.py:233<span style="color:#f92672">)</span>
-    at <span style="color:#66d9ef">return</span> self.query<span style="color:#f92672">(</span>qout, processed<span style="color:#f92672">=</span>True<span style="color:#f92672">)(</span>db.py:720<span style="color:#f92672">)</span>
-    at self._db_execute<span style="color:#f92672">(</span>db_cursor, sql_query<span style="color:#f92672">)(</span>db.py:680<span style="color:#f92672">)</span>
-    at print<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;%s (%s): %s&#39;</span> % <span style="color:#f92672">(</span>round<span style="color:#f92672">(</span>b-a, 2<span style="color:#f92672">)</span>, self.ctx.dbq_count, str<span style="color:#f92672">(</span>sql_query<span style="color:#f92672">))</span>, file<span style="color:#f92672">=</span>debug<span style="color:#f92672">)(</span>db.py:623<span style="color:#f92672">)</span>
-    at out.write<span style="color:#f92672">(</span>x<span style="color:#f92672">)(</span>webapi.py:512<span style="color:#f92672">)</span>
+    at <span style="color:#bb60d5">instances</span> <span style="color:#666">=</span> list<span style="color:#666">(</span>db.select<span style="color:#666">(</span><span style="color:#4070a0">&#39;instance&#39;</span>, vars, <span style="color:#bb60d5">where</span><span style="color:#666">=</span><span style="color:#4070a0">&#39;app_name=$app_name and host=$host and port=$port&#39;</span><span style="color:#666">))(</span>xxx.py:233<span style="color:#666">)</span>
+    at <span style="color:#007020;font-weight:bold">return</span> self.query<span style="color:#666">(</span>qout, <span style="color:#bb60d5">processed</span><span style="color:#666">=</span>True<span style="color:#666">)(</span>db.py:720<span style="color:#666">)</span>
+    at self._db_execute<span style="color:#666">(</span>db_cursor, sql_query<span style="color:#666">)(</span>db.py:680<span style="color:#666">)</span>
+    at print<span style="color:#666">(</span><span style="color:#4070a0">&#39;%s (%s): %s&#39;</span> % <span style="color:#666">(</span>round<span style="color:#666">(</span>b-a, 2<span style="color:#666">)</span>, self.ctx.dbq_count, str<span style="color:#666">(</span>sql_query<span style="color:#666">))</span>, <span style="color:#bb60d5">file</span><span style="color:#666">=</span>debug<span style="color:#666">)(</span>db.py:623<span style="color:#666">)</span>
+    at out.write<span style="color:#666">(</span>x<span style="color:#666">)(</span>webapi.py:512<span style="color:#666">)</span>
 
-<span style="color:#e6db74">&#34;CP Server Thread-5&#34;</span> tid<span style="color:#f92672">=</span><span style="color:#ae81ff">139695172515584</span>
-    at self.__bootstrap_inner<span style="color:#f92672">()(</span>threading.py:785<span style="color:#f92672">)</span>
-    at self.run<span style="color:#f92672">()(</span>threading.py:812<span style="color:#f92672">)</span>
-    at conn.communicate<span style="color:#f92672">()(</span>wsgiserver2.py:1532<span style="color:#f92672">)</span>
+<span style="color:#4070a0">&#34;CP Server Thread-5&#34;</span> <span style="color:#bb60d5">tid</span><span style="color:#666">=</span><span style="color:#40a070">139695172515584</span>
+    at self.__bootstrap_inner<span style="color:#666">()(</span>threading.py:785<span style="color:#666">)</span>
+    at self.run<span style="color:#666">()(</span>threading.py:812<span style="color:#666">)</span>
+    at conn.communicate<span style="color:#666">()(</span>wsgiserver2.py:1532<span style="color:#666">)</span>
     ... more omitted 
-    at instances <span style="color:#f92672">=</span> list<span style="color:#f92672">(</span>db.select<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;instance&#39;</span>, vars, where<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;app_name=$app_name and host=$host and port=$port&#39;</span><span style="color:#f92672">))(</span>xxx.py:233<span style="color:#f92672">)</span>
-    at <span style="color:#66d9ef">return</span> self.query<span style="color:#f92672">(</span>qout, processed<span style="color:#f92672">=</span>True<span style="color:#f92672">)(</span>db.py:720<span style="color:#f92672">)</span>
-    at self._db_execute<span style="color:#f92672">(</span>db_cursor, sql_query<span style="color:#f92672">)(</span>db.py:680<span style="color:#f92672">)</span>
-    at print<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;%s (%s): %s&#39;</span> % <span style="color:#f92672">(</span>round<span style="color:#f92672">(</span>b-a, 2<span style="color:#f92672">)</span>, self.ctx.dbq_count, str<span style="color:#f92672">(</span>sql_query<span style="color:#f92672">))</span>, file<span style="color:#f92672">=</span>debug<span style="color:#f92672">)(</span>db.py:623<span style="color:#f92672">)</span>
-    at out.write<span style="color:#f92672">(</span>x<span style="color:#f92672">)(</span>webapi.py:512<span style="color:#f92672">)</span>
+    at <span style="color:#bb60d5">instances</span> <span style="color:#666">=</span> list<span style="color:#666">(</span>db.select<span style="color:#666">(</span><span style="color:#4070a0">&#39;instance&#39;</span>, vars, <span style="color:#bb60d5">where</span><span style="color:#666">=</span><span style="color:#4070a0">&#39;app_name=$app_name and host=$host and port=$port&#39;</span><span style="color:#666">))(</span>xxx.py:233<span style="color:#666">)</span>
+    at <span style="color:#007020;font-weight:bold">return</span> self.query<span style="color:#666">(</span>qout, <span style="color:#bb60d5">processed</span><span style="color:#666">=</span>True<span style="color:#666">)(</span>db.py:720<span style="color:#666">)</span>
+    at self._db_execute<span style="color:#666">(</span>db_cursor, sql_query<span style="color:#666">)(</span>db.py:680<span style="color:#666">)</span>
+    at print<span style="color:#666">(</span><span style="color:#4070a0">&#39;%s (%s): %s&#39;</span> % <span style="color:#666">(</span>round<span style="color:#666">(</span>b-a, 2<span style="color:#666">)</span>, self.ctx.dbq_count, str<span style="color:#666">(</span>sql_query<span style="color:#666">))</span>, <span style="color:#bb60d5">file</span><span style="color:#666">=</span>debug<span style="color:#666">)(</span>db.py:623<span style="color:#666">)</span>
+    at out.write<span style="color:#666">(</span>x<span style="color:#666">)(</span>webapi.py:512<span style="color:#666">)</span>
 </code></pre></div><p>OK，总计 10 个工作线程，全都阻塞在 <code>out.write(x)</code> ，多次打印调用栈结果相同。基本可以断定是 <code>write</code> 方法出了问题了。不过直到这个时候，都还是深陷在死锁原因中无法自拔（还是接触得太少了）。</p>
 <p>虚度半个多钟&hellip; 后看代码了解到，其准备将 SQL 执行结果打印到标准错误。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_debugwrite</span>(x):
-    <span style="color:#66d9ef">try</span>:
-        out <span style="color:#f92672">=</span> ctx<span style="color:#f92672">.</span>environ[<span style="color:#e6db74">&#39;wsgi.errors&#39;</span>]
-    <span style="color:#66d9ef">except</span>:
-        out <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>stderr
-    out<span style="color:#f92672">.</span>write(x)
-debug<span style="color:#f92672">.</span>write <span style="color:#f92672">=</span> _debugwrite
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#007020;font-weight:bold">def</span> <span style="color:#06287e">_debugwrite</span>(x):
+    <span style="color:#007020;font-weight:bold">try</span>:
+        out <span style="color:#666">=</span> ctx<span style="color:#666">.</span>environ[<span style="color:#4070a0">&#39;wsgi.errors&#39;</span>]
+    <span style="color:#007020;font-weight:bold">except</span>:
+        out <span style="color:#666">=</span> sys<span style="color:#666">.</span>stderr
+    out<span style="color:#666">.</span>write(x)
+debug<span style="color:#666">.</span>write <span style="color:#666">=</span> _debugwrite
 </code></pre></div><p>果断去查看 Python 服务的文件描述符 <code>lsof -p &lt;PID&gt;</code> / <code>ls -al /proc/&lt;PID&gt;/fd</code> 。总算见着可信的证据了。</p>
 <pre><code>&gt; lsof -p &lt;PID&gt;
 python  139756 sysop    0r  FIFO     0,9       0t0 5210639 pipe
@@ -305,17 +305,17 @@ lr-x------ 1 sysop sysop 64 May 20 13:47 6 -&gt; pipe:[5210778]
 l-wx------ 1 sysop sysop 64 May 20 13:47 7 -&gt; pipe:[5210778]
 ... more omitted
 </code></pre><p>标准错误(fd = 2)指向了一个匿名管道（inode = 5210641）。但是找遍整个系统都没有这个匿名管道的读取方，只有写入方</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">&gt; sudo lsof | grep <span style="color:#ae81ff">5210641</span>
-bash      <span style="color:#ae81ff">139747</span>          sysop    2w     FIFO                0,9       0t0    <span style="color:#ae81ff">5210641</span> pipe
-python    <span style="color:#ae81ff">139756</span>          sysop    2w     FIFO                0,9       0t0    <span style="color:#ae81ff">5210641</span> pipe
-python    <span style="color:#ae81ff">139756</span> <span style="color:#ae81ff">139764</span>   sysop    2w     FIFO                0,9       0t0    <span style="color:#ae81ff">5210641</span> pipe
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">&gt; sudo lsof | grep <span style="color:#40a070">5210641</span>
+bash      <span style="color:#40a070">139747</span>          sysop    2w     FIFO                0,9       0t0    <span style="color:#40a070">5210641</span> pipe
+python    <span style="color:#40a070">139756</span>          sysop    2w     FIFO                0,9       0t0    <span style="color:#40a070">5210641</span> pipe
+python    <span style="color:#40a070">139756</span> <span style="color:#40a070">139764</span>   sysop    2w     FIFO                0,9       0t0    <span style="color:#40a070">5210641</span> pipe
 </code></pre></div><p>OK，合理的解释出现了。管道的缓冲区大小有限(经过测试是 64KB)，Python 服务在不断地向标准错误打印日志，从而导致匿名管道(inode = 5210641)的缓冲区数据不断积累，最终达到满的状态。这个过程大概需要一天多的心跳包才能积累得到。而系统调用 <code>write</code> 发现标准错误对应的文件已满，为等待 IO 就绪而陷入睡眠状态。同时，Main 线程在不断地 Accept 新的套接字的建立，而没有更多工作线程来处理新的请求，Nginx 因为连接超时直接发出来 FIN 包。最后，积累了几千/上万请求的 Python 服务也没法主动 close 已有的套接字（即 FIN,ACK 包因为没法发送而在本机不断积累 <code>CLOSE_WAIT</code> 状态的连接）</p>
 <h3 id="重定向标准错误的原因">重定向标准错误的原因</h3>
 <p>至于为何会将标准错误重定向到一个匿名管道呢？百思不得其解，不过最后还是从应用负责人那儿得到了提示。新的发布方式采用了全新的启动命令:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ssh -fn xx.xx.x.60 <span style="color:#e6db74">&#39;cd /home/path/to/xxx ; python -u xxx.py 8080 &gt;&gt; /home/path/to/logs/xxx.log&#39;</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ssh -fn xx.xx.x.60 <span style="color:#4070a0">&#39;cd /home/path/to/xxx ; python -u xxx.py 8080 &gt;&gt; /home/path/to/logs/xxx.log&#39;</span>
 </code></pre></div><p>一看就能和前面的原因衔接，使用 ssh 直接调用命名，不会建立一个终端，由 ssh 远程命令启动的任务，其标准输入/输出/错误默认将会通过管道重定向的 ssh server 端，并通过网络传回发起的 ssh client 端。</p>
 <p><em>以发起 <code>ssh -fn ...</code> 的机器为 xx.192，目标机器为 xx.60</em></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">
   xx.192                       |           xx.60
   -----------------------------+-------------------------------
                                | 
@@ -331,7 +331,7 @@ python    <span style="color:#ae81ff">139756</span> <span style="color:#ae81ff">
 </code></pre></div><p>Python 服务通过管道与 ssh serve 进行进程间交互，最终会将标准错误打印到 192 机器的标准输出/错误上（一般是终端，也就是我们将在终端上看到 Python 服务的错误日志）。而问题在于 ssh serve 任务被杀掉了，从而 <code>pipe[b]</code> 只能不断地向匿名管道写入数据，而没有任务读取数据，一天多时间也就将缓冲区写满了。</p>
 <h2 id="总结">总结</h2>
 <p>到此为止，问题总算得到了圆满的解释，历时 5 天。最重要的就是通过调用栈定位代码阻塞的原因，否则就真是瞎找。对于匿名管道问题的发现、write 系统调用导致的线程睡眠，都是建立在调用栈信息之上的定向探究的过程。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -342,6 +342,12 @@ python    <span style="color:#ae81ff">139756</span> <span style="color:#ae81ff">
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

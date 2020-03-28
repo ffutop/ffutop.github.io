@@ -119,28 +119,28 @@
 <p>最后一步自然是三级域名 <code>www.ffutop.com</code> 的 IP 啦。解析出来是 <code>104.28.24.190</code> 和 <code>104.28.25.190</code> 。</p>
 </li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">➜  ~ dig @198.41.0.4 www.ffutop.com
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">➜  ~ dig @198.41.0.4 www.ffutop.com
 
 ; &lt;&lt;&gt;&gt; DiG 9.10.6 &lt;&lt;&gt;&gt; @198.41.0.4 www.ffutop.com
-; <span style="color:#f92672">(</span><span style="color:#ae81ff">1</span> server found<span style="color:#f92672">)</span>
+; <span style="color:#666">(</span><span style="color:#40a070">1</span> server found<span style="color:#666">)</span>
 
 ;; QUESTION SECTION:
 ;www.ffutop.com.			IN	A
 
 ;; AUTHORITY SECTION:
 com.			172800	IN	NS	a.gtld-servers.net.
-<span style="color:#75715e"># ... some records omitted ...</span>
+<span style="color:#60a0b0;font-style:italic"># ... some records omitted ...</span>
 com.			172800	IN	NS	m.gtld-servers.net.
 
 ;; ADDITIONAL SECTION:
 a.gtld-servers.net.	172800	IN	A	192.5.6.30
-<span style="color:#75715e"># ... some records omitted ...</span>
+<span style="color:#60a0b0;font-style:italic"># ... some records omitted ...</span>
 m.gtld-servers.net.	172800	IN	A	192.55.83.30
 
-;; Query time: <span style="color:#ae81ff">220</span> msec
-;; SERVER: 198.41.0.4#53<span style="color:#f92672">(</span>198.41.0.4<span style="color:#f92672">)</span>
-;; WHEN: Thu Feb <span style="color:#ae81ff">27</span> 18:04:28 CST <span style="color:#ae81ff">2020</span>
-;; MSG SIZE  rcvd: <span style="color:#ae81ff">839</span>
+;; Query time: <span style="color:#40a070">220</span> msec
+;; SERVER: 198.41.0.4#53<span style="color:#666">(</span>198.41.0.4<span style="color:#666">)</span>
+;; WHEN: Thu Feb <span style="color:#40a070">27</span> 18:04:28 CST <span style="color:#40a070">2020</span>
+;; MSG SIZE  rcvd: <span style="color:#40a070">839</span>
 </code></pre></div><blockquote>
 <p>这里我们额外地需要提一下，DNS 记录有不同的类型，像是 <code>NS</code> , <code>A</code> , <code>AAAA</code> ，分别指代不同的记录类型，提供不同的记录内容。</p>
 <p><code>A</code> : 将域名指向 IPv4 地址</p>
@@ -174,52 +174,52 @@ m.gtld-servers.net.	172800	IN	A	192.55.83.30
 </li>
 </ul>
 <p>通过 useCache 和缓存超时时间共同决定缓存的添加与过期</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/** Source File: java.net.InetAddress */</span>
-<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> InetAddress<span style="color:#f92672">[]</span> <span style="color:#a6e22e">getAllByName0</span><span style="color:#f92672">(</span>String host<span style="color:#f92672">,</span> InetAddress reqAddr<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> check<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> useCache<span style="color:#f92672">)</span>
-        <span style="color:#66d9ef">throws</span> UnknownHostException  <span style="color:#f92672">{</span>
-    <span style="color:#75715e">// 从缓存中主动移除过期的记录 （如果这条记录的缓存时间预期会超时的话）
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">long</span> now <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">nanoTime</span><span style="color:#f92672">();</span>
-    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>CachedAddresses caddrs <span style="color:#f92672">:</span> expirySet<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span>caddrs<span style="color:#f92672">.</span><span style="color:#a6e22e">expiryTime</span> <span style="color:#f92672">-</span> now<span style="color:#f92672">)</span> <span style="color:#f92672">&lt;</span> 0L<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>expirySet<span style="color:#f92672">.</span><span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>caddrs<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-                cache<span style="color:#f92672">.</span><span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>caddrs<span style="color:#f92672">.</span><span style="color:#a6e22e">host</span><span style="color:#f92672">,</span> caddrs<span style="color:#f92672">);</span>
-            <span style="color:#f92672">}</span>
-        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#60a0b0;font-style:italic">/** Source File: java.net.InetAddress */</span>
+<span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> InetAddress<span style="color:#666">[]</span> <span style="color:#06287e">getAllByName0</span><span style="color:#666">(</span>String host<span style="color:#666">,</span> InetAddress reqAddr<span style="color:#666">,</span> <span style="color:#902000">boolean</span> check<span style="color:#666">,</span> <span style="color:#902000">boolean</span> useCache<span style="color:#666">)</span>
+        <span style="color:#007020;font-weight:bold">throws</span> UnknownHostException  <span style="color:#666">{</span>
+    <span style="color:#60a0b0;font-style:italic">// 从缓存中主动移除过期的记录 （如果这条记录的缓存时间预期会超时的话）
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#902000">long</span> now <span style="color:#666">=</span> System<span style="color:#666">.</span><span style="color:#4070a0">nanoTime</span><span style="color:#666">();</span>
+    <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(</span>CachedAddresses caddrs <span style="color:#666">:</span> expirySet<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">((</span>caddrs<span style="color:#666">.</span><span style="color:#4070a0">expiryTime</span> <span style="color:#666">-</span> now<span style="color:#666">)</span> <span style="color:#666">&lt;</span> 0L<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>expirySet<span style="color:#666">.</span><span style="color:#4070a0">remove</span><span style="color:#666">(</span>caddrs<span style="color:#666">))</span> <span style="color:#666">{</span>
+                cache<span style="color:#666">.</span><span style="color:#4070a0">remove</span><span style="color:#666">(</span>caddrs<span style="color:#666">.</span><span style="color:#4070a0">host</span><span style="color:#666">,</span> caddrs<span style="color:#666">);</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">else</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">break</span><span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#75715e">// look-up or remove from cache
-</span><span style="color:#75715e"></span>    Addresses addrs<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>useCache<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// 尝试在缓存中获取
-</span><span style="color:#75715e"></span>        addrs <span style="color:#f92672">=</span> cache<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>host<span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// 如果 useCache = false，主动清理掉相关的缓存
-</span><span style="color:#75715e"></span>        addrs <span style="color:#f92672">=</span> cache<span style="color:#f92672">.</span><span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>host<span style="color:#f92672">);</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>addrs <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>addrs <span style="color:#66d9ef">instanceof</span> CachedAddresses<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                expirySet<span style="color:#f92672">.</span><span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>addrs<span style="color:#f92672">);</span>
-            <span style="color:#f92672">}</span>
-            addrs <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">// look-up or remove from cache
+</span><span style="color:#60a0b0;font-style:italic"></span>    Addresses addrs<span style="color:#666">;</span>
+    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>useCache<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">// 尝试在缓存中获取
+</span><span style="color:#60a0b0;font-style:italic"></span>        addrs <span style="color:#666">=</span> cache<span style="color:#666">.</span><span style="color:#4070a0">get</span><span style="color:#666">(</span>host<span style="color:#666">);</span>
+    <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">else</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">// 如果 useCache = false，主动清理掉相关的缓存
+</span><span style="color:#60a0b0;font-style:italic"></span>        addrs <span style="color:#666">=</span> cache<span style="color:#666">.</span><span style="color:#4070a0">remove</span><span style="color:#666">(</span>host<span style="color:#666">);</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>addrs <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>addrs <span style="color:#007020;font-weight:bold">instanceof</span> CachedAddresses<span style="color:#666">)</span> <span style="color:#666">{</span>
+                expirySet<span style="color:#666">.</span><span style="color:#4070a0">remove</span><span style="color:#666">(</span>addrs<span style="color:#666">);</span>
+            <span style="color:#666">}</span>
+            addrs <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>addrs <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// create a NameServiceAddresses instance which will look up
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// the name service and install it within cache...
-</span><span style="color:#75715e"></span>        Addresses oldAddrs <span style="color:#f92672">=</span> cache<span style="color:#f92672">.</span><span style="color:#a6e22e">putIfAbsent</span><span style="color:#f92672">(</span>
-            host<span style="color:#f92672">,</span>
-            addrs <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NameServiceAddresses<span style="color:#f92672">(</span>host<span style="color:#f92672">,</span> reqAddr<span style="color:#f92672">)</span>
-        <span style="color:#f92672">);</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>oldAddrs <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#75715e">// lost putIfAbsent race
-</span><span style="color:#75715e"></span>            addrs <span style="color:#f92672">=</span> oldAddrs<span style="color:#f92672">;</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>addrs <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">// create a NameServiceAddresses instance which will look up
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#60a0b0;font-style:italic">// the name service and install it within cache...
+</span><span style="color:#60a0b0;font-style:italic"></span>        Addresses oldAddrs <span style="color:#666">=</span> cache<span style="color:#666">.</span><span style="color:#4070a0">putIfAbsent</span><span style="color:#666">(</span>
+            host<span style="color:#666">,</span>
+            addrs <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> NameServiceAddresses<span style="color:#666">(</span>host<span style="color:#666">,</span> reqAddr<span style="color:#666">)</span>
+        <span style="color:#666">);</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>oldAddrs <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span> <span style="color:#60a0b0;font-style:italic">// lost putIfAbsent race
+</span><span style="color:#60a0b0;font-style:italic"></span>            addrs <span style="color:#666">=</span> oldAddrs<span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#75715e">// ask Addresses to get an array of InetAddress(es) and clone it
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> addrs<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">().</span><span style="color:#a6e22e">clone</span><span style="color:#f92672">();</span>
-<span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">// ask Addresses to get an array of InetAddress(es) and clone it
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">return</span> addrs<span style="color:#666">.</span><span style="color:#4070a0">get</span><span style="color:#666">().</span><span style="color:#4070a0">clone</span><span style="color:#666">();</span>
+<span style="color:#666">}</span>
 </code></pre></div><p>未命中缓存的将产生真实的 DNS 解析请求。使用 Cache 的情况下，缓存时间的配置来源于 <code>java.security</code> 文件中的 <code>networkaddress.cache.ttl</code> 和 <code>networkaddress.cache.negative.ttl</code> 。</p>
 <ul>
 <li>
@@ -232,65 +232,65 @@ m.gtld-servers.net.	172800	IN	A	192.55.83.30
 <p>如果 ttl 未配置，则默认对有效结果进行缓存，缓存时长 30 秒</p>
 </li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/** Source File: java.net.InetAddress */</span>
-<span style="color:#66d9ef">public</span> InetAddress<span style="color:#f92672">[]</span> <span style="color:#a6e22e">get</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> UnknownHostException <span style="color:#f92672">{</span>
-    Addresses addresses<span style="color:#f92672">;</span>
-    <span style="color:#75715e">// only one thread is doing lookup to name service
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// for particular host at any time.
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// re-check that we are still us + re-install us if slot empty
-</span><span style="color:#75715e"></span>        addresses <span style="color:#f92672">=</span> cache<span style="color:#f92672">.</span><span style="color:#a6e22e">putIfAbsent</span><span style="color:#f92672">(</span>host<span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">);</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>addresses <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#75715e">// this can happen when we were replaced by CachedAddresses in
-</span><span style="color:#75715e"></span>            <span style="color:#75715e">// some other thread, then CachedAddresses expired and were
-</span><span style="color:#75715e"></span>            <span style="color:#75715e">// removed from cache while we were waiting for lock...
-</span><span style="color:#75715e"></span>            addresses <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
-        <span style="color:#f92672">}</span>
-        <span style="color:#75715e">// still us ?
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>addresses <span style="color:#f92672">==</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#75715e">// lookup name services
-</span><span style="color:#75715e"></span>            InetAddress<span style="color:#f92672">[]</span> inetAddresses<span style="color:#f92672">;</span>
-            UnknownHostException ex<span style="color:#f92672">;</span>
-            <span style="color:#66d9ef">int</span> cachePolicy<span style="color:#f92672">;</span>
-            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-                inetAddresses <span style="color:#f92672">=</span> getAddressesFromNameService<span style="color:#f92672">(</span>host<span style="color:#f92672">,</span> reqAddr<span style="color:#f92672">);</span>
-                ex <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-                cachePolicy <span style="color:#f92672">=</span> InetAddressCachePolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
-            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>UnknownHostException uhe<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                inetAddresses <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-                ex <span style="color:#f92672">=</span> uhe<span style="color:#f92672">;</span>
-                cachePolicy <span style="color:#f92672">=</span> InetAddressCachePolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">getNegative</span><span style="color:#f92672">();</span>
-            <span style="color:#f92672">}</span>
-            <span style="color:#75715e">// remove or replace us with cached addresses according to cachePolicy
-</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>cachePolicy <span style="color:#f92672">==</span> InetAddressCachePolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">NEVER</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                cache<span style="color:#f92672">.</span><span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>host<span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">);</span>
-            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-                CachedAddresses cachedAddresses <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CachedAddresses<span style="color:#f92672">(</span>
-                    host<span style="color:#f92672">,</span>
-                    inetAddresses<span style="color:#f92672">,</span>
-                    cachePolicy <span style="color:#f92672">==</span> InetAddressCachePolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">FOREVER</span>
-                    <span style="color:#f92672">?</span> 0L
-                    <span style="color:#75715e">// cachePolicy is in [s] - we need [ns]
-</span><span style="color:#75715e"></span>                    <span style="color:#f92672">:</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">nanoTime</span><span style="color:#f92672">()</span> <span style="color:#f92672">+</span> 1000_000_000L <span style="color:#f92672">*</span> cachePolicy
-                <span style="color:#f92672">);</span>
-                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>cache<span style="color:#f92672">.</span><span style="color:#a6e22e">replace</span><span style="color:#f92672">(</span>host<span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">,</span> cachedAddresses<span style="color:#f92672">)</span> <span style="color:#f92672">&amp;&amp;</span>
-                    cachePolicy <span style="color:#f92672">!=</span> 
-                    <span style="color:#f92672">.</span><span style="color:#a6e22e">FOREVER</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                    <span style="color:#75715e">// schedule expiry
-</span><span style="color:#75715e"></span>                    expirySet<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>cachedAddresses<span style="color:#f92672">);</span>
-                <span style="color:#f92672">}</span>
-            <span style="color:#f92672">}</span>
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>inetAddresses <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                <span style="color:#66d9ef">throw</span> ex <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">?</span> <span style="color:#66d9ef">new</span> UnknownHostException<span style="color:#f92672">(</span>host<span style="color:#f92672">)</span> <span style="color:#f92672">:</span> ex<span style="color:#f92672">;</span>
-            <span style="color:#f92672">}</span>
-            <span style="color:#66d9ef">return</span> inetAddresses<span style="color:#f92672">;</span>
-        <span style="color:#f92672">}</span>
-        <span style="color:#75715e">// else addresses != this
-</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
-    <span style="color:#75715e">// delegate to different addresses when we are already replaced
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// but outside of synchronized block to avoid any chance of dead-locking
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> addresses<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
-<span style="color:#f92672">}</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#60a0b0;font-style:italic">/** Source File: java.net.InetAddress */</span>
+<span style="color:#007020;font-weight:bold">public</span> InetAddress<span style="color:#666">[]</span> <span style="color:#06287e">get</span><span style="color:#666">()</span> <span style="color:#007020;font-weight:bold">throws</span> UnknownHostException <span style="color:#666">{</span>
+    Addresses addresses<span style="color:#666">;</span>
+    <span style="color:#60a0b0;font-style:italic">// only one thread is doing lookup to name service
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic">// for particular host at any time.
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">synchronized</span> <span style="color:#666">(</span><span style="color:#007020;font-weight:bold">this</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">// re-check that we are still us + re-install us if slot empty
+</span><span style="color:#60a0b0;font-style:italic"></span>        addresses <span style="color:#666">=</span> cache<span style="color:#666">.</span><span style="color:#4070a0">putIfAbsent</span><span style="color:#666">(</span>host<span style="color:#666">,</span> <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">);</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>addresses <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#60a0b0;font-style:italic">// this can happen when we were replaced by CachedAddresses in
+</span><span style="color:#60a0b0;font-style:italic"></span>            <span style="color:#60a0b0;font-style:italic">// some other thread, then CachedAddresses expired and were
+</span><span style="color:#60a0b0;font-style:italic"></span>            <span style="color:#60a0b0;font-style:italic">// removed from cache while we were waiting for lock...
+</span><span style="color:#60a0b0;font-style:italic"></span>            addresses <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+        <span style="color:#60a0b0;font-style:italic">// still us ?
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>addresses <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#60a0b0;font-style:italic">// lookup name services
+</span><span style="color:#60a0b0;font-style:italic"></span>            InetAddress<span style="color:#666">[]</span> inetAddresses<span style="color:#666">;</span>
+            UnknownHostException ex<span style="color:#666">;</span>
+            <span style="color:#902000">int</span> cachePolicy<span style="color:#666">;</span>
+            <span style="color:#007020;font-weight:bold">try</span> <span style="color:#666">{</span>
+                inetAddresses <span style="color:#666">=</span> getAddressesFromNameService<span style="color:#666">(</span>host<span style="color:#666">,</span> reqAddr<span style="color:#666">);</span>
+                ex <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
+                cachePolicy <span style="color:#666">=</span> InetAddressCachePolicy<span style="color:#666">.</span><span style="color:#4070a0">get</span><span style="color:#666">();</span>
+            <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span> <span style="color:#666">(</span>UnknownHostException uhe<span style="color:#666">)</span> <span style="color:#666">{</span>
+                inetAddresses <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
+                ex <span style="color:#666">=</span> uhe<span style="color:#666">;</span>
+                cachePolicy <span style="color:#666">=</span> InetAddressCachePolicy<span style="color:#666">.</span><span style="color:#4070a0">getNegative</span><span style="color:#666">();</span>
+            <span style="color:#666">}</span>
+            <span style="color:#60a0b0;font-style:italic">// remove or replace us with cached addresses according to cachePolicy
+</span><span style="color:#60a0b0;font-style:italic"></span>            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>cachePolicy <span style="color:#666">==</span> InetAddressCachePolicy<span style="color:#666">.</span><span style="color:#4070a0">NEVER</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                cache<span style="color:#666">.</span><span style="color:#4070a0">remove</span><span style="color:#666">(</span>host<span style="color:#666">,</span> <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">);</span>
+            <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">else</span> <span style="color:#666">{</span>
+                CachedAddresses cachedAddresses <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> CachedAddresses<span style="color:#666">(</span>
+                    host<span style="color:#666">,</span>
+                    inetAddresses<span style="color:#666">,</span>
+                    cachePolicy <span style="color:#666">==</span> InetAddressCachePolicy<span style="color:#666">.</span><span style="color:#4070a0">FOREVER</span>
+                    <span style="color:#666">?</span> 0L
+                    <span style="color:#60a0b0;font-style:italic">// cachePolicy is in [s] - we need [ns]
+</span><span style="color:#60a0b0;font-style:italic"></span>                    <span style="color:#666">:</span> System<span style="color:#666">.</span><span style="color:#4070a0">nanoTime</span><span style="color:#666">()</span> <span style="color:#666">+</span> 1000_000_000L <span style="color:#666">*</span> cachePolicy
+                <span style="color:#666">);</span>
+                <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>cache<span style="color:#666">.</span><span style="color:#4070a0">replace</span><span style="color:#666">(</span>host<span style="color:#666">,</span> <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">,</span> cachedAddresses<span style="color:#666">)</span> <span style="color:#666">&amp;&amp;</span>
+                    cachePolicy <span style="color:#666">!=</span> 
+                    <span style="color:#666">.</span><span style="color:#4070a0">FOREVER</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                    <span style="color:#60a0b0;font-style:italic">// schedule expiry
+</span><span style="color:#60a0b0;font-style:italic"></span>                    expirySet<span style="color:#666">.</span><span style="color:#4070a0">add</span><span style="color:#666">(</span>cachedAddresses<span style="color:#666">);</span>
+                <span style="color:#666">}</span>
+            <span style="color:#666">}</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>inetAddresses <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                <span style="color:#007020;font-weight:bold">throw</span> ex <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span> <span style="color:#666">?</span> <span style="color:#007020;font-weight:bold">new</span> UnknownHostException<span style="color:#666">(</span>host<span style="color:#666">)</span> <span style="color:#666">:</span> ex<span style="color:#666">;</span>
+            <span style="color:#666">}</span>
+            <span style="color:#007020;font-weight:bold">return</span> inetAddresses<span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+        <span style="color:#60a0b0;font-style:italic">// else addresses != this
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#666">}</span>
+    <span style="color:#60a0b0;font-style:italic">// delegate to different addresses when we are already replaced
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic">// but outside of synchronized block to avoid any chance of dead-locking
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">return</span> addresses<span style="color:#666">.</span><span style="color:#4070a0">get</span><span style="color:#666">();</span>
+<span style="color:#666">}</span>
 </code></pre></div><h2 id="数据库切换方案">数据库切换方案</h2>
 <p>我们计划将服务 A 的主从数据库 MDB/RDB 从老实例集群迁移到新实例集群。MDB/RBD 的实例域名不变，但背后绑定的两个 IP 将发生变化。为了规避 Java DNS 缓存的影响，我们选择了最简单的停机重启。至于 DNS 记录更新，使用云服务商的内网 DNS 服务，在方案中，它被认为是与自建内网 DNS 服务器同等的服务。虽然 TTL = 3600，但新记录将完全覆盖老记录（毕竟中间没有代理服务器的存在，可以简单地看做是集中式的服务，新老记录做替换。T_T 这恰恰是方案中一个致命的问题）</p>
 <p><img src="https://img.ffutop.com/C8DB7DA6-0207-42CC-B112-3B77FF2CD6E7.png" alt="切换方案"></p>
@@ -341,6 +341,12 @@ m.gtld-servers.net.	172800	IN	A	192.55.83.30
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

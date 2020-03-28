@@ -175,7 +175,7 @@
 <p>目录下文件如下</p>
 </li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">.
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">.
 ├── bochsrc.txt         // bochs 启动时将默认通过这个文件读取仿真器配置
 ├── hd10meg.img         // 磁盘映像文件
 ├── readme.txt
@@ -184,7 +184,7 @@
 <li>启动仿真器</li>
 </ol>
 <p>在 DLX Linux 目录下键入命令 <code>bochs</code>, 观察到命令行输出:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">========================================================================
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">========================================================================
                        Bochs x86 Emulator 2.6.9
                Built from SVN snapshot on April 9, 2017
                   Compiled on May  2 2018 at 13:26:32
@@ -231,7 +231,7 @@ You can also start bochs with the -q option to skip these menus.
 Please choose one: [6]
 </code></pre></div><p>bochs 默认读取当前目录下 <code>bochsrc.txt</code> 文件，因此不需要其他配置。</p>
 <p>选择 6 或者直接 <em>回车</em></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">00000000000i[      ] lt_dlhandle is 0x7fef22707270
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">00000000000i[      ] lt_dlhandle is 0x7fef22707270
 00000000000i[PLUGIN] loaded plugin libbx_sdl2.so
 00000000000i[      ] installing sdl2 module as the Bochs GUI
 00000000000i[SDL2  ] maximum host resolution: x=2880 y=1800
@@ -246,7 +246,7 @@ Next at t=0
 <ol start="4">
 <li>键入 <code>c</code></li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">&lt;bochs:1&gt; c
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">&lt;bochs:1&gt; c
 </code></pre></div><p>仿真器开始引导程序的加载</p>
 <p><img src="https://ws4.sinaimg.cn/large/006tNbRwgy1fuew9zoocuj313c0pstaw.jpg" alt=""></p>
 <p>OS Kernel 启动，等待用户登录 (默认的用户是 root , 没有密码)。
@@ -261,48 +261,48 @@ Next at t=0
 <p>这部分不详述，作为一个热门的技术，这方面的资料很多。Ubuntu 系统只是为了来执行一些 macOS 上没有的命令的(比如 <code>as86</code>, <code>ld86</code>)</p>
 <p>简述两个 docker 容器和宿主机间复制文件的命令</p>
 <p>在宿主机下执行命令:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker cp <span style="color:#f92672">[</span>OPTIONS<span style="color:#f92672">]</span> CONTAINER:SRC_PATH DEST_PATH|-
-docker cp <span style="color:#f92672">[</span>OPTIONS<span style="color:#f92672">]</span> SRC_PATH|- CONTAINER:DEST_PATH <span style="color:#f92672">[</span>flags<span style="color:#f92672">]</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker cp <span style="color:#666">[</span>OPTIONS<span style="color:#666">]</span> CONTAINER:SRC_PATH DEST_PATH|-
+docker cp <span style="color:#666">[</span>OPTIONS<span style="color:#666">]</span> SRC_PATH|- CONTAINER:DEST_PATH <span style="color:#666">[</span>flags<span style="color:#666">]</span>
 </code></pre></div><p>例如:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker cp linux:/root/hello.c ./hello.c         <span style="color:#75715e"># 这里 linux 是 docker 容器名</span>
-docker cp 92dfc8ad70e1:/root/hello.c ./hello.c  <span style="color:#75715e"># 这里 92dfc8ad70e1 是 docker 容器 ID</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">docker cp linux:/root/hello.c ./hello.c         <span style="color:#60a0b0;font-style:italic"># 这里 linux 是 docker 容器名</span>
+docker cp 92dfc8ad70e1:/root/hello.c ./hello.c  <span style="color:#60a0b0;font-style:italic"># 这里 92dfc8ad70e1 是 docker 容器 ID</span>
 </code></pre></div><h2 id="boots-汇编程序">boot.s 汇编程序</h2>
 <p>这里没法多说，都是书中的源码，只是供未读过书的读者参考，特意摘录了下来(不过，就不加注释了)</p>
 <p>boot.s 源代码</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm"><span style="color:#a6e22e">.global</span> <span style="color:#66d9ef">begtext</span>, <span style="color:#66d9ef">begdata</span>, <span style="color:#66d9ef">begbss</span>, <span style="color:#66d9ef">endtext</span>, <span style="color:#66d9ef">enddata</span>, <span style="color:#66d9ef">endbss</span>
-<span style="color:#a6e22e">.text</span>
-begtext:
-<span style="color:#a6e22e">.data</span>
-begdata:
-<span style="color:#a6e22e">.bss</span>
-begbss:
-<span style="color:#a6e22e">.text</span>
-<span style="color:#a6e22e">BOOTSEG</span><span style="color:#960050;background-color:#1e0010">=</span><span style="color:#ae81ff">0x07c0</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm"><span style="color:#4070a0">.global</span> <span style="color:#60add5">begtext</span>, <span style="color:#60add5">begdata</span>, <span style="color:#60add5">begbss</span>, <span style="color:#60add5">endtext</span>, <span style="color:#60add5">enddata</span>, <span style="color:#60add5">endbss</span>
+<span style="color:#4070a0">.text</span>
+<span style="color:#002070;font-weight:bold">begtext:</span>
+<span style="color:#4070a0">.data</span>
+<span style="color:#002070;font-weight:bold">begdata:</span>
+<span style="color:#4070a0">.bss</span>
+<span style="color:#002070;font-weight:bold">begbss:</span>
+<span style="color:#4070a0">.text</span>
+<span style="color:#06287e">BOOTSEG</span><span style="">=</span><span style="color:#40a070">0x07c0</span>
 
-<span style="color:#a6e22e">entry</span> <span style="color:#66d9ef">start</span>
-start:
-    <span style="color:#a6e22e">jmpi</span>    <span style="color:#66d9ef">go</span>,<span style="color:#66d9ef">BOOTSEG</span>
-go: <span style="color:#a6e22e">mov</span> <span style="color:#66d9ef">ax</span>,<span style="color:#66d9ef">cs</span>
-    <span style="color:#a6e22e">mov</span> <span style="color:#66d9ef">ds</span>,<span style="color:#66d9ef">ax</span>
-    <span style="color:#a6e22e">mov</span> <span style="color:#66d9ef">es</span>,<span style="color:#66d9ef">ax</span>
-    <span style="color:#a6e22e">mov</span> [<span style="color:#66d9ef">msg</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">17</span>],<span style="color:#66d9ef">ah</span>
-    <span style="color:#a6e22e">mov</span> <span style="color:#66d9ef">cx</span>,<span style="color:#75715e">#20
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">mov</span> <span style="color:#66d9ef">dx</span>,<span style="color:#75715e">#0x1004
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">mov</span> <span style="color:#66d9ef">bx</span>,<span style="color:#75715e">#0x000c
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">mov</span> <span style="color:#66d9ef">bp</span>,<span style="color:#75715e">#msg
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">mov</span> <span style="color:#66d9ef">ax</span>,<span style="color:#75715e">#0x1301
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> <span style="color:#ae81ff">0x10</span>
-loop1:  <span style="color:#a6e22e">jmp</span> <span style="color:#66d9ef">loop1</span>
-msg:    <span style="color:#a6e22e">.ascii</span>  <span style="color:#e6db74">&#34;Loading System...&#34;</span>
-        <span style="color:#a6e22e">.byte</span>   <span style="color:#ae81ff">13</span>,<span style="color:#ae81ff">10</span>
-<span style="color:#a6e22e">.org</span>    <span style="color:#ae81ff">510</span>
-<span style="color:#a6e22e">.word</span>   <span style="color:#ae81ff">0xAA55</span>
-<span style="color:#a6e22e">.text</span>
-endtext:
-<span style="color:#a6e22e">.data</span>
-enddata:
-<span style="color:#a6e22e">.bss</span>
-endbss:
+<span style="color:#06287e">entry</span> <span style="color:#60add5">start</span>
+<span style="color:#002070;font-weight:bold">start:</span>
+    <span style="color:#06287e">jmpi</span>    <span style="color:#60add5">go</span>,<span style="color:#60add5">BOOTSEG</span>
+<span style="color:#002070;font-weight:bold">go:</span> <span style="color:#06287e">mov</span> <span style="color:#60add5">ax</span>,<span style="color:#60add5">cs</span>
+    <span style="color:#06287e">mov</span> <span style="color:#60add5">ds</span>,<span style="color:#60add5">ax</span>
+    <span style="color:#06287e">mov</span> <span style="color:#60add5">es</span>,<span style="color:#60add5">ax</span>
+    <span style="color:#06287e">mov</span> [<span style="color:#60add5">msg</span><span style="">+</span><span style="color:#40a070">17</span>],<span style="color:#60add5">ah</span>
+    <span style="color:#06287e">mov</span> <span style="color:#60add5">cx</span>,<span style="color:#60a0b0;font-style:italic">#20
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60add5">mov</span> <span style="color:#60add5">dx</span>,<span style="color:#60a0b0;font-style:italic">#0x1004
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60add5">mov</span> <span style="color:#60add5">bx</span>,<span style="color:#60a0b0;font-style:italic">#0x000c
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60add5">mov</span> <span style="color:#60add5">bp</span>,<span style="color:#60a0b0;font-style:italic">#msg
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60add5">mov</span> <span style="color:#60add5">ax</span>,<span style="color:#60a0b0;font-style:italic">#0x1301
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60add5">int</span> <span style="color:#40a070">0x10</span>
+<span style="color:#002070;font-weight:bold">loop1:</span>  <span style="color:#06287e">jmp</span> <span style="color:#60add5">loop1</span>
+<span style="color:#002070;font-weight:bold">msg:</span>    <span style="color:#4070a0">.ascii</span>  <span style="color:#4070a0">&#34;Loading System...&#34;</span>
+        <span style="color:#4070a0">.byte</span>   <span style="color:#40a070">13</span>,<span style="color:#40a070">10</span>
+<span style="color:#4070a0">.org</span>    <span style="color:#40a070">510</span>
+<span style="color:#4070a0">.word</span>   <span style="color:#40a070">0xAA55</span>
+<span style="color:#4070a0">.text</span>
+<span style="color:#002070;font-weight:bold">endtext:</span>
+<span style="color:#4070a0">.data</span>
+<span style="color:#002070;font-weight:bold">enddata:</span>
+<span style="color:#4070a0">.bss</span>
+<span style="color:#002070;font-weight:bold">endbss:</span>
 </code></pre></div><p>这段程序的主要的执行流程将是:</p>
 <ol>
 <li>通过 BIOS 加载这段 boot 引导程序</li>
@@ -312,18 +312,18 @@ endbss:
 <p>下面就该把这个汇编程序 <em>编译 + 链接</em> 成 boot 引导程序。</p>
 <p>虽然在 macOS 上确实找到了一个 as86 汇编器(来自 nasm 的一个编译选项，但我不知道为什么始终无法正常编译，也可能这个根本就不是我想要的)。</p>
 <p>通过 docker 容器部署的 Ubuntu，可以很容易地得到一个 as86 汇编程序。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">apt-get install bin86   <span style="color:#75715e"># as86, ld86 都在这个包里提供了</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">apt-get install bin86   <span style="color:#60a0b0;font-style:italic"># as86, ld86 都在这个包里提供了</span>
 
-<span style="color:#75715e"># 这句需要在宿主机上执行</span>
-docker cp boot.s linux:/root/boot.s     <span style="color:#75715e"># 这里 linux 是我 docker 部署的 Ubuntu 的容器的名称。   如果之前 boot.s 在宿主机上，可以这样拷贝到容器中</span>
+<span style="color:#60a0b0;font-style:italic"># 这句需要在宿主机上执行</span>
+docker cp boot.s linux:/root/boot.s     <span style="color:#60a0b0;font-style:italic"># 这里 linux 是我 docker 部署的 Ubuntu 的容器的名称。   如果之前 boot.s 在宿主机上，可以这样拷贝到容器中</span>
 
-as86 -0 -a -o boot.o boot.s             <span style="color:#75715e"># 编译</span>
+as86 -0 -a -o boot.o boot.s             <span style="color:#60a0b0;font-style:italic"># 编译</span>
 
-ld86 -0 -s -o execfile boot.o           <span style="color:#75715e"># 链接</span>
+ld86 -0 -s -o execfile boot.o           <span style="color:#60a0b0;font-style:italic"># 链接</span>
 
-<span style="color:#75715e"># 当然，到这里为止，其实都可以理解成在将汇编代码编译链接成可执行程序 (和 boot 引导程序没有太大关系，唯一有关系的就是这段汇编语言是以引导为目的写的)</span>
+<span style="color:#60a0b0;font-style:italic"># 当然，到这里为止，其实都可以理解成在将汇编代码编译链接成可执行程序 (和 boot 引导程序没有太大关系，唯一有关系的就是这段汇编语言是以引导为目的写的)</span>
 
-dd bs<span style="color:#f92672">=</span><span style="color:#ae81ff">32</span> <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>execfile of<span style="color:#f92672">=</span>boot skip<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>     <span style="color:#75715e"># 这里去掉可执行程序的前 32 字节，形成刚好 512 字节的 boot 引导程序</span>
+dd <span style="color:#bb60d5">bs</span><span style="color:#666">=</span><span style="color:#40a070">32</span> <span style="color:#007020;font-weight:bold">if</span><span style="color:#666">=</span>execfile <span style="color:#bb60d5">of</span><span style="color:#666">=</span>boot <span style="color:#bb60d5">skip</span><span style="color:#666">=</span><span style="color:#40a070">1</span>     <span style="color:#60a0b0;font-style:italic"># 这里去掉可执行程序的前 32 字节，形成刚好 512 字节的 boot 引导程序</span>
 </code></pre></div><h2 id="用仿真器启动引导程序">用仿真器启动引导程序</h2>
 <p>事实上，这部分内容，我始终没有搞清楚 <strong>磁盘映像文件</strong> 和 <strong>boot 引导程序</strong> 间的关系(当然还有 floppy 和 ata0~3)</p>
 <p>在上一节成功拿到 <em>512B</em> 的 boot 引导程序之后，直接使用这个貌似我也运行成功了(根本就不需要创建磁盘映像文件并将引导程序写入映像文件中，不过，也许只是因为这个引导程序太简单了，根本就不需要其他程序的配合。它最后就是一个死循环 )</p>
@@ -380,7 +380,7 @@ speaker: enabled=1, mode=sound
 <li>当前目录 <em>linux-boot</em> 下，键入命令 <code>bochs</code></li>
 <li>由于读取到 <em>bochsrc</em> 配置文件的存在，menu 的默认选项为 6 (开始模拟机器)</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">You can also start bochs with the -q option to skip these menus.
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">You can also start bochs with the -q option to skip these menus.
 
 1. Restore factory default configuration
 2. Read options from...
@@ -394,7 +394,7 @@ Please choose one: [6]
 </code></pre></div><ol start="7">
 <li>直接开始运行机器，键入命令 <code>c</code></li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">Please choose one: [6]
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">Please choose one: [6]
 00000000000i[      ] lt_dlhandle is 0x7f85d0405ff0
 00000000000i[PLUGIN] loaded plugin libbx_sdl2.so
 00000000000i[      ] installing sdl2 module as the Bochs GUI
@@ -412,7 +412,7 @@ Next at t=0
 <li>关机</li>
 </ol>
 <p>无需多言，右上角模拟的就是<strong>关机实体按键</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -423,6 +423,12 @@ Next at t=0
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

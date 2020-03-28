@@ -215,133 +215,133 @@
 <ul>
 <li>跟随者监听 AppendEntries 和 RequestVote 事件以及选举超时事件</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">rf</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Raft</span>) <span style="color:#a6e22e">followerLoop</span>() {
-	<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">votedFor</span> = <span style="color:#a6e22e">notVoted</span>
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">State</span>() <span style="color:#f92672">==</span> <span style="color:#a6e22e">StateFollower</span> {
-		<span style="color:#66d9ef">select</span> {
-		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">ev</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">c</span>:
-			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
-			<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">req</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">req</span>.(<span style="color:#66d9ef">type</span>) {
-			<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">AppendEntriesArgs</span>:
-				<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">resp</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">processAppendEntries</span>(<span style="color:#a6e22e">req</span>)
-			<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RequestVoteArgs</span>:
-				<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">resp</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">processRequestVote</span>(<span style="color:#a6e22e">req</span>)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">func</span> (rf <span style="color:#666">*</span>Raft) <span style="color:#06287e">followerLoop</span>() {
+	rf.votedFor = notVoted
+	<span style="color:#007020;font-weight:bold">for</span> rf.<span style="color:#06287e">State</span>() <span style="color:#666">==</span> StateFollower {
+		<span style="color:#007020;font-weight:bold">select</span> {
+		<span style="color:#007020;font-weight:bold">case</span> ev <span style="color:#666">:=</span> <span style="color:#666">&lt;-</span>rf.c:
+			<span style="color:#007020;font-weight:bold">var</span> err <span style="color:#902000">error</span>
+			<span style="color:#007020;font-weight:bold">switch</span> req <span style="color:#666">:=</span> ev.req.(<span style="color:#007020;font-weight:bold">type</span>) {
+			<span style="color:#007020;font-weight:bold">case</span> <span style="color:#666">*</span>AppendEntriesArgs:
+				ev.resp = rf.<span style="color:#06287e">processAppendEntries</span>(req)
+			<span style="color:#007020;font-weight:bold">case</span> <span style="color:#666">*</span>RequestVoteArgs:
+				ev.resp = rf.<span style="color:#06287e">processRequestVote</span>(req)
             }
-			<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">c</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">err</span>
-		<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">After</span>(<span style="color:#a6e22e">randElectionTick</span>()):
-			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">setState</span>(<span style="color:#a6e22e">StateCandidate</span>)
+			ev.c <span style="color:#666">&lt;-</span> err
+		<span style="color:#007020;font-weight:bold">case</span> <span style="color:#666">&lt;-</span>time.<span style="color:#06287e">After</span>(<span style="color:#06287e">randElectionTick</span>()):
+			rf.<span style="color:#06287e">setState</span>(StateCandidate)
 		}
     }
 }
 </code></pre></div><ul>
 <li>候选人每个候选周期发送 RequestVote，并等待其它的 AppendEntries、RequestVote 和选举响应、选举超时事件</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">rf</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Raft</span>) <span style="color:#a6e22e">candidateLoop</span>() {
-	<span style="color:#a6e22e">newTerm</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">true</span>
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">timeoutChan</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Time</span>
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">replyChan</span> <span style="color:#66d9ef">chan</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RequestVoteReply</span>
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">State</span>() <span style="color:#f92672">==</span> <span style="color:#a6e22e">StateCandidate</span> {
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">newTerm</span> {
-			<span style="color:#a6e22e">newTerm</span> = <span style="color:#66d9ef">false</span>
-			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">incTerm</span>()
-			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">voteCount</span> = <span style="color:#ae81ff">1</span>
-			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">votedFor</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">me</span>
-			<span style="color:#a6e22e">replyChan</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RequestVoteReply</span>, <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nPeers</span>)
-			<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nPeers</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
-				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">me</span> {
-					<span style="color:#66d9ef">continue</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">func</span> (rf <span style="color:#666">*</span>Raft) <span style="color:#06287e">candidateLoop</span>() {
+	newTerm <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">true</span>
+	<span style="color:#007020;font-weight:bold">var</span> timeoutChan <span style="color:#666">&lt;-</span><span style="color:#007020;font-weight:bold">chan</span> time.Time
+	<span style="color:#007020;font-weight:bold">var</span> replyChan <span style="color:#007020;font-weight:bold">chan</span> <span style="color:#666">*</span>RequestVoteReply
+	<span style="color:#007020;font-weight:bold">for</span> rf.<span style="color:#06287e">State</span>() <span style="color:#666">==</span> StateCandidate {
+		<span style="color:#007020;font-weight:bold">if</span> newTerm {
+			newTerm = <span style="color:#007020;font-weight:bold">false</span>
+			rf.<span style="color:#06287e">incTerm</span>()
+			rf.voteCount = <span style="color:#40a070">1</span>
+			rf.votedFor = rf.me
+			replyChan = <span style="color:#007020">make</span>(<span style="color:#007020;font-weight:bold">chan</span> <span style="color:#666">*</span>RequestVoteReply, rf.nPeers)
+			<span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; rf.nPeers; i<span style="color:#666">++</span> {
+				<span style="color:#007020;font-weight:bold">if</span> i <span style="color:#666">==</span> rf.me {
+					<span style="color:#007020;font-weight:bold">continue</span>
 				}
-				<span style="color:#a6e22e">entry</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">LastEntry</span>()
-				<span style="color:#a6e22e">args</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">RequestVoteArgs</span>{
-					<span style="color:#a6e22e">Term</span>:         <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">Term</span>(),
-					<span style="color:#a6e22e">CandidateId</span>:  <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">me</span>,
-					<span style="color:#a6e22e">LastLogIndex</span>: <span style="color:#a6e22e">entry</span>.<span style="color:#a6e22e">Index</span>,
-					<span style="color:#a6e22e">LastLogTerm</span>:  <span style="color:#a6e22e">entry</span>.<span style="color:#a6e22e">Term</span>,
+				entry <span style="color:#666">:=</span> rf.log.<span style="color:#06287e">LastEntry</span>()
+				args <span style="color:#666">:=</span> <span style="color:#666">&amp;</span>RequestVoteArgs{
+					Term:         rf.<span style="color:#06287e">Term</span>(),
+					CandidateId:  rf.me,
+					LastLogIndex: entry.Index,
+					LastLogTerm:  entry.Term,
 				}
-				<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">sendRequestVote</span>(<span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">args</span>, <span style="color:#a6e22e">replyChan</span>)
+				<span style="color:#007020;font-weight:bold">go</span> rf.<span style="color:#06287e">sendRequestVote</span>(i, args, replyChan)
 			}
-			<span style="color:#a6e22e">timeoutChan</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">After</span>(<span style="color:#a6e22e">randElectionTick</span>())
+			timeoutChan = time.<span style="color:#06287e">After</span>(<span style="color:#06287e">randElectionTick</span>())
 		}
 
-		<span style="color:#66d9ef">select</span> {
-		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">reply</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">replyChan</span>:
-			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">commonRule</span>(<span style="color:#a6e22e">reply</span>.<span style="color:#a6e22e">Term</span>)
-			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">State</span>() <span style="color:#f92672">==</span> <span style="color:#a6e22e">StateCandidate</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">reply</span>.<span style="color:#a6e22e">VoteGranted</span> {
-				<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">voteCount</span><span style="color:#f92672">++</span>
-				<span style="color:#a6e22e">DPrintf</span>(<span style="color:#e6db74">&#34;raft %v get new vote, total: %v&#34;</span>, <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">me</span>, <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">voteCount</span>)
-				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">voteCount</span> &gt; (<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nPeers</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">1</span>) {
-					<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">setState</span>(<span style="color:#a6e22e">StateLeader</span>)
+		<span style="color:#007020;font-weight:bold">select</span> {
+		<span style="color:#007020;font-weight:bold">case</span> reply <span style="color:#666">:=</span> <span style="color:#666">&lt;-</span>replyChan:
+			rf.<span style="color:#06287e">commonRule</span>(reply.Term)
+			<span style="color:#007020;font-weight:bold">if</span> rf.<span style="color:#06287e">State</span>() <span style="color:#666">==</span> StateCandidate <span style="color:#666">&amp;&amp;</span> reply.VoteGranted {
+				rf.voteCount<span style="color:#666">++</span>
+				<span style="color:#06287e">DPrintf</span>(<span style="color:#4070a0">&#34;raft %v get new vote, total: %v&#34;</span>, rf.me, rf.voteCount)
+				<span style="color:#007020;font-weight:bold">if</span> rf.voteCount &gt; (rf.nPeers <span style="color:#666">&gt;&gt;</span> <span style="color:#40a070">1</span>) {
+					rf.<span style="color:#06287e">setState</span>(StateLeader)
 				}
 			}
-		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">ev</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">c</span>:
-			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
-			<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">req</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">req</span>.(<span style="color:#66d9ef">type</span>) {
-			<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">AppendEntriesArgs</span>:
-				<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">resp</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">processAppendEntries</span>(<span style="color:#a6e22e">req</span>)
-			<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RequestVoteArgs</span>:
-				<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">resp</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">processRequestVote</span>(<span style="color:#a6e22e">req</span>)
-			<span style="color:#66d9ef">default</span>:
-				<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">UnknownEventErr</span>
+		<span style="color:#007020;font-weight:bold">case</span> ev <span style="color:#666">:=</span> <span style="color:#666">&lt;-</span>rf.c:
+			<span style="color:#007020;font-weight:bold">var</span> err <span style="color:#902000">error</span>
+			<span style="color:#007020;font-weight:bold">switch</span> req <span style="color:#666">:=</span> ev.req.(<span style="color:#007020;font-weight:bold">type</span>) {
+			<span style="color:#007020;font-weight:bold">case</span> <span style="color:#666">*</span>AppendEntriesArgs:
+				ev.resp = rf.<span style="color:#06287e">processAppendEntries</span>(req)
+			<span style="color:#007020;font-weight:bold">case</span> <span style="color:#666">*</span>RequestVoteArgs:
+				ev.resp = rf.<span style="color:#06287e">processRequestVote</span>(req)
+			<span style="color:#007020;font-weight:bold">default</span>:
+				err = UnknownEventErr
 			}
-			<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">c</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">err</span>
-		<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">timeoutChan</span>:
-			<span style="color:#a6e22e">newTerm</span> = <span style="color:#66d9ef">true</span>
+			ev.c <span style="color:#666">&lt;-</span> err
+		<span style="color:#007020;font-weight:bold">case</span> <span style="color:#666">&lt;-</span>timeoutChan:
+			newTerm = <span style="color:#007020;font-weight:bold">true</span>
 		}
 	}
 }
 </code></pre></div><ul>
 <li>领导者需要定期发送 AppendEntries，并等待其它 RequestVote 和 AppendEntries 事件</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">rf</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Raft</span>) <span style="color:#a6e22e">leaderLoop</span>() {
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nPeers</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
-		<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nextIndex</span>[<span style="color:#a6e22e">i</span>] = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">NextIndex</span>()
-		<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">matchIndex</span>[<span style="color:#a6e22e">i</span>] = <span style="color:#ae81ff">0</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#007020;font-weight:bold">func</span> (rf <span style="color:#666">*</span>Raft) <span style="color:#06287e">leaderLoop</span>() {
+	<span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; rf.nPeers; i<span style="color:#666">++</span> {
+		rf.nextIndex[i] = rf.log.<span style="color:#06287e">NextIndex</span>()
+		rf.matchIndex[i] = <span style="color:#40a070">0</span>
 	}
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">tickChan</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Time</span>
-	<span style="color:#a6e22e">newHeartbeat</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">true</span>
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">replyChan</span> <span style="color:#66d9ef">chan</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">AppendEntriesReply</span>
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">State</span>() <span style="color:#f92672">==</span> <span style="color:#a6e22e">StateLeader</span> {
-		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">newHeartbeat</span> {
-			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">updateCommitIndex</span>()
-			<span style="color:#a6e22e">replyChan</span> = make(<span style="color:#66d9ef">chan</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">AppendEntriesReply</span>)
-			<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nPeers</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
-				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">me</span> {
-					<span style="color:#66d9ef">continue</span>
+	<span style="color:#007020;font-weight:bold">var</span> tickChan <span style="color:#666">&lt;-</span><span style="color:#007020;font-weight:bold">chan</span> time.Time
+	newHeartbeat <span style="color:#666">:=</span> <span style="color:#007020;font-weight:bold">true</span>
+	<span style="color:#007020;font-weight:bold">var</span> replyChan <span style="color:#007020;font-weight:bold">chan</span> <span style="color:#666">*</span>AppendEntriesReply
+	<span style="color:#007020;font-weight:bold">for</span> rf.<span style="color:#06287e">State</span>() <span style="color:#666">==</span> StateLeader {
+		<span style="color:#007020;font-weight:bold">if</span> newHeartbeat {
+			rf.<span style="color:#06287e">updateCommitIndex</span>()
+			replyChan = <span style="color:#007020">make</span>(<span style="color:#007020;font-weight:bold">chan</span> <span style="color:#666">*</span>AppendEntriesReply)
+			<span style="color:#007020;font-weight:bold">for</span> i <span style="color:#666">:=</span> <span style="color:#40a070">0</span>; i &lt; rf.nPeers; i<span style="color:#666">++</span> {
+				<span style="color:#007020;font-weight:bold">if</span> i <span style="color:#666">==</span> rf.me {
+					<span style="color:#007020;font-weight:bold">continue</span>
 				}
 
-				<span style="color:#a6e22e">entries</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Entries</span>(<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">nextIndex</span>[<span style="color:#a6e22e">i</span>] <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>)
-				<span style="color:#a6e22e">prevLogEntry</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">entries</span>[<span style="color:#ae81ff">0</span>]
+				entries <span style="color:#666">:=</span> rf.log.<span style="color:#06287e">Entries</span>(rf.nextIndex[i] <span style="color:#666">-</span> <span style="color:#40a070">1</span>)
+				prevLogEntry <span style="color:#666">:=</span> entries[<span style="color:#40a070">0</span>]
 
-				<span style="color:#a6e22e">args</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">AppendEntriesArgs</span>{
-					<span style="color:#a6e22e">Term</span>:         <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">currentTerm</span>,
-					<span style="color:#a6e22e">LeaderId</span>:     <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">me</span>,
-					<span style="color:#a6e22e">PrevLogIndex</span>: <span style="color:#a6e22e">prevLogEntry</span>.<span style="color:#a6e22e">Index</span>,
-					<span style="color:#a6e22e">PrevLogTerm</span>:  <span style="color:#a6e22e">prevLogEntry</span>.<span style="color:#a6e22e">Term</span>,
-					<span style="color:#a6e22e">Entries</span>:      <span style="color:#a6e22e">entries</span>[<span style="color:#ae81ff">1</span>:],
-					<span style="color:#a6e22e">LeaderCommit</span>: <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">commitIndex</span>,
+				args <span style="color:#666">:=</span> <span style="color:#666">&amp;</span>AppendEntriesArgs{
+					Term:         rf.currentTerm,
+					LeaderId:     rf.me,
+					PrevLogIndex: prevLogEntry.Index,
+					PrevLogTerm:  prevLogEntry.Term,
+					Entries:      entries[<span style="color:#40a070">1</span>:],
+					LeaderCommit: rf.log.commitIndex,
 				}
-				<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">sendAppendEntries</span>(<span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">args</span>, <span style="color:#a6e22e">replyChan</span>)
+				<span style="color:#007020;font-weight:bold">go</span> rf.<span style="color:#06287e">sendAppendEntries</span>(i, args, replyChan)
 			}
-			<span style="color:#a6e22e">tickChan</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">After</span>(<span style="color:#a6e22e">fixedHeartbeatTick</span>())
-			<span style="color:#a6e22e">newHeartbeat</span> = <span style="color:#66d9ef">false</span>
+			tickChan = time.<span style="color:#06287e">After</span>(<span style="color:#06287e">fixedHeartbeatTick</span>())
+			newHeartbeat = <span style="color:#007020;font-weight:bold">false</span>
 		}
 
-		<span style="color:#66d9ef">select</span> {
-		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">reply</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">replyChan</span>:
-			<span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">commonRule</span>(<span style="color:#a6e22e">reply</span>.<span style="color:#a6e22e">Term</span>)
-		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">ev</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">c</span>:
-			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
-			<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">req</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">req</span>.(<span style="color:#66d9ef">type</span>) {
-			<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">AppendEntriesArgs</span>:
-				<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">resp</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">processAppendEntries</span>(<span style="color:#a6e22e">req</span>)
-			<span style="color:#66d9ef">case</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RequestVoteArgs</span>:
-				<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">resp</span> = <span style="color:#a6e22e">rf</span>.<span style="color:#a6e22e">processRequestVote</span>(<span style="color:#a6e22e">req</span>)
-			<span style="color:#66d9ef">default</span>:
-				<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">UnknownEventErr</span>
+		<span style="color:#007020;font-weight:bold">select</span> {
+		<span style="color:#007020;font-weight:bold">case</span> reply <span style="color:#666">:=</span> <span style="color:#666">&lt;-</span>replyChan:
+			rf.<span style="color:#06287e">commonRule</span>(reply.Term)
+		<span style="color:#007020;font-weight:bold">case</span> ev <span style="color:#666">:=</span> <span style="color:#666">&lt;-</span>rf.c:
+			<span style="color:#007020;font-weight:bold">var</span> err <span style="color:#902000">error</span>
+			<span style="color:#007020;font-weight:bold">switch</span> req <span style="color:#666">:=</span> ev.req.(<span style="color:#007020;font-weight:bold">type</span>) {
+			<span style="color:#007020;font-weight:bold">case</span> <span style="color:#666">*</span>AppendEntriesArgs:
+				ev.resp = rf.<span style="color:#06287e">processAppendEntries</span>(req)
+			<span style="color:#007020;font-weight:bold">case</span> <span style="color:#666">*</span>RequestVoteArgs:
+				ev.resp = rf.<span style="color:#06287e">processRequestVote</span>(req)
+			<span style="color:#007020;font-weight:bold">default</span>:
+				err = UnknownEventErr
 			}
-			<span style="color:#a6e22e">ev</span>.<span style="color:#a6e22e">c</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">err</span>
-		<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">tickChan</span>:
-			<span style="color:#a6e22e">newHeartbeat</span> = <span style="color:#66d9ef">true</span>
+			ev.c <span style="color:#666">&lt;-</span> err
+		<span style="color:#007020;font-weight:bold">case</span> <span style="color:#666">&lt;-</span>tickChan:
+			newHeartbeat = <span style="color:#007020;font-weight:bold">true</span>
 		}
 	}
 }
@@ -354,6 +354,12 @@
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

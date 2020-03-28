@@ -124,12 +124,12 @@ POSTOUTING链：用于源地址转换(SNAT)</p>
 <h3 id="rule">rule</h3>
 <p>至于规则，挂载在规则链上，逐一按照预定动作执行</p>
 <p><em>以 iptables 工具的语法为例</em></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">iptables -t filter -A INPUT -s 172.16.1.0/24 -p tcp --dport <span style="color:#ae81ff">22</span> -j ACCEPT
-<span style="color:#75715e"># -t filter 指向 filter 表添加一条规则</span>
-<span style="color:#75715e"># -A INPUT [rule-specification] 指向 INPUT 链添加一条路由规则</span>
-<span style="color:#75715e"># -s 172.16.1.0/24 表示允许这个网段的机器来连接</span>
-<span style="color:#75715e"># -p tcp 表示允许 tcp 协议</span>
-<span style="color:#75715e"># -j ACCEPT 表示接受这样的请求</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">iptables -t filter -A INPUT -s 172.16.1.0/24 -p tcp --dport <span style="color:#40a070">22</span> -j ACCEPT
+<span style="color:#60a0b0;font-style:italic"># -t filter 指向 filter 表添加一条规则</span>
+<span style="color:#60a0b0;font-style:italic"># -A INPUT [rule-specification] 指向 INPUT 链添加一条路由规则</span>
+<span style="color:#60a0b0;font-style:italic"># -s 172.16.1.0/24 表示允许这个网段的机器来连接</span>
+<span style="color:#60a0b0;font-style:italic"># -p tcp 表示允许 tcp 协议</span>
+<span style="color:#60a0b0;font-style:italic"># -j ACCEPT 表示接受这样的请求</span>
 </code></pre></div><p><code>-j [target]</code> 表示这条规则的执行结果，预置的执行结果及描述包括：</p>
 <ul>
 <li>ACCEPT ：接收数据包</li>
@@ -292,6 +292,12 @@ POSTOUTING链：用于源地址转换(SNAT)</p>
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

@@ -23,7 +23,7 @@
       "articleSection" : "posts",
       "name" : "ASM - ClassReader 与 Java ClassFile 文件格式",
       "headline" : "ASM - ClassReader 与 Java ClassFile 文件格式",
-      "description" : "\x3ch2 id=\x22java-classfile-文件格式\x22\x3eJava ClassFile 文件格式\x3c\/h2\x3e\n\x3cp\x3e读了将近一周的时间，勉强算是把 ClassFile 的文件格式给简单的梳理了个脉络。\n\x3ca href=\x22https:\/\/docs.oracle.com\/javase\/specs\/jvms\/se8\/html\/index.html\x22\x3eThe class File Format(Java SE 8)\x3c\/a\x3e\x3c\/p\x3e\n\x3cblockquote\x3e\n\x3cp\x3eu1, u2, u4 分别表示无符号的一字节、二字节、四字节数据(以大端存储)\x3c\/p\x3e\n\x3c\/blockquote\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-c\x2b\x2b\x22 data-lang=\x22c\x2b\x2b\x22\x3eClassFile {\n    u4             magic;                                   \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 魔数(magic) 固定为 0xCAFEBABE\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    u2             minor_version;                           \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 次版本号\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    u2             major_version;                           \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 主版本号\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    u2             constant_pool_count;                     \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 常量池 constant_pool 的数量 \x2b 1, 最大为 (2\x26lt;\x26lt;16 - 1) = 65535\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    cp_info        constant_pool[constant_pool_count\x3cspan style=\x22color:#f92672\x22\x3e-\x3c\/span\x3e\x3cspan style=\x22color:#ae81ff\x22\x3e1\x3c\/span\x3e];    \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 常量池 取值下标为 [1, constant_pool_count)\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    u2             access_flags;                            \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 对类 or 接口的访问权限和属性的标志的掩码\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    u2             this_class;                              \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 值为 constant_pool 的有效下标(且 constant_pool[this_class] 的类型为 CONSTANT_Class_info)\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    u2             super_class;                             \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 值为 0 或者 constant_pool 的有效下标(同上), 如果是 interface, 则该值一定为有效下标\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    u2             interfaces_count;                        \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 直接父接口的数量\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    u2             interfaces[interfaces_count];            \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 值必须是 constant_pool 的有效下标, 且 interfaces[i](0≤i\x26lt;interfaces_count), 指向的类型为 CONSTANT_Class_info)\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    u2             fields_count;                            \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 字段数量, 统计所有字段, 包括 class variables(静态变量) 和 instance variables(实例变量)\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    field_info     fields[fields_count];                    \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 字段的详细声明, 不包含继承来的字段\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    u2             methods_count;                           \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 方法数量\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    method_info    methods[methods_count];                  \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 方法的详细声明, 不包括继承来的方法\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    u2             attributes_count;                        \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 属性数量\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e    attribute_info attributes[attributes_count];            \x3cspan style=\x22color:#75715e\x22\x3e\/\/ 属性的详细声明\n\x3c\/span\x3e\x3cspan style=\x22color:#75715e\x22\x3e\x3c\/span\x3e}\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e",
+      "description" : "\x3ch2 id=\x22java-classfile-文件格式\x22\x3eJava ClassFile 文件格式\x3c\/h2\x3e\n\x3cp\x3e读了将近一周的时间，勉强算是把 ClassFile 的文件格式给简单的梳理了个脉络。\n\x3ca href=\x22https:\/\/docs.oracle.com\/javase\/specs\/jvms\/se8\/html\/index.html\x22\x3eThe class File Format(Java SE 8)\x3c\/a\x3e\x3c\/p\x3e\n\x3cblockquote\x3e\n\x3cp\x3eu1, u2, u4 分别表示无符号的一字节、二字节、四字节数据(以大端存储)\x3c\/p\x3e\n\x3c\/blockquote\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-c\x2b\x2b\x22 data-lang=\x22c\x2b\x2b\x22\x3eClassFile {\n    u4             magic;                                   \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 魔数(magic) 固定为 0xCAFEBABE\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    u2             minor_version;                           \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 次版本号\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    u2             major_version;                           \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 主版本号\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    u2             constant_pool_count;                     \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 常量池 constant_pool 的数量 \x2b 1, 最大为 (2\x26lt;\x26lt;16 - 1) = 65535\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    cp_info        constant_pool[constant_pool_count\x3cspan style=\x22color:#666\x22\x3e-\x3c\/span\x3e\x3cspan style=\x22color:#40a070\x22\x3e1\x3c\/span\x3e];    \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 常量池 取值下标为 [1, constant_pool_count)\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    u2             access_flags;                            \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 对类 or 接口的访问权限和属性的标志的掩码\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    u2             this_class;                              \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 值为 constant_pool 的有效下标(且 constant_pool[this_class] 的类型为 CONSTANT_Class_info)\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    u2             super_class;                             \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 值为 0 或者 constant_pool 的有效下标(同上), 如果是 interface, 则该值一定为有效下标\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    u2             interfaces_count;                        \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 直接父接口的数量\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    u2             interfaces[interfaces_count];            \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 值必须是 constant_pool 的有效下标, 且 interfaces[i](0≤i\x26lt;interfaces_count), 指向的类型为 CONSTANT_Class_info)\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    u2             fields_count;                            \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 字段数量, 统计所有字段, 包括 class variables(静态变量) 和 instance variables(实例变量)\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    field_info     fields[fields_count];                    \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 字段的详细声明, 不包含继承来的字段\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    u2             methods_count;                           \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 方法数量\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    method_info    methods[methods_count];                  \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 方法的详细声明, 不包括继承来的方法\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    u2             attributes_count;                        \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 属性数量\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e    attribute_info attributes[attributes_count];            \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ 属性的详细声明\n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e}\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -155,35 +155,35 @@ ClassFile {
 <blockquote>
 <p>u1, u2, u4 分别表示无符号的一字节、二字节、四字节数据(以大端存储)</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">ClassFile {
-    u4             magic;                                   <span style="color:#75715e">// 魔数(magic) 固定为 0xCAFEBABE
-</span><span style="color:#75715e"></span>    u2             minor_version;                           <span style="color:#75715e">// 次版本号
-</span><span style="color:#75715e"></span>    u2             major_version;                           <span style="color:#75715e">// 主版本号
-</span><span style="color:#75715e"></span>    u2             constant_pool_count;                     <span style="color:#75715e">// 常量池 constant_pool 的数量 + 1, 最大为 (2&lt;&lt;16 - 1) = 65535
-</span><span style="color:#75715e"></span>    cp_info        constant_pool[constant_pool_count<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>];    <span style="color:#75715e">// 常量池 取值下标为 [1, constant_pool_count)
-</span><span style="color:#75715e"></span>    u2             access_flags;                            <span style="color:#75715e">// 对类 or 接口的访问权限和属性的标志的掩码
-</span><span style="color:#75715e"></span>    u2             this_class;                              <span style="color:#75715e">// 值为 constant_pool 的有效下标(且 constant_pool[this_class] 的类型为 CONSTANT_Class_info)
-</span><span style="color:#75715e"></span>    u2             super_class;                             <span style="color:#75715e">// 值为 0 或者 constant_pool 的有效下标(同上), 如果是 interface, 则该值一定为有效下标
-</span><span style="color:#75715e"></span>    u2             interfaces_count;                        <span style="color:#75715e">// 直接父接口的数量
-</span><span style="color:#75715e"></span>    u2             interfaces[interfaces_count];            <span style="color:#75715e">// 值必须是 constant_pool 的有效下标, 且 interfaces[i](0≤i&lt;interfaces_count), 指向的类型为 CONSTANT_Class_info)
-</span><span style="color:#75715e"></span>    u2             fields_count;                            <span style="color:#75715e">// 字段数量, 统计所有字段, 包括 class variables(静态变量) 和 instance variables(实例变量)
-</span><span style="color:#75715e"></span>    field_info     fields[fields_count];                    <span style="color:#75715e">// 字段的详细声明, 不包含继承来的字段
-</span><span style="color:#75715e"></span>    u2             methods_count;                           <span style="color:#75715e">// 方法数量
-</span><span style="color:#75715e"></span>    method_info    methods[methods_count];                  <span style="color:#75715e">// 方法的详细声明, 不包括继承来的方法
-</span><span style="color:#75715e"></span>    u2             attributes_count;                        <span style="color:#75715e">// 属性数量
-</span><span style="color:#75715e"></span>    attribute_info attributes[attributes_count];            <span style="color:#75715e">// 属性的详细声明
-</span><span style="color:#75715e"></span>}
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">ClassFile {
+    u4             magic;                                   <span style="color:#60a0b0;font-style:italic">// 魔数(magic) 固定为 0xCAFEBABE
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2             minor_version;                           <span style="color:#60a0b0;font-style:italic">// 次版本号
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2             major_version;                           <span style="color:#60a0b0;font-style:italic">// 主版本号
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2             constant_pool_count;                     <span style="color:#60a0b0;font-style:italic">// 常量池 constant_pool 的数量 + 1, 最大为 (2&lt;&lt;16 - 1) = 65535
+</span><span style="color:#60a0b0;font-style:italic"></span>    cp_info        constant_pool[constant_pool_count<span style="color:#666">-</span><span style="color:#40a070">1</span>];    <span style="color:#60a0b0;font-style:italic">// 常量池 取值下标为 [1, constant_pool_count)
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2             access_flags;                            <span style="color:#60a0b0;font-style:italic">// 对类 or 接口的访问权限和属性的标志的掩码
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2             this_class;                              <span style="color:#60a0b0;font-style:italic">// 值为 constant_pool 的有效下标(且 constant_pool[this_class] 的类型为 CONSTANT_Class_info)
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2             super_class;                             <span style="color:#60a0b0;font-style:italic">// 值为 0 或者 constant_pool 的有效下标(同上), 如果是 interface, 则该值一定为有效下标
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2             interfaces_count;                        <span style="color:#60a0b0;font-style:italic">// 直接父接口的数量
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2             interfaces[interfaces_count];            <span style="color:#60a0b0;font-style:italic">// 值必须是 constant_pool 的有效下标, 且 interfaces[i](0≤i&lt;interfaces_count), 指向的类型为 CONSTANT_Class_info)
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2             fields_count;                            <span style="color:#60a0b0;font-style:italic">// 字段数量, 统计所有字段, 包括 class variables(静态变量) 和 instance variables(实例变量)
+</span><span style="color:#60a0b0;font-style:italic"></span>    field_info     fields[fields_count];                    <span style="color:#60a0b0;font-style:italic">// 字段的详细声明, 不包含继承来的字段
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2             methods_count;                           <span style="color:#60a0b0;font-style:italic">// 方法数量
+</span><span style="color:#60a0b0;font-style:italic"></span>    method_info    methods[methods_count];                  <span style="color:#60a0b0;font-style:italic">// 方法的详细声明, 不包括继承来的方法
+</span><span style="color:#60a0b0;font-style:italic"></span>    u2             attributes_count;                        <span style="color:#60a0b0;font-style:italic">// 属性数量
+</span><span style="color:#60a0b0;font-style:italic"></span>    attribute_info attributes[attributes_count];            <span style="color:#60a0b0;font-style:italic">// 属性的详细声明
+</span><span style="color:#60a0b0;font-style:italic"></span>}
 </code></pre></div><p>通过 <code>javac Xxx.java</code> 命令得到的 <code>Xxx.class</code> 文件严格按照定义的 ClassFile 文件格式以8比特的字节为单位进行存储。</p>
 <p><strong>下面的例子都将通过 Trie.java (实际代码见本文最后) 以及其经编译后的文件 Trie.class 做基本的介绍。</strong></p>
 <h3 id="magic-minor_verion--major_version">magic, minor_verion &amp; major_version</h3>
 <p>通过命令 <code>xxd Trie.class</code> 查看 Trie.class 的十六进制编码，前16字节的内容如下:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">00000000: cafe babe 0000 0034 008f 0a00 2400 4b09  .......4....$.K.
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">00000000: cafe babe 0000 0034 008f 0a00 2400 4b09  .......4....$.K.
 </code></pre></div><p>可以看到前4字节的内容 <code>0xcafebabe</code>，没有实际意义，但是作为其是能否被JVM(Java Virtual Machine, Java虚拟机)接收的Class文件的一个校验。</p>
 <p>紧接着的4个字节包括<code>次版本号</code> 和 <code>主版本号</code>，暂时不做深入。</p>
 <h3 id="常量池-constant_pool">常量池 constant_pool</h3>
 <p>从第10个字节开始(从第0字节开始计数)，连续的两个字节表示常量池中各种 CONSTANT 的总个数+1 (constant_pool_count)。constant_pool_count 只有2字节也就意味着: 常量池的最大常量数量为 (2&laquo;16 - 1) = 65535 (当然，貌似在这个量级上，也从没见过有谁能够维护这样一个大JAVA类文件了)。</p>
 <p>可以看到 constant_pool_count 的内容为 <code>0x008f = 143</code> ，即对于常量池的声明可以认为是 <code>cp_info constant_pool[142]</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">cp_info {
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">cp_info {
     u1 tag;
     u1 info[]; 
 }
@@ -265,11 +265,11 @@ ClassFile {
 </table>
 <p>在 Java ClassFile 的格式定义中，同时定义了每种 <code>CONSTANT</code> 的长度与格式。
 例如:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">CONSTANT_Class_info {
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">CONSTANT_Class_info {
     u1 tag;
     u2 name_index;
 }
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">CONSTANT_Fieldref_info {
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">CONSTANT_Fieldref_info {
      u1 tag;
      u2 class_index;
      u2 name_and_type_index;
@@ -281,7 +281,7 @@ CONSTANT_Methodref_info {
 }
 </code></pre></div><p>更多的 <code>CONSTANT_XXX</code> 的格式定义见 <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4">ClassFile CONSTANT_XXX 结构</a></p>
 <p>简单解析一下 cp_info[1]。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">00000000: cafe babe 0000 0034 008f 0a00 2400 4b09  .......4....$.K.
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">00000000: cafe babe 0000 0034 008f 0a00 2400 4b09  .......4....$.K.
 
 #1 = Methodref          #36.#75       // java/lang/Object.&#34;&lt;init&gt;&#34;:()V
 </code></pre></div><p><code>cp_info[1].tag = 0x0a = 10</code>，即 cp_info[1] 的类型为 Methodref 。
@@ -328,93 +328,93 @@ CONSTANT_Methodref_info {
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  ClassReader<span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> classFileBuffer<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> classFileOffset<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> checkClassVersion<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">b</span> <span style="color:#f92672">=</span> classFileBuffer<span style="color:#f92672">;</span>   <span style="color:#75715e">// .class 文件缓存
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 检查主版本号, 第6,7个字节(从0字节开始计数)
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>checkClassVersion <span style="color:#f92672">&amp;&amp;</span> readShort<span style="color:#f92672">(</span>classFileOffset <span style="color:#f92672">+</span> 6<span style="color:#f92672">)</span> <span style="color:#f92672">&gt;</span> Opcodes<span style="color:#f92672">.</span><span style="color:#a6e22e">V11</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-      <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">(</span>
-          <span style="color:#e6db74">&#34;Unsupported class file major version &#34;</span> <span style="color:#f92672">+</span> readShort<span style="color:#f92672">(</span>classFileOffset <span style="color:#f92672">+</span> 6<span style="color:#f92672">));</span>
-    <span style="color:#f92672">}</span>
-    <span style="color:#75715e">// 创建常量池数组，常量池长度的定义 constant_pool_count 在第8,9字节
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> constantPoolCount <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>classFileOffset <span style="color:#f92672">+</span> 8<span style="color:#f92672">);</span>     <span style="color:#75715e">// 读取无符号short, 即读取连续两字节作为一个short值
-</span><span style="color:#75715e"></span>    cpInfoOffsets <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">[</span>constantPoolCount<span style="color:#f92672">];</span>                         <span style="color:#75715e">// 每个常量的偏移位置
-</span><span style="color:#75715e"></span>    cpInfoValues <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">[</span>constantPoolCount<span style="color:#f92672">];</span>                       <span style="color:#75715e">// 每个常量的实例对象
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> currentCpInfoIndex <span style="color:#f92672">=</span> 1<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">int</span> currentCpInfoOffset <span style="color:#f92672">=</span> classFileOffset <span style="color:#f92672">+</span> 10<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">int</span> currentMaxStringLength <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>                                     <span style="color:#75715e">// 最长字符串常量
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>currentCpInfoIndex <span style="color:#f92672">&lt;</span> constantPoolCount<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-      cpInfoOffsets<span style="color:#f92672">[</span>currentCpInfoIndex<span style="color:#f92672">++]</span> <span style="color:#f92672">=</span> currentCpInfoOffset <span style="color:#f92672">+</span> 1<span style="color:#f92672">;</span>
-      <span style="color:#66d9ef">int</span> cpInfoSize<span style="color:#f92672">;</span>
-      <span style="color:#66d9ef">switch</span> <span style="color:#f92672">(</span>classFileBuffer<span style="color:#f92672">[</span>currentCpInfoOffset<span style="color:#f92672">])</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_FIELDREF_TAG</span><span style="color:#f92672">:</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_METHODREF_TAG</span><span style="color:#f92672">:</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_INTERFACE_METHODREF_TAG</span><span style="color:#f92672">:</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_INTEGER_TAG</span><span style="color:#f92672">:</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_FLOAT_TAG</span><span style="color:#f92672">:</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_NAME_AND_TYPE_TAG</span><span style="color:#f92672">:</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_INVOKE_DYNAMIC_TAG</span><span style="color:#f92672">:</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_DYNAMIC_TAG</span><span style="color:#f92672">:</span>
-          cpInfoSize <span style="color:#f92672">=</span> 5<span style="color:#f92672">;</span>
-          <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_LONG_TAG</span><span style="color:#f92672">:</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_DOUBLE_TAG</span><span style="color:#f92672">:</span>
-          cpInfoSize <span style="color:#f92672">=</span> 9<span style="color:#f92672">;</span>
-          currentCpInfoIndex<span style="color:#f92672">++;</span>
-          <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_UTF8_TAG</span><span style="color:#f92672">:</span>
-          cpInfoSize <span style="color:#f92672">=</span> 3 <span style="color:#f92672">+</span> readUnsignedShort<span style="color:#f92672">(</span>currentCpInfoOffset <span style="color:#f92672">+</span> 1<span style="color:#f92672">);</span>
-          <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>cpInfoSize <span style="color:#f92672">&gt;</span> currentMaxStringLength<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#75715e">// The size in bytes of this CONSTANT_Utf8 structure provides a conservative estimate
-</span><span style="color:#75715e"></span>            <span style="color:#75715e">// of the length in characters of the corresponding string, and is much cheaper to
-</span><span style="color:#75715e"></span>            <span style="color:#75715e">// compute than this exact length.
-</span><span style="color:#75715e"></span>            currentMaxStringLength <span style="color:#f92672">=</span> cpInfoSize<span style="color:#f92672">;</span>
-          <span style="color:#f92672">}</span>
-          <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_METHOD_HANDLE_TAG</span><span style="color:#f92672">:</span>
-          cpInfoSize <span style="color:#f92672">=</span> 4<span style="color:#f92672">;</span>
-          <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_CLASS_TAG</span><span style="color:#f92672">:</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_STRING_TAG</span><span style="color:#f92672">:</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_METHOD_TYPE_TAG</span><span style="color:#f92672">:</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_PACKAGE_TAG</span><span style="color:#f92672">:</span>
-        <span style="color:#66d9ef">case</span> Symbol<span style="color:#f92672">.</span><span style="color:#a6e22e">CONSTANT_MODULE_TAG</span><span style="color:#f92672">:</span>
-          cpInfoSize <span style="color:#f92672">=</span> 3<span style="color:#f92672">;</span>
-          <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
-          <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">();</span>
-      <span style="color:#f92672">}</span>
-      currentCpInfoOffset <span style="color:#f92672">+=</span> cpInfoSize<span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">maxStringLength</span> <span style="color:#f92672">=</span> currentMaxStringLength<span style="color:#f92672">;</span>
-    <span style="color:#75715e">// The Classfile&#39;s access_flags field is just after the last constant pool entry.
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">header</span> <span style="color:#f92672">=</span> currentCpInfoOffset<span style="color:#f92672">;</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  ClassReader<span style="color:#666">(</span><span style="color:#007020;font-weight:bold">final</span> <span style="color:#902000">byte</span><span style="color:#666">[]</span> classFileBuffer<span style="color:#666">,</span> <span style="color:#007020;font-weight:bold">final</span> <span style="color:#902000">int</span> classFileOffset<span style="color:#666">,</span> <span style="color:#007020;font-weight:bold">final</span> <span style="color:#902000">boolean</span> checkClassVersion<span style="color:#666">)</span> <span style="color:#666">{</span>
+    <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">.</span><span style="color:#4070a0">b</span> <span style="color:#666">=</span> classFileBuffer<span style="color:#666">;</span>   <span style="color:#60a0b0;font-style:italic">// .class 文件缓存
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic">// 检查主版本号, 第6,7个字节(从0字节开始计数)
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>checkClassVersion <span style="color:#666">&amp;&amp;</span> readShort<span style="color:#666">(</span>classFileOffset <span style="color:#666">+</span> 6<span style="color:#666">)</span> <span style="color:#666">&gt;</span> Opcodes<span style="color:#666">.</span><span style="color:#4070a0">V11</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+      <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> IllegalArgumentException<span style="color:#666">(</span>
+          <span style="color:#4070a0">&#34;Unsupported class file major version &#34;</span> <span style="color:#666">+</span> readShort<span style="color:#666">(</span>classFileOffset <span style="color:#666">+</span> 6<span style="color:#666">));</span>
+    <span style="color:#666">}</span>
+    <span style="color:#60a0b0;font-style:italic">// 创建常量池数组，常量池长度的定义 constant_pool_count 在第8,9字节
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#902000">int</span> constantPoolCount <span style="color:#666">=</span> readUnsignedShort<span style="color:#666">(</span>classFileOffset <span style="color:#666">+</span> 8<span style="color:#666">);</span>     <span style="color:#60a0b0;font-style:italic">// 读取无符号short, 即读取连续两字节作为一个short值
+</span><span style="color:#60a0b0;font-style:italic"></span>    cpInfoOffsets <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> <span style="color:#902000">int</span><span style="color:#666">[</span>constantPoolCount<span style="color:#666">];</span>                         <span style="color:#60a0b0;font-style:italic">// 每个常量的偏移位置
+</span><span style="color:#60a0b0;font-style:italic"></span>    cpInfoValues <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> Object<span style="color:#666">[</span>constantPoolCount<span style="color:#666">];</span>                       <span style="color:#60a0b0;font-style:italic">// 每个常量的实例对象
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#902000">int</span> currentCpInfoIndex <span style="color:#666">=</span> 1<span style="color:#666">;</span>
+    <span style="color:#902000">int</span> currentCpInfoOffset <span style="color:#666">=</span> classFileOffset <span style="color:#666">+</span> 10<span style="color:#666">;</span>
+    <span style="color:#902000">int</span> currentMaxStringLength <span style="color:#666">=</span> 0<span style="color:#666">;</span>                                     <span style="color:#60a0b0;font-style:italic">// 最长字符串常量
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">while</span> <span style="color:#666">(</span>currentCpInfoIndex <span style="color:#666">&lt;</span> constantPoolCount<span style="color:#666">)</span> <span style="color:#666">{</span>
+      cpInfoOffsets<span style="color:#666">[</span>currentCpInfoIndex<span style="color:#666">++]</span> <span style="color:#666">=</span> currentCpInfoOffset <span style="color:#666">+</span> 1<span style="color:#666">;</span>
+      <span style="color:#902000">int</span> cpInfoSize<span style="color:#666">;</span>
+      <span style="color:#007020;font-weight:bold">switch</span> <span style="color:#666">(</span>classFileBuffer<span style="color:#666">[</span>currentCpInfoOffset<span style="color:#666">])</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_FIELDREF_TAG</span><span style="color:#666">:</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_METHODREF_TAG</span><span style="color:#666">:</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_INTERFACE_METHODREF_TAG</span><span style="color:#666">:</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_INTEGER_TAG</span><span style="color:#666">:</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_FLOAT_TAG</span><span style="color:#666">:</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_NAME_AND_TYPE_TAG</span><span style="color:#666">:</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_INVOKE_DYNAMIC_TAG</span><span style="color:#666">:</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_DYNAMIC_TAG</span><span style="color:#666">:</span>
+          cpInfoSize <span style="color:#666">=</span> 5<span style="color:#666">;</span>
+          <span style="color:#007020;font-weight:bold">break</span><span style="color:#666">;</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_LONG_TAG</span><span style="color:#666">:</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_DOUBLE_TAG</span><span style="color:#666">:</span>
+          cpInfoSize <span style="color:#666">=</span> 9<span style="color:#666">;</span>
+          currentCpInfoIndex<span style="color:#666">++;</span>
+          <span style="color:#007020;font-weight:bold">break</span><span style="color:#666">;</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_UTF8_TAG</span><span style="color:#666">:</span>
+          cpInfoSize <span style="color:#666">=</span> 3 <span style="color:#666">+</span> readUnsignedShort<span style="color:#666">(</span>currentCpInfoOffset <span style="color:#666">+</span> 1<span style="color:#666">);</span>
+          <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>cpInfoSize <span style="color:#666">&gt;</span> currentMaxStringLength<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#60a0b0;font-style:italic">// The size in bytes of this CONSTANT_Utf8 structure provides a conservative estimate
+</span><span style="color:#60a0b0;font-style:italic"></span>            <span style="color:#60a0b0;font-style:italic">// of the length in characters of the corresponding string, and is much cheaper to
+</span><span style="color:#60a0b0;font-style:italic"></span>            <span style="color:#60a0b0;font-style:italic">// compute than this exact length.
+</span><span style="color:#60a0b0;font-style:italic"></span>            currentMaxStringLength <span style="color:#666">=</span> cpInfoSize<span style="color:#666">;</span>
+          <span style="color:#666">}</span>
+          <span style="color:#007020;font-weight:bold">break</span><span style="color:#666">;</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_METHOD_HANDLE_TAG</span><span style="color:#666">:</span>
+          cpInfoSize <span style="color:#666">=</span> 4<span style="color:#666">;</span>
+          <span style="color:#007020;font-weight:bold">break</span><span style="color:#666">;</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_CLASS_TAG</span><span style="color:#666">:</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_STRING_TAG</span><span style="color:#666">:</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_METHOD_TYPE_TAG</span><span style="color:#666">:</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_PACKAGE_TAG</span><span style="color:#666">:</span>
+        <span style="color:#007020;font-weight:bold">case</span> Symbol<span style="color:#666">.</span><span style="color:#4070a0">CONSTANT_MODULE_TAG</span><span style="color:#666">:</span>
+          cpInfoSize <span style="color:#666">=</span> 3<span style="color:#666">;</span>
+          <span style="color:#007020;font-weight:bold">break</span><span style="color:#666">;</span>
+        <span style="color:#007020;font-weight:bold">default</span><span style="color:#666">:</span>
+          <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> IllegalArgumentException<span style="color:#666">();</span>
+      <span style="color:#666">}</span>
+      currentCpInfoOffset <span style="color:#666">+=</span> cpInfoSize<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+    <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">.</span><span style="color:#4070a0">maxStringLength</span> <span style="color:#666">=</span> currentMaxStringLength<span style="color:#666">;</span>
+    <span style="color:#60a0b0;font-style:italic">// The Classfile&#39;s access_flags field is just after the last constant pool entry.
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">.</span><span style="color:#4070a0">header</span> <span style="color:#666">=</span> currentCpInfoOffset<span style="color:#666">;</span>
 
-    <span style="color:#75715e">// 读取 BootstrapMethods 属性(如果存在)
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> currentAttributeOffset <span style="color:#f92672">=</span> getFirstAttributeOffset<span style="color:#f92672">();</span>
-    <span style="color:#66d9ef">int</span><span style="color:#f92672">[]</span> currentBootstrapMethodOffsets <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> readUnsignedShort<span style="color:#f92672">(</span>currentAttributeOffset <span style="color:#f92672">-</span> 2<span style="color:#f92672">);</span> i <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">;</span> <span style="color:#f92672">--</span>i<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-      <span style="color:#75715e">// 读取每个 attribute_info 的属性名和属性长度
-</span><span style="color:#75715e"></span>      String attributeName <span style="color:#f92672">=</span> readUTF8<span style="color:#f92672">(</span>currentAttributeOffset<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">[</span>maxStringLength<span style="color:#f92672">]);</span>
-      <span style="color:#66d9ef">int</span> attributeLength <span style="color:#f92672">=</span> readInt<span style="color:#f92672">(</span>currentAttributeOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">);</span>
-      currentAttributeOffset <span style="color:#f92672">+=</span> 6<span style="color:#f92672">;</span>
-      <span style="color:#75715e">// 如果当前属性名为 BootstrapMethods ，则进入处理逻辑
-</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Constants<span style="color:#f92672">.</span><span style="color:#a6e22e">BOOTSTRAP_METHODS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>attributeName<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// Read the num_bootstrap_methods field and create an array of this size.
-</span><span style="color:#75715e"></span>        currentBootstrapMethodOffsets <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">[</span>readUnsignedShort<span style="color:#f92672">(</span>currentAttributeOffset<span style="color:#f92672">)];</span>
-        <span style="color:#75715e">// Compute and store the offset of each &#39;bootstrap_methods&#39; array field entry.
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> currentBootstrapMethodOffset <span style="color:#f92672">=</span> currentAttributeOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> j <span style="color:#f92672">&lt;</span> currentBootstrapMethodOffsets<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span> <span style="color:#f92672">++</span>j<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-          currentBootstrapMethodOffsets<span style="color:#f92672">[</span>j<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> currentBootstrapMethodOffset<span style="color:#f92672">;</span>
-          <span style="color:#75715e">// Skip the bootstrap_method_ref and num_bootstrap_arguments fields (2 bytes each),
-</span><span style="color:#75715e"></span>          <span style="color:#75715e">// as well as the bootstrap_arguments array field (of size num_bootstrap_arguments * 2).
-</span><span style="color:#75715e"></span>          currentBootstrapMethodOffset <span style="color:#f92672">+=</span>
-              4 <span style="color:#f92672">+</span> readUnsignedShort<span style="color:#f92672">(</span>currentBootstrapMethodOffset <span style="color:#f92672">+</span> 2<span style="color:#f92672">)</span> <span style="color:#f92672">*</span> 2<span style="color:#f92672">;</span>
-        <span style="color:#f92672">}</span>
-      <span style="color:#f92672">}</span>
-      currentAttributeOffset <span style="color:#f92672">+=</span> attributeLength<span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">bootstrapMethodOffsets</span> <span style="color:#f92672">=</span> currentBootstrapMethodOffsets<span style="color:#f92672">;</span>
-  <span style="color:#f92672">}</span>
+    <span style="color:#60a0b0;font-style:italic">// 读取 BootstrapMethods 属性(如果存在)
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#902000">int</span> currentAttributeOffset <span style="color:#666">=</span> getFirstAttributeOffset<span style="color:#666">();</span>
+    <span style="color:#902000">int</span><span style="color:#666">[]</span> currentBootstrapMethodOffsets <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
+    <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#902000">int</span> i <span style="color:#666">=</span> readUnsignedShort<span style="color:#666">(</span>currentAttributeOffset <span style="color:#666">-</span> 2<span style="color:#666">);</span> i <span style="color:#666">&gt;</span> 0<span style="color:#666">;</span> <span style="color:#666">--</span>i<span style="color:#666">)</span> <span style="color:#666">{</span>
+      <span style="color:#60a0b0;font-style:italic">// 读取每个 attribute_info 的属性名和属性长度
+</span><span style="color:#60a0b0;font-style:italic"></span>      String attributeName <span style="color:#666">=</span> readUTF8<span style="color:#666">(</span>currentAttributeOffset<span style="color:#666">,</span> <span style="color:#007020;font-weight:bold">new</span> <span style="color:#902000">char</span><span style="color:#666">[</span>maxStringLength<span style="color:#666">]);</span>
+      <span style="color:#902000">int</span> attributeLength <span style="color:#666">=</span> readInt<span style="color:#666">(</span>currentAttributeOffset <span style="color:#666">+</span> 2<span style="color:#666">);</span>
+      currentAttributeOffset <span style="color:#666">+=</span> 6<span style="color:#666">;</span>
+      <span style="color:#60a0b0;font-style:italic">// 如果当前属性名为 BootstrapMethods ，则进入处理逻辑
+</span><span style="color:#60a0b0;font-style:italic"></span>      <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>Constants<span style="color:#666">.</span><span style="color:#4070a0">BOOTSTRAP_METHODS</span><span style="color:#666">.</span><span style="color:#4070a0">equals</span><span style="color:#666">(</span>attributeName<span style="color:#666">))</span> <span style="color:#666">{</span>
+        <span style="color:#60a0b0;font-style:italic">// Read the num_bootstrap_methods field and create an array of this size.
+</span><span style="color:#60a0b0;font-style:italic"></span>        currentBootstrapMethodOffsets <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> <span style="color:#902000">int</span><span style="color:#666">[</span>readUnsignedShort<span style="color:#666">(</span>currentAttributeOffset<span style="color:#666">)];</span>
+        <span style="color:#60a0b0;font-style:italic">// Compute and store the offset of each &#39;bootstrap_methods&#39; array field entry.
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#902000">int</span> currentBootstrapMethodOffset <span style="color:#666">=</span> currentAttributeOffset <span style="color:#666">+</span> 2<span style="color:#666">;</span>
+        <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#902000">int</span> j <span style="color:#666">=</span> 0<span style="color:#666">;</span> j <span style="color:#666">&lt;</span> currentBootstrapMethodOffsets<span style="color:#666">.</span><span style="color:#4070a0">length</span><span style="color:#666">;</span> <span style="color:#666">++</span>j<span style="color:#666">)</span> <span style="color:#666">{</span>
+          currentBootstrapMethodOffsets<span style="color:#666">[</span>j<span style="color:#666">]</span> <span style="color:#666">=</span> currentBootstrapMethodOffset<span style="color:#666">;</span>
+          <span style="color:#60a0b0;font-style:italic">// Skip the bootstrap_method_ref and num_bootstrap_arguments fields (2 bytes each),
+</span><span style="color:#60a0b0;font-style:italic"></span>          <span style="color:#60a0b0;font-style:italic">// as well as the bootstrap_arguments array field (of size num_bootstrap_arguments * 2).
+</span><span style="color:#60a0b0;font-style:italic"></span>          currentBootstrapMethodOffset <span style="color:#666">+=</span>
+              4 <span style="color:#666">+</span> readUnsignedShort<span style="color:#666">(</span>currentBootstrapMethodOffset <span style="color:#666">+</span> 2<span style="color:#666">)</span> <span style="color:#666">*</span> 2<span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+      <span style="color:#666">}</span>
+      currentAttributeOffset <span style="color:#666">+=</span> attributeLength<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+    <span style="color:#007020;font-weight:bold">this</span><span style="color:#666">.</span><span style="color:#4070a0">bootstrapMethodOffsets</span> <span style="color:#666">=</span> currentBootstrapMethodOffsets<span style="color:#666">;</span>
+  <span style="color:#666">}</span>
 </code></pre></div><p>到此为止，ClassReader 已经解析了包括 magic, minor version, major version, constant pool 。
 但是，诸如 field_info, method_info, attribute_info 等仍然没有得到处理。</p>
 <p>这部分的内容在 accept(&hellip;) 和 readXXX(&hellip;) 中将得到解析。</p>
@@ -427,89 +427,89 @@ CONSTANT_Methodref_info {
 <li>visitEnd</li>
 </ol>
 <h2 id="附录1-triejava">附录1 Trie.java</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> me.fangfeng.filter<span style="color:#f92672">;</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">me.fangfeng.filter</span><span style="color:#666">;</span>
 
-<span style="color:#f92672">import</span> java.io.BufferedReader<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> java.io.BufferedWriter<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> java.io.FileInputStream<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> java.io.FileOutputStream<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> java.io.FileNotFoundException<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> java.io.InputStreamReader<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> java.io.IOException<span style="color:#f92672">;</span>
-<span style="color:#f92672">import</span> java.io.OutputStreamWriter<span style="color:#f92672">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.io.BufferedReader</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.io.BufferedWriter</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.io.FileInputStream</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.io.FileOutputStream</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.io.FileNotFoundException</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.io.InputStreamReader</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.io.IOException</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.io.OutputStreamWriter</span><span style="color:#666">;</span>
 
-<span style="color:#75715e">/**
-</span><span style="color:#75715e"> * @author fangfeng
-</span><span style="color:#75715e"> * @since 2018/5/16
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Trie</span> <span style="color:#f92672">{</span>
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2018/5/16
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Trie</span> <span style="color:#666">{</span>
     
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> MAX_ITEM <span style="color:#f92672">=</span> 700000<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> AVG_LENGTH <span style="color:#f92672">=</span> 11<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> MAX_NODE <span style="color:#f92672">=</span> MAX_ITEM <span style="color:#f92672">*</span> AVG_LENGTH<span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> CHAR_NUM <span style="color:#f92672">=</span> 10<span style="color:#f92672">;</span>
+    <span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">int</span> MAX_ITEM <span style="color:#666">=</span> 700000<span style="color:#666">;</span>
+    <span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">int</span> AVG_LENGTH <span style="color:#666">=</span> 11<span style="color:#666">;</span>
+    <span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">int</span> MAX_NODE <span style="color:#666">=</span> MAX_ITEM <span style="color:#666">*</span> AVG_LENGTH<span style="color:#666">;</span>
+    <span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">int</span> CHAR_NUM <span style="color:#666">=</span> 10<span style="color:#666">;</span>
 
-    <span style="color:#66d9ef">int</span><span style="color:#f92672">[][]</span> nxt <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">[</span>MAX_NODE<span style="color:#f92672">][</span>CHAR_NUM<span style="color:#f92672">];</span>
-    <span style="color:#66d9ef">boolean</span><span style="color:#f92672">[]</span> flag <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">boolean</span><span style="color:#f92672">[</span>MAX_NODE<span style="color:#f92672">];</span>
-    <span style="color:#66d9ef">int</span> trieIndex <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#902000">int</span><span style="color:#666">[][]</span> nxt <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> <span style="color:#902000">int</span><span style="color:#666">[</span>MAX_NODE<span style="color:#666">][</span>CHAR_NUM<span style="color:#666">];</span>
+    <span style="color:#902000">boolean</span><span style="color:#666">[]</span> flag <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> <span style="color:#902000">boolean</span><span style="color:#666">[</span>MAX_NODE<span style="color:#666">];</span>
+    <span style="color:#902000">int</span> trieIndex <span style="color:#666">=</span> 0<span style="color:#666">;</span>
 
-    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">insert</span><span style="color:#f92672">(</span><span style="color:#66d9ef">long</span> number<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">int</span> tmpIndex <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(;</span>number <span style="color:#f92672">!=</span> 0<span style="color:#f92672">;</span>number <span style="color:#f92672">/=</span> 10<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>nxt<span style="color:#f92672">[</span>tmpIndex<span style="color:#f92672">][(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span>number <span style="color:#f92672">%</span> 10<span style="color:#f92672">)]</span> <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                nxt<span style="color:#f92672">[</span>tmpIndex<span style="color:#f92672">][(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span>number <span style="color:#f92672">%</span> 10<span style="color:#f92672">)]</span> <span style="color:#f92672">=</span> <span style="color:#f92672">++</span>trieIndex<span style="color:#f92672">;</span>
-            <span style="color:#f92672">}</span>
-            tmpIndex <span style="color:#f92672">=</span> nxt<span style="color:#f92672">[</span>tmpIndex<span style="color:#f92672">][(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span>number <span style="color:#f92672">%</span> 10<span style="color:#f92672">)];</span>
-        <span style="color:#f92672">}</span>
-        flag<span style="color:#f92672">[</span>tmpIndex<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#902000">void</span> <span style="color:#06287e">insert</span><span style="color:#666">(</span><span style="color:#902000">long</span> number<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#902000">int</span> tmpIndex <span style="color:#666">=</span> 0<span style="color:#666">;</span>
+        <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(;</span>number <span style="color:#666">!=</span> 0<span style="color:#666">;</span>number <span style="color:#666">/=</span> 10<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>nxt<span style="color:#666">[</span>tmpIndex<span style="color:#666">][(</span><span style="color:#902000">int</span><span style="color:#666">)</span> <span style="color:#666">(</span>number <span style="color:#666">%</span> 10<span style="color:#666">)]</span> <span style="color:#666">==</span> 0<span style="color:#666">)</span> <span style="color:#666">{</span>
+                nxt<span style="color:#666">[</span>tmpIndex<span style="color:#666">][(</span><span style="color:#902000">int</span><span style="color:#666">)</span> <span style="color:#666">(</span>number <span style="color:#666">%</span> 10<span style="color:#666">)]</span> <span style="color:#666">=</span> <span style="color:#666">++</span>trieIndex<span style="color:#666">;</span>
+            <span style="color:#666">}</span>
+            tmpIndex <span style="color:#666">=</span> nxt<span style="color:#666">[</span>tmpIndex<span style="color:#666">][(</span><span style="color:#902000">int</span><span style="color:#666">)</span> <span style="color:#666">(</span>number <span style="color:#666">%</span> 10<span style="color:#666">)];</span>
+        <span style="color:#666">}</span>
+        flag<span style="color:#666">[</span>tmpIndex<span style="color:#666">]</span> <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">true</span><span style="color:#666">;</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">query</span><span style="color:#f92672">(</span><span style="color:#66d9ef">long</span> number<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">int</span> tmpIndex <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(;</span>number <span style="color:#f92672">!=</span> 0<span style="color:#f92672">;</span>number <span style="color:#f92672">/=</span> 10<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>nxt<span style="color:#f92672">[</span>tmpIndex<span style="color:#f92672">][(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span>number <span style="color:#f92672">%</span> 10<span style="color:#f92672">)]</span> <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
-            <span style="color:#f92672">}</span>
-            tmpIndex <span style="color:#f92672">=</span> nxt<span style="color:#f92672">[</span>tmpIndex<span style="color:#f92672">][(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span>number <span style="color:#f92672">%</span> 10<span style="color:#f92672">)];</span>
-        <span style="color:#f92672">}</span>
-        <span style="color:#66d9ef">return</span> flag<span style="color:#f92672">[</span>tmpIndex<span style="color:#f92672">];</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#902000">boolean</span> <span style="color:#06287e">query</span><span style="color:#666">(</span><span style="color:#902000">long</span> number<span style="color:#666">)</span> <span style="color:#666">{</span>
+        <span style="color:#902000">int</span> tmpIndex <span style="color:#666">=</span> 0<span style="color:#666">;</span>
+        <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(;</span>number <span style="color:#666">!=</span> 0<span style="color:#666">;</span>number <span style="color:#666">/=</span> 10<span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>nxt<span style="color:#666">[</span>tmpIndex<span style="color:#666">][(</span><span style="color:#902000">int</span><span style="color:#666">)</span> <span style="color:#666">(</span>number <span style="color:#666">%</span> 10<span style="color:#666">)]</span> <span style="color:#666">==</span> 0<span style="color:#666">)</span> <span style="color:#666">{</span>
+                <span style="color:#007020;font-weight:bold">return</span> <span style="color:#007020;font-weight:bold">false</span><span style="color:#666">;</span>
+            <span style="color:#666">}</span>
+            tmpIndex <span style="color:#666">=</span> nxt<span style="color:#666">[</span>tmpIndex<span style="color:#666">][(</span><span style="color:#902000">int</span><span style="color:#666">)</span> <span style="color:#666">(</span>number <span style="color:#666">%</span> 10<span style="color:#666">)];</span>
+        <span style="color:#666">}</span>
+        <span style="color:#007020;font-weight:bold">return</span> flag<span style="color:#666">[</span>tmpIndex<span style="color:#666">];</span>
+    <span style="color:#666">}</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">...</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> FileNotFoundException<span style="color:#f92672">,</span> IOException <span style="color:#f92672">{</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">main</span><span style="color:#666">(</span>String<span style="color:#666">...</span> args<span style="color:#666">)</span> <span style="color:#007020;font-weight:bold">throws</span> FileNotFoundException<span style="color:#666">,</span> IOException <span style="color:#666">{</span>
 
-        <span style="color:#66d9ef">long</span> start <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTimeMillis</span><span style="color:#f92672">();</span>
+        <span style="color:#902000">long</span> start <span style="color:#666">=</span> System<span style="color:#666">.</span><span style="color:#4070a0">currentTimeMillis</span><span style="color:#666">();</span>
 
-        String ruleFilePath <span style="color:#f92672">=</span> args<span style="color:#f92672">[</span>0<span style="color:#f92672">];</span>
-        String sendFilePath <span style="color:#f92672">=</span> args<span style="color:#f92672">[</span>1<span style="color:#f92672">];</span>
-        String outFilePath <span style="color:#f92672">=</span> args<span style="color:#f92672">[</span>2<span style="color:#f92672">];</span>
+        String ruleFilePath <span style="color:#666">=</span> args<span style="color:#666">[</span>0<span style="color:#666">];</span>
+        String sendFilePath <span style="color:#666">=</span> args<span style="color:#666">[</span>1<span style="color:#666">];</span>
+        String outFilePath <span style="color:#666">=</span> args<span style="color:#666">[</span>2<span style="color:#666">];</span>
 
-        BufferedReader ruleReader <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedReader<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> InputStreamReader<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> FileInputStream<span style="color:#f92672">(</span>ruleFilePath<span style="color:#f92672">)));</span>
-        BufferedReader sendReader <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedReader<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> InputStreamReader<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> FileInputStream<span style="color:#f92672">(</span>sendFilePath<span style="color:#f92672">)));</span>
+        BufferedReader ruleReader <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> BufferedReader<span style="color:#666">(</span><span style="color:#007020;font-weight:bold">new</span> InputStreamReader<span style="color:#666">(</span><span style="color:#007020;font-weight:bold">new</span> FileInputStream<span style="color:#666">(</span>ruleFilePath<span style="color:#666">)));</span>
+        BufferedReader sendReader <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> BufferedReader<span style="color:#666">(</span><span style="color:#007020;font-weight:bold">new</span> InputStreamReader<span style="color:#666">(</span><span style="color:#007020;font-weight:bold">new</span> FileInputStream<span style="color:#666">(</span>sendFilePath<span style="color:#666">)));</span>
 
-        BufferedWriter outWriter <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedWriter<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> OutputStreamWriter<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> FileOutputStream<span style="color:#f92672">(</span>outFilePath<span style="color:#f92672">)));</span>
+        BufferedWriter outWriter <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> BufferedWriter<span style="color:#666">(</span><span style="color:#007020;font-weight:bold">new</span> OutputStreamWriter<span style="color:#666">(</span><span style="color:#007020;font-weight:bold">new</span> FileOutputStream<span style="color:#666">(</span>outFilePath<span style="color:#666">)));</span>
 
-        Trie trie <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Trie<span style="color:#f92672">();</span>
-        String mobile<span style="color:#f92672">;</span>
-        <span style="color:#66d9ef">while</span><span style="color:#f92672">((</span>mobile <span style="color:#f92672">=</span> ruleReader<span style="color:#f92672">.</span><span style="color:#a6e22e">readLine</span><span style="color:#f92672">())</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            trie<span style="color:#f92672">.</span><span style="color:#a6e22e">insert</span><span style="color:#f92672">(</span>Long<span style="color:#f92672">.</span><span style="color:#a6e22e">parseLong</span><span style="color:#f92672">(</span>mobile<span style="color:#f92672">));</span>
-        <span style="color:#f92672">}</span>
-        ruleReader<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">();</span>
+        Trie trie <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> Trie<span style="color:#666">();</span>
+        String mobile<span style="color:#666">;</span>
+        <span style="color:#007020;font-weight:bold">while</span><span style="color:#666">((</span>mobile <span style="color:#666">=</span> ruleReader<span style="color:#666">.</span><span style="color:#4070a0">readLine</span><span style="color:#666">())</span> <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            trie<span style="color:#666">.</span><span style="color:#4070a0">insert</span><span style="color:#666">(</span>Long<span style="color:#666">.</span><span style="color:#4070a0">parseLong</span><span style="color:#666">(</span>mobile<span style="color:#666">));</span>
+        <span style="color:#666">}</span>
+        ruleReader<span style="color:#666">.</span><span style="color:#4070a0">close</span><span style="color:#666">();</span>
 
-        <span style="color:#66d9ef">while</span><span style="color:#f92672">((</span>mobile <span style="color:#f92672">=</span> sendReader<span style="color:#f92672">.</span><span style="color:#a6e22e">readLine</span><span style="color:#f92672">())</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>trie<span style="color:#f92672">.</span><span style="color:#a6e22e">query</span><span style="color:#f92672">(</span>Long<span style="color:#f92672">.</span><span style="color:#a6e22e">parseLong</span><span style="color:#f92672">(</span>mobile<span style="color:#f92672">))</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-                outWriter<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>mobile<span style="color:#f92672">);</span>
-                outWriter<span style="color:#f92672">.</span><span style="color:#a6e22e">newLine</span><span style="color:#f92672">();</span>
-            <span style="color:#f92672">}</span>
-        <span style="color:#f92672">}</span>
-        sendReader<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">();</span>
+        <span style="color:#007020;font-weight:bold">while</span><span style="color:#666">((</span>mobile <span style="color:#666">=</span> sendReader<span style="color:#666">.</span><span style="color:#4070a0">readLine</span><span style="color:#666">())</span> <span style="color:#666">!=</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">if</span><span style="color:#666">(</span>trie<span style="color:#666">.</span><span style="color:#4070a0">query</span><span style="color:#666">(</span>Long<span style="color:#666">.</span><span style="color:#4070a0">parseLong</span><span style="color:#666">(</span>mobile<span style="color:#666">))</span> <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">false</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+                outWriter<span style="color:#666">.</span><span style="color:#4070a0">write</span><span style="color:#666">(</span>mobile<span style="color:#666">);</span>
+                outWriter<span style="color:#666">.</span><span style="color:#4070a0">newLine</span><span style="color:#666">();</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span>
+        sendReader<span style="color:#666">.</span><span style="color:#4070a0">close</span><span style="color:#666">();</span>
 
-        outWriter<span style="color:#f92672">.</span><span style="color:#a6e22e">flush</span><span style="color:#f92672">();</span>
-        outWriter<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">();</span>
+        outWriter<span style="color:#666">.</span><span style="color:#4070a0">flush</span><span style="color:#666">();</span>
+        outWriter<span style="color:#666">.</span><span style="color:#4070a0">close</span><span style="color:#666">();</span>
 
-        <span style="color:#66d9ef">long</span> end <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTimeMillis</span><span style="color:#f92672">();</span>
-        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;exec success! used %d ms&#34;</span><span style="color:#f92672">,</span> end <span style="color:#f92672">-</span> start<span style="color:#f92672">));</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
+        <span style="color:#902000">long</span> end <span style="color:#666">=</span> System<span style="color:#666">.</span><span style="color:#4070a0">currentTimeMillis</span><span style="color:#666">();</span>
+        System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>String<span style="color:#666">.</span><span style="color:#4070a0">format</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;exec success! used %d ms&#34;</span><span style="color:#666">,</span> end <span style="color:#666">-</span> start<span style="color:#666">));</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
 </code></pre></div><h2 id="附录2-constant-pool">附录2 Constant pool</h2>
 <pre><code>Constant pool:
     #1 = Methodref          #36.#75       // java/lang/Object.&quot;&lt;init&gt;&quot;:()V
@@ -656,7 +656,7 @@ CONSTANT_Methodref_info {
 </code></pre><h2 id="参考">参考</h2>
 <p>[1]: <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html">https://docs.oracle.com/javase/specs/jvms/se8/html/index.html</a> &ldquo;Java Virtual Machine Specification&rdquo;
 [2]: <a href="https://icyfenix.iteye.com/blog/1256329">https://icyfenix.iteye.com/blog/1256329</a> &ldquo;Java虚拟机规范（Java SE 7 中文版）&rdquo;</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -667,6 +667,12 @@ CONSTANT_Methodref_info {
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

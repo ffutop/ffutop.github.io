@@ -113,549 +113,555 @@ BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 
 <p>既然说 BPF 的高效在于其将一定用户高度个性定制的包过滤代码埋入了内核，那么就先来看看代理程序是如何深入内核，并展开相应的工作。</p>
 <p><img src="https://img.ffutop.com/39D53E85-8DEF-421E-AA8A-3383B271981B.png" alt=""></p>
 <p>与 BPF 相关的系统调用</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">socket(AF_PACKET, SOCK_RAW, ...)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">socket(AF_PACKET, SOCK_RAW, ...)
 bind(sockfd, iface)
 setsockopt(sockfd, SOL_SOCKET, SO_ATTACH_FILTER, ...)
 recv(sockfd, ...)
 </code></pre></div><p>通过 <code>setsockopt</code> 系统调用，用户自定义的过滤程序将进入内核空间，并作为钩子对每个通过网络协议栈的网络包进行过滤，抓取并拷贝命中的网络包提交到监听 socket 的接收等待队列中。下列的示例程序展示了配置代理过滤程序及提取过滤结果的逻辑。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;net/if.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;net/ethernet.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netinet/in.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netinet/ip.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;arpa/inet.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netpacket/packet.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;linux/filter.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#75715e">#define OP_LDH (BPF_LD  | BPF_H   | BPF_ABS)
-</span><span style="color:#75715e">#define OP_LDB (BPF_LD  | BPF_B   | BPF_ABS)
-</span><span style="color:#75715e">#define OP_JEQ (BPF_JMP | BPF_JEQ | BPF_K)
-</span><span style="color:#75715e">#define OP_RET (BPF_RET | BPF_K)
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">struct</span> sock_filter bpfcode[<span style="color:#ae81ff">6</span>] <span style="color:#f92672">=</span> {
-	{ OP_LDH, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">12</span>          },	<span style="color:#75715e">// ldh [12]
-</span><span style="color:#75715e"></span>	{ OP_JEQ, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">2</span>, ETH_P_IP    },	<span style="color:#75715e">// jeq #0x800, L2, L5
-</span><span style="color:#75715e"></span>	{ OP_LDB, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">23</span>          },	<span style="color:#75715e">// ldb [23]
-</span><span style="color:#75715e"></span>	{ OP_JEQ, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, IPPROTO_TCP },	<span style="color:#75715e">// jeq #0x6, L4, L5
-</span><span style="color:#75715e"></span>	{ OP_RET, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>           },	<span style="color:#75715e">// ret #0x0
-</span><span style="color:#75715e"></span>	{ OP_RET, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,         },	<span style="color:#75715e">// ret #0xffffffff
-</span><span style="color:#75715e"></span>};
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020">#include</span> <span style="color:#007020">&lt;stdio.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;string.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/types.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/socket.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;net/if.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;net/ethernet.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;netinet/in.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;netinet/ip.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;arpa/inet.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;netpacket/packet.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;linux/filter.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020"></span>
+<span style="color:#007020">#define OP_LDH (BPF_LD  | BPF_H   | BPF_ABS)
+</span><span style="color:#007020">#define OP_LDB (BPF_LD  | BPF_B   | BPF_ABS)
+</span><span style="color:#007020">#define OP_JEQ (BPF_JMP | BPF_JEQ | BPF_K)
+</span><span style="color:#007020">#define OP_RET (BPF_RET | BPF_K)
+</span><span style="color:#007020"></span>
+<span style="color:#007020;font-weight:bold">static</span> <span style="color:#007020;font-weight:bold">struct</span> sock_filter bpfcode[<span style="color:#40a070">6</span>] <span style="color:#666">=</span> {
+	{ OP_LDH, <span style="color:#40a070">0</span>, <span style="color:#40a070">0</span>, <span style="color:#40a070">12</span>          },	<span style="color:#60a0b0;font-style:italic">// ldh [12]
+</span><span style="color:#60a0b0;font-style:italic"></span>	{ OP_JEQ, <span style="color:#40a070">0</span>, <span style="color:#40a070">2</span>, ETH_P_IP    },	<span style="color:#60a0b0;font-style:italic">// jeq #0x800, L2, L5
+</span><span style="color:#60a0b0;font-style:italic"></span>	{ OP_LDB, <span style="color:#40a070">0</span>, <span style="color:#40a070">0</span>, <span style="color:#40a070">23</span>          },	<span style="color:#60a0b0;font-style:italic">// ldb [23]
+</span><span style="color:#60a0b0;font-style:italic"></span>	{ OP_JEQ, <span style="color:#40a070">0</span>, <span style="color:#40a070">1</span>, IPPROTO_TCP },	<span style="color:#60a0b0;font-style:italic">// jeq #0x6, L4, L5
+</span><span style="color:#60a0b0;font-style:italic"></span>	{ OP_RET, <span style="color:#40a070">0</span>, <span style="color:#40a070">0</span>, <span style="color:#40a070">0</span>           },	<span style="color:#60a0b0;font-style:italic">// ret #0x0
+</span><span style="color:#60a0b0;font-style:italic"></span>	{ OP_RET, <span style="color:#40a070">0</span>, <span style="color:#40a070">0</span>, <span style="color:#666">-</span><span style="color:#40a070">1</span>,         },	<span style="color:#60a0b0;font-style:italic">// ret #0xffffffff
+</span><span style="color:#60a0b0;font-style:italic"></span>};
 
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>argv)
+<span style="color:#902000">int</span> <span style="color:#06287e">main</span>(<span style="color:#902000">int</span> argc, <span style="color:#902000">char</span> <span style="color:#666">**</span>argv)
 {
-	<span style="color:#66d9ef">int</span> sock;
-	<span style="color:#66d9ef">int</span> n;
-	<span style="color:#66d9ef">char</span> buf[<span style="color:#ae81ff">2000</span>];
-	<span style="color:#66d9ef">struct</span> sockaddr_ll addr;
-	<span style="color:#66d9ef">struct</span> packet_mreq mreq;
-	<span style="color:#66d9ef">struct</span> iphdr <span style="color:#f92672">*</span>ip;
-	<span style="color:#66d9ef">char</span> saddr_str[INET_ADDRSTRLEN], daddr_str[INET_ADDRSTRLEN];
-	<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>proto_str;
-	<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name;
-	<span style="color:#66d9ef">struct</span> sock_fprog bpf <span style="color:#f92672">=</span> { <span style="color:#ae81ff">6</span>, bpfcode };
+	<span style="color:#902000">int</span> sock;
+	<span style="color:#902000">int</span> n;
+	<span style="color:#902000">char</span> buf[<span style="color:#40a070">2000</span>];
+	<span style="color:#007020;font-weight:bold">struct</span> sockaddr_ll addr;
+	<span style="color:#007020;font-weight:bold">struct</span> packet_mreq mreq;
+	<span style="color:#007020;font-weight:bold">struct</span> iphdr <span style="color:#666">*</span>ip;
+	<span style="color:#902000">char</span> saddr_str[INET_ADDRSTRLEN], daddr_str[INET_ADDRSTRLEN];
+	<span style="color:#902000">char</span> <span style="color:#666">*</span>proto_str;
+	<span style="color:#902000">char</span> <span style="color:#666">*</span>name;
+	<span style="color:#007020;font-weight:bold">struct</span> sock_fprog bpf <span style="color:#666">=</span> { <span style="color:#40a070">6</span>, bpfcode };
 
-	<span style="color:#66d9ef">if</span> (argc <span style="color:#f92672">!=</span> <span style="color:#ae81ff">2</span>) {
-		printf(<span style="color:#e6db74">&#34;Usage: %s ifname</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, argv[<span style="color:#ae81ff">0</span>]);
-		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+	<span style="color:#007020;font-weight:bold">if</span> (argc <span style="color:#666">!=</span> <span style="color:#40a070">2</span>) {
+		printf(<span style="color:#4070a0">&#34;Usage: %s ifname</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, argv[<span style="color:#40a070">0</span>]);
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">1</span>;
 	}
 
-	name <span style="color:#f92672">=</span> argv[<span style="color:#ae81ff">1</span>];
+	name <span style="color:#666">=</span> argv[<span style="color:#40a070">1</span>];
 
-	sock <span style="color:#f92672">=</span> socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-	<span style="color:#66d9ef">if</span> (sock <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) {
-		perror(<span style="color:#e6db74">&#34;socket&#34;</span>);
-		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+	sock <span style="color:#666">=</span> socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+	<span style="color:#007020;font-weight:bold">if</span> (sock <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span>) {
+		perror(<span style="color:#4070a0">&#34;socket&#34;</span>);
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">1</span>;
 	}
 
-	memset(<span style="color:#f92672">&amp;</span>addr, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">sizeof</span>(addr));
-	addr.sll_ifindex <span style="color:#f92672">=</span> if_nametoindex(name);
-	addr.sll_family <span style="color:#f92672">=</span> AF_PACKET;
-	addr.sll_protocol <span style="color:#f92672">=</span> htons(ETH_P_ALL);
+	memset(<span style="color:#666">&amp;</span>addr, <span style="color:#40a070">0</span>, <span style="color:#007020;font-weight:bold">sizeof</span>(addr));
+	addr.sll_ifindex <span style="color:#666">=</span> if_nametoindex(name);
+	addr.sll_family <span style="color:#666">=</span> AF_PACKET;
+	addr.sll_protocol <span style="color:#666">=</span> htons(ETH_P_ALL);
 
-	<span style="color:#66d9ef">if</span> (bind(sock, (<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>) <span style="color:#f92672">&amp;</span>addr, <span style="color:#66d9ef">sizeof</span>(addr))) {
-		perror(<span style="color:#e6db74">&#34;bind&#34;</span>);
-		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+	<span style="color:#007020;font-weight:bold">if</span> (bind(sock, (<span style="color:#007020;font-weight:bold">struct</span> sockaddr <span style="color:#666">*</span>) <span style="color:#666">&amp;</span>addr, <span style="color:#007020;font-weight:bold">sizeof</span>(addr))) {
+		perror(<span style="color:#4070a0">&#34;bind&#34;</span>);
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">1</span>;
 	}
 
-	<span style="color:#66d9ef">if</span> (setsockopt(sock, SOL_SOCKET, SO_ATTACH_FILTER, <span style="color:#f92672">&amp;</span>bpf, <span style="color:#66d9ef">sizeof</span>(bpf))) {
-		perror(<span style="color:#e6db74">&#34;setsockopt ATTACH_FILTER&#34;</span>);
-		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+	<span style="color:#007020;font-weight:bold">if</span> (setsockopt(sock, SOL_SOCKET, SO_ATTACH_FILTER, <span style="color:#666">&amp;</span>bpf, <span style="color:#007020;font-weight:bold">sizeof</span>(bpf))) {
+		perror(<span style="color:#4070a0">&#34;setsockopt ATTACH_FILTER&#34;</span>);
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">1</span>;
 	}
 
-	memset(<span style="color:#f92672">&amp;</span>mreq, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">sizeof</span>(mreq));
-	mreq.mr_type <span style="color:#f92672">=</span> PACKET_MR_PROMISC;
-	mreq.mr_ifindex <span style="color:#f92672">=</span> if_nametoindex(name);
+	memset(<span style="color:#666">&amp;</span>mreq, <span style="color:#40a070">0</span>, <span style="color:#007020;font-weight:bold">sizeof</span>(mreq));
+	mreq.mr_type <span style="color:#666">=</span> PACKET_MR_PROMISC;
+	mreq.mr_ifindex <span style="color:#666">=</span> if_nametoindex(name);
 
-	<span style="color:#66d9ef">if</span> (setsockopt(sock, SOL_PACKET,
-				PACKET_ADD_MEMBERSHIP, (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>mreq, <span style="color:#66d9ef">sizeof</span>(mreq))) {
-		perror(<span style="color:#e6db74">&#34;setsockopt MR_PROMISC&#34;</span>);
-		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+	<span style="color:#007020;font-weight:bold">if</span> (setsockopt(sock, SOL_PACKET,
+				PACKET_ADD_MEMBERSHIP, (<span style="color:#902000">char</span> <span style="color:#666">*</span>)<span style="color:#666">&amp;</span>mreq, <span style="color:#007020;font-weight:bold">sizeof</span>(mreq))) {
+		perror(<span style="color:#4070a0">&#34;setsockopt MR_PROMISC&#34;</span>);
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">1</span>;
 	}
 
-	<span style="color:#66d9ef">for</span> (;;) {
-		n <span style="color:#f92672">=</span> recv(sock, buf, <span style="color:#66d9ef">sizeof</span>(buf), <span style="color:#ae81ff">0</span>);
-		<span style="color:#66d9ef">if</span> (n <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1</span>) {
-			perror(<span style="color:#e6db74">&#34;recv&#34;</span>);
-			<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+	<span style="color:#007020;font-weight:bold">for</span> (;;) {
+		n <span style="color:#666">=</span> recv(sock, buf, <span style="color:#007020;font-weight:bold">sizeof</span>(buf), <span style="color:#40a070">0</span>);
+		<span style="color:#007020;font-weight:bold">if</span> (n <span style="color:#666">&lt;</span> <span style="color:#40a070">1</span>) {
+			perror(<span style="color:#4070a0">&#34;recv&#34;</span>);
+			<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
 		}
 
-		ip <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> iphdr <span style="color:#f92672">*</span>)(buf <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> ether_header));
+		ip <span style="color:#666">=</span> (<span style="color:#007020;font-weight:bold">struct</span> iphdr <span style="color:#666">*</span>)(buf <span style="color:#666">+</span> <span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#007020;font-weight:bold">struct</span> ether_header));
 
-		inet_ntop(AF_INET, <span style="color:#f92672">&amp;</span>ip<span style="color:#f92672">-&gt;</span>saddr, saddr_str, <span style="color:#66d9ef">sizeof</span>(saddr_str));
-		inet_ntop(AF_INET, <span style="color:#f92672">&amp;</span>ip<span style="color:#f92672">-&gt;</span>daddr, daddr_str, <span style="color:#66d9ef">sizeof</span>(daddr_str));
+		inet_ntop(AF_INET, <span style="color:#666">&amp;</span>ip<span style="color:#666">-&gt;</span>saddr, saddr_str, <span style="color:#007020;font-weight:bold">sizeof</span>(saddr_str));
+		inet_ntop(AF_INET, <span style="color:#666">&amp;</span>ip<span style="color:#666">-&gt;</span>daddr, daddr_str, <span style="color:#007020;font-weight:bold">sizeof</span>(daddr_str));
 
-		<span style="color:#66d9ef">switch</span> (ip<span style="color:#f92672">-&gt;</span>protocol) {
-<span style="color:#75715e">#define PTOSTR(_p,_str) \
-</span><span style="color:#75715e">			case _p: proto_str = _str; break
-</span><span style="color:#75715e"></span>
-		PTOSTR(IPPROTO_ICMP, <span style="color:#e6db74">&#34;icmp&#34;</span>);
-		PTOSTR(IPPROTO_TCP, <span style="color:#e6db74">&#34;tcp&#34;</span>);
-		PTOSTR(IPPROTO_UDP, <span style="color:#e6db74">&#34;udp&#34;</span>);
-		<span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
-			proto_str <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>;
-			<span style="color:#66d9ef">break</span>;
+		<span style="color:#007020;font-weight:bold">switch</span> (ip<span style="color:#666">-&gt;</span>protocol) {
+<span style="color:#007020">#define PTOSTR(_p,_str) \
+</span><span style="color:#007020">			case _p: proto_str = _str; break
+</span><span style="color:#007020"></span>
+		PTOSTR(IPPROTO_ICMP, <span style="color:#4070a0">&#34;icmp&#34;</span>);
+		PTOSTR(IPPROTO_TCP, <span style="color:#4070a0">&#34;tcp&#34;</span>);
+		PTOSTR(IPPROTO_UDP, <span style="color:#4070a0">&#34;udp&#34;</span>);
+		<span style="color:#007020;font-weight:bold">default</span><span style="color:#666">:</span>
+			proto_str <span style="color:#666">=</span> <span style="color:#4070a0">&#34;&#34;</span>;
+			<span style="color:#007020;font-weight:bold">break</span>;
 		}
 
-		printf(<span style="color:#e6db74">&#34;IPv%d proto=%d(%s) src=%s dst=%s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,
-				ip<span style="color:#f92672">-&gt;</span>version, ip<span style="color:#f92672">-&gt;</span>protocol, proto_str, saddr_str, daddr_str);
+		printf(<span style="color:#4070a0">&#34;IPv%d proto=%d(%s) src=%s dst=%s</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>,
+				ip<span style="color:#666">-&gt;</span>version, ip<span style="color:#666">-&gt;</span>protocol, proto_str, saddr_str, daddr_str);
 	}
 
-	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+	<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
 }
 </code></pre></div><p><code>setsockopt</code> 作为代理程序进出内核的核心路径。提供 <code>SO_ATTACH_FILTER</code> 和 <code>SO_DETACH_FILTER</code> 两个操作枚举值</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Copied from net/core/sock.c */</span>
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sock_setsockopt</span>(<span style="color:#66d9ef">struct</span> socket <span style="color:#f92672">*</span>sock, <span style="color:#66d9ef">int</span> level, <span style="color:#66d9ef">int</span> optname,
-		    <span style="color:#66d9ef">char</span> __user <span style="color:#f92672">*</span>optval, <span style="color:#66d9ef">int</span> optlen)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* Copied from net/core/sock.c */</span>
+<span style="color:#902000">int</span> <span style="color:#06287e">sock_setsockopt</span>(<span style="color:#007020;font-weight:bold">struct</span> socket <span style="color:#666">*</span>sock, <span style="color:#902000">int</span> level, <span style="color:#902000">int</span> optname,
+		    <span style="color:#902000">char</span> __user <span style="color:#666">*</span>optval, <span style="color:#902000">int</span> optlen)
 {
-	<span style="color:#66d9ef">struct</span> sock <span style="color:#f92672">*</span>sk<span style="color:#f92672">=</span>sock<span style="color:#f92672">-&gt;</span>sk;
-	<span style="color:#66d9ef">int</span> ret <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+	<span style="color:#007020;font-weight:bold">struct</span> sock <span style="color:#666">*</span>sk<span style="color:#666">=</span>sock<span style="color:#666">-&gt;</span>sk;
+	<span style="color:#902000">int</span> ret <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
 
-	<span style="color:#66d9ef">switch</span>(optname) {
-    <span style="color:#75715e">/* some code omitted ... */</span>
-	<span style="color:#66d9ef">case</span> SO_ATTACH_FILTER:
-		ret <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>EINVAL;
-		<span style="color:#66d9ef">if</span> (optlen <span style="color:#f92672">==</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> sock_fprog)) {
-			<span style="color:#66d9ef">struct</span> sock_fprog fprog;
+	<span style="color:#007020;font-weight:bold">switch</span>(optname) {
+    <span style="color:#60a0b0;font-style:italic">/* some code omitted ... */</span>
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">SO_ATTACH_FILTER</span>:
+		ret <span style="color:#666">=</span> <span style="color:#666">-</span>EINVAL;
+		<span style="color:#007020;font-weight:bold">if</span> (optlen <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#007020;font-weight:bold">struct</span> sock_fprog)) {
+			<span style="color:#007020;font-weight:bold">struct</span> sock_fprog fprog;
 
-			ret <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>EFAULT;
-            <span style="color:#75715e">/* 从用户空间向内核空间拷贝维护着代理程序的通用数据结构 */</span>
-			<span style="color:#66d9ef">if</span> (copy_from_user(<span style="color:#f92672">&amp;</span>fprog, optval, <span style="color:#66d9ef">sizeof</span>(fprog)))
-				<span style="color:#66d9ef">break</span>;
-            <span style="color:#75715e">/* 给 sock 挂载上代理程序 */</span>
-			ret <span style="color:#f92672">=</span> sk_attach_filter(<span style="color:#f92672">&amp;</span>fprog, sk);
+			ret <span style="color:#666">=</span> <span style="color:#666">-</span>EFAULT;
+            <span style="color:#60a0b0;font-style:italic">/* 从用户空间向内核空间拷贝维护着代理程序的通用数据结构 */</span>
+			<span style="color:#007020;font-weight:bold">if</span> (copy_from_user(<span style="color:#666">&amp;</span>fprog, optval, <span style="color:#007020;font-weight:bold">sizeof</span>(fprog)))
+				<span style="color:#007020;font-weight:bold">break</span>;
+            <span style="color:#60a0b0;font-style:italic">/* 给 sock 挂载上代理程序 */</span>
+			ret <span style="color:#666">=</span> sk_attach_filter(<span style="color:#666">&amp;</span>fprog, sk);
 		}
-		<span style="color:#66d9ef">break</span>;
+		<span style="color:#007020;font-weight:bold">break</span>;
 
-	<span style="color:#66d9ef">case</span> SO_DETACH_FILTER:
-        <span style="color:#75715e">/* 解挂代理程序 */</span>
-		ret <span style="color:#f92672">=</span> sk_detach_filter(sk);
-		<span style="color:#66d9ef">break</span>;
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">SO_DETACH_FILTER</span>:
+        <span style="color:#60a0b0;font-style:italic">/* 解挂代理程序 */</span>
+		ret <span style="color:#666">=</span> sk_detach_filter(sk);
+		<span style="color:#007020;font-weight:bold">break</span>;
 
-	<span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
-		ret <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>ENOPROTOOPT;
-		<span style="color:#66d9ef">break</span>;
+	<span style="color:#007020;font-weight:bold">default</span><span style="color:#666">:</span>
+		ret <span style="color:#666">=</span> <span style="color:#666">-</span>ENOPROTOOPT;
+		<span style="color:#007020;font-weight:bold">break</span>;
 	}
 	release_sock(sk);
-	<span style="color:#66d9ef">return</span> ret;
+	<span style="color:#007020;font-weight:bold">return</span> ret;
 }
 </code></pre></div><p><code>sk_attach_filter</code> 对代理程序进行安全检测，并在确认不会导致内核 panic 的前提下，将程序挂载到钩子 <code>sk_filter</code> 上。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Copied from net/core/filter.c */</span>
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sk_attach_filter</span>(<span style="color:#66d9ef">struct</span> sock_fprog <span style="color:#f92672">*</span>fprog, <span style="color:#66d9ef">struct</span> sock <span style="color:#f92672">*</span>sk)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* Copied from net/core/filter.c */</span>
+<span style="color:#902000">int</span> <span style="color:#06287e">sk_attach_filter</span>(<span style="color:#007020;font-weight:bold">struct</span> sock_fprog <span style="color:#666">*</span>fprog, <span style="color:#007020;font-weight:bold">struct</span> sock <span style="color:#666">*</span>sk)
 {
-	<span style="color:#66d9ef">struct</span> sk_filter <span style="color:#f92672">*</span>fp, <span style="color:#f92672">*</span>old_fp;
-	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> fsize <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> sock_filter) <span style="color:#f92672">*</span> fprog<span style="color:#f92672">-&gt;</span>len;
-	<span style="color:#66d9ef">int</span> err;
+	<span style="color:#007020;font-weight:bold">struct</span> sk_filter <span style="color:#666">*</span>fp, <span style="color:#666">*</span>old_fp;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span> fsize <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#007020;font-weight:bold">struct</span> sock_filter) <span style="color:#666">*</span> fprog<span style="color:#666">-&gt;</span>len;
+	<span style="color:#902000">int</span> err;
 
-	fp <span style="color:#f92672">=</span> sock_kmalloc(sk, fsize<span style="color:#f92672">+</span><span style="color:#66d9ef">sizeof</span>(<span style="color:#f92672">*</span>fp), GFP_KERNEL);
-    <span style="color:#75715e">/* 从用户空间向内核空间拷贝代理程序 */</span>
-	<span style="color:#66d9ef">if</span> (copy_from_user(fp<span style="color:#f92672">-&gt;</span>insns, fprog<span style="color:#f92672">-&gt;</span>filter, fsize)) {
-		sock_kfree_s(sk, fp, fsize<span style="color:#f92672">+</span><span style="color:#66d9ef">sizeof</span>(<span style="color:#f92672">*</span>fp));
-		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span>EFAULT;
+	fp <span style="color:#666">=</span> sock_kmalloc(sk, fsize<span style="color:#666">+</span><span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#666">*</span>fp), GFP_KERNEL);
+    <span style="color:#60a0b0;font-style:italic">/* 从用户空间向内核空间拷贝代理程序 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (copy_from_user(fp<span style="color:#666">-&gt;</span>insns, fprog<span style="color:#666">-&gt;</span>filter, fsize)) {
+		sock_kfree_s(sk, fp, fsize<span style="color:#666">+</span><span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#666">*</span>fp));
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>EFAULT;
 	}
 
-	atomic_set(<span style="color:#f92672">&amp;</span>fp<span style="color:#f92672">-&gt;</span>refcnt, <span style="color:#ae81ff">1</span>);
-	fp<span style="color:#f92672">-&gt;</span>len <span style="color:#f92672">=</span> fprog<span style="color:#f92672">-&gt;</span>len;
+	atomic_set(<span style="color:#666">&amp;</span>fp<span style="color:#666">-&gt;</span>refcnt, <span style="color:#40a070">1</span>);
+	fp<span style="color:#666">-&gt;</span>len <span style="color:#666">=</span> fprog<span style="color:#666">-&gt;</span>len;
 
-    <span style="color:#75715e">/* 在沙箱中对代理程序做安全检测 */</span>
-	err <span style="color:#f92672">=</span> sk_chk_filter(fp<span style="color:#f92672">-&gt;</span>insns, fp<span style="color:#f92672">-&gt;</span>len);
-	<span style="color:#66d9ef">if</span> (err) {
+    <span style="color:#60a0b0;font-style:italic">/* 在沙箱中对代理程序做安全检测 */</span>
+	err <span style="color:#666">=</span> sk_chk_filter(fp<span style="color:#666">-&gt;</span>insns, fp<span style="color:#666">-&gt;</span>len);
+	<span style="color:#007020;font-weight:bold">if</span> (err) {
 		sk_filter_uncharge(sk, fp);
-		<span style="color:#66d9ef">return</span> err;
+		<span style="color:#007020;font-weight:bold">return</span> err;
 	}
 
 	rcu_read_lock_bh();
-	old_fp <span style="color:#f92672">=</span> rcu_dereference(sk<span style="color:#f92672">-&gt;</span>sk_filter);
-    <span style="color:#75715e">/* 在 sk_filter 绑上经过检测的代理程序 */</span>
-	rcu_assign_pointer(sk<span style="color:#f92672">-&gt;</span>sk_filter, fp);
+	old_fp <span style="color:#666">=</span> rcu_dereference(sk<span style="color:#666">-&gt;</span>sk_filter);
+    <span style="color:#60a0b0;font-style:italic">/* 在 sk_filter 绑上经过检测的代理程序 */</span>
+	rcu_assign_pointer(sk<span style="color:#666">-&gt;</span>sk_filter, fp);
 	rcu_read_unlock_bh();
 
-	<span style="color:#66d9ef">if</span> (old_fp)
+	<span style="color:#007020;font-weight:bold">if</span> (old_fp)
 		sk_filter_delayed_uncharge(sk, old_fp);
-	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+	<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
 }
 </code></pre></div><p>核心的安全检测函数是 <code>sk_chk_filter</code> 。BPF 的沙箱化处理，就是实现里一套精简指令集，提供有限的几十个指令以及几个寄存器，在内核模拟了一个小的处理器来执行代理程序。这里的安全检测，其核心就是检测是否存在非预期的指令，相关指令的非法配合，是否存在读取非法地址的情况以及程序是否以 <code>BPF_RET</code> 指令作为结束。</p>
 <p>了解了代理程序的挂载，再来看看这个代理程序在网络协议栈中由谁触发，并如何完成令人惊艳的过滤工作。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Copied from net/packet/af_packet.c */</span>
-<span style="color:#75715e">/* socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)) 内核创建 packet 族套接字的核心流程 */</span>
-<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">packet_create</span>(<span style="color:#66d9ef">struct</span> net <span style="color:#f92672">*</span>net, <span style="color:#66d9ef">struct</span> socket <span style="color:#f92672">*</span>sock, <span style="color:#66d9ef">int</span> protocol)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* Copied from net/packet/af_packet.c */</span>
+<span style="color:#60a0b0;font-style:italic">/* socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)) 内核创建 packet 族套接字的核心流程 */</span>
+<span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">int</span> <span style="color:#06287e">packet_create</span>(<span style="color:#007020;font-weight:bold">struct</span> net <span style="color:#666">*</span>net, <span style="color:#007020;font-weight:bold">struct</span> socket <span style="color:#666">*</span>sock, <span style="color:#902000">int</span> protocol)
 {
-    <span style="color:#75715e">/* some code omitted ... */</span>
-	po <span style="color:#f92672">=</span> pkt_sk(sk);
-	sk<span style="color:#f92672">-&gt;</span>sk_family <span style="color:#f92672">=</span> PF_PACKET;
-	po<span style="color:#f92672">-&gt;</span>num <span style="color:#f92672">=</span> proto;
+    <span style="color:#60a0b0;font-style:italic">/* some code omitted ... */</span>
+	po <span style="color:#666">=</span> pkt_sk(sk);
+	sk<span style="color:#666">-&gt;</span>sk_family <span style="color:#666">=</span> PF_PACKET;
+	po<span style="color:#666">-&gt;</span>num <span style="color:#666">=</span> proto;
 
-	spin_lock_init(<span style="color:#f92672">&amp;</span>po<span style="color:#f92672">-&gt;</span>bind_lock);
-    <span style="color:#75715e">/* 配置协议相关钩子函数 */</span>
-	po<span style="color:#f92672">-&gt;</span>prot_hook.func <span style="color:#f92672">=</span> packet_rcv;
+	spin_lock_init(<span style="color:#666">&amp;</span>po<span style="color:#666">-&gt;</span>bind_lock);
+    <span style="color:#60a0b0;font-style:italic">/* 配置协议相关钩子函数 */</span>
+	po<span style="color:#666">-&gt;</span>prot_hook.func <span style="color:#666">=</span> packet_rcv;
 
-    <span style="color:#75715e">/* 根据套接字的类型，有两类不同的钩子 */</span>
-	<span style="color:#66d9ef">if</span> (sock<span style="color:#f92672">-&gt;</span>type <span style="color:#f92672">==</span> SOCK_PACKET)
-		po<span style="color:#f92672">-&gt;</span>prot_hook.func <span style="color:#f92672">=</span> packet_rcv_spkt;
+    <span style="color:#60a0b0;font-style:italic">/* 根据套接字的类型，有两类不同的钩子 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (sock<span style="color:#666">-&gt;</span>type <span style="color:#666">==</span> SOCK_PACKET)
+		po<span style="color:#666">-&gt;</span>prot_hook.func <span style="color:#666">=</span> packet_rcv_spkt;
 
-	<span style="color:#66d9ef">if</span> (proto) {
-		po<span style="color:#f92672">-&gt;</span>prot_hook.type <span style="color:#f92672">=</span> proto;
-        <span style="color:#75715e">/* 将钩子函数直接与网络设备挂钩 */</span>
-		dev_add_pack(<span style="color:#f92672">&amp;</span>po<span style="color:#f92672">-&gt;</span>prot_hook);
+	<span style="color:#007020;font-weight:bold">if</span> (proto) {
+		po<span style="color:#666">-&gt;</span>prot_hook.type <span style="color:#666">=</span> proto;
+        <span style="color:#60a0b0;font-style:italic">/* 将钩子函数直接与网络设备挂钩 */</span>
+		dev_add_pack(<span style="color:#666">&amp;</span>po<span style="color:#666">-&gt;</span>prot_hook);
 		sock_hold(sk);
-		po<span style="color:#f92672">-&gt;</span>running <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+		po<span style="color:#666">-&gt;</span>running <span style="color:#666">=</span> <span style="color:#40a070">1</span>;
 	}
 }
 
-<span style="color:#75715e">/* 网络包(接收/发送)达到数据链路层，都将尝试调用预置的钩子函数 */</span>
-<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">packet_rcv</span>(<span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb, <span style="color:#66d9ef">struct</span> net_device <span style="color:#f92672">*</span>dev, <span style="color:#66d9ef">struct</span> packet_type <span style="color:#f92672">*</span>pt, <span style="color:#66d9ef">struct</span> net_device <span style="color:#f92672">*</span>orig_dev)
+<span style="color:#60a0b0;font-style:italic">/* 网络包(接收/发送)达到数据链路层，都将尝试调用预置的钩子函数 */</span>
+<span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">int</span> <span style="color:#06287e">packet_rcv</span>(<span style="color:#007020;font-weight:bold">struct</span> sk_buff <span style="color:#666">*</span>skb, <span style="color:#007020;font-weight:bold">struct</span> net_device <span style="color:#666">*</span>dev, <span style="color:#007020;font-weight:bold">struct</span> packet_type <span style="color:#666">*</span>pt, <span style="color:#007020;font-weight:bold">struct</span> net_device <span style="color:#666">*</span>orig_dev)
 {
-    sk <span style="color:#f92672">=</span> pt<span style="color:#f92672">-&gt;</span>af_packet_priv;
-    snaplen <span style="color:#f92672">=</span> skb<span style="color:#f92672">-&gt;</span>len;
-    <span style="color:#75715e">/* 核心代理函数的触发逻辑 */</span>
-	res <span style="color:#f92672">=</span> run_filter(skb, sk, snaplen);
-    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>res)
-		<span style="color:#66d9ef">goto</span> drop_n_restore;
-    <span style="color:#75715e">/* 根据代理函数执行结果，如果 res 不为零，则将这个 sk_buff 提交到之前创建的 packet 族的套接字等待队列 */</span>
-    __skb_queue_tail(<span style="color:#f92672">&amp;</span>sk<span style="color:#f92672">-&gt;</span>sk_receive_queue, skb);
+    sk <span style="color:#666">=</span> pt<span style="color:#666">-&gt;</span>af_packet_priv;
+    snaplen <span style="color:#666">=</span> skb<span style="color:#666">-&gt;</span>len;
+    <span style="color:#60a0b0;font-style:italic">/* 核心代理函数的触发逻辑 */</span>
+	res <span style="color:#666">=</span> run_filter(skb, sk, snaplen);
+    <span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>res)
+		<span style="color:#007020;font-weight:bold">goto</span> drop_n_restore;
+    <span style="color:#60a0b0;font-style:italic">/* 根据代理函数执行结果，如果 res 不为零，则将这个 sk_buff 提交到之前创建的 packet 族的套接字等待队列 */</span>
+    __skb_queue_tail(<span style="color:#666">&amp;</span>sk<span style="color:#666">-&gt;</span>sk_receive_queue, skb);
 }
 
-<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">inline</span> <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">run_filter</span>(<span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb, <span style="color:#66d9ef">struct</span> sock <span style="color:#f92672">*</span>sk,
-				      <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> res)
+<span style="color:#007020;font-weight:bold">static</span> <span style="color:#007020;font-weight:bold">inline</span> <span style="color:#902000">unsigned</span> <span style="color:#902000">int</span> <span style="color:#06287e">run_filter</span>(<span style="color:#007020;font-weight:bold">struct</span> sk_buff <span style="color:#666">*</span>skb, <span style="color:#007020;font-weight:bold">struct</span> sock <span style="color:#666">*</span>sk,
+				      <span style="color:#902000">unsigned</span> <span style="color:#902000">int</span> res)
 {
-	<span style="color:#66d9ef">struct</span> sk_filter <span style="color:#f92672">*</span>filter;
+	<span style="color:#007020;font-weight:bold">struct</span> sk_filter <span style="color:#666">*</span>filter;
 
 	rcu_read_lock_bh();
-	filter <span style="color:#f92672">=</span> rcu_dereference(sk<span style="color:#f92672">-&gt;</span>sk_filter);
-    <span style="color:#75715e">/* 存在代理函数，则尝试执行 */</span>
-	<span style="color:#66d9ef">if</span> (filter <span style="color:#f92672">!=</span> NULL)
-		res <span style="color:#f92672">=</span> sk_run_filter(skb, filter<span style="color:#f92672">-&gt;</span>insns, filter<span style="color:#f92672">-&gt;</span>len);
+	filter <span style="color:#666">=</span> rcu_dereference(sk<span style="color:#666">-&gt;</span>sk_filter);
+    <span style="color:#60a0b0;font-style:italic">/* 存在代理函数，则尝试执行 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (filter <span style="color:#666">!=</span> <span style="color:#007020">NULL</span>)
+		res <span style="color:#666">=</span> sk_run_filter(skb, filter<span style="color:#666">-&gt;</span>insns, filter<span style="color:#666">-&gt;</span>len);
 	rcu_read_unlock_bh();
 
-	<span style="color:#66d9ef">return</span> res;
+	<span style="color:#007020;font-weight:bold">return</span> res;
 }
 </code></pre></div><p>总的来说，创建的套接字 <code>socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL))</code> 就相当于在数据链路层挂上了一个窃听程序，负责将命中的包全部提取到这个窃听套接字的接收队列中。至于内核空间到用户空间的数据提取工作，就像普通的套接字一样。直接使用 <code>recv</code> 系统调用读取套接字的接收队列也就完成了。</p>
 <p>最后来看一下代理程序是如何沙箱化执行的。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Copied from net/core/filter.c */</span>
-<span style="color:#75715e">/*
-</span><span style="color:#75715e"> * 核心的实现就是模拟了一套简单的处理器，由累加器、索引寄存器、小块内存、PC 组成，
-</span><span style="color:#75715e"> * 一般负责对一段数据的某些特定字节的校验工作
-</span><span style="color:#75715e"> */</span>
-<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sk_run_filter</span>(<span style="color:#66d9ef">struct</span> sk_buff <span style="color:#f92672">*</span>skb, <span style="color:#66d9ef">struct</span> sock_filter <span style="color:#f92672">*</span>filter, <span style="color:#66d9ef">int</span> flen)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* Copied from net/core/filter.c */</span>
+<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic"> * 核心的实现就是模拟了一套简单的处理器，由累加器、索引寄存器、小块内存、PC 组成，
+</span><span style="color:#60a0b0;font-style:italic"> * 一般负责对一段数据的某些特定字节的校验工作
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span> <span style="color:#06287e">sk_run_filter</span>(<span style="color:#007020;font-weight:bold">struct</span> sk_buff <span style="color:#666">*</span>skb, <span style="color:#007020;font-weight:bold">struct</span> sock_filter <span style="color:#666">*</span>filter, <span style="color:#902000">int</span> flen)
 {
-	<span style="color:#66d9ef">struct</span> sock_filter <span style="color:#f92672">*</span>fentry;	<span style="color:#75715e">/* We walk down these */</span>
-	<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>ptr;
-	u32 A <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;			<span style="color:#75715e">/* Accumulator */</span>
-	u32 X <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;			<span style="color:#75715e">/* Index Register */</span>
-	u32 mem[BPF_MEMWORDS];		<span style="color:#75715e">/* Scratch Memory Store */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> sock_filter <span style="color:#666">*</span>fentry;	<span style="color:#60a0b0;font-style:italic">/* We walk down these */</span>
+	<span style="color:#902000">void</span> <span style="color:#666">*</span>ptr;
+	u32 A <span style="color:#666">=</span> <span style="color:#40a070">0</span>;			<span style="color:#60a0b0;font-style:italic">/* Accumulator */</span>
+	u32 X <span style="color:#666">=</span> <span style="color:#40a070">0</span>;			<span style="color:#60a0b0;font-style:italic">/* Index Register */</span>
+	u32 mem[BPF_MEMWORDS];		<span style="color:#60a0b0;font-style:italic">/* Scratch Memory Store */</span>
 	u32 tmp;
-	<span style="color:#66d9ef">int</span> k;
-	<span style="color:#66d9ef">int</span> pc;
+	<span style="color:#902000">int</span> k;
+	<span style="color:#902000">int</span> pc;
 
-	<span style="color:#75715e">/*
-</span><span style="color:#75715e">	 * Process array of filter instructions.
-</span><span style="color:#75715e">	 */</span>
-	<span style="color:#66d9ef">for</span> (pc <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; pc <span style="color:#f92672">&lt;</span> flen; pc<span style="color:#f92672">++</span>) {
-		fentry <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>filter[pc];
+	<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">	 * Process array of filter instructions.
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+	<span style="color:#007020;font-weight:bold">for</span> (pc <span style="color:#666">=</span> <span style="color:#40a070">0</span>; pc <span style="color:#666">&lt;</span> flen; pc<span style="color:#666">++</span>) {
+		fentry <span style="color:#666">=</span> <span style="color:#666">&amp;</span>filter[pc];
 
-		<span style="color:#66d9ef">switch</span> (fentry<span style="color:#f92672">-&gt;</span>code) {
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_ADD<span style="color:#f92672">|</span>BPF_X:
-			A <span style="color:#f92672">+=</span> X;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_ADD<span style="color:#f92672">|</span>BPF_K:
-			A <span style="color:#f92672">+=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_SUB<span style="color:#f92672">|</span>BPF_X:
-			A <span style="color:#f92672">-=</span> X;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_SUB<span style="color:#f92672">|</span>BPF_K:
-			A <span style="color:#f92672">-=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_MUL<span style="color:#f92672">|</span>BPF_X:
-			A <span style="color:#f92672">*=</span> X;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_MUL<span style="color:#f92672">|</span>BPF_K:
-			A <span style="color:#f92672">*=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_DIV<span style="color:#f92672">|</span>BPF_X:
-			<span style="color:#66d9ef">if</span> (X <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
-				<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-			A <span style="color:#f92672">/=</span> X;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_DIV<span style="color:#f92672">|</span>BPF_K:
-			A <span style="color:#f92672">/=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_AND<span style="color:#f92672">|</span>BPF_X:
-			A <span style="color:#f92672">&amp;=</span> X;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_AND<span style="color:#f92672">|</span>BPF_K:
-			A <span style="color:#f92672">&amp;=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_OR<span style="color:#f92672">|</span>BPF_X:
-			A <span style="color:#f92672">|=</span> X;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_OR<span style="color:#f92672">|</span>BPF_K:
-			A <span style="color:#f92672">|=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_LSH<span style="color:#f92672">|</span>BPF_X:
-			A <span style="color:#f92672">&lt;&lt;=</span> X;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_LSH<span style="color:#f92672">|</span>BPF_K:
-			A <span style="color:#f92672">&lt;&lt;=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_RSH<span style="color:#f92672">|</span>BPF_X:
-			A <span style="color:#f92672">&gt;&gt;=</span> X;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_RSH<span style="color:#f92672">|</span>BPF_K:
-			A <span style="color:#f92672">&gt;&gt;=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_ALU<span style="color:#f92672">|</span>BPF_NEG:
-			A <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>A;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JA:
-			pc <span style="color:#f92672">+=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JGT<span style="color:#f92672">|</span>BPF_K:
-			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">&gt;</span> fentry<span style="color:#f92672">-&gt;</span>k) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JGE<span style="color:#f92672">|</span>BPF_K:
-			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">&gt;=</span> fentry<span style="color:#f92672">-&gt;</span>k) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JEQ<span style="color:#f92672">|</span>BPF_K:
-			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">==</span> fentry<span style="color:#f92672">-&gt;</span>k) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JSET<span style="color:#f92672">|</span>BPF_K:
-			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">&amp;</span> fentry<span style="color:#f92672">-&gt;</span>k) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JGT<span style="color:#f92672">|</span>BPF_X:
-			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">&gt;</span> X) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JGE<span style="color:#f92672">|</span>BPF_X:
-			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">&gt;=</span> X) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JEQ<span style="color:#f92672">|</span>BPF_X:
-			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">==</span> X) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_JMP<span style="color:#f92672">|</span>BPF_JSET<span style="color:#f92672">|</span>BPF_X:
-			pc <span style="color:#f92672">+=</span> (A <span style="color:#f92672">&amp;</span> X) <span style="color:#f92672">?</span> fentry<span style="color:#f92672">-&gt;</span>jt : fentry<span style="color:#f92672">-&gt;</span>jf;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_W<span style="color:#f92672">|</span>BPF_ABS:
-			k <span style="color:#f92672">=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-load_w:
-			ptr <span style="color:#f92672">=</span> load_pointer(skb, k, <span style="color:#ae81ff">4</span>, <span style="color:#f92672">&amp;</span>tmp);
-			<span style="color:#66d9ef">if</span> (ptr <span style="color:#f92672">!=</span> NULL) {
-				A <span style="color:#f92672">=</span> ntohl(get_unaligned((__be32 <span style="color:#f92672">*</span>)ptr));
-				<span style="color:#66d9ef">continue</span>;
+		<span style="color:#007020;font-weight:bold">switch</span> (fentry<span style="color:#666">-&gt;</span>code) {
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_ADD<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_X</span>:
+			A <span style="color:#666">+=</span> X;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_ADD<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			A <span style="color:#666">+=</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_SUB<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_X</span>:
+			A <span style="color:#666">-=</span> X;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_SUB<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			A <span style="color:#666">-=</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_MUL<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_X</span>:
+			A <span style="color:#666">*=</span> X;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_MUL<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			A <span style="color:#666">*=</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_DIV<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_X</span>:
+			<span style="color:#007020;font-weight:bold">if</span> (X <span style="color:#666">==</span> <span style="color:#40a070">0</span>)
+				<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
+			A <span style="color:#666">/=</span> X;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_DIV<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			A <span style="color:#666">/=</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_AND<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_X</span>:
+			A <span style="color:#666">&amp;=</span> X;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_AND<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			A <span style="color:#666">&amp;=</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_OR<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_X</span>:
+			A <span style="color:#666">|=</span> X;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_OR<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			A <span style="color:#666">|=</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_LSH<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_X</span>:
+			A <span style="color:#666">&lt;&lt;=</span> X;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_LSH<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			A <span style="color:#666">&lt;&lt;=</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_RSH<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_X</span>:
+			A <span style="color:#666">&gt;&gt;=</span> X;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span>BPF_RSH<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			A <span style="color:#666">&gt;&gt;=</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_ALU<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_NEG</span>:
+			A <span style="color:#666">=</span> <span style="color:#666">-</span>A;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_JMP<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_JA</span>:
+			pc <span style="color:#666">+=</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_JMP<span style="color:#666">|</span>BPF_JGT<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			pc <span style="color:#666">+=</span> (A <span style="color:#666">&gt;</span> fentry<span style="color:#666">-&gt;</span>k) <span style="color:#666">?</span> fentry<span style="color:#666">-&gt;</span><span style="color:#002070;font-weight:bold">jt</span> : fentry<span style="color:#666">-&gt;</span>jf;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_JMP<span style="color:#666">|</span>BPF_JGE<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			pc <span style="color:#666">+=</span> (A <span style="color:#666">&gt;=</span> fentry<span style="color:#666">-&gt;</span>k) <span style="color:#666">?</span> fentry<span style="color:#666">-&gt;</span><span style="color:#002070;font-weight:bold">jt</span> : fentry<span style="color:#666">-&gt;</span>jf;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_JMP<span style="color:#666">|</span>BPF_JEQ<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			pc <span style="color:#666">+=</span> (A <span style="color:#666">==</span> fentry<span style="color:#666">-&gt;</span>k) <span style="color:#666">?</span> fentry<span style="color:#666">-&gt;</span><span style="color:#002070;font-weight:bold">jt</span> : fentry<span style="color:#666">-&gt;</span>jf;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_JMP<span style="color:#666">|</span>BPF_JSET<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			pc <span style="color:#666">+=</span> (A <span style="color:#666">&amp;</span> fentry<span style="color:#666">-&gt;</span>k) <span style="color:#666">?</span> fentry<span style="color:#666">-&gt;</span><span style="color:#002070;font-weight:bold">jt</span> : fentry<span style="color:#666">-&gt;</span>jf;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_JMP<span style="color:#666">|</span>BPF_JGT<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_X</span>:
+			pc <span style="color:#666">+=</span> (A <span style="color:#666">&gt;</span> X) <span style="color:#666">?</span> fentry<span style="color:#666">-&gt;</span><span style="color:#002070;font-weight:bold">jt</span> : fentry<span style="color:#666">-&gt;</span>jf;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_JMP<span style="color:#666">|</span>BPF_JGE<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_X</span>:
+			pc <span style="color:#666">+=</span> (A <span style="color:#666">&gt;=</span> X) <span style="color:#666">?</span> fentry<span style="color:#666">-&gt;</span><span style="color:#002070;font-weight:bold">jt</span> : fentry<span style="color:#666">-&gt;</span>jf;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_JMP<span style="color:#666">|</span>BPF_JEQ<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_X</span>:
+			pc <span style="color:#666">+=</span> (A <span style="color:#666">==</span> X) <span style="color:#666">?</span> fentry<span style="color:#666">-&gt;</span><span style="color:#002070;font-weight:bold">jt</span> : fentry<span style="color:#666">-&gt;</span>jf;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_JMP<span style="color:#666">|</span>BPF_JSET<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_X</span>:
+			pc <span style="color:#666">+=</span> (A <span style="color:#666">&amp;</span> X) <span style="color:#666">?</span> fentry<span style="color:#666">-&gt;</span><span style="color:#002070;font-weight:bold">jt</span> : fentry<span style="color:#666">-&gt;</span>jf;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LD<span style="color:#666">|</span>BPF_W<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_ABS</span>:
+			k <span style="color:#666">=</span> fentry<span style="color:#666">-&gt;</span>k;
+<span style="color:#002070;font-weight:bold">load_w</span>:
+			ptr <span style="color:#666">=</span> load_pointer(skb, k, <span style="color:#40a070">4</span>, <span style="color:#666">&amp;</span>tmp);
+			<span style="color:#007020;font-weight:bold">if</span> (ptr <span style="color:#666">!=</span> <span style="color:#007020">NULL</span>) {
+				A <span style="color:#666">=</span> ntohl(get_unaligned((__be32 <span style="color:#666">*</span>)ptr));
+				<span style="color:#007020;font-weight:bold">continue</span>;
 			}
-			<span style="color:#66d9ef">break</span>;
-		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_H<span style="color:#f92672">|</span>BPF_ABS:
-			k <span style="color:#f92672">=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-load_h:
-			ptr <span style="color:#f92672">=</span> load_pointer(skb, k, <span style="color:#ae81ff">2</span>, <span style="color:#f92672">&amp;</span>tmp);
-			<span style="color:#66d9ef">if</span> (ptr <span style="color:#f92672">!=</span> NULL) {
-				A <span style="color:#f92672">=</span> ntohs(get_unaligned((__be16 <span style="color:#f92672">*</span>)ptr));
-				<span style="color:#66d9ef">continue</span>;
+			<span style="color:#007020;font-weight:bold">break</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LD<span style="color:#666">|</span>BPF_H<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_ABS</span>:
+			k <span style="color:#666">=</span> fentry<span style="color:#666">-&gt;</span>k;
+<span style="color:#002070;font-weight:bold">load_h</span>:
+			ptr <span style="color:#666">=</span> load_pointer(skb, k, <span style="color:#40a070">2</span>, <span style="color:#666">&amp;</span>tmp);
+			<span style="color:#007020;font-weight:bold">if</span> (ptr <span style="color:#666">!=</span> <span style="color:#007020">NULL</span>) {
+				A <span style="color:#666">=</span> ntohs(get_unaligned((__be16 <span style="color:#666">*</span>)ptr));
+				<span style="color:#007020;font-weight:bold">continue</span>;
 			}
-			<span style="color:#66d9ef">break</span>;
-		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_B<span style="color:#f92672">|</span>BPF_ABS:
-			k <span style="color:#f92672">=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-load_b:
-			ptr <span style="color:#f92672">=</span> load_pointer(skb, k, <span style="color:#ae81ff">1</span>, <span style="color:#f92672">&amp;</span>tmp);
-			<span style="color:#66d9ef">if</span> (ptr <span style="color:#f92672">!=</span> NULL) {
-				A <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>(u8 <span style="color:#f92672">*</span>)ptr;
-				<span style="color:#66d9ef">continue</span>;
+			<span style="color:#007020;font-weight:bold">break</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LD<span style="color:#666">|</span>BPF_B<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_ABS</span>:
+			k <span style="color:#666">=</span> fentry<span style="color:#666">-&gt;</span>k;
+<span style="color:#002070;font-weight:bold">load_b</span>:
+			ptr <span style="color:#666">=</span> load_pointer(skb, k, <span style="color:#40a070">1</span>, <span style="color:#666">&amp;</span>tmp);
+			<span style="color:#007020;font-weight:bold">if</span> (ptr <span style="color:#666">!=</span> <span style="color:#007020">NULL</span>) {
+				A <span style="color:#666">=</span> <span style="color:#666">*</span>(u8 <span style="color:#666">*</span>)ptr;
+				<span style="color:#007020;font-weight:bold">continue</span>;
 			}
-			<span style="color:#66d9ef">break</span>;
-		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_W<span style="color:#f92672">|</span>BPF_LEN:
-			A <span style="color:#f92672">=</span> skb<span style="color:#f92672">-&gt;</span>len;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_LDX<span style="color:#f92672">|</span>BPF_W<span style="color:#f92672">|</span>BPF_LEN:
-			X <span style="color:#f92672">=</span> skb<span style="color:#f92672">-&gt;</span>len;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_W<span style="color:#f92672">|</span>BPF_IND:
-			k <span style="color:#f92672">=</span> X <span style="color:#f92672">+</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">goto</span> load_w;
-		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_H<span style="color:#f92672">|</span>BPF_IND:
-			k <span style="color:#f92672">=</span> X <span style="color:#f92672">+</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">goto</span> load_h;
-		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_B<span style="color:#f92672">|</span>BPF_IND:
-			k <span style="color:#f92672">=</span> X <span style="color:#f92672">+</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">goto</span> load_b;
-		<span style="color:#66d9ef">case</span> BPF_LDX<span style="color:#f92672">|</span>BPF_B<span style="color:#f92672">|</span>BPF_MSH:
-			ptr <span style="color:#f92672">=</span> load_pointer(skb, fentry<span style="color:#f92672">-&gt;</span>k, <span style="color:#ae81ff">1</span>, <span style="color:#f92672">&amp;</span>tmp);
-			<span style="color:#66d9ef">if</span> (ptr <span style="color:#f92672">!=</span> NULL) {
-				X <span style="color:#f92672">=</span> (<span style="color:#f92672">*</span>(u8 <span style="color:#f92672">*</span>)ptr <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xf</span>) <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">2</span>;
-				<span style="color:#66d9ef">continue</span>;
+			<span style="color:#007020;font-weight:bold">break</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LD<span style="color:#666">|</span>BPF_W<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_LEN</span>:
+			A <span style="color:#666">=</span> skb<span style="color:#666">-&gt;</span>len;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LDX<span style="color:#666">|</span>BPF_W<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_LEN</span>:
+			X <span style="color:#666">=</span> skb<span style="color:#666">-&gt;</span>len;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LD<span style="color:#666">|</span>BPF_W<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_IND</span>:
+			k <span style="color:#666">=</span> X <span style="color:#666">+</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">goto</span> load_w;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LD<span style="color:#666">|</span>BPF_H<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_IND</span>:
+			k <span style="color:#666">=</span> X <span style="color:#666">+</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">goto</span> load_h;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LD<span style="color:#666">|</span>BPF_B<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_IND</span>:
+			k <span style="color:#666">=</span> X <span style="color:#666">+</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">goto</span> load_b;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LDX<span style="color:#666">|</span>BPF_B<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_MSH</span>:
+			ptr <span style="color:#666">=</span> load_pointer(skb, fentry<span style="color:#666">-&gt;</span>k, <span style="color:#40a070">1</span>, <span style="color:#666">&amp;</span>tmp);
+			<span style="color:#007020;font-weight:bold">if</span> (ptr <span style="color:#666">!=</span> <span style="color:#007020">NULL</span>) {
+				X <span style="color:#666">=</span> (<span style="color:#666">*</span>(u8 <span style="color:#666">*</span>)ptr <span style="color:#666">&amp;</span> <span style="color:#40a070">0xf</span>) <span style="color:#666">&lt;&lt;</span> <span style="color:#40a070">2</span>;
+				<span style="color:#007020;font-weight:bold">continue</span>;
 			}
-			<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_IMM:
-			A <span style="color:#f92672">=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_LDX<span style="color:#f92672">|</span>BPF_IMM:
-			X <span style="color:#f92672">=</span> fentry<span style="color:#f92672">-&gt;</span>k;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_LD<span style="color:#f92672">|</span>BPF_MEM:
-			A <span style="color:#f92672">=</span> mem[fentry<span style="color:#f92672">-&gt;</span>k];
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_LDX<span style="color:#f92672">|</span>BPF_MEM:
-			X <span style="color:#f92672">=</span> mem[fentry<span style="color:#f92672">-&gt;</span>k];
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_MISC<span style="color:#f92672">|</span>BPF_TAX:
-			X <span style="color:#f92672">=</span> A;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_MISC<span style="color:#f92672">|</span>BPF_TXA:
-			A <span style="color:#f92672">=</span> X;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_RET<span style="color:#f92672">|</span>BPF_K:
-			<span style="color:#66d9ef">return</span> fentry<span style="color:#f92672">-&gt;</span>k;
-		<span style="color:#66d9ef">case</span> BPF_RET<span style="color:#f92672">|</span>BPF_A:
-			<span style="color:#66d9ef">return</span> A;
-		<span style="color:#66d9ef">case</span> BPF_ST:
-			mem[fentry<span style="color:#f92672">-&gt;</span>k] <span style="color:#f92672">=</span> A;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> BPF_STX:
-			mem[fentry<span style="color:#f92672">-&gt;</span>k] <span style="color:#f92672">=</span> X;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
-			WARN_ON(<span style="color:#ae81ff">1</span>);
-			<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+			<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LD<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_IMM</span>:
+			A <span style="color:#666">=</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LDX<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_IMM</span>:
+			X <span style="color:#666">=</span> fentry<span style="color:#666">-&gt;</span>k;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LD<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_MEM</span>:
+			A <span style="color:#666">=</span> mem[fentry<span style="color:#666">-&gt;</span>k];
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_LDX<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_MEM</span>:
+			X <span style="color:#666">=</span> mem[fentry<span style="color:#666">-&gt;</span>k];
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_MISC<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_TAX</span>:
+			X <span style="color:#666">=</span> A;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_MISC<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_TXA</span>:
+			A <span style="color:#666">=</span> X;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_RET<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_K</span>:
+			<span style="color:#007020;font-weight:bold">return</span> fentry<span style="color:#666">-&gt;</span>k;
+		<span style="color:#007020;font-weight:bold">case</span> BPF_RET<span style="color:#666">|</span><span style="color:#002070;font-weight:bold">BPF_A</span>:
+			<span style="color:#007020;font-weight:bold">return</span> A;
+		<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">BPF_ST</span>:
+			mem[fentry<span style="color:#666">-&gt;</span>k] <span style="color:#666">=</span> A;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">BPF_STX</span>:
+			mem[fentry<span style="color:#666">-&gt;</span>k] <span style="color:#666">=</span> X;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">default</span><span style="color:#666">:</span>
+			WARN_ON(<span style="color:#40a070">1</span>);
+			<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
 		}
 
-		<span style="color:#75715e">/*
-</span><span style="color:#75715e">		 * Handle ancillary data, which are impossible
-</span><span style="color:#75715e">		 * (or very difficult) to get parsing packet contents.
-</span><span style="color:#75715e">		 */</span>
-		<span style="color:#66d9ef">switch</span> (k<span style="color:#f92672">-</span>SKF_AD_OFF) {
-		<span style="color:#66d9ef">case</span> SKF_AD_PROTOCOL:
-			A <span style="color:#f92672">=</span> ntohs(skb<span style="color:#f92672">-&gt;</span>protocol);
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> SKF_AD_PKTTYPE:
-			A <span style="color:#f92672">=</span> skb<span style="color:#f92672">-&gt;</span>pkt_type;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">case</span> SKF_AD_IFINDEX:
-			A <span style="color:#f92672">=</span> skb<span style="color:#f92672">-&gt;</span>dev<span style="color:#f92672">-&gt;</span>ifindex;
-			<span style="color:#66d9ef">continue</span>;
-		<span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
-			<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+		<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">		 * Handle ancillary data, which are impossible
+</span><span style="color:#60a0b0;font-style:italic">		 * (or very difficult) to get parsing packet contents.
+</span><span style="color:#60a0b0;font-style:italic">		 */</span>
+		<span style="color:#007020;font-weight:bold">switch</span> (k<span style="color:#666">-</span>SKF_AD_OFF) {
+		<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">SKF_AD_PROTOCOL</span>:
+			A <span style="color:#666">=</span> ntohs(skb<span style="color:#666">-&gt;</span>protocol);
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">SKF_AD_PKTTYPE</span>:
+			A <span style="color:#666">=</span> skb<span style="color:#666">-&gt;</span>pkt_type;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">SKF_AD_IFINDEX</span>:
+			A <span style="color:#666">=</span> skb<span style="color:#666">-&gt;</span>dev<span style="color:#666">-&gt;</span>ifindex;
+			<span style="color:#007020;font-weight:bold">continue</span>;
+		<span style="color:#007020;font-weight:bold">default</span><span style="color:#666">:</span>
+			<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
 		}
 	}
-	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+	<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
 }
 </code></pre></div><h2 id="bpf-jit-技术">BPF JIT 技术</h2>
 <p>沙箱执行虽然保证了内核的安全，无需担心用户随意定制的程序导致内核 panic 。但大量的网络包都需要经过这个沙箱的检测，这部分逻辑的效率就变得至关重要了。因此，在 Linux 3.x 版本之后，BPF 开始引入 JIT 技术来提高这部分代码的执行效率。</p>
 <p><em>下列源代码均来自于 Linux 3.10.1 版本</em></p>
 <p>以 BPF 指令 <code>BPF_S_ALU_ADD_X</code> 来讲，本质上 JIT 就是做完成编译的工作，将高级语言向低级语言做一个翻译工作。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Copied from arch/x86/net/bpf_jit_comp.c */</span>
-<span style="color:#66d9ef">case</span> BPF_S_ALU_ADD_X: <span style="color:#75715e">/* A += X; */</span>
-    seen <span style="color:#f92672">|=</span> SEEN_XREG;
-    EMIT2(<span style="color:#ae81ff">0x01</span>, <span style="color:#ae81ff">0xd8</span>);		<span style="color:#75715e">/* add %ebx,%eax */</span>
-	<span style="color:#66d9ef">break</span>;
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* Copied from arch/x86/net/bpf_jit_comp.c */</span>
+<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">BPF_S_ALU_ADD_X</span>: <span style="color:#60a0b0;font-style:italic">/* A += X; */</span>
+    seen <span style="color:#666">|=</span> SEEN_XREG;
+    EMIT2(<span style="color:#40a070">0x01</span>, <span style="color:#40a070">0xd8</span>);		<span style="color:#60a0b0;font-style:italic">/* add %ebx,%eax */</span>
+	<span style="color:#007020;font-weight:bold">break</span>;
 </code></pre></div><p>在 x86 架构下，翻译作机器码的 <code>add %ebx,%eax</code> 就是 0x01d8 啦</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">bpf_jit_compile</span>(<span style="color:#66d9ef">struct</span> sk_filter <span style="color:#f92672">*</span>fp)
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#902000">void</span> <span style="color:#06287e">bpf_jit_compile</span>(<span style="color:#007020;font-weight:bold">struct</span> sk_filter <span style="color:#666">*</span>fp)
 {
-	u8 temp[<span style="color:#ae81ff">64</span>];
-	u8 <span style="color:#f92672">*</span>prog;
-	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> proglen, oldproglen <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-	<span style="color:#66d9ef">int</span> ilen, i;
-	<span style="color:#66d9ef">int</span> t_offset, f_offset;
-	u8 t_op, f_op, seen <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, pass;
-	u8 <span style="color:#f92672">*</span>image <span style="color:#f92672">=</span> NULL;
-	u8 <span style="color:#f92672">*</span>func;
-	<span style="color:#66d9ef">int</span> pc_ret0 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>; <span style="color:#75715e">/* bpf index of first RET #0 instruction (if any) */</span>
-	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> cleanup_addr; <span style="color:#75715e">/* epilogue code offset */</span>
-	<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>addrs;
-	<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> sock_filter <span style="color:#f92672">*</span>filter <span style="color:#f92672">=</span> fp<span style="color:#f92672">-&gt;</span>insns;
-	<span style="color:#66d9ef">int</span> flen <span style="color:#f92672">=</span> fp<span style="color:#f92672">-&gt;</span>len;
+	u8 temp[<span style="color:#40a070">64</span>];
+	u8 <span style="color:#666">*</span>prog;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span> proglen, oldproglen <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+	<span style="color:#902000">int</span> ilen, i;
+	<span style="color:#902000">int</span> t_offset, f_offset;
+	u8 t_op, f_op, seen <span style="color:#666">=</span> <span style="color:#40a070">0</span>, pass;
+	u8 <span style="color:#666">*</span>image <span style="color:#666">=</span> <span style="color:#007020">NULL</span>;
+	u8 <span style="color:#666">*</span>func;
+	<span style="color:#902000">int</span> pc_ret0 <span style="color:#666">=</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>; <span style="color:#60a0b0;font-style:italic">/* bpf index of first RET #0 instruction (if any) */</span>
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span> cleanup_addr; <span style="color:#60a0b0;font-style:italic">/* epilogue code offset */</span>
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span> <span style="color:#666">*</span>addrs;
+	<span style="color:#007020;font-weight:bold">const</span> <span style="color:#007020;font-weight:bold">struct</span> sock_filter <span style="color:#666">*</span>filter <span style="color:#666">=</span> fp<span style="color:#666">-&gt;</span>insns;
+	<span style="color:#902000">int</span> flen <span style="color:#666">=</span> fp<span style="color:#666">-&gt;</span>len;
 
-	<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>bpf_jit_enable)
-		<span style="color:#66d9ef">return</span>;
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>bpf_jit_enable)
+		<span style="color:#007020;font-weight:bold">return</span>;
 
-	addrs <span style="color:#f92672">=</span> kmalloc(flen <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#f92672">*</span>addrs), GFP_KERNEL);
-	<span style="color:#66d9ef">if</span> (addrs <span style="color:#f92672">==</span> NULL)
-		<span style="color:#66d9ef">return</span>;
+	addrs <span style="color:#666">=</span> kmalloc(flen <span style="color:#666">*</span> <span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#666">*</span>addrs), GFP_KERNEL);
+	<span style="color:#007020;font-weight:bold">if</span> (addrs <span style="color:#666">==</span> <span style="color:#007020">NULL</span>)
+		<span style="color:#007020;font-weight:bold">return</span>;
 
-	<span style="color:#75715e">/* Before first pass, make a rough estimation of addrs[]
-</span><span style="color:#75715e">	 * each bpf instruction is translated to less than 64 bytes
-</span><span style="color:#75715e">	 */</span>
-	<span style="color:#66d9ef">for</span> (proglen <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> flen; i<span style="color:#f92672">++</span>) {
-		proglen <span style="color:#f92672">+=</span> <span style="color:#ae81ff">64</span>;
-		addrs[i] <span style="color:#f92672">=</span> proglen;
+	<span style="color:#60a0b0;font-style:italic">/* Before first pass, make a rough estimation of addrs[]
+</span><span style="color:#60a0b0;font-style:italic">	 * each bpf instruction is translated to less than 64 bytes
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+	<span style="color:#007020;font-weight:bold">for</span> (proglen <span style="color:#666">=</span> <span style="color:#40a070">0</span>, i <span style="color:#666">=</span> <span style="color:#40a070">0</span>; i <span style="color:#666">&lt;</span> flen; i<span style="color:#666">++</span>) {
+		proglen <span style="color:#666">+=</span> <span style="color:#40a070">64</span>;
+		addrs[i] <span style="color:#666">=</span> proglen;
 	}
-	cleanup_addr <span style="color:#f92672">=</span> proglen; <span style="color:#75715e">/* epilogue address */</span>
+	cleanup_addr <span style="color:#666">=</span> proglen; <span style="color:#60a0b0;font-style:italic">/* epilogue address */</span>
 
-	<span style="color:#66d9ef">for</span> (pass <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; pass <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">10</span>; pass<span style="color:#f92672">++</span>) {
-		u8 seen_or_pass0 <span style="color:#f92672">=</span> (pass <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">?</span> (SEEN_XREG <span style="color:#f92672">|</span> SEEN_DATAREF <span style="color:#f92672">|</span> SEEN_MEM) <span style="color:#f92672">:</span> seen;
-		<span style="color:#75715e">/* no prologue/epilogue for trivial filters (RET something) */</span>
-		proglen <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-		prog <span style="color:#f92672">=</span> temp;
+	<span style="color:#007020;font-weight:bold">for</span> (pass <span style="color:#666">=</span> <span style="color:#40a070">0</span>; pass <span style="color:#666">&lt;</span> <span style="color:#40a070">10</span>; pass<span style="color:#666">++</span>) {
+		u8 seen_or_pass0 <span style="color:#666">=</span> (pass <span style="color:#666">==</span> <span style="color:#40a070">0</span>) <span style="color:#666">?</span> (SEEN_XREG <span style="color:#666">|</span> SEEN_DATAREF <span style="color:#666">|</span> SEEN_MEM) <span style="color:#666">:</span> seen;
+		<span style="color:#60a0b0;font-style:italic">/* no prologue/epilogue for trivial filters (RET something) */</span>
+		proglen <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+		prog <span style="color:#666">=</span> temp;
 
-        <span style="color:#75715e">/* some code omitted ... */</span>
+        <span style="color:#60a0b0;font-style:italic">/* some code omitted ... */</span>
 
-        <span style="color:#75715e">/*
-</span><span style="color:#75715e">         * JIT 全部基于 prog 指针实施，temp 和 prog 就分别作为 JIT 机器码的头尾指针。
-</span><span style="color:#75715e">         * 所有翻译成的机器码全部存储在 temp 指向的内存区域 
-</span><span style="color:#75715e">         */</span>
-			ilen <span style="color:#f92672">=</span> prog <span style="color:#f92672">-</span> temp;
-			<span style="color:#66d9ef">if</span> (image) {
-				<span style="color:#66d9ef">if</span> (unlikely(proglen <span style="color:#f92672">+</span> ilen <span style="color:#f92672">&gt;</span> oldproglen)) {
-					pr_err(<span style="color:#e6db74">&#34;bpb_jit_compile fatal error</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+        <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">         * JIT 全部基于 prog 指针实施，temp 和 prog 就分别作为 JIT 机器码的头尾指针。
+</span><span style="color:#60a0b0;font-style:italic">         * 所有翻译成的机器码全部存储在 temp 指向的内存区域 
+</span><span style="color:#60a0b0;font-style:italic">         */</span>
+			ilen <span style="color:#666">=</span> prog <span style="color:#666">-</span> temp;
+			<span style="color:#007020;font-weight:bold">if</span> (image) {
+				<span style="color:#007020;font-weight:bold">if</span> (unlikely(proglen <span style="color:#666">+</span> ilen <span style="color:#666">&gt;</span> oldproglen)) {
+					pr_err(<span style="color:#4070a0">&#34;bpb_jit_compile fatal error</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>);
 					kfree(addrs);
-					module_free(NULL, image);
-					<span style="color:#66d9ef">return</span>;
+					module_free(<span style="color:#007020">NULL</span>, image);
+					<span style="color:#007020;font-weight:bold">return</span>;
 				}
-                <span style="color:#75715e">/* 最终 JIT 之后的机器码会全部拷贝到 image 指向的内存区域 */</span>
-				memcpy(image <span style="color:#f92672">+</span> proglen, temp, ilen);
+                <span style="color:#60a0b0;font-style:italic">/* 最终 JIT 之后的机器码会全部拷贝到 image 指向的内存区域 */</span>
+				memcpy(image <span style="color:#666">+</span> proglen, temp, ilen);
 			}
-			proglen <span style="color:#f92672">+=</span> ilen;
-			addrs[i] <span style="color:#f92672">=</span> proglen;
-			prog <span style="color:#f92672">=</span> temp;
+			proglen <span style="color:#666">+=</span> ilen;
+			addrs[i] <span style="color:#666">=</span> proglen;
+			prog <span style="color:#666">=</span> temp;
 
-		<span style="color:#66d9ef">if</span> (image) {
-			<span style="color:#66d9ef">if</span> (proglen <span style="color:#f92672">!=</span> oldproglen)
-				pr_err(<span style="color:#e6db74">&#34;bpb_jit_compile proglen=%u != oldproglen=%u</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, proglen, oldproglen);
-			<span style="color:#66d9ef">break</span>;
+		<span style="color:#007020;font-weight:bold">if</span> (image) {
+			<span style="color:#007020;font-weight:bold">if</span> (proglen <span style="color:#666">!=</span> oldproglen)
+				pr_err(<span style="color:#4070a0">&#34;bpb_jit_compile proglen=%u != oldproglen=%u</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, proglen, oldproglen);
+			<span style="color:#007020;font-weight:bold">break</span>;
 		}
-		<span style="color:#66d9ef">if</span> (proglen <span style="color:#f92672">==</span> oldproglen) {
-			image <span style="color:#f92672">=</span> module_alloc(max_t(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>,
+		<span style="color:#007020;font-weight:bold">if</span> (proglen <span style="color:#666">==</span> oldproglen) {
+			image <span style="color:#666">=</span> module_alloc(max_t(<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span>,
 						   proglen,
-						   <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> work_struct)));
-			<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>image)
-				<span style="color:#66d9ef">goto</span> out;
+						   <span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#007020;font-weight:bold">struct</span> work_struct)));
+			<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>image)
+				<span style="color:#007020;font-weight:bold">goto</span> out;
 		}
-		oldproglen <span style="color:#f92672">=</span> proglen;
+		oldproglen <span style="color:#666">=</span> proglen;
 	}
 
-	<span style="color:#66d9ef">if</span> (image) {
-		bpf_flush_icache(image, image <span style="color:#f92672">+</span> proglen);
-        <span style="color:#75715e">/* image 指向的机器码就直接替代了非 JIT 下的 sk_run_filter 函数 */</span> 
-		fp<span style="color:#f92672">-&gt;</span>bpf_func <span style="color:#f92672">=</span> (<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>)image;
+	<span style="color:#007020;font-weight:bold">if</span> (image) {
+		bpf_flush_icache(image, image <span style="color:#666">+</span> proglen);
+        <span style="color:#60a0b0;font-style:italic">/* image 指向的机器码就直接替代了非 JIT 下的 sk_run_filter 函数 */</span> 
+		fp<span style="color:#666">-&gt;</span>bpf_func <span style="color:#666">=</span> (<span style="color:#902000">void</span> <span style="color:#666">*</span>)image;
 	}
-out:
+<span style="color:#002070;font-weight:bold">out</span>:
 	kfree(addrs);
-	<span style="color:#66d9ef">return</span>;
+	<span style="color:#007020;font-weight:bold">return</span>;
 }
 </code></pre></div><p>JIT 编译完成后的机器码，完全可以类比 C 语言在编译后的 ELF 文件中的机器码。是可以交由 CPU 直接执行的。而由 CPU 直接执行的效率，一般都是高于基于 CPU 模拟的一套处理器的。</p>
         </div>
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

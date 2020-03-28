@@ -177,22 +177,22 @@ Additional C code
 <li>支持三角函数</li>
 <li>支持变量声明</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ ./calc
-3*10+2*<span style="color:#f92672">(</span>3-1<span style="color:#f92672">)</span>
-	<span style="color:#ae81ff">34</span>
-alpha<span style="color:#f92672">=</span>beta<span style="color:#f92672">=</span>5*3+4
-	<span style="color:#ae81ff">19</span>
-sin<span style="color:#f92672">(</span>PI/2<span style="color:#f92672">)</span>
-	<span style="color:#ae81ff">1</span>
-cos<span style="color:#f92672">(</span>PI<span style="color:#f92672">)</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ ./calc
+3*10+2*<span style="color:#666">(</span>3-1<span style="color:#666">)</span>
+	<span style="color:#40a070">34</span>
+<span style="color:#bb60d5">alpha</span><span style="color:#666">=</span><span style="color:#bb60d5">beta</span><span style="color:#666">=</span>5*3+4
+	<span style="color:#40a070">19</span>
+sin<span style="color:#666">(</span>PI/2<span style="color:#666">)</span>
+	<span style="color:#40a070">1</span>
+cos<span style="color:#666">(</span>PI<span style="color:#666">)</span>
 	-1
-ln<span style="color:#f92672">(</span>alpha<span style="color:#f92672">)</span>
+ln<span style="color:#666">(</span>alpha<span style="color:#666">)</span>
 	2.944438979
-beta<span style="color:#f92672">=</span>ln<span style="color:#f92672">(</span>alpha<span style="color:#f92672">)</span>
+<span style="color:#bb60d5">beta</span><span style="color:#666">=</span>ln<span style="color:#666">(</span>alpha<span style="color:#666">)</span>
 	2.944438979
-sqrt<span style="color:#f92672">(</span>25<span style="color:#f92672">)</span>
-	<span style="color:#ae81ff">5</span>
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">%{
+sqrt<span style="color:#666">(</span>25<span style="color:#666">)</span>
+	<span style="color:#40a070">5</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">%{
 #include &lt;math.h&gt;
 #include &lt;stdio.h&gt;
 #include &lt;ctype.h&gt;
@@ -362,30 +362,30 @@ int yylex()
 
     return c;
 }
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">/* Data type for links in the chain of symbols.      */</span>
-<span style="color:#66d9ef">struct</span> symrec
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* Data type for links in the chain of symbols.      */</span>
+<span style="color:#007020;font-weight:bold">struct</span> symrec
 {
-    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name;  <span style="color:#75715e">/* name of symbol                     */</span>
-    <span style="color:#66d9ef">int</span> type;    <span style="color:#75715e">/* type of symbol: either VAR or FNCT */</span>
-    <span style="color:#66d9ef">union</span> {
-        <span style="color:#66d9ef">double</span> var;           <span style="color:#75715e">/* value of a VAR          */</span>
-        <span style="color:#66d9ef">double</span> (<span style="color:#f92672">*</span>fnctptr)();  <span style="color:#75715e">/* value of a FNCT         */</span>
+    <span style="color:#902000">char</span> <span style="color:#666">*</span>name;  <span style="color:#60a0b0;font-style:italic">/* name of symbol                     */</span>
+    <span style="color:#902000">int</span> type;    <span style="color:#60a0b0;font-style:italic">/* type of symbol: either VAR or FNCT */</span>
+    <span style="color:#007020;font-weight:bold">union</span> {
+        <span style="color:#902000">double</span> var;           <span style="color:#60a0b0;font-style:italic">/* value of a VAR          */</span>
+        <span style="color:#902000">double</span> (<span style="color:#666">*</span>fnctptr)();  <span style="color:#60a0b0;font-style:italic">/* value of a FNCT         */</span>
     } value;
-    <span style="color:#66d9ef">struct</span> symrec <span style="color:#f92672">*</span>next;    <span style="color:#75715e">/* link field              */</span>
+    <span style="color:#007020;font-weight:bold">struct</span> symrec <span style="color:#666">*</span>next;    <span style="color:#60a0b0;font-style:italic">/* link field              */</span>
 };
 
-<span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> symrec symrec;
+<span style="color:#007020;font-weight:bold">typedef</span> <span style="color:#007020;font-weight:bold">struct</span> symrec symrec;
 
-<span style="color:#75715e">/* The symbol table: a chain of `struct symrec&#39;.     */</span>
-<span style="color:#66d9ef">extern</span> symrec <span style="color:#f92672">*</span>sym_table;
+<span style="color:#60a0b0;font-style:italic">/* The symbol table: a chain of `struct symrec&#39;.     */</span>
+<span style="color:#007020;font-weight:bold">extern</span> symrec <span style="color:#666">*</span>sym_table;
 
-symrec <span style="color:#f92672">*</span><span style="color:#a6e22e">putsym</span> ();
-symrec <span style="color:#f92672">*</span><span style="color:#a6e22e">getsym</span> ();
+symrec <span style="color:#666">*</span><span style="color:#06287e">putsym</span> ();
+symrec <span style="color:#666">*</span><span style="color:#06287e">getsym</span> ();
 
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-make" data-lang="make"><span style="color:#a6e22e">calc</span><span style="color:#f92672">:</span> calc.y calc.h
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-make" data-lang="make"><span style="color:#06287e">calc</span><span style="color:#666">:</span> calc.y calc.h
 	bison -o calc.c calc.y 
 	gcc -o calc calc.c -w
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -396,6 +396,12 @@ symrec <span style="color:#f92672">*</span><span style="color:#a6e22e">getsym</s
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

@@ -29,10 +29,10 @@
       
       <guid>https://www.ffutop.com/posts/2019-09-16-%E7%B3%BB%E7%BB%9F%E5%B9%B3%E5%9D%87%E8%B4%9F%E8%BD%BD%E5%88%86%E6%9E%90/</guid>
       <description>&lt;p&gt;&lt;code&gt;Load Average&lt;/code&gt; 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ffutop $ time ./a
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ffutop $ &lt;span style=&#34;color:#007020&#34;&gt;time&lt;/span&gt; ./a
 ./a  59.48s user 0.04s system 98% cpu 1:00.59 total
 ffutop $ uptime
-09:58:56 up &lt;span style=&#34;color:#ae81ff&#34;&gt;165&lt;/span&gt; days, 20:14,  &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; users,  load average: 0.63, 0.24, 0.09
+09:58:56 up &lt;span style=&#34;color:#40a070&#34;&gt;165&lt;/span&gt; days, 20:14,  &lt;span style=&#34;color:#40a070&#34;&gt;2&lt;/span&gt; users,  load average: 0.63, 0.24, 0.09
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;是什么原因导致平均负载与预期值不符呢？&lt;/p&gt;</description>
     </item>
     

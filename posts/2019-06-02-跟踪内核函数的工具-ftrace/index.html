@@ -123,7 +123,7 @@ Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在�
 <h2 id="启用-ftrace">启用 Ftrace</h2>
 <p><code>Ftrace</code> 自版本 2.6.28 开始加入内核。首先要做的就是确保内核已经集成了 <code>Ftrace</code> 。当然，目前的内核版本都已经到 5.X 了，而且云服务器的普及，相信已经没有太多还在使用7、8年前 Linux 发行版的机器了吧 :)</p>
 <p><code>Ftrace</code> 使用 debugfs 文件系统以文件的形式来维护控制项和跟踪器输出。一般来说，这个文件系统将挂载在 <code>/sys/kernel/debug</code> 目录下。如果没有找到，那就主动先挂载上 debugfs 文件系统：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mount -t debugfs nodev /sys/kernel/debug
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mount -t debugfs nodev /sys/kernel/debug
 </code></pre></div><p>挂载文件系统之后，可以检查下 <code>/sys/kernel/debug/tracing</code> 目录，这里就是 <code>Ftrace</code> 全部的可配置项和输出。</p>
 <p>几个重要的文件包括：</p>
 <ul>
@@ -144,93 +144,93 @@ Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在�
 </ul>
 <h2 id="使用-ftrace">使用 Ftrace</h2>
 <p>配置 <code>current_tracer</code> ，跟踪内核所有函数的调用</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ echo <span style="color:#66d9ef">function</span> &gt; current_tracer
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ <span style="color:#007020">echo</span> <span style="color:#007020;font-weight:bold">function</span> &gt; current_tracer
 </code></pre></div><p>配置 <code>tracing_enabled</code>，开启跟踪器</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ echo <span style="color:#ae81ff">1</span> &gt; tracing_on
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ <span style="color:#007020">echo</span> <span style="color:#40a070">1</span> &gt; tracing_on
 </code></pre></div><p>查看 <code>trace</code> 文件中记录的跟踪器输出</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ head -15 trace
-<span style="color:#75715e"># tracer: function</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ head -15 trace
+<span style="color:#60a0b0;font-style:italic"># tracer: function</span>
 #
-<span style="color:#75715e">#                              _-----=&gt; irqs-off</span>
-<span style="color:#75715e">#                             / _----=&gt; need-resched</span>
-<span style="color:#75715e">#                            | / _---=&gt; hardirq/softirq</span>
-<span style="color:#75715e">#                            || / _--=&gt; preempt-depth</span>
-<span style="color:#75715e">#                            ||| /     delay</span>
-<span style="color:#75715e">#           TASK-PID   CPU#  ||||    TIMESTAMP  FUNCTION</span>
-<span style="color:#75715e">#              | |       |   ||||       |         |</span>
-             zsh-23126 <span style="color:#f92672">[</span>000<span style="color:#f92672">]</span> d... 5252243.233084: do_syscall_64 &lt;-entry_SYSCALL_64_after_hwframe
-             zsh-23126 <span style="color:#f92672">[</span>000<span style="color:#f92672">]</span> .... 5252243.233084: SyS_rt_sigprocmask &lt;-do_syscall_64
-             zsh-23126 <span style="color:#f92672">[</span>000<span style="color:#f92672">]</span> .... 5252243.233084: sigprocmask &lt;-SyS_rt_sigprocmask
-             zsh-23126 <span style="color:#f92672">[</span>000<span style="color:#f92672">]</span> .... 5252243.233084: __set_current_blocked &lt;-sigprocmask
-             zsh-23126 <span style="color:#f92672">[</span>000<span style="color:#f92672">]</span> .... 5252243.233084: _raw_spin_lock_irq &lt;-__set_current_blocked
-             zsh-23126 <span style="color:#f92672">[</span>000<span style="color:#f92672">]</span> d... 5252243.233085: __set_task_blocked &lt;-__set_current_blocked
+<span style="color:#60a0b0;font-style:italic">#                              _-----=&gt; irqs-off</span>
+<span style="color:#60a0b0;font-style:italic">#                             / _----=&gt; need-resched</span>
+<span style="color:#60a0b0;font-style:italic">#                            | / _---=&gt; hardirq/softirq</span>
+<span style="color:#60a0b0;font-style:italic">#                            || / _--=&gt; preempt-depth</span>
+<span style="color:#60a0b0;font-style:italic">#                            ||| /     delay</span>
+<span style="color:#60a0b0;font-style:italic">#           TASK-PID   CPU#  ||||    TIMESTAMP  FUNCTION</span>
+<span style="color:#60a0b0;font-style:italic">#              | |       |   ||||       |         |</span>
+             zsh-23126 <span style="color:#666">[</span>000<span style="color:#666">]</span> d... 5252243.233084: do_syscall_64 &lt;-entry_SYSCALL_64_after_hwframe
+             zsh-23126 <span style="color:#666">[</span>000<span style="color:#666">]</span> .... 5252243.233084: SyS_rt_sigprocmask &lt;-do_syscall_64
+             zsh-23126 <span style="color:#666">[</span>000<span style="color:#666">]</span> .... 5252243.233084: sigprocmask &lt;-SyS_rt_sigprocmask
+             zsh-23126 <span style="color:#666">[</span>000<span style="color:#666">]</span> .... 5252243.233084: __set_current_blocked &lt;-sigprocmask
+             zsh-23126 <span style="color:#666">[</span>000<span style="color:#666">]</span> .... 5252243.233084: _raw_spin_lock_irq &lt;-__set_current_blocked
+             zsh-23126 <span style="color:#666">[</span>000<span style="color:#666">]</span> d... 5252243.233085: __set_task_blocked &lt;-__set_current_blocked
 </code></pre></div><p>OK，如果觉得这个结果并不直观，可以重新配置 <code>current_tracer</code>，使用 <code>function_graph</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ echo function_graph &gt; current_tracer
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ <span style="color:#007020">echo</span> function_graph &gt; current_tracer
 $ head -15 trace
-<span style="color:#75715e"># tracer: function_graph</span>
+<span style="color:#60a0b0;font-style:italic"># tracer: function_graph</span>
 #
-<span style="color:#75715e"># CPU  DURATION                  FUNCTION CALLS</span>
-<span style="color:#75715e"># |     |   |                     |   |   |   |</span>
- 0<span style="color:#f92672">)</span>               |      __fdget_pos<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
- 0<span style="color:#f92672">)</span>   0.072 us    |        __fget_light<span style="color:#f92672">()</span>;
- 0<span style="color:#f92672">)</span>   0.377 us    |      <span style="color:#f92672">}</span>
- 0<span style="color:#f92672">)</span>               |      vfs_read<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
- 0<span style="color:#f92672">)</span>               |        rw_verify_area<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
- 0<span style="color:#f92672">)</span>               |          security_file_permission<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
- 0<span style="color:#f92672">)</span>               |            apparmor_file_permission<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
- 0<span style="color:#f92672">)</span>               |              common_file_perm<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
- 0<span style="color:#f92672">)</span>   0.079 us    |                aa_file_perm<span style="color:#f92672">()</span>;
- 0<span style="color:#f92672">)</span>   0.480 us    |              <span style="color:#f92672">}</span>
- 0<span style="color:#f92672">)</span>   0.877 us    |            <span style="color:#f92672">}</span>
+<span style="color:#60a0b0;font-style:italic"># CPU  DURATION                  FUNCTION CALLS</span>
+<span style="color:#60a0b0;font-style:italic"># |     |   |                     |   |   |   |</span>
+ 0<span style="color:#666">)</span>               |      __fdget_pos<span style="color:#666">()</span> <span style="color:#666">{</span>
+ 0<span style="color:#666">)</span>   0.072 us    |        __fget_light<span style="color:#666">()</span>;
+ 0<span style="color:#666">)</span>   0.377 us    |      <span style="color:#666">}</span>
+ 0<span style="color:#666">)</span>               |      vfs_read<span style="color:#666">()</span> <span style="color:#666">{</span>
+ 0<span style="color:#666">)</span>               |        rw_verify_area<span style="color:#666">()</span> <span style="color:#666">{</span>
+ 0<span style="color:#666">)</span>               |          security_file_permission<span style="color:#666">()</span> <span style="color:#666">{</span>
+ 0<span style="color:#666">)</span>               |            apparmor_file_permission<span style="color:#666">()</span> <span style="color:#666">{</span>
+ 0<span style="color:#666">)</span>               |              common_file_perm<span style="color:#666">()</span> <span style="color:#666">{</span>
+ 0<span style="color:#666">)</span>   0.079 us    |                aa_file_perm<span style="color:#666">()</span>;
+ 0<span style="color:#666">)</span>   0.480 us    |              <span style="color:#666">}</span>
+ 0<span style="color:#666">)</span>   0.877 us    |            <span style="color:#666">}</span>
 </code></pre></div><h2 id="跟踪应用程序的系统调用">跟踪应用程序的系统调用</h2>
 <p>虽然 <code>strace</code> 就可以打印出任务的每个系统调用，但是，它所能完成的仅仅只是对每个系统调用及结果进行记录，而无法看到系统调用内部究竟发生了什么。而 ftrace 可以很好的完成这一点。当然，这需要一点点编码量。</p>
 <p>回到最初的命题，执行 <code>ffstrings</code> 过程中，抛出了 <code>EPERM</code> 错误码。首先使用 <code>strace</code> 进行定位，究竟是哪个系统调用出了问题</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ strace ./ffstrings &lt;PID&gt;
-<span style="color:#75715e"># ... omitted output</span>
-read<span style="color:#f92672">(</span>4, 0x7f9ac2970000, 1024<span style="color:#f92672">)</span>           <span style="color:#f92672">=</span> -1 EPERM <span style="color:#f92672">(</span>Operation not permitted<span style="color:#f92672">)</span>
-<span style="color:#75715e"># ... omitted output</span>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ strace ./ffstrings &lt;PID&gt;
+<span style="color:#60a0b0;font-style:italic"># ... omitted output</span>
+read<span style="color:#666">(</span>4, 0x7f9ac2970000, 1024<span style="color:#666">)</span>           <span style="color:#666">=</span> -1 EPERM <span style="color:#666">(</span>Operation not permitted<span style="color:#666">)</span>
+<span style="color:#60a0b0;font-style:italic"># ... omitted output</span>
 </code></pre></div><p>修改应用程序代码，添加两个新的函数 (<code>trace_on</code>, <code>trace_off</code>)。</p>
 <p><em>Hint: 这段代码的健壮性并不好，请各位多担待</em></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">int</span> trace_fd <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
-<span style="color:#66d9ef">int</span> marker_fd <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
-<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>debugfs <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/sys/kernel/debug&#34;</span>;
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#902000">int</span> trace_fd <span style="color:#666">=</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>;
+<span style="color:#902000">int</span> marker_fd <span style="color:#666">=</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>;
+<span style="color:#902000">char</span> <span style="color:#666">*</span>debugfs <span style="color:#666">=</span> <span style="color:#4070a0">&#34;/sys/kernel/debug&#34;</span>;
 
-<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">trace_on</span>()
+<span style="color:#902000">void</span> <span style="color:#06287e">trace_on</span>()
 {
-	<span style="color:#66d9ef">char</span> path[<span style="color:#ae81ff">256</span>];
+	<span style="color:#902000">char</span> path[<span style="color:#40a070">256</span>];
 
-	strcpy(path, debugfs);  <span style="color:#75715e">/* BEWARE buffer overflow */</span>
-	strcat(path,<span style="color:#e6db74">&#34;/tracing/tracing_on&#34;</span>);
-	trace_fd <span style="color:#f92672">=</span> open(path, O_WRONLY);
-	<span style="color:#66d9ef">if</span> (trace_fd <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>)
-		write(trace_fd, <span style="color:#e6db74">&#34;1&#34;</span>, <span style="color:#ae81ff">1</span>);
+	strcpy(path, debugfs);  <span style="color:#60a0b0;font-style:italic">/* BEWARE buffer overflow */</span>
+	strcat(path,<span style="color:#4070a0">&#34;/tracing/tracing_on&#34;</span>);
+	trace_fd <span style="color:#666">=</span> open(path, O_WRONLY);
+	<span style="color:#007020;font-weight:bold">if</span> (trace_fd <span style="color:#666">&gt;=</span> <span style="color:#40a070">0</span>)
+		write(trace_fd, <span style="color:#4070a0">&#34;1&#34;</span>, <span style="color:#40a070">1</span>);
 
 	strcpy(path, debugfs);
-	strcat(path,<span style="color:#e6db74">&#34;/tracing/trace_marker&#34;</span>);
-	marker_fd <span style="color:#f92672">=</span> open(path, O_WRONLY);
-    <span style="color:#66d9ef">if</span> (marker_fd <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>)
-	    write(marker_fd, <span style="color:#e6db74">&#34;In critical area</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">17</span>);
+	strcat(path,<span style="color:#4070a0">&#34;/tracing/trace_marker&#34;</span>);
+	marker_fd <span style="color:#666">=</span> open(path, O_WRONLY);
+    <span style="color:#007020;font-weight:bold">if</span> (marker_fd <span style="color:#666">&gt;=</span> <span style="color:#40a070">0</span>)
+	    write(marker_fd, <span style="color:#4070a0">&#34;In critical area</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, <span style="color:#40a070">17</span>);
 }
 
-<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">trace_off</span>()
+<span style="color:#902000">void</span> <span style="color:#06287e">trace_off</span>()
 {
-    <span style="color:#66d9ef">if</span> (marker_fd <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>)
-	    write(marker_fd, <span style="color:#e6db74">&#34;Out critical area</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">17</span>);
-    write(trace_fd, <span style="color:#e6db74">&#34;0&#34;</span>, <span style="color:#ae81ff">1</span>);
+    <span style="color:#007020;font-weight:bold">if</span> (marker_fd <span style="color:#666">&gt;=</span> <span style="color:#40a070">0</span>)
+	    write(marker_fd, <span style="color:#4070a0">&#34;Out critical area</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, <span style="color:#40a070">17</span>);
+    write(trace_fd, <span style="color:#4070a0">&#34;0&#34;</span>, <span style="color:#40a070">1</span>);
     close(trace_fd);
     close(marker_fd);
-    trace_fd <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
-    marker_fd <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+    trace_fd <span style="color:#666">=</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>;
+    marker_fd <span style="color:#666">=</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>;
 }
 </code></pre></div><p>在问题代码前后执行这两个新的函数</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">trace_on();
-<span style="color:#66d9ef">char</span> c <span style="color:#f92672">=</span> getc(mem);
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">trace_on();
+<span style="color:#902000">char</span> c <span style="color:#666">=</span> getc(mem);
 trace_off();
 </code></pre></div><p>再去从 <code>trace</code> 文件中取一下执行结果（局部结果）</p>
 <p><img src="https://img.ffutop.com/669F0256-7612-48E5-9069-292D4E687660.png" alt=""></p>
 <p>到此为止，就可以简单的实现对内核函数的跟踪。</p>
 <p>不过，这仅仅只能看到内核函数调用，具体的调用关系，还是得拿到相应版本的内核代码仔细研读研读。毕竟，内核代码的改动也是相当频繁的，不同版本调用关系会出现很大的变化。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
  / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
 | |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
 |  _| (_| | | | | (_| |  _|  __/ | | | (_| |
@@ -241,6 +241,12 @@ trace_off();
 
         <div class="row middle-xs">
           <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
             
           </div>
         </div>

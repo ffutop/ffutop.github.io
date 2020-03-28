@@ -87,6 +87,13 @@
   </url>
   
   <url>
+    <loc>https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/</loc>
+    <lastmod>2020-02-28T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://www.ffutop.com/tags/c/</loc>
     <lastmod>2020-02-17T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -1033,13 +1040,6 @@
   
   <url>
     <loc>https://www.ffutop.com/posts/2018-01-15-spring-jdbc-%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</loc>
-    <lastmod>2018-01-15T00:00:00+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/</loc>
     <lastmod>2018-01-15T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
