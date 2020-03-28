@@ -170,6 +170,15 @@ a:hover {
   margin-bottom: 1em;
 }
 
+.post-line {
+  width: 100%;
+  border-width: 2px;
+  border-color: #888;
+  border-style: solid none none none;
+  margin: 18px 0;
+}
+
+
 .releated-content {
   border-width: 3px;
   border-style: solid;
@@ -181,6 +190,28 @@ a:hover {
 
 .releated-content li {
   margin: 5px 0;
+}
+
+/* summary */
+
+.summary-read-more {
+  color: #000;
+}
+
+.summary-read-more:hover {
+  color: #000;
+}
+
+/* pagination */
+
+.pagination-prev {
+  text-align: left;
+  font-weight: bold;
+}
+
+.pagination-next {
+  text-align: right;
+  font-weight: bold;
 }
 
 /* taxonomy */

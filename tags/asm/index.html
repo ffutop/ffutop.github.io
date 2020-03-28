@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Hugo 0.68.3" />
 
@@ -58,8 +61,10 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
 </head>
 
-
-<body>
+     
+  </head>
+  <body>
+    
   <article class="posts">
     <div class="row">
       <div class="col-xs-12">
@@ -78,54 +83,177 @@
 
         <h1 class="taxonomy-term">ASM</h1>
         <div id="posts-list">
+          
           <section>
-            <h1 class="site-date-catalog">2018</h1>
+            <header class="post-header">
+              <h1 class="post-title">Java Instrumentation</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-08-15 00:00:00 UTC">
+                    15 Aug 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
 
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2018-08-15 00:00:00 UTC">Aug 15</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2018-08-15-java-instrumentation/">Java Instrumentation</a>
-                  </div>
-                </div>
-              </div>
+            <div class="post-content markdown-body">
+                <h2 id="start">Start</h2>
+<p>从现有的前置知识来说，我们能够认识到两个事实:</p>
+<ol>
+<li>Java Class 通过 ClassLoader 进行加载。
+通过<code>全限定名</code>进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。
+换句话说: Class 一经加载，就不会尝试重复加载 (至少按绝大多数人的认知来说，确实是的)</li>
+<li>有没有可能让被加载的 Class 与物理存储上的 .class 内容不同。
+当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧
+(虽然可能不了解细节。在此，欢迎学习前置技能 <a href="https://dormouse-none.github.io/2018-07-10-CGlib-Enhancer/">CGlib Enhancer 主流程源码解析</a> 和 <a href="https://dormouse-none.github.io/2018-07-20-Java-Proxy/">Java Proxy 源码解析</a>。不过不影响本文后续内容)</li>
+</ol>
+<p>另一个方面，也许绝大多数人都听说过所谓的<code>热部署</code>。但是究竟怎么才能做到 <code>热部署</code>(话题开得有点大哈。Y_Y 本文不讲这个)</p>
+<p>操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。</p>
+<p>如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚&hellip;</p>
+<p>Java 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的</p>
+<h2 id="instrumentation">Instrumentation</h2>
+<p><code>java.lang.instrument.Instrumentation</code> 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)</p>
+<p>相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。</p>
+<p>下列有两种方法可以达到目的</p>
+<ol>
+<li>当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。</li>
+<li>当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。</li>
+</ol>
+<p>话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了<em>检测</em>的目的)的使用</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-15-java-instrumentation/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
             </div>
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2018-07-10 00:00:00 UTC">Jul 10</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2018-07-10-cglib-enhancer-%E4%B8%BB%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">CGlib Enhancer 主流程源码解析</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2018-06-25 00:00:00 UTC">Jun 25</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2018-06-25-asm-%E6%A0%B8%E5%BF%83%E5%8C%85%E5%9F%BA%E6%9C%AC%E5%86%85%E5%AE%B9%E6%BC%AB%E8%B0%88/">ASM 核心包基本内容漫谈</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
           </section>
           
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">CGlib Enhancer 主流程源码解析</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-07-10 00:00:00 UTC">
+                    10 Jul 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="前言">前言</h2>
+<p>此博文写作的目的:</p>
+<ul>
+<li>(Core) 通过了解 CGlib Enhancer 的整个调用链，了解其对于唯一依赖的 ASM 库的调用方式。</li>
+<li>基于 Enhancer 对已有字节码进行增强的进一步理解与掌握。</li>
+</ul>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-10-cglib-enhancer-%E4%B8%BB%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">ASM 核心包基本内容漫谈</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-06-25 00:00:00 UTC">
+                    25 Jun 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <blockquote>
+<p>本文描述的 ASM 指的是 OW2 ASM</p>
+</blockquote>
+<h2 id="asm-core-的结构">ASM-Core 的结构</h2>
+<p><em>首先是一些概述性的内容。</em></p>
+<p>由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。
+因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)</p>
+<p>从核心包声明的类来看，主要包括:</p>
+<ol>
+<li>
+<p>ClassReader - 作为结构化对象，将接收(accept)访问者的访问</p>
+</li>
+<li>
+<p>几种访问者抽象类以及相应的实现类</p>
+</li>
+</ol>
+<ul>
+<li>AnnotationVisitor -&gt; AnnotationWriter</li>
+<li>ClassVisitor -&gt; ClassWriter</li>
+<li>FieldVisitor -&gt; FieldWriter</li>
+<li>MethodVisitor -&gt; MethodWriter</li>
+<li>ModuleVisitor -&gt; ModuleWriter</li>
+</ul>
+<ol start="3">
+<li>
+<p>Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值</p>
+</li>
+<li>
+<p>其它一些辅助的类</p>
+</li>
+</ol>
+<ul>
+<li>Attribute - 用于处理非标准化的属性(ClassFile 允许<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVMS</a> 中未定义的 Attribute)</li>
+<li>ByteArray - 动态可自适应的 byte[] (字节数组)</li>
+<li>Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象</li>
+<li>Symbol - 用于表示 ClassFile 中描述的 Constant 的基类</li>
+<li>SymbolTable - 用于存储常量池对象</li>
+<li>其它内容省略</li>
+</ul>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-25-asm-%E6%A0%B8%E5%BF%83%E5%8C%85%E5%9F%BA%E6%9C%AC%E5%86%85%E5%AE%B9%E6%BC%AB%E8%B0%88/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
         </div>
+        <div class="pagination">
+  <div class="row between-xs">
+    <div class="col-xs-6 col-md-2 pagination-prev">
+      
+    </div>
+    <div class="col-xs-6 col-md-2 pagination-next">
+      
+    </div>
+</div>
+</div>
+
 
         <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/view.html" target="_blank">View</a>
+  </div>
   
   <div class="site-footer-item">
     <a href="/index.xml" target="_blank">RSS</a>
@@ -159,6 +287,6 @@
   
 </script>
 
-</body>
-
+ 
+  </body>
 </html>

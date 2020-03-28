@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Hugo 0.68.3" />
 
@@ -58,8 +61,10 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
 </head>
 
-
-<body>
+     
+  </head>
+  <body>
+    
   <article class="posts">
     <div class="row">
       <div class="col-xs-12">
@@ -78,28 +83,103 @@
 
         <h1 class="taxonomy-term">read &amp; write</h1>
         <div id="posts-list">
+          
           <section>
-            <h1 class="site-date-catalog">2018</h1>
-
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2018-11-11 00:00:00 UTC">Nov 11</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2018-11-11-%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/">理解 Linux Kernel (6) - read &amp; write</a>
+            <header class="post-header">
+              <h1 class="post-title">理解 Linux Kernel (6) - read &amp; write</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-11-11 00:00:00 UTC">
+                    11 Nov 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
                   </div>
+                  
                 </div>
               </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p><a href="https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/">前一篇</a>已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。</p>
+<p>首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020">#include</span> <span style="color:#007020">&lt;stdio.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;stdlib.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;string.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;unistd.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;fcntl.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;errno.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/types.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/stat.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020"></span>
+<span style="color:#902000">int</span> <span style="color:#06287e">panic</span>()
+{
+    fprintf(stderr, <span style="color:#4070a0">&#34;%s (errno=%d)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, strerror(errno), errno);
+    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>;
+}
+
+<span style="color:#902000">int</span> <span style="color:#06287e">main</span>(<span style="color:#902000">int</span> argc, <span style="color:#902000">char</span> <span style="color:#666">*</span>argv[])
+{
+    <span style="color:#60a0b0;font-style:italic">/* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */</span>
+    <span style="color:#902000">int</span> fd <span style="color:#666">=</span> open(<span style="color:#4070a0">&#34;/root/frw.txt&#34;</span>, O_RDWR <span style="color:#666">|</span> O_CREAT);
+    <span style="color:#007020;font-weight:bold">if</span> (fd <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    <span style="color:#60a0b0;font-style:italic">/* 向文件写入 Hello World! 共计 12 个字符 */</span>
+    ssize_t wsize <span style="color:#666">=</span> write(fd, <span style="color:#4070a0">&#34;Hello World!&#34;</span>, <span style="color:#40a070">12</span>);
+    <span style="color:#007020;font-weight:bold">if</span> (wsize <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    <span style="color:#60a0b0;font-style:italic">/* 重定位文件读写指针 */</span>
+    off_t off <span style="color:#666">=</span> lseek(fd, <span style="color:#40a070">0</span>, SEEK_SET);
+    <span style="color:#007020;font-weight:bold">if</span> (off <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    <span style="color:#902000">char</span><span style="color:#666">*</span> buf <span style="color:#666">=</span> (<span style="color:#902000">char</span> <span style="color:#666">*</span>) malloc(wsize);
+    <span style="color:#60a0b0;font-style:italic">/* 读取文件内容 */</span>
+    ssize_t rsize <span style="color:#666">=</span> read(fd, buf, wsize);
+    <span style="color:#007020;font-weight:bold">if</span> (rsize <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    printf(<span style="color:#4070a0">&#34;%s</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, buf);
+    free(buf);
+    <span style="color:#60a0b0;font-style:italic">/* 关闭文件 */</span>
+    <span style="color:#902000">int</span> stat <span style="color:#666">=</span> close(fd);
+    <span style="color:#007020;font-weight:bold">if</span> (stat <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
+}
+</code></pre></div>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-11-11-%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
             </div>
-            
           </section>
           
+          
         </div>
+        <div class="pagination">
+  <div class="row between-xs">
+    <div class="col-xs-6 col-md-2 pagination-prev">
+      
+    </div>
+    <div class="col-xs-6 col-md-2 pagination-next">
+      
+    </div>
+</div>
+</div>
+
 
         <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/view.html" target="_blank">View</a>
+  </div>
   
   <div class="site-footer-item">
     <a href="/index.xml" target="_blank">RSS</a>
@@ -133,6 +213,6 @@
   
 </script>
 
-</body>
-
+ 
+  </body>
 </html>

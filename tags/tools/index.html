@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Hugo 0.68.3" />
 
@@ -58,8 +61,10 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
 </head>
 
-
-<body>
+     
+  </head>
+  <body>
+    
   <article class="posts">
     <div class="row">
       <div class="col-xs-12">
@@ -78,28 +83,58 @@
 
         <h1 class="taxonomy-term">tools</h1>
         <div id="posts-list">
+          
           <section>
-            <h1 class="site-date-catalog">2018</h1>
-
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2018-07-13 00:00:00 UTC">Jul 13</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2018-07-13-%E5%A6%82%E4%BD%95%E6%96%B9%E4%BE%BF%E5%9C%B0%E8%8E%B7%E5%8F%96-cglib-%E7%94%9F%E6%88%90%E7%B1%BB/">如何方便地获取 CGlib 生成类</a>
+            <header class="post-header">
+              <h1 class="post-title">如何方便地获取 CGlib 生成类</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-07-13 00:00:00 UTC">
+                    13 Jul 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
                   </div>
+                  
                 </div>
               </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="配置参数">配置参数</h2>
+<p><strong>命令行使用</strong></p>
+<p>在 java 启动命令中添加参数配置项 <code>-Dcglib.debugLocation=&lt;Custom Path&gt;</code></p>
+<p><strong>编码实现</strong></p>
+<p>在执行 CGlib 获取新生成类之前，调用 <code>System.setProperty(&quot;cglib.debugLocation&quot;, &lt;Custom Path&gt;)</code></p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-13-%E5%A6%82%E4%BD%95%E6%96%B9%E4%BE%BF%E5%9C%B0%E8%8E%B7%E5%8F%96-cglib-%E7%94%9F%E6%88%90%E7%B1%BB/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
             </div>
-            
           </section>
           
+          
         </div>
+        <div class="pagination">
+  <div class="row between-xs">
+    <div class="col-xs-6 col-md-2 pagination-prev">
+      
+    </div>
+    <div class="col-xs-6 col-md-2 pagination-next">
+      
+    </div>
+</div>
+</div>
+
 
         <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/view.html" target="_blank">View</a>
+  </div>
   
   <div class="site-footer-item">
     <a href="/index.xml" target="_blank">RSS</a>
@@ -133,6 +168,6 @@
   
 </script>
 
-</body>
-
+ 
+  </body>
 </html>

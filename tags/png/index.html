@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Hugo 0.68.3" />
 
@@ -58,8 +61,10 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
 </head>
 
-
-<body>
+     
+  </head>
+  <body>
+    
   <article class="posts">
     <div class="row">
       <div class="col-xs-12">
@@ -78,28 +83,59 @@
 
         <h1 class="taxonomy-term">PNG</h1>
         <div id="posts-list">
+          
           <section>
-            <h1 class="site-date-catalog">2019</h1>
-
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2019-05-10 00:00:00 UTC">May 10</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2019-05-10-png-%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/">PNG 文件格式</a>
+            <header class="post-header">
+              <h1 class="post-title">PNG 文件格式</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-05-10 00:00:00 UTC">
+                    10 May 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
                   </div>
+                  
                 </div>
               </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>PNG (Portable Network Graphics) 文件格式(第二版)。PNG 文件格式由两类结构——<code>PNG 签名(PNG Signature)</code>和若干<code>数据块(chunk)</code>组成。</p>
+<p>PNG 签名相当于其他文件格式中的魔数，用于声明二进制数据所代表的格式。类似的有 <code>JAVA</code> class 文件的 <code>ca fe ba be</code>、<code>ELF</code> 文件的 <code>7f 45 4c 46</code> (.ELF) 。PNG 签名使用 <code>89 50 4e 47 0d 0a 1a 0a</code> (.PNG&hellip;.) 作为魔数。</p>
+<blockquote>
+<p>HINT 上述的 <code>.</code> 仅仅是为了指代非打印字符，并非真的是 <code>点号</code>。</p>
+</blockquote>
+<p>在 <code>PNG 签名</code> 数据之后，紧接着就是 <code>数据块(chunk)</code> 的数据。虽然统称<code>数据块</code>，但存在不同类型的数据块（例如 IHDR, PLTE, IDAT, IEND 等）。每个 PNG 文件可以有若干连续的数据块（至少 3 个数据块），其中第一个数据块和最后一个数据块类型分别是 IHDR、IEND 。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-10-png-%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
             </div>
-            
           </section>
           
+          
         </div>
+        <div class="pagination">
+  <div class="row between-xs">
+    <div class="col-xs-6 col-md-2 pagination-prev">
+      
+    </div>
+    <div class="col-xs-6 col-md-2 pagination-next">
+      
+    </div>
+</div>
+</div>
+
 
         <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/view.html" target="_blank">View</a>
+  </div>
   
   <div class="site-footer-item">
     <a href="/index.xml" target="_blank">RSS</a>
@@ -133,6 +169,6 @@
   
 </script>
 
-</body>
-
+ 
+  </body>
 </html>

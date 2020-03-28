@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Hugo 0.68.3" />
 
@@ -58,8 +61,10 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
 </head>
 
-
-<body>
+     
+  </head>
+  <body>
+    
   <article class="posts">
     <div class="row">
       <div class="col-xs-12">
@@ -78,28 +83,68 @@
 
         <h1 class="taxonomy-term">memory leak</h1>
         <div id="posts-list">
+          
           <section>
-            <h1 class="site-date-catalog">2019</h1>
-
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2019-07-06 00:00:00 UTC">Jul 06</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2019-07-06-jni-%E5%BC%95%E5%8F%91%E7%9A%84%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/">JNI 引发的堆外内存泄露</a>
+            <header class="post-header">
+              <h1 class="post-title">JNI 引发的堆外内存泄露</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-07-06 00:00:00 UTC">
+                    06 Jul 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
                   </div>
+                  
                 </div>
               </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。</p>
+<p>为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。</p>
+<p>问题代码类似于下列代码：</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020">#include</span> <span style="color:#007020">&#34;Main.h&#34;</span><span style="color:#007020">
+</span><span style="color:#007020"></span>
+JNIEXPORT <span style="color:#902000">void</span> JNICALL <span style="color:#06287e">Java_Main_sayHi</span> (JNIEnv <span style="color:#666">*</span>env, jobject jobj, jstring jstr)
+{
+    <span style="color:#007020;font-weight:bold">const</span> <span style="color:#902000">char</span> <span style="color:#666">*</span>str <span style="color:#666">=</span> (<span style="color:#666">*</span>env)<span style="color:#666">-&gt;</span>GetStringUTFChars(env, jstr, <span style="color:#40a070">0</span>);
+    <span style="color:#902000">int</span> len <span style="color:#666">=</span> (<span style="color:#666">*</span>env)<span style="color:#666">-&gt;</span>GetStringUTFLength(env, jstr);
+
+    <span style="color:#60a0b0;font-style:italic">// ... some code omitted 
+</span><span style="color:#60a0b0;font-style:italic"></span>
+    <span style="color:#007020;font-weight:bold">return</span> ;
+}
+</code></pre></div>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-06-jni-%E5%BC%95%E5%8F%91%E7%9A%84%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
             </div>
-            
           </section>
           
+          
         </div>
+        <div class="pagination">
+  <div class="row between-xs">
+    <div class="col-xs-6 col-md-2 pagination-prev">
+      
+    </div>
+    <div class="col-xs-6 col-md-2 pagination-next">
+      
+    </div>
+</div>
+</div>
+
 
         <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/view.html" target="_blank">View</a>
+  </div>
   
   <div class="site-footer-item">
     <a href="/index.xml" target="_blank">RSS</a>
@@ -133,6 +178,6 @@
   
 </script>
 
-</body>
-
+ 
+  </body>
 </html>

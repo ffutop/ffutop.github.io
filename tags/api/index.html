@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Hugo 0.68.3" />
 
@@ -58,8 +61,10 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
 </head>
 
-
-<body>
+     
+  </head>
+  <body>
+    
   <article class="posts">
     <div class="row">
       <div class="col-xs-12">
@@ -78,28 +83,56 @@
 
         <h1 class="taxonomy-term">API</h1>
         <div id="posts-list">
+          
           <section>
-            <h1 class="site-date-catalog">2019</h1>
-
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2019-02-27 00:00:00 UTC">Feb 27</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2019-02-27-javaapi-%E5%8F%82%E6%95%B0%E8%AF%AF%E5%AE%9A%E4%B9%89%E7%9A%84%E5%90%8E%E6%9E%9C/">【Java】API 参数误定义的后果</a>
+            <header class="post-header">
+              <h1 class="post-title">【Java】API 参数误定义的后果</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-02-27 00:00:00 UTC">
+                    27 Feb 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
                   </div>
+                  
                 </div>
               </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。</p>
+<p>想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！</p>
+<p>想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把<code>void add(int)</code> API 改写成 <code>int add(int)</code>，可能得到的大多数回答都是可以。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-02-27-javaapi-%E5%8F%82%E6%95%B0%E8%AF%AF%E5%AE%9A%E4%B9%89%E7%9A%84%E5%90%8E%E6%9E%9C/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
             </div>
-            
           </section>
           
+          
         </div>
+        <div class="pagination">
+  <div class="row between-xs">
+    <div class="col-xs-6 col-md-2 pagination-prev">
+      
+    </div>
+    <div class="col-xs-6 col-md-2 pagination-next">
+      
+    </div>
+</div>
+</div>
+
 
         <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/view.html" target="_blank">View</a>
+  </div>
   
   <div class="site-footer-item">
     <a href="/index.xml" target="_blank">RSS</a>
@@ -133,6 +166,6 @@
   
 </script>
 
-</body>
-
+ 
+  </body>
 </html>

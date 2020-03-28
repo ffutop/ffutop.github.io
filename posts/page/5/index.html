@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/www.ffutop.com\/"
+      },
+      "articleSection" : "posts",
+      "name" : "Posts",
+      "headline" : "Posts",
+      "description" : "",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2020",
+      "datePublished": "2020-03-26 00:00:00 \x2b0000 UTC",
+      "dateModified" : "2020-03-26 00:00:00 \x2b0000 UTC",
+      "url" : "https:\/\/www.ffutop.com\/posts\/",
+      "keywords" : [  ]
+  }
+</script>
+<title>Posts - Utop&#39;s Blog</title>
+  <meta property="og:title" content="Posts - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="" />
+  <meta name="description" content="" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="posts">
+    <div class="row">
+      <div class="col-xs-12">
+        
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+
+        <h1 class="taxonomy-term"></h1>
+        <div id="posts-list">
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">理解 Linux Kernel (0) - 概述</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-08-19 00:00:00 UTC">
+                    19 Aug 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="概述">概述</h2>
+<p>《理解Linux Kernel》系列最早开始于 2018 年中，当时我刚刚结束对 JVM (Java Virtual Machine, Java 虚拟机) <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html">ClassFile 文件格式</a>的学习。彼时，在<em>实现新编程语言</em>、<em>学习 Linux 内核实现</em>、<em>继续深入 JVM 源码</em>三个下一阶段的命题中，我选择了拥抱 Linux 源码。</p>
+<p>时间过去了大半年，我已经简单地建立了对 Linux Kernel 的结构化认知。趁着现阶段有一些闲暇，整理过去的文章，以期删繁就简，并对错误的描述进行修正。</p>
+<p>《理解 Linux Kernel》系列最早发布于<a href="https://www.ffutop.com/">我的博客 (Utop&rsquo;s Blog)</a>。由于这些文章的完成完全出于个人兴趣，对每个内核子系统的学习往往浅尝辄止，但我依旧认为这个系列对初学者来说是大有裨益的。</p>
+<p>本系列对内核的学习完全建立在 0.11、2.6.24 两个版本源码的基础上。从 0.11 版本入门，学习硬件启动阶段进行的主要操作、任务调度、文件系统等早期版本已初现雏形的子系统；从 2.6.24 版本进阶，学习网络、内存管理等子系统的实现。在此强烈推荐，直接阅读源码对理解的帮助最为深远。请随时备上两个版本的源码，以备深入理解。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-19-%E7%90%86%E8%A7%A3-linux-kernel-0-%E6%A6%82%E8%BF%B0/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">理解 Linux Kernel (1) - BIOS</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-08-19 00:00:00 UTC">
+                    19 Aug 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="前言">前言</h2>
+<p>在<a href="https://www.ffutop.com/2018-08-19-understand-Kernel-0/">概述</a>，我已经介绍过《理解 Linux Kernel》系列文章的写作原因。我不能担保我所进行的所有试验性操作都是对的，但至少操作我的环境下成功地运行了，并帮助我触及我始终敬畏的<strong>硬件&amp;OS</strong></p>
+<p>《Linux 内核完全注释》第三章——内核编程语言和环境，描述了用 as86 汇编语言构建 boot 引导程序，在 Bochs 仿真器成功模拟开机运行，最终输出 <em>Loading System&hellip;</em>。这就是本篇所要尝试的核心实验。之所以在已经有资料的基础上再写一遍，是书中缺失了仿真器模拟的环节。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-19-%E7%90%86%E8%A7%A3-linux-kernel-1-bios/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">Java Instrumentation</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-08-15 00:00:00 UTC">
+                    15 Aug 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="start">Start</h2>
+<p>从现有的前置知识来说，我们能够认识到两个事实:</p>
+<ol>
+<li>Java Class 通过 ClassLoader 进行加载。
+通过<code>全限定名</code>进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。
+换句话说: Class 一经加载，就不会尝试重复加载 (至少按绝大多数人的认知来说，确实是的)</li>
+<li>有没有可能让被加载的 Class 与物理存储上的 .class 内容不同。
+当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧
+(虽然可能不了解细节。在此，欢迎学习前置技能 <a href="https://dormouse-none.github.io/2018-07-10-CGlib-Enhancer/">CGlib Enhancer 主流程源码解析</a> 和 <a href="https://dormouse-none.github.io/2018-07-20-Java-Proxy/">Java Proxy 源码解析</a>。不过不影响本文后续内容)</li>
+</ol>
+<p>另一个方面，也许绝大多数人都听说过所谓的<code>热部署</code>。但是究竟怎么才能做到 <code>热部署</code>(话题开得有点大哈。Y_Y 本文不讲这个)</p>
+<p>操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。</p>
+<p>如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚&hellip;</p>
+<p>Java 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的</p>
+<h2 id="instrumentation">Instrumentation</h2>
+<p><code>java.lang.instrument.Instrumentation</code> 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)</p>
+<p>相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。</p>
+<p>下列有两种方法可以达到目的</p>
+<ol>
+<li>当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。</li>
+<li>当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。</li>
+</ol>
+<p>话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了<em>检测</em>的目的)的使用</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-15-java-instrumentation/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">JVM 指令简析</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-07-24 00:00:00 UTC">
+                    24 Jul 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>在之前描述过包括 ASM, CGlib, Java Proxy 的基本内容之后，本文将就更为基础的 JVM 指令集进行简单而有效的介绍。</p>
+<p>当然，在开始正文前，读者需要了解到，JVM 指令集这种类似于汇编的规范性内容，包含一百多个指令，若要求一一介绍。
+那么，直接阅读 <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html">官方文档</a> 绝对是比本文的内容更为详实且准确。</p>
+<p>这篇文档的目的，只是为了使读者建立起关于 JVM 指令集基本的常识性观念。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-24-jvm-%E6%8C%87%E4%BB%A4%E7%AE%80%E6%9E%90/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">Java Proxy 源码解析</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-07-20 00:00:00 UTC">
+                    20 Jul 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>在 Java 整个生态里面, 通用的有两类动态代理的应用: Java Proxy 与 CGlib 代理。</p>
+<p>从宽泛的区别来说，Java Proxy 只能对接口进行增强，而 CGlib 同时适用于类和接口的增强。
+而且，业内普遍的认知是，CGlib 动态代理较之于 Java Proxy 在生成字节码的速度上也更为高效。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-20-java-proxy-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">如何方便地获取 CGlib 生成类</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-07-13 00:00:00 UTC">
+                    13 Jul 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="配置参数">配置参数</h2>
+<p><strong>命令行使用</strong></p>
+<p>在 java 启动命令中添加参数配置项 <code>-Dcglib.debugLocation=&lt;Custom Path&gt;</code></p>
+<p><strong>编码实现</strong></p>
+<p>在执行 CGlib 获取新生成类之前，调用 <code>System.setProperty(&quot;cglib.debugLocation&quot;, &lt;Custom Path&gt;)</code></p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-13-%E5%A6%82%E4%BD%95%E6%96%B9%E4%BE%BF%E5%9C%B0%E8%8E%B7%E5%8F%96-cglib-%E7%94%9F%E6%88%90%E7%B1%BB/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">CGlib Enhancer 主流程源码解析</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-07-10 00:00:00 UTC">
+                    10 Jul 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="前言">前言</h2>
+<p>此博文写作的目的:</p>
+<ul>
+<li>(Core) 通过了解 CGlib Enhancer 的整个调用链，了解其对于唯一依赖的 ASM 库的调用方式。</li>
+<li>基于 Enhancer 对已有字节码进行增强的进一步理解与掌握。</li>
+</ul>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-10-cglib-enhancer-%E4%B8%BB%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">Java 安全访问与权限控制</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-07-04 00:00:00 UTC">
+                    04 Jul 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="绪论">绪论</h2>
+<p><em>本文只是对 Java 安全访问与权限控制的基础性探究。</em></p>
+<p><strong>本节与全文内容无关，如无兴趣阅读，可以跳过</strong></p>
+<p>了解 Java 安全访问相关内容的初衷，是准备在项目中利用 Java 标准库提供的 ServiceLoader 对 SPI 实现类进行&quot;自动发现&quot;和加载。
+这对于将本项目作为二方库来依赖的上层项目将更为方便，只需要</p>
+<ol>
+<li>在 <code>META-INF.services</code> 目录下配置被命名为 SPI 接口全限定名的文件及添加相关内容</li>
+<li>由项目的注册管理器触发下列 Java 代码</li>
+</ol>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#666">{</span>
+    ServiceLoader<span style="color:#666">&lt;</span>XxxPolicy<span style="color:#666">&gt;</span> xxxPolicyServiceLoader <span style="color:#666">=</span> ServiceLoader<span style="color:#666">.</span><span style="color:#4070a0">load</span><span style="color:#666">(</span>XxxPolicy<span style="color:#666">.</span><span style="color:#4070a0">class</span><span style="color:#666">);</span>
+    <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(</span>Iterator<span style="color:#666">&lt;</span>XxxPolicy<span style="color:#666">&gt;</span> it <span style="color:#666">=</span> xxxPolicyServiceLoader<span style="color:#666">.</span><span style="color:#4070a0">iterator</span><span style="color:#666">();</span> it<span style="color:#666">.</span><span style="color:#4070a0">hasNext</span><span style="color:#666">();</span> <span style="color:#666">)</span> <span style="color:#666">{</span>
+        XxxPolicy xxxPolicy <span style="color:#666">=</span> it<span style="color:#666">.</span><span style="color:#4070a0">next</span><span style="color:#666">();</span>
+        <span style="color:#60a0b0;font-style:italic">// ... more code ...
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+</code></pre></div><p>就可以完成一个新的 SPI 策略的注册工作。</p>
+<p>但是，在尝试实现，了解了 ServiceLoader 源码，以及 DriverManager 和 mysql-connection-java-<!-- raw HTML omitted -->.jar 在注册 Driver 相关的代码。
+发现怎么也绕不开 Java 安全访问相关的内容。诸如下列这段来自 DriverManager.loadInitialDrivers() 的代码:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">AccessController<span style="color:#666">.</span><span style="color:#4070a0">doPrivileged</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">new</span> PrivilegedAction<span style="color:#666">&lt;</span>Void<span style="color:#666">&gt;()</span> <span style="color:#666">{</span>
+    <span style="color:#007020;font-weight:bold">public</span> Void <span style="color:#06287e">run</span><span style="color:#666">()</span> <span style="color:#666">{</span>
+
+        ServiceLoader<span style="color:#666">&lt;</span>Driver<span style="color:#666">&gt;</span> loadedDrivers <span style="color:#666">=</span> ServiceLoader<span style="color:#666">.</span><span style="color:#4070a0">load</span><span style="color:#666">(</span>Driver<span style="color:#666">.</span><span style="color:#4070a0">class</span><span style="color:#666">);</span>
+        Iterator<span style="color:#666">&lt;</span>Driver<span style="color:#666">&gt;</span> driversIterator <span style="color:#666">=</span> loadedDrivers<span style="color:#666">.</span><span style="color:#4070a0">iterator</span><span style="color:#666">();</span>
+
+        <span style="color:#007020;font-weight:bold">try</span><span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">while</span><span style="color:#666">(</span>driversIterator<span style="color:#666">.</span><span style="color:#4070a0">hasNext</span><span style="color:#666">())</span> <span style="color:#666">{</span>
+            driversIterator<span style="color:#666">.</span><span style="color:#4070a0">next</span><span style="color:#666">();</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span><span style="color:#666">(</span>Throwable t<span style="color:#666">)</span> <span style="color:#666">{</span>
+                <span style="color:#60a0b0;font-style:italic">// Do nothing
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#666">}</span>
+        <span style="color:#007020;font-weight:bold">return</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">});</span>
+</code></pre></div><p>诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。</p>
+<p>为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-04-java-%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE%E4%B8%8E%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">ASM-VerifyError错误信息解决</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-06-28 00:00:00 UTC">
+                    28 Jun 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="报错信息">报错信息</h2>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">java<span style="color:#666">.</span><span style="color:#4070a0">lang</span><span style="color:#666">.</span><span style="color:#4070a0">VerifyError</span><span style="color:#666">:</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">net</span><span style="color:#666">.</span><span style="color:#4070a0">sf</span><span style="color:#666">.</span><span style="color:#4070a0">cglib</span><span style="color:#666">.</span><span style="color:#4070a0">core</span><span style="color:#666">.</span><span style="color:#4070a0">DebuggingClassWriter</span> overrides <span style="color:#007020;font-weight:bold">final</span> method visit<span style="color:#666">.(</span>IILjava<span style="color:#666">/</span>lang<span style="color:#666">/</span>String<span style="color:#666">;</span>Ljava<span style="color:#666">/</span>lang<span style="color:#666">/</span>String<span style="color:#666">;</span>Ljava<span style="color:#666">/</span>lang<span style="color:#666">/</span>String<span style="color:#666">;[</span>Ljava<span style="color:#666">/</span>lang<span style="color:#666">/</span>String<span style="color:#666">;)</span>V
+</code></pre></div>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-28-asm-verifyerror%E9%94%99%E8%AF%AF%E4%BF%A1%E6%81%AF%E8%A7%A3%E5%86%B3/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">ASM 核心包基本内容漫谈</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-06-25 00:00:00 UTC">
+                    25 Jun 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <blockquote>
+<p>本文描述的 ASM 指的是 OW2 ASM</p>
+</blockquote>
+<h2 id="asm-core-的结构">ASM-Core 的结构</h2>
+<p><em>首先是一些概述性的内容。</em></p>
+<p>由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。
+因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)</p>
+<p>从核心包声明的类来看，主要包括:</p>
+<ol>
+<li>
+<p>ClassReader - 作为结构化对象，将接收(accept)访问者的访问</p>
+</li>
+<li>
+<p>几种访问者抽象类以及相应的实现类</p>
+</li>
+</ol>
+<ul>
+<li>AnnotationVisitor -&gt; AnnotationWriter</li>
+<li>ClassVisitor -&gt; ClassWriter</li>
+<li>FieldVisitor -&gt; FieldWriter</li>
+<li>MethodVisitor -&gt; MethodWriter</li>
+<li>ModuleVisitor -&gt; ModuleWriter</li>
+</ul>
+<ol start="3">
+<li>
+<p>Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值</p>
+</li>
+<li>
+<p>其它一些辅助的类</p>
+</li>
+</ol>
+<ul>
+<li>Attribute - 用于处理非标准化的属性(ClassFile 允许<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVMS</a> 中未定义的 Attribute)</li>
+<li>ByteArray - 动态可自适应的 byte[] (字节数组)</li>
+<li>Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象</li>
+<li>Symbol - 用于表示 ClassFile 中描述的 Constant 的基类</li>
+<li>SymbolTable - 用于存储常量池对象</li>
+<li>其它内容省略</li>
+</ul>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-25-asm-%E6%A0%B8%E5%BF%83%E5%8C%85%E5%9F%BA%E6%9C%AC%E5%86%85%E5%AE%B9%E6%BC%AB%E8%B0%88/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+        </div>
+        <div class="pagination">
+  <div class="row between-xs">
+    <div class="col-xs-6 col-md-2 pagination-prev">
+      
+      <a href="/posts/page/4/">上一页</a>
+      
+    </div>
+    <div class="col-xs-6 col-md-2 pagination-next">
+      
+      <a href="/posts/page/6/">下一页</a>
+      
+    </div>
+</div>
+</div>
+
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/view.html" target="_blank">View</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+ 
+  </body>
+</html>

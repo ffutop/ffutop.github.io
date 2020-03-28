@@ -1046,31 +1046,7 @@
   </url>
   
   <url>
-    <loc>https://www.ffutop.com/about/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.ffutop.com/archives/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.ffutop.com/tags/java-%E7%A8%8B%E5%BA%8F%E7%8C%BF/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.ffutop.com/tags/linux-kernel-%E5%AD%A6%E4%B9%A0%E8%80%85/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.ffutop.com/tags/%E5%89%8D%E7%AE%97%E6%B3%95%E7%88%B1%E5%A5%BD%E8%80%85/</loc>
+    <loc>https://www.ffutop.com/view/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

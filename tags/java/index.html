@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Hugo 0.68.3" />
 
@@ -58,8 +61,10 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
 </head>
 
-
-<body>
+     
+  </head>
+  <body>
+    
   <article class="posts">
     <div class="row">
       <div class="col-xs-12">
@@ -78,129 +83,367 @@
 
         <h1 class="taxonomy-term">Java</h1>
         <div id="posts-list">
+          
           <section>
-            <h1 class="site-date-catalog">2020</h1>
+            <header class="post-header">
+              <h1 class="post-title">基于DNS的数据库切换·事故</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2020-02-28 00:00:00 UTC">
+                    28 Feb 2020
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
 
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2020-02-28 00:00:00 UTC">Feb 28</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2020-02-28-%E5%9F%BA%E4%BA%8Edns%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%87%E6%8D%A2%E4%BA%8B%E6%95%85/">基于DNS的数据库切换·事故</a>
-                  </div>
-                </div>
-              </div>
+            <div class="post-content markdown-body">
+                <p>我们生产环境上所有的应用都是通过域名来访问 MySQL、Redis 等基础服务。按说域名相较于 IP，凭空多了个 DNS 解析动作，是一个劣化的方案。但好处在于，一旦需要切换基础服务，将带来巨大的利好。可是，任何忽视DNS Record TTL的切换方案，都将伴随着巨大的风险。甚至，成为否定该利好的佐证。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-02-28-%E5%9F%BA%E4%BA%8Edns%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%87%E6%8D%A2%E4%BA%8B%E6%95%85/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
             </div>
-            
-          </section>
-          <section>
-            <h1 class="site-date-catalog">2019</h1>
-
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2019-11-06 00:00:00 UTC">Nov 06</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2019-11-06-groovyclassloader-%E5%BC%95%E5%8F%91%E7%9A%84-fullgc/">GroovyClassLoader 引发的 FullGC</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2019-10-17 00:00:00 UTC">Oct 17</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2019-10-17-%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8%E6%8B%96%E6%85%A2-tomcat-%E5%90%AF%E5%8A%A8%E9%80%9F%E5%BA%A6/">随机数生成器拖慢 Tomcat 启动速度</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2019-02-27 00:00:00 UTC">Feb 27</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2019-02-27-javaapi-%E5%8F%82%E6%95%B0%E8%AF%AF%E5%AE%9A%E4%B9%89%E7%9A%84%E5%90%8E%E6%9E%9C/">【Java】API 参数误定义的后果</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-          </section>
-          <section>
-            <h1 class="site-date-catalog">2018</h1>
-
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2018-08-15 00:00:00 UTC">Aug 15</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2018-08-15-java-instrumentation/">Java Instrumentation</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2018-07-04 00:00:00 UTC">Jul 04</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2018-07-04-java-%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE%E4%B8%8E%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/">Java 安全访问与权限控制</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2018-06-25 00:00:00 UTC">Jun 25</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2018-06-25-asm-%E6%A0%B8%E5%BF%83%E5%8C%85%E5%9F%BA%E6%9C%AC%E5%86%85%E5%AE%B9%E6%BC%AB%E8%B0%88/">ASM 核心包基本内容漫谈</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2018-06-21 00:00:00 UTC">Jun 21</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2018-06-21-java-memory-model/">java-memory-model</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
           </section>
           
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">GroovyClassLoader 引发的 FullGC</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-11-06 00:00:00 UTC">
+                    06 Nov 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="背景">背景</h2>
+<p>近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，<strong>stop the world</strong> :&lt; 从 <code>gc.log</code> 中，看到的原因是触及了 <code>Metaspace</code> 的阈值，进而引发了 FGC。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">2019-11-05T14:31:38.880+0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880+0800: 504600.716: [CMS2019-11-05T14:31:39.364+0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs]
+ (concurrent mode failure): 266828K-&gt;266865K(873856K), 1.3752377 secs] 267430K-&gt;266865K(1267072K), [Metaspace: 204152K-&gt;204152K(1267712K)], 1.3757441 secs] [Times: user=1.36 sys=0.00, real=1.38 secs]
+2019-11-05T14:31:40.256+0800: 504602.092: [Full GC (Last ditch collection) 2019-11-05T14:31:40.256+0800: 504602.092: [CMS: 266865K-&gt;266841K(873856K), 0.8590901 secs] 266865K-&gt;266841K(1267072K), [Metaspace: 204152K-&gt;204152K(1267712K)], 0.8595047 secs] [Times: user=0.86 sys=0.00, real=0.86 secs]
+2019-11-05T14:31:41.117+0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117+0800: 504602.953: [CMS: 266841K-&gt;266816K(873856K), 0.9109948 secs] 267218K-&gt;266816K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]
+2019-11-05T14:31:42.028+0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028+0800: 504603.865: [CMS: 266816K-&gt;266769K(873856K), 1.0351283 secs] 266816K-&gt;266769K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]
+</code></pre></div><p>FGC 前后，<code>Metaspace</code> 占用的内存没有得到任何释放。<em>[Metaspace: 204153K-&gt;204153K(1267712K)]</em> 。这也就是反复 FGC 的原因。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-11-06-groovyclassloader-%E5%BC%95%E5%8F%91%E7%9A%84-fullgc/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">随机数生成器拖慢 Tomcat 启动速度</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-10-17 00:00:00 UTC">
+                    17 Oct 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
+...
+16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
+</code></pre></div><p>创建 <code>SecureRandom</code> 竟然花了 6 分多钟，占了整个启动时间的 94% 。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-17-%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8%E6%8B%96%E6%85%A2-tomcat-%E5%90%AF%E5%8A%A8%E9%80%9F%E5%BA%A6/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">【Java】API 参数误定义的后果</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-02-27 00:00:00 UTC">
+                    27 Feb 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。</p>
+<p>想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！</p>
+<p>想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把<code>void add(int)</code> API 改写成 <code>int add(int)</code>，可能得到的大多数回答都是可以。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-02-27-javaapi-%E5%8F%82%E6%95%B0%E8%AF%AF%E5%AE%9A%E4%B9%89%E7%9A%84%E5%90%8E%E6%9E%9C/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">Java Instrumentation</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-08-15 00:00:00 UTC">
+                    15 Aug 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="start">Start</h2>
+<p>从现有的前置知识来说，我们能够认识到两个事实:</p>
+<ol>
+<li>Java Class 通过 ClassLoader 进行加载。
+通过<code>全限定名</code>进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。
+换句话说: Class 一经加载，就不会尝试重复加载 (至少按绝大多数人的认知来说，确实是的)</li>
+<li>有没有可能让被加载的 Class 与物理存储上的 .class 内容不同。
+当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧
+(虽然可能不了解细节。在此，欢迎学习前置技能 <a href="https://dormouse-none.github.io/2018-07-10-CGlib-Enhancer/">CGlib Enhancer 主流程源码解析</a> 和 <a href="https://dormouse-none.github.io/2018-07-20-Java-Proxy/">Java Proxy 源码解析</a>。不过不影响本文后续内容)</li>
+</ol>
+<p>另一个方面，也许绝大多数人都听说过所谓的<code>热部署</code>。但是究竟怎么才能做到 <code>热部署</code>(话题开得有点大哈。Y_Y 本文不讲这个)</p>
+<p>操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。</p>
+<p>如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚&hellip;</p>
+<p>Java 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的</p>
+<h2 id="instrumentation">Instrumentation</h2>
+<p><code>java.lang.instrument.Instrumentation</code> 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)</p>
+<p>相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。</p>
+<p>下列有两种方法可以达到目的</p>
+<ol>
+<li>当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。</li>
+<li>当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。</li>
+</ol>
+<p>话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了<em>检测</em>的目的)的使用</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-15-java-instrumentation/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">Java 安全访问与权限控制</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-07-04 00:00:00 UTC">
+                    04 Jul 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="绪论">绪论</h2>
+<p><em>本文只是对 Java 安全访问与权限控制的基础性探究。</em></p>
+<p><strong>本节与全文内容无关，如无兴趣阅读，可以跳过</strong></p>
+<p>了解 Java 安全访问相关内容的初衷，是准备在项目中利用 Java 标准库提供的 ServiceLoader 对 SPI 实现类进行&quot;自动发现&quot;和加载。
+这对于将本项目作为二方库来依赖的上层项目将更为方便，只需要</p>
+<ol>
+<li>在 <code>META-INF.services</code> 目录下配置被命名为 SPI 接口全限定名的文件及添加相关内容</li>
+<li>由项目的注册管理器触发下列 Java 代码</li>
+</ol>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#666">{</span>
+    ServiceLoader<span style="color:#666">&lt;</span>XxxPolicy<span style="color:#666">&gt;</span> xxxPolicyServiceLoader <span style="color:#666">=</span> ServiceLoader<span style="color:#666">.</span><span style="color:#4070a0">load</span><span style="color:#666">(</span>XxxPolicy<span style="color:#666">.</span><span style="color:#4070a0">class</span><span style="color:#666">);</span>
+    <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(</span>Iterator<span style="color:#666">&lt;</span>XxxPolicy<span style="color:#666">&gt;</span> it <span style="color:#666">=</span> xxxPolicyServiceLoader<span style="color:#666">.</span><span style="color:#4070a0">iterator</span><span style="color:#666">();</span> it<span style="color:#666">.</span><span style="color:#4070a0">hasNext</span><span style="color:#666">();</span> <span style="color:#666">)</span> <span style="color:#666">{</span>
+        XxxPolicy xxxPolicy <span style="color:#666">=</span> it<span style="color:#666">.</span><span style="color:#4070a0">next</span><span style="color:#666">();</span>
+        <span style="color:#60a0b0;font-style:italic">// ... more code ...
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+</code></pre></div><p>就可以完成一个新的 SPI 策略的注册工作。</p>
+<p>但是，在尝试实现，了解了 ServiceLoader 源码，以及 DriverManager 和 mysql-connection-java-<!-- raw HTML omitted -->.jar 在注册 Driver 相关的代码。
+发现怎么也绕不开 Java 安全访问相关的内容。诸如下列这段来自 DriverManager.loadInitialDrivers() 的代码:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">AccessController<span style="color:#666">.</span><span style="color:#4070a0">doPrivileged</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">new</span> PrivilegedAction<span style="color:#666">&lt;</span>Void<span style="color:#666">&gt;()</span> <span style="color:#666">{</span>
+    <span style="color:#007020;font-weight:bold">public</span> Void <span style="color:#06287e">run</span><span style="color:#666">()</span> <span style="color:#666">{</span>
+
+        ServiceLoader<span style="color:#666">&lt;</span>Driver<span style="color:#666">&gt;</span> loadedDrivers <span style="color:#666">=</span> ServiceLoader<span style="color:#666">.</span><span style="color:#4070a0">load</span><span style="color:#666">(</span>Driver<span style="color:#666">.</span><span style="color:#4070a0">class</span><span style="color:#666">);</span>
+        Iterator<span style="color:#666">&lt;</span>Driver<span style="color:#666">&gt;</span> driversIterator <span style="color:#666">=</span> loadedDrivers<span style="color:#666">.</span><span style="color:#4070a0">iterator</span><span style="color:#666">();</span>
+
+        <span style="color:#007020;font-weight:bold">try</span><span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">while</span><span style="color:#666">(</span>driversIterator<span style="color:#666">.</span><span style="color:#4070a0">hasNext</span><span style="color:#666">())</span> <span style="color:#666">{</span>
+            driversIterator<span style="color:#666">.</span><span style="color:#4070a0">next</span><span style="color:#666">();</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span> <span style="color:#007020;font-weight:bold">catch</span><span style="color:#666">(</span>Throwable t<span style="color:#666">)</span> <span style="color:#666">{</span>
+                <span style="color:#60a0b0;font-style:italic">// Do nothing
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#666">}</span>
+        <span style="color:#007020;font-weight:bold">return</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">});</span>
+</code></pre></div><p>诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。</p>
+<p>为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-04-java-%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE%E4%B8%8E%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">ASM 核心包基本内容漫谈</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-06-25 00:00:00 UTC">
+                    25 Jun 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <blockquote>
+<p>本文描述的 ASM 指的是 OW2 ASM</p>
+</blockquote>
+<h2 id="asm-core-的结构">ASM-Core 的结构</h2>
+<p><em>首先是一些概述性的内容。</em></p>
+<p>由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。
+因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)</p>
+<p>从核心包声明的类来看，主要包括:</p>
+<ol>
+<li>
+<p>ClassReader - 作为结构化对象，将接收(accept)访问者的访问</p>
+</li>
+<li>
+<p>几种访问者抽象类以及相应的实现类</p>
+</li>
+</ol>
+<ul>
+<li>AnnotationVisitor -&gt; AnnotationWriter</li>
+<li>ClassVisitor -&gt; ClassWriter</li>
+<li>FieldVisitor -&gt; FieldWriter</li>
+<li>MethodVisitor -&gt; MethodWriter</li>
+<li>ModuleVisitor -&gt; ModuleWriter</li>
+</ul>
+<ol start="3">
+<li>
+<p>Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值</p>
+</li>
+<li>
+<p>其它一些辅助的类</p>
+</li>
+</ol>
+<ul>
+<li>Attribute - 用于处理非标准化的属性(ClassFile 允许<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVMS</a> 中未定义的 Attribute)</li>
+<li>ByteArray - 动态可自适应的 byte[] (字节数组)</li>
+<li>Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象</li>
+<li>Symbol - 用于表示 ClassFile 中描述的 Constant 的基类</li>
+<li>SymbolTable - 用于存储常量池对象</li>
+<li>其它内容省略</li>
+</ul>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-25-asm-%E6%A0%B8%E5%BF%83%E5%8C%85%E5%9F%BA%E6%9C%AC%E5%86%85%E5%AE%B9%E6%BC%AB%E8%B0%88/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">java-memory-model</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-06-21 00:00:00 UTC">
+                    21 Jun 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="jvm-运行时数据区">JVM 运行时数据区</h2>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg" alt=""></p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-21-java-memory-model/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
         </div>
+        <div class="pagination">
+  <div class="row between-xs">
+    <div class="col-xs-6 col-md-2 pagination-prev">
+      
+    </div>
+    <div class="col-xs-6 col-md-2 pagination-next">
+      
+    </div>
+</div>
+</div>
+
 
         <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/view.html" target="_blank">View</a>
+  </div>
   
   <div class="site-footer-item">
     <a href="/index.xml" target="_blank">RSS</a>
@@ -234,6 +477,6 @@
   
 </script>
 
-</body>
-
+ 
+  </body>
 </html>

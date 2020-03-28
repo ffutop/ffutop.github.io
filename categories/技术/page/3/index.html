@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/" />
+  <link rel="canonical" href="https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/www.ffutop.com\/"
+      },
+      "articleSection" : "categories",
+      "name" : "技术",
+      "headline" : "技术",
+      "description" : "",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2020",
+      "datePublished": "2020-02-28 00:00:00 \x2b0000 UTC",
+      "dateModified" : "2020-02-28 00:00:00 \x2b0000 UTC",
+      "url" : "https:\/\/www.ffutop.com\/categories\/%E6%8A%80%E6%9C%AF\/",
+      "keywords" : [  ]
+  }
+</script>
+<title>技术 - Utop&#39;s Blog</title>
+  <meta property="og:title" content="技术 - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="" />
+  <meta name="description" content="" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="posts">
+    <div class="row">
+      <div class="col-xs-12">
+        
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+
+        <h1 class="taxonomy-term">技术</h1>
+        <div id="posts-list">
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">Lex &amp; Yacc 学习笔记</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-04-25 00:00:00 UTC">
+                    25 Apr 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>高级语言相较于机器语言、汇编语言，更加符合人的思考习惯。换句话说，更偏向于自然语言的风格而更偏离指令化的描述。用高级语言编写的一行代码，最终可能需要处理器执行若干条指令。如何让机器意识到高级语言代码对应的机器指令是哪些呢？当然就需要一个优秀的翻译。</p>
+<p>无论是编译型语言还是解释型语言，总逃脱不了这样一个流程：高级语言 ➜ 目标平台的指令。所谓编译型/解释型的区别，在于其转换流程是在线的(online)还是离线的(offline)。在线的方式无法意识到后续的代码，但胜在即时反应；离线的方式可以统揽全局，进行更多的优化，但代码文本必须完整。</p>
+<p>高级语言 ➜ 目标平台的指令，这样的流程如何实现。一般来说，划分为四个阶段：词法分析、语法分析、语义分析、目标代码生成。</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1g2b583io0ej30wq094aa5.jpg" alt=""></p>
+<p>本篇的主要目的，是展示“语言翻译”的几个阶段工作，以及通过 Lex &amp; Yacc 工具演示一门自定义语言的“翻译”。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-25-lex-yacc-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">理解 Linux Kernel(10) - Context of Execution</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-04-10 00:00:00 UTC">
+                    10 Apr 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>在进行<a href="https://www.ffutop.com/2018-10-12-understand-Kernel-4/">第四篇(任务调度)</a>行文描述时，就一直闹不清内核所谓的<code>task</code>的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：<strong>我们错误地将理论和实践不加区分地混淆了</strong>。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，<code>task</code> 也就是 <code>Context of Execution</code> 概念在实现上的表征。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-10-%E7%90%86%E8%A7%A3-linux-kernel10-context-of-execution/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">如何获取运行时进程堆栈</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-03-25 00:00:00 UTC">
+                    25 Mar 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>前些天看了关于在密码学应用中使用<code>java.lang.String</code>与<code>byte[]</code>的相关讨论，不推荐使用<code>java.lang.String</code>的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。</p>
+<h2 id="procpidmaps">/proc/${pid}/maps</h2>
+<p>首先当然是确定进程堆栈在物理内存的位置啦。很遗憾，没有找到相关的方案。毕竟进程记录的都是虚拟线性地址，而通过内核分段、分页机制最终映射到物理内存。不过，从<code>/proc</code>虚拟文件系统中，提供了进程虚拟地址映射。</p>
+<pre><code>address                   perm offset   dev   inode                      pathname
+556566cb5000-556566cb6000 r-xp 00000000 fc:01 2496598                    /root/ffTrace/run
+556566eb5000-556566eb6000 r--p 00000000 fc:01 2496598                    /root/ffTrace/run
+556566eb6000-556566eb7000 rw-p 00001000 fc:01 2496598                    /root/ffTrace/run
+55656814f000-556568170000 rw-p 00000000 00:00 0                          [heap]
+7f2a95f91000-7f2a96178000 r-xp 00000000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a96178000-7f2a96378000 ---p 001e7000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a96378000-7f2a9637c000 r--p 001e7000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a9637c000-7f2a9637e000 rw-p 001eb000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a9637e000-7f2a96382000 rw-p 00000000 00:00 0
+7f2a96382000-7f2a963a9000 r-xp 00000000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965a0000-7f2a965a2000 rw-p 00000000 00:00 0
+7f2a965a9000-7f2a965aa000 r--p 00027000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965aa000-7f2a965ab000 rw-p 00028000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965ab000-7f2a965ac000 rw-p 00000000 00:00 0
+7ffe2cf5e000-7ffe2cf7f000 rw-p 00000000 00:00 0                          [stack]
+7ffe2cfed000-7ffe2cff0000 r--p 00000000 00:00 0                          [vvar]
+7ffe2cff0000-7ffe2cff2000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+</code></pre>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-03-25-%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E8%BF%90%E8%A1%8C%E6%97%B6%E8%BF%9B%E7%A8%8B%E5%A0%86%E6%A0%88/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">认证与授权·简述</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-03-19 00:00:00 UTC">
+                    19 Mar 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="概述">概述</h2>
+<blockquote>
+<p>在大多数系统中，都或多或少需要认证授权模型/系统的支持。</p>
+</blockquote>
+<p>认证/授权是什么？最简单的，我们的系统要求用户必须在“登录”之后才允许进行一些操作。“登录”的过程就是认证；而区别与未登录状态，只允许登录用户进行一些操作，这就是授权。认证与授权相互独立，有协同配合，共同支撑起系统对安全的基本要求。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-03-19-%E8%AE%A4%E8%AF%81%E4%B8%8E%E6%8E%88%E6%9D%83%E7%AE%80%E8%BF%B0/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">理解 Linux Kernel (9) - IO Multiplexing</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-03-05 00:00:00 UTC">
+                    05 Mar 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p><a href="./2019-01-15-understand-Kernel-8/">前一篇</a>已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 <code>struct sock</code> 对象，将其逐级从网络接口层逐级提升到网络层、传输层&hellip;最终添加到接收队列 <code>sk_receive_queue</code> 中；用户进程通过 <code>read</code>、<code>recv</code>、<code>recvfrom</code> 等命令检查并获取 <code>sk_receive_queue</code> 中的数据。</p>
+<p>整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。</p>
+<p>那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（<code>select</code>, <code>poll</code>, <code>epoll</code>）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 <code>select</code> 和 <code>epoll</code> 两类系统调用的实现进行探究。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-03-05-%E7%90%86%E8%A7%A3-linux-kernel-9-io-multiplexing/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">【Java】API 参数误定义的后果</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-02-27 00:00:00 UTC">
+                    27 Feb 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。</p>
+<p>想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！</p>
+<p>想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把<code>void add(int)</code> API 改写成 <code>int add(int)</code>，可能得到的大多数回答都是可以。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-02-27-javaapi-%E5%8F%82%E6%95%B0%E8%AF%AF%E5%AE%9A%E4%B9%89%E7%9A%84%E5%90%8E%E6%9E%9C/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">字符集与字符编码</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-02-02 00:00:00 UTC">
+                    02 Feb 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                {% pdf https://drive.google.com/file/d/1MuBNtZPMWCt9kGlpqiAtG3i3Al2MaknY/preview %}
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-02-02-%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">理解 Linux Kernel (8) - 网络</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-01-15 00:00:00 UTC">
+                    15 Jan 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                PDF
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-01-15-%E7%90%86%E8%A7%A3-linux-kernel-8-%E7%BD%91%E7%BB%9C/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">理解 Linux Kernel (7) - 字符设备</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-12-28 00:00:00 UTC">
+                    28 Dec 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>相比较于块设备，字符设备无论从物理认知上，抑或是理论理解上，都存在着相当大的入门门槛。特别是在将字符设备与控制台、命令行终端混淆的时候，就更加难以进行分辨了。</p>
+<p>回到字符设备本身，字符设备与块设备最主要的区别就在于块设备可以随机读写，而字符设备只能够顺序读，顺序写。</p>
+<p>那么，常见的字符设备有什么？显示器、键盘、鼠标。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-12-28-%E7%90%86%E8%A7%A3-linux-kernel-7-%E5%AD%97%E7%AC%A6%E8%AE%BE%E5%A4%87/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">SQL 注入</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-12-15 00:00:00 UTC">
+                    15 Dec 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>说实话此前对 SQL 注入的理解仅仅只是皮毛。当然，目前也是，只是有了一定程度的理解。</p>
+<p>最近好像工具用得有些过头了，需要停下来整理下工具的实现原理。</p>
+<p>更好地理解了工具实现，才能更加心安理得地使用工具。毕竟等别人怼的时候，还能够比较安心地回道: &ldquo;我用不用现成的工具只是取决于我想不想自己再写一套&rdquo;</p>
+<p>当然，毕竟成熟的工具有更多的优化，这就不是短时间内我想不想自己写的问题了，哈哈。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-12-15-sql-%E6%B3%A8%E5%85%A5/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+        </div>
+        <div class="pagination">
+  <div class="row between-xs">
+    <div class="col-xs-6 col-md-2 pagination-prev">
+      
+      <a href="/categories/%E6%8A%80%E6%9C%AF/page/2/">上一页</a>
+      
+    </div>
+    <div class="col-xs-6 col-md-2 pagination-next">
+      
+      <a href="/categories/%E6%8A%80%E6%9C%AF/page/4/">下一页</a>
+      
+    </div>
+</div>
+</div>
+
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/view.html" target="_blank">View</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+ 
+  </body>
+</html>

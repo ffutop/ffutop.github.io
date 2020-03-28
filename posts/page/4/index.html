@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https:\/\/www.ffutop.com\/"
+      },
+      "articleSection" : "posts",
+      "name" : "Posts",
+      "headline" : "Posts",
+      "description" : "",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2020",
+      "datePublished": "2020-03-26 00:00:00 \x2b0000 UTC",
+      "dateModified" : "2020-03-26 00:00:00 \x2b0000 UTC",
+      "url" : "https:\/\/www.ffutop.com\/posts\/",
+      "keywords" : [  ]
+  }
+</script>
+<title>Posts - Utop&#39;s Blog</title>
+  <meta property="og:title" content="Posts - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="" />
+  <meta name="description" content="" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="posts">
+    <div class="row">
+      <div class="col-xs-12">
+        
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+
+        <h1 class="taxonomy-term"></h1>
+        <div id="posts-list">
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">SQL 注入</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-12-15 00:00:00 UTC">
+                    15 Dec 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>说实话此前对 SQL 注入的理解仅仅只是皮毛。当然，目前也是，只是有了一定程度的理解。</p>
+<p>最近好像工具用得有些过头了，需要停下来整理下工具的实现原理。</p>
+<p>更好地理解了工具实现，才能更加心安理得地使用工具。毕竟等别人怼的时候，还能够比较安心地回道: &ldquo;我用不用现成的工具只是取决于我想不想自己再写一套&rdquo;</p>
+<p>当然，毕竟成熟的工具有更多的优化，这就不是短时间内我想不想自己写的问题了，哈哈。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-12-15-sql-%E6%B3%A8%E5%85%A5/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">正则表达式指数爆炸</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-11-16 00:00:00 UTC">
+                    16 Nov 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="背景">背景</h2>
+<p>昨天接触到一个很有意思的问题, 公司测试环境一台机器 CPU 跑到了 400%，导致该机器上的所有服务都挂掉了。</p>
+<p>最后查到的原因竟然是正则表达式所引起的，大大出乎意料啊。虽然早就知道正则效率很差，但绝对没有想到会导致整个机器上服务崩溃的情况。</p>
+<p>先简单展示下问题正则:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">String regex <span style="color:#666">=</span> <span style="color:#4070a0">&#34;(\\w+,?)+&#34;</span><span style="color:#666">;</span>
+String val <span style="color:#666">=</span> <span style="color:#4070a0">&#34;abcdefghijklmno,abcdefghijklmno+&#34;</span><span style="color:#666">;</span>
+System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>val<span style="color:#666">.</span><span style="color:#4070a0">matches</span><span style="color:#666">(</span>regex<span style="color:#666">));</span>
+</code></pre></div><p>最终的执行时间是 17s 左右。</p>
+<p>相反，如果改成 <code>String val = &quot;abcdefghijklmno,abcdefghijklmno&quot;</code> ，实际执行时间 1ms 左右。</p>
+<p>哈哈，完全不是一个量级的结果。</p>
+<p>最后，当然是要找原因了:&lt; 当然，有其它重要的事在耽搁，没时间去看 Java Regex 源码。不过，从正则本身下手反而是个好事情。毕竟几乎所有的编程语言都有对正则的支持。而同样的，都存在着这样的问题。那就可以大胆猜想其实是和语言本身无关，而在于正则规范本身了。</p>
+<p>先给个结果，罪魁祸首就是<code>指数爆炸</code></p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-11-16-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%8C%87%E6%95%B0%E7%88%86%E7%82%B8/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">理解 Linux Kernel (6) - read &amp; write</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-11-11 00:00:00 UTC">
+                    11 Nov 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p><a href="https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/">前一篇</a>已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。</p>
+<p>首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020">#include</span> <span style="color:#007020">&lt;stdio.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;stdlib.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;string.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;unistd.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;fcntl.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;errno.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/types.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/stat.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020"></span>
+<span style="color:#902000">int</span> <span style="color:#06287e">panic</span>()
+{
+    fprintf(stderr, <span style="color:#4070a0">&#34;%s (errno=%d)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, strerror(errno), errno);
+    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>;
+}
+
+<span style="color:#902000">int</span> <span style="color:#06287e">main</span>(<span style="color:#902000">int</span> argc, <span style="color:#902000">char</span> <span style="color:#666">*</span>argv[])
+{
+    <span style="color:#60a0b0;font-style:italic">/* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */</span>
+    <span style="color:#902000">int</span> fd <span style="color:#666">=</span> open(<span style="color:#4070a0">&#34;/root/frw.txt&#34;</span>, O_RDWR <span style="color:#666">|</span> O_CREAT);
+    <span style="color:#007020;font-weight:bold">if</span> (fd <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    <span style="color:#60a0b0;font-style:italic">/* 向文件写入 Hello World! 共计 12 个字符 */</span>
+    ssize_t wsize <span style="color:#666">=</span> write(fd, <span style="color:#4070a0">&#34;Hello World!&#34;</span>, <span style="color:#40a070">12</span>);
+    <span style="color:#007020;font-weight:bold">if</span> (wsize <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    <span style="color:#60a0b0;font-style:italic">/* 重定位文件读写指针 */</span>
+    off_t off <span style="color:#666">=</span> lseek(fd, <span style="color:#40a070">0</span>, SEEK_SET);
+    <span style="color:#007020;font-weight:bold">if</span> (off <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    <span style="color:#902000">char</span><span style="color:#666">*</span> buf <span style="color:#666">=</span> (<span style="color:#902000">char</span> <span style="color:#666">*</span>) malloc(wsize);
+    <span style="color:#60a0b0;font-style:italic">/* 读取文件内容 */</span>
+    ssize_t rsize <span style="color:#666">=</span> read(fd, buf, wsize);
+    <span style="color:#007020;font-weight:bold">if</span> (rsize <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    printf(<span style="color:#4070a0">&#34;%s</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, buf);
+    free(buf);
+    <span style="color:#60a0b0;font-style:italic">/* 关闭文件 */</span>
+    <span style="color:#902000">int</span> stat <span style="color:#666">=</span> close(fd);
+    <span style="color:#007020;font-weight:bold">if</span> (stat <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
+}
+</code></pre></div>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-11-11-%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">理解 Linux Kernel (5) - 文件系统(宏观描述)</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-10-14 00:00:00 UTC">
+                    14 Oct 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>用惯了类 Unix 系统，应该说文件系统是日常最常接触的一个操作系统模块之一了。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ls
+Applications Network      Users        bin          data         etc          net          sbin         usr
+Library      System       Volumes      cores        dev          home         private      tmp          var
+</code></pre></div><p>但是，究竟什么是文件系统? 为什么需要文件系统? 难道文件不是简单地存储到存储设备一块连续区域的吗?</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-10-14-%E7%90%86%E8%A7%A3-linux-kernel-5-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AE%8F%E8%A7%82%E6%8F%8F%E8%BF%B0/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">理解 Linux Kernel (4) - 任务调度</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-10-12 00:00:00 UTC">
+                    12 Oct 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>前面几节已经描述过，对于单核 CPU 来说。CPU 就处于不断地执行指令的过程(或者通过 <code>hlt</code> 指令直接停止工作)。</p>
+<p>针对于每一个程序来说，这个程序执行流程是通过 CPU 中几组寄存器(通用寄存器、段寄存器、控制寄存器等) 和存储在内存中的代码和数据协作完成的。</p>
+<p>如果要达到单核多任务的目的，首先要做的就是完成对几组寄存器中当前值的保存(我称之为保存现场)。而对于内存来说，多个任务的代码、数据同时存在内存是完全合理且可行的。毕竟相较于有限的寄存器，内存实在是太大了(相对而言)。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-10-12-%E7%90%86%E8%A7%A3-linux-kernel-4-%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">理解 Linux Kernel (3) - 操作系统启动</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-10-06 00:00:00 UTC">
+                    06 Oct 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>这次拖得有够久的，毕竟需要将知识串联起来并不是一件容易的事情。更何况很多内容可以说和常理(个人理解的常理)有了比较大的偏差。</p>
+<p>不过确实比较有意思。从引导程序到操作系统启动，这中间究竟经历了多少流程呢？</p>
+<p>由于前几篇已经有过介绍，这里不会再对引导程序及汇编语法做过多的介绍。而着重描述整个操作系统的启动流程。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-10-06-%E7%90%86%E8%A7%A3-linux-kernel-3-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">Understand MAIL</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-09-27 00:00:00 UTC">
+                    27 Sep 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>在网络协议上，高层协议确实比底层协议更容易理解，也更加的人性化。
+传输层的 TCP, UDP 都还停留在各种字节内容的整合和校验上，而更上层的应用层协议就已经能够直观到通过直接解读就能理解其每条消息的含义了。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-09-27-understand-mail/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">TCP SYN 包模拟</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-09-18 00:00:00 UTC">
+                    18 Sep 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>写了两天，几乎是从零开始，C 语言搞了一个发 TCP SYN 包的小程序。
+从协议到程序代码的转换，确实没有花费太多的时间，但是为了字节序(byteorder)的问题简直折腾得&hellip;</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-09-18-tcp-syn-%E5%8C%85%E6%A8%A1%E6%8B%9F/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">Preprocessor Output</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-09-08 00:00:00 UTC">
+                    08 Sep 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>最近重新开始回顾 C 语言以及其编译后的文件格式 ELF。
+暂时告别一步到位的命令 <code>gcc main.c</code>，如果从 <code>.c</code> 文件的编译来说，主要分为预编译(preprocess)、编译(Compilation)、汇编(Assembly)、链接(Linking) 四个步骤。
+但是，仅仅从第一个流程 <strong>预编译</strong> 而言，就已经遇到了一些麻烦。</p>
+<p><!-- raw HTML omitted -->program.i<!-- raw HTML omitted --></p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020"># 1 &#34;program.c&#34;
+</span><span style="color:#007020"># 1 &#34;&lt;built-in&gt;&#34;
+</span><span style="color:#007020"># 1 &#34;&lt;command-line&gt;&#34;
+</span><span style="color:#007020"># 1 &#34;/usr/include</span><span style="color:#007020">/stdc-predef.h&#34; 1 3 4</span><span style="color:#007020">
+</span><span style="color:#007020"># 1 &#34;&lt;command-line&gt;&#34; 2
+</span><span style="color:#007020"># 1 &#34;program.c&#34;
+</span><span style="color:#007020"># 1 &#34;header.h&#34; 1
+</span><span style="color:#007020"></span><span style="color:#902000">char</span> <span style="color:#666">*</span><span style="color:#06287e">test</span>(<span style="color:#902000">void</span>);
+<span style="color:#007020"># 2 &#34;program.c&#34; 2
+</span><span style="color:#007020"></span>
+<span style="color:#902000">int</span> <span style="color:#06287e">main</span>(<span style="color:#902000">void</span>)
+{
+}
+</code></pre></div><p>预编译后的问题出现了诸如 <code># 1 &quot;program.c&quot;</code> 的 <em>注释?</em></p>
+<p>这里简单记录预处理输出文件的基本格式，方便今后回顾。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-09-08-preprocessor-output/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+          <section>
+            <header class="post-header">
+              <h1 class="post-title">理解 Linux Kernel (2) - 多任务切换</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-08-26 00:00:00 UTC">
+                    26 Aug 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <h2 id="概述">概述</h2>
+<p>《只是为了好玩》书中，林纳斯描述过他最早的试验性程序就是执行两个不同的任务（一个不断输出A，另一个输出B），同时不断地让 CPU 在两个任务间做切换。结合《Linux 内核完全注释》提供的一个多任务切换示例程序，本篇将就多任务切换程序的执行流程进行详述，并提供当下汇编工具下的适配。</p>
+<p>关于运行环境的说明，欢迎参考 <a href="https://www.ffutop.com/2018-08-19-understand-Kernel-1/#Bochs-%E4%BB%BF%E7%9C%9F%E5%99%A8">Bochs 仿真器使用简介</a></p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-26-%E7%90%86%E8%A7%A3-linux-kernel-2-%E5%A4%9A%E4%BB%BB%E5%8A%A1%E5%88%87%E6%8D%A2/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
+            </div>
+          </section>
+          
+          
+        </div>
+        <div class="pagination">
+  <div class="row between-xs">
+    <div class="col-xs-6 col-md-2 pagination-prev">
+      
+      <a href="/posts/page/3/">上一页</a>
+      
+    </div>
+    <div class="col-xs-6 col-md-2 pagination-next">
+      
+      <a href="/posts/page/5/">下一页</a>
+      
+    </div>
+</div>
+</div>
+
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/view.html" target="_blank">View</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+ 
+  </body>
+</html>

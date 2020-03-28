@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Hugo 0.68.3" />
 
@@ -58,8 +61,10 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
 </head>
 
-
-<body>
+     
+  </head>
+  <body>
+    
   <article class="posts">
     <div class="row">
       <div class="col-xs-12">
@@ -78,28 +83,92 @@
 
         <h1 class="taxonomy-term">Visitor Pattern</h1>
         <div id="posts-list">
+          
           <section>
-            <h1 class="site-date-catalog">2018</h1>
-
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2018-06-25 00:00:00 UTC">Jun 25</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2018-06-25-asm-%E6%A0%B8%E5%BF%83%E5%8C%85%E5%9F%BA%E6%9C%AC%E5%86%85%E5%AE%B9%E6%BC%AB%E8%B0%88/">ASM 核心包基本内容漫谈</a>
+            <header class="post-header">
+              <h1 class="post-title">ASM 核心包基本内容漫谈</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2018-06-25 00:00:00 UTC">
+                    25 Jun 2018
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
                   </div>
+                  
                 </div>
               </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <blockquote>
+<p>本文描述的 ASM 指的是 OW2 ASM</p>
+</blockquote>
+<h2 id="asm-core-的结构">ASM-Core 的结构</h2>
+<p><em>首先是一些概述性的内容。</em></p>
+<p>由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。
+因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)</p>
+<p>从核心包声明的类来看，主要包括:</p>
+<ol>
+<li>
+<p>ClassReader - 作为结构化对象，将接收(accept)访问者的访问</p>
+</li>
+<li>
+<p>几种访问者抽象类以及相应的实现类</p>
+</li>
+</ol>
+<ul>
+<li>AnnotationVisitor -&gt; AnnotationWriter</li>
+<li>ClassVisitor -&gt; ClassWriter</li>
+<li>FieldVisitor -&gt; FieldWriter</li>
+<li>MethodVisitor -&gt; MethodWriter</li>
+<li>ModuleVisitor -&gt; ModuleWriter</li>
+</ul>
+<ol start="3">
+<li>
+<p>Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值</p>
+</li>
+<li>
+<p>其它一些辅助的类</p>
+</li>
+</ol>
+<ul>
+<li>Attribute - 用于处理非标准化的属性(ClassFile 允许<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVMS</a> 中未定义的 Attribute)</li>
+<li>ByteArray - 动态可自适应的 byte[] (字节数组)</li>
+<li>Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象</li>
+<li>Symbol - 用于表示 ClassFile 中描述的 Constant 的基类</li>
+<li>SymbolTable - 用于存储常量池对象</li>
+<li>其它内容省略</li>
+</ul>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-25-asm-%E6%A0%B8%E5%BF%83%E5%8C%85%E5%9F%BA%E6%9C%AC%E5%86%85%E5%AE%B9%E6%BC%AB%E8%B0%88/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
             </div>
-            
           </section>
           
+          
         </div>
+        <div class="pagination">
+  <div class="row between-xs">
+    <div class="col-xs-6 col-md-2 pagination-prev">
+      
+    </div>
+    <div class="col-xs-6 col-md-2 pagination-next">
+      
+    </div>
+</div>
+</div>
+
 
         <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/view.html" target="_blank">View</a>
+  </div>
   
   <div class="site-footer-item">
     <a href="/index.xml" target="_blank">RSS</a>
@@ -133,6 +202,6 @@
   
 </script>
 
-</body>
-
+ 
+  </body>
 </html>

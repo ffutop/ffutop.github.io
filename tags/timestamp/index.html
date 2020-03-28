@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Hugo 0.68.3" />
 
@@ -58,8 +61,10 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
 </head>
 
-
-<body>
+     
+  </head>
+  <body>
+    
   <article class="posts">
     <div class="row">
       <div class="col-xs-12">
@@ -78,28 +83,68 @@
 
         <h1 class="taxonomy-term">TimeStamp</h1>
         <div id="posts-list">
+          
           <section>
-            <h1 class="site-date-catalog">2019</h1>
-
-            
-            <div class="row posts-line">
-              <div class="posts-date col-xs-2">
-                <time datetime="2019-04-26 00:00:00 UTC">Apr 26</time>
-              </div>
-              <div class="posts-title col-xs-10">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <a href="/posts/2019-04-26-mysql-timestamp-%E6%97%B6%E9%97%B4%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/">MySQL TIMESTAMP 时间精度问题</a>
+            <header class="post-header">
+              <h1 class="post-title">MySQL TIMESTAMP 时间精度问题</h1>
+              <div class="row post-desc">
+                <div class="col-xs-6">
+                  
+                  <time class="post-date" datetime="2019-04-26 00:00:00 UTC">
+                    26 Apr 2019
+                  </time>
+                  
+                </div>
+                <div class="col-xs-6">
+                  
+                  <div class="post-author">
+                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
                   </div>
+                  
                 </div>
               </div>
+            </header>
+
+            <div class="post-content markdown-body">
+                <p>最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic">  * 表结构
+</span><span style="color:#60a0b0;font-style:italic">  * CREATE TABLE `time_0` (
+</span><span style="color:#60a0b0;font-style:italic">  *     `timeout` timestamp NOT NULL
+</span><span style="color:#60a0b0;font-style:italic">  * )
+</span><span style="color:#60a0b0;font-style:italic">  */</span>
+
+<span style="color:#60a0b0;font-style:italic">// part 1
+</span><span style="color:#60a0b0;font-style:italic"></span>jdbcTemplate<span style="color:#666">.</span><span style="color:#4070a0">execute</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;UPDATE `time_0` SET `timeout`=now() WHERE `id` = xxx;&#34;</span><span style="color:#666">);</span>
+
+<span style="color:#60a0b0;font-style:italic">// part 2
+</span><span style="color:#60a0b0;font-style:italic"></span>Date timeout <span style="color:#666">=</span> jdbcTemplate<span style="color:#666">.</span><span style="color:#4070a0">queryForObject</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;SELECT `timeout` FROM `time_0` WHERE `id` = xxx;&#34;</span><span style="color:#666">,</span> Date<span style="color:#666">.</span><span style="color:#4070a0">class</span><span style="color:#666">);</span>
+Assert<span style="color:#666">.</span><span style="color:#4070a0">assertTrue</span><span style="color:#666">(</span>timeout<span style="color:#666">.</span><span style="color:#4070a0">getTime</span><span style="color:#666">()</span> <span style="color:#666">&lt;</span> System<span style="color:#666">.</span><span style="color:#4070a0">currentTimeMillis</span><span style="color:#666">());</span>
+</code></pre></div><p>在绝大多数模拟中，先执行 <code>part 1</code>，紧跟着执行 <code>part 2</code> 都能通过测试。但偶尔还是挂掉了。</p>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-26-mysql-timestamp-%E6%97%B6%E9%97%B4%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <div class="post-line"></div>
             </div>
-            
           </section>
           
+          
         </div>
+        <div class="pagination">
+  <div class="row between-xs">
+    <div class="col-xs-6 col-md-2 pagination-prev">
+      
+    </div>
+    <div class="col-xs-6 col-md-2 pagination-next">
+      
+    </div>
+</div>
+</div>
+
 
         <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/view.html" target="_blank">View</a>
+  </div>
   
   <div class="site-footer-item">
     <a href="/index.xml" target="_blank">RSS</a>
@@ -133,6 +178,6 @@
   
 </script>
 
-</body>
-
+ 
+  </body>
 </html>
