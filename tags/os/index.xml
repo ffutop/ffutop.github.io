@@ -13,10 +13,10 @@
     
     <item>
       <title>理解 Linux Kernel (3) - 操作系统启动</title>
-      <link>https://www.ffutop.com/posts/2018-10-06-%E7%90%86%E8%A7%A3-linux-kernel-3-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8/</link>
+      <link>https://www.ffutop.com/posts/2018-10-06-understand-kernel-3/</link>
       <pubDate>Sat, 06 Oct 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-10-06-%E7%90%86%E8%A7%A3-linux-kernel-3-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8/</guid>
+      <guid>https://www.ffutop.com/posts/2018-10-06-understand-kernel-3/</guid>
       <description>&lt;p&gt;这次拖得有够久的，毕竟需要将知识串联起来并不是一件容易的事情。更何况很多内容可以说和常理(个人理解的常理)有了比较大的偏差。&lt;/p&gt;
 &lt;p&gt;不过确实比较有意思。从引导程序到操作系统启动，这中间究竟经历了多少流程呢？&lt;/p&gt;
 &lt;p&gt;由于前几篇已经有过介绍，这里不会再对引导程序及汇编语法做过多的介绍。而着重描述整个操作系统的启动流程。&lt;/p&gt;</description>

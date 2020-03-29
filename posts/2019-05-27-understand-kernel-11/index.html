@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https://www.ffutop.com/"
+      },
+      "articleSection" : "posts",
+      "name" : "理解 Linux Kernel (11) - 进程间通信",
+      "headline" : "理解 Linux Kernel (11) - 进程间通信",
+      "description" : "\u003cp\u003e进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。\u003c/p\u003e\n\u003cp\u003e\u003cem\u003e本篇基于 Linux 4.9.87 版本源码\u003c/em\u003e\u003c/p\u003e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2019",
+      "datePublished": "2019-05-27T00:00:00Z",
+      "dateModified" : "2019-05-27T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/",
+      "keywords" : [ "Linux","Kernel","IPC", ]
+  }
+</script>
+<title>理解 Linux Kernel (11) - 进程间通信 - Utop&#39;s Blog</title>
+  <meta property="og:title" content="理解 Linux Kernel (11) - 进程间通信 - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。
+本篇基于 Linux 4.9.87 版本源码" />
+  <meta name="description" content="进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。
+本篇基于 Linux 4.9.87 版本源码" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">理解 Linux Kernel (11) - 进程间通信</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2019-05-27 00:00:00 UTC">
+                27 May 2019
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。</p>
+<p><em>本篇基于 Linux 4.9.87 版本源码</em></p>
+<h2 id="ipc-命名空间">IPC 命名空间</h2>
+<p>读过前几篇的同学应该都能够了解，内核统一维护了所有的资源，并有限地向各个执行流暴露所需的资源。这保证了各个执行流看似独立地运行，但也为进程间的协作制造了障碍。基于这个原因，内核又提供了额外的机制来超脱这个限制。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">struct</span> kern_ipc_perm
+{
+	spinlock_t	lock;
+	<span style="color:#902000">bool</span>		deleted;
+	<span style="color:#902000">int</span>		id;             <span style="color:#60a0b0;font-style:italic">/* 内核态内部 id */</span>
+	key_t		key;        <span style="color:#60a0b0;font-style:italic">/* 保存用户程序用来唯一区分信号量的一个魔数 */</span>
+	kuid_t		uid;
+	kgid_t		gid;
+	kuid_t		cuid;
+	kgid_t		cgid;
+	umode_t		mode;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span>	seq;
+	<span style="color:#902000">void</span>		<span style="color:#666">*</span>security;
+};
+
+<span style="color:#007020;font-weight:bold">struct</span> ipc_ids {
+	<span style="color:#902000">int</span> in_use;                 <span style="color:#60a0b0;font-style:italic">/* 使用中的 IPC 对象数量 */</span>
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> seq;         <span style="color:#60a0b0;font-style:italic">/* 用户空间 IPC 对象 ID */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> rw_semaphore rwsem;  <span style="color:#60a0b0;font-style:italic">/* 内核信号量，内核操作必备的锁机制 */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> idr ipcs_idr;        <span style="color:#60a0b0;font-style:italic">/* id 管理器，ipcs_idr 总是指向 kern_ipc_perm 对象 */</span>
+	<span style="color:#902000">int</span> next_id;
+};
+
+<span style="color:#007020;font-weight:bold">struct</span> ipc_namespace {
+	atomic_t	count;          <span style="color:#60a0b0;font-style:italic">/* 被引用的次数 */</span>
+    <span style="color:#60a0b0;font-style:italic">/* “核心”，每个数组元素对应一种 IPC 机制：信号量、消息队列、共享内存 */</span>
+    <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">       from ipc/util.h
+</span><span style="color:#60a0b0;font-style:italic">        #define IPC_SEM_IDS 0   信号量
+</span><span style="color:#60a0b0;font-style:italic">        #define IPC_MSG_IDS 1   消息队列
+</span><span style="color:#60a0b0;font-style:italic">        #define IPC_SHM_IDS 2   共享内存
+</span><span style="color:#60a0b0;font-style:italic">    */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> ipc_ids	ids[<span style="color:#40a070">3</span>];
+
+    <span style="color:#60a0b0;font-style:italic">/* 以下都是对三种 IPC 机制设置的限制，诸如共享内存页的最大数量等 */</span>
+	<span style="color:#902000">int</span>		sem_ctls[<span style="color:#40a070">4</span>];
+	<span style="color:#902000">int</span>		used_sems;
+
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span>	msg_ctlmax;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span>	msg_ctlmnb;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span>	msg_ctlmni;
+	atomic_t	msg_bytes;
+	atomic_t	msg_hdrs;
+
+	size_t		shm_ctlmax;
+	size_t		shm_ctlall;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span>	shm_tot;
+	<span style="color:#902000">int</span>		shm_ctlmni;
+	<span style="color:#902000">int</span>		shm_rmid_forced;
+
+	<span style="color:#007020;font-weight:bold">struct</span> notifier_block ipcns_nb;
+
+	<span style="color:#60a0b0;font-style:italic">/* The kern_mount of the mqueuefs sb.  We take a ref on it */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> vfsmount	<span style="color:#666">*</span>mq_mnt;
+
+	<span style="color:#60a0b0;font-style:italic">/* # queues in this ns, protected by mq_lock */</span>
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span>    mq_queues_count;
+
+	<span style="color:#60a0b0;font-style:italic">/* next fields are set through sysctl */</span>
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span>    mq_queues_max;   <span style="color:#60a0b0;font-style:italic">/* initialized to DFLT_QUEUESMAX */</span>
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span>    mq_msg_max;      <span style="color:#60a0b0;font-style:italic">/* initialized to DFLT_MSGMAX */</span>
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span>    mq_msgsize_max;  <span style="color:#60a0b0;font-style:italic">/* initialized to DFLT_MSGSIZEMAX */</span>
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span>    mq_msg_default;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span>    mq_msgsize_default;
+
+	<span style="color:#60a0b0;font-style:italic">/* user_ns which owns the ipc ns */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> user_namespace <span style="color:#666">*</span>user_ns;
+	<span style="color:#007020;font-weight:bold">struct</span> ucounts <span style="color:#666">*</span>ucounts;
+
+	<span style="color:#007020;font-weight:bold">struct</span> ns_common ns;
+};
+</code></pre></div><p>IPC 由一个被称为 <code>ipc_namespace</code> 的数据结构维护，如果熟悉 <code>pid_namespace</code> 之类的，应该能够理解内核通过命名空间实现了资源的隔离。这里的 <code>ipc_namespace</code> 也是为了实现多个 ipc 环境所做的抽象。首先看下初始化 IPC 命名空间的流程。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* from init/init_task.c */</span>
+<span style="color:#60a0b0;font-style:italic">/* 内核抽象的第一个任务 */</span>
+<span style="color:#007020;font-weight:bold">struct</span> task_struct init_task <span style="color:#666">=</span> INIT_TASK(init_task);
+
+<span style="color:#60a0b0;font-style:italic">/* from include/linux/init_task.h */</span>
+<span style="color:#007020">#define INIT_TASK(tsk) \
+</span><span style="color:#007020">{                                       \
+</span><span style="color:#007020">    .nsproxy	= &amp;init_nsproxy,        \
+</span><span style="color:#007020">}
+</span><span style="color:#007020"></span>
+<span style="color:#60a0b0;font-style:italic">/* from kernel/nsproxy.c */</span>
+<span style="color:#007020;font-weight:bold">struct</span> nsproxy init_nsproxy <span style="color:#666">=</span> {
+	.count			<span style="color:#666">=</span> ATOMIC_INIT(<span style="color:#40a070">1</span>),
+	.uts_ns			<span style="color:#666">=</span> <span style="color:#666">&amp;</span>init_uts_ns,
+<span style="color:#007020">#if defined(CONFIG_POSIX_MQUEUE) || defined(CONFIG_SYSVIPC)
+</span><span style="color:#007020"></span>	.ipc_ns			<span style="color:#666">=</span> <span style="color:#666">&amp;</span>init_ipc_ns,
+<span style="color:#007020">#endif
+</span><span style="color:#007020"></span>	.mnt_ns			<span style="color:#666">=</span> <span style="color:#007020">NULL</span>,
+	.pid_ns_for_children	<span style="color:#666">=</span> <span style="color:#666">&amp;</span>init_pid_ns,
+<span style="color:#007020">#ifdef CONFIG_NET
+</span><span style="color:#007020"></span>	.net_ns			<span style="color:#666">=</span> <span style="color:#666">&amp;</span>init_net,
+<span style="color:#007020">#endif
+</span><span style="color:#007020">#ifdef CONFIG_CGROUPS
+</span><span style="color:#007020"></span>	.cgroup_ns		<span style="color:#666">=</span> <span style="color:#666">&amp;</span>init_cgroup_ns,
+<span style="color:#007020">#endif
+</span><span style="color:#007020"></span>};
+
+<span style="color:#60a0b0;font-style:italic">/* from ipc/msgutil.c */</span> 
+<span style="color:#007020;font-weight:bold">struct</span> ipc_namespace init_ipc_ns <span style="color:#666">=</span> {
+	.count		<span style="color:#666">=</span> ATOMIC_INIT(<span style="color:#40a070">1</span>),
+	.user_ns <span style="color:#666">=</span> <span style="color:#666">&amp;</span>init_user_ns,
+	.ns.inum <span style="color:#666">=</span> PROC_IPC_INIT_INO,
+<span style="color:#007020">#ifdef CONFIG_IPC_NS
+</span><span style="color:#007020"></span>	.ns.ops <span style="color:#666">=</span> <span style="color:#666">&amp;</span>ipcns_operations,
+<span style="color:#007020">#endif
+</span><span style="color:#007020"></span>};
+</code></pre></div><p>任务通过 <code>fork</code>、<code>clone</code> 等操作构建新的任务，并由 <code>flag CLONE_NEWIPC</code> 决定与父任务共享 IPC 命名空间或创建新的 IPC 命名空间。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">struct</span> ipc_namespace <span style="color:#666">*</span><span style="color:#06287e">copy_ipcs</span>(<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> flags,
+	<span style="color:#007020;font-weight:bold">struct</span> user_namespace <span style="color:#666">*</span>user_ns, <span style="color:#007020;font-weight:bold">struct</span> ipc_namespace <span style="color:#666">*</span>ns)
+{
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>(flags <span style="color:#666">&amp;</span> CLONE_NEWIPC))
+        <span style="color:#60a0b0;font-style:italic">/* 返回原来的 IPC 命名空间 */</span>
+		<span style="color:#007020;font-weight:bold">return</span> get_ipc_ns(ns);
+    <span style="color:#60a0b0;font-style:italic">/* 返回一个新的 IPC 命名空间 */</span>
+	<span style="color:#007020;font-weight:bold">return</span> create_ipc_ns(user_ns, ns);
+}
+</code></pre></div><h2 id="信号量">信号量</h2>
+<p><img src="https://img.ffutop.com/7A24F185-3480-4C29-A006-C66BB54E046F.png" alt=""></p>
+<p>上图给出了各个结构间的关系，通过当前任务指向的 IPC 命名空间，找到 <code>struct ipc_ids</code> ，内核通过 <code>ipcs_idr</code> 找到 ID 到指针的映射关系，从而得到所需的 <code>kern_ipc_perm</code> 实例。同时 <code>kern_ipc_perm</code> 作为结构 <code>sem_array</code> 的第一个元素，使用技巧就可以直接定位到 <code>struct sem_array</code> 。</p>
+<h3 id="syscall-semget">syscall <code>semget</code></h3>
+<p>获取一个信号量</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* from ipc/sem.c */</span>
+SYSCALL_DEFINE3(semget, key_t, key, <span style="color:#902000">int</span>, nsems, <span style="color:#902000">int</span>, semflg)
+{
+	<span style="color:#007020;font-weight:bold">struct</span> ipc_namespace <span style="color:#666">*</span>ns;
+	<span style="color:#007020;font-weight:bold">static</span> <span style="color:#007020;font-weight:bold">const</span> <span style="color:#007020;font-weight:bold">struct</span> ipc_ops sem_ops <span style="color:#666">=</span> {
+		.getnew <span style="color:#666">=</span> newary,
+		.associate <span style="color:#666">=</span> sem_security,
+		.more_checks <span style="color:#666">=</span> sem_more_checks,
+	};
+	<span style="color:#007020;font-weight:bold">struct</span> ipc_params sem_params;
+
+    <span style="color:#60a0b0;font-style:italic">/* 获取当前任务的 IPC 命名空间 */</span>
+	ns <span style="color:#666">=</span> current<span style="color:#666">-&gt;</span>nsproxy<span style="color:#666">-&gt;</span>ipc_ns;
+
+	<span style="color:#007020;font-weight:bold">if</span> (nsems <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span> <span style="color:#666">||</span> nsems <span style="color:#666">&gt;</span> ns<span style="color:#666">-&gt;</span>sc_semmsl)
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>EINVAL;
+
+	sem_params.key <span style="color:#666">=</span> key;
+	sem_params.flg <span style="color:#666">=</span> semflg;
+	sem_params.u.nsems <span style="color:#666">=</span> nsems;
+
+	<span style="color:#007020;font-weight:bold">return</span> <span style="color:#06287e">ipcget</span>(ns, <span style="color:#666">&amp;</span>sem_ids(ns), <span style="color:#666">&amp;</span>sem_ops, <span style="color:#666">&amp;</span>sem_params);
+}
+
+<span style="color:#60a0b0;font-style:italic">/* from ipc/util.c */</span>
+<span style="color:#902000">int</span> ipcget(<span style="color:#007020;font-weight:bold">struct</span> ipc_namespace <span style="color:#666">*</span>ns, <span style="color:#007020;font-weight:bold">struct</span> ipc_ids <span style="color:#666">*</span>ids,
+			<span style="color:#007020;font-weight:bold">const</span> <span style="color:#007020;font-weight:bold">struct</span> ipc_ops <span style="color:#666">*</span>ops, <span style="color:#007020;font-weight:bold">struct</span> ipc_params <span style="color:#666">*</span>params)
+{
+    <span style="color:#60a0b0;font-style:italic">/* 如果标志位为“私有”，则创建新的 IPC 命名空间 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (params<span style="color:#666">-&gt;</span>key <span style="color:#666">==</span> IPC_PRIVATE)
+		<span style="color:#007020;font-weight:bold">return</span> ipcget_new(ns, ids, ops, params);
+    <span style="color:#60a0b0;font-style:italic">/* 使用当前任务的 IPC 命名空间 */</span>
+	<span style="color:#007020;font-weight:bold">else</span>
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#06287e">ipcget_public</span>(ns, ids, ops, params);
+}
+</code></pre></div><p><img src="https://img.ffutop.com/DED2216C-127B-4036-84D8-33A2E44C5B33.png" alt=""></p>
+<p>这里额外展示了 <code>msgget</code>, <code>shmget</code>，分别意味着消息队列、共享内存。获取 IPC 对象的流程都是相同的，有所区别的只是获取、写入和存储数据的方式。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">// from &#39;ipc/util.c&#39;
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#902000">int</span> <span style="color:#06287e">ipcget_new</span>(<span style="color:#007020;font-weight:bold">struct</span> ipc_namespace <span style="color:#666">*</span>ns, <span style="color:#007020;font-weight:bold">struct</span> ipc_ids <span style="color:#666">*</span>ids,
+		<span style="color:#007020;font-weight:bold">struct</span> ipc_ops <span style="color:#666">*</span>ops, <span style="color:#007020;font-weight:bold">struct</span> ipc_params <span style="color:#666">*</span>params)
+{
+	<span style="color:#902000">int</span> err;
+<span style="color:#002070;font-weight:bold">retry</span>:
+	err <span style="color:#666">=</span> idr_pre_get(<span style="color:#666">&amp;</span>ids<span style="color:#666">-&gt;</span>ipcs_idr, GFP_KERNEL);
+
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>err)
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>ENOMEM;
+
+	down_write(<span style="color:#666">&amp;</span>ids<span style="color:#666">-&gt;</span>rw_mutex);
+	err <span style="color:#666">=</span> ops<span style="color:#666">-&gt;</span>getnew(ns, params);
+	up_write(<span style="color:#666">&amp;</span>ids<span style="color:#666">-&gt;</span>rw_mutex);
+
+	<span style="color:#007020;font-weight:bold">if</span> (err <span style="color:#666">==</span> <span style="color:#666">-</span>EAGAIN)
+		<span style="color:#007020;font-weight:bold">goto</span> retry;
+
+	<span style="color:#007020;font-weight:bold">return</span> err;
+}
+
+<span style="color:#902000">int</span> <span style="color:#06287e">ipcget_public</span>(<span style="color:#007020;font-weight:bold">struct</span> ipc_namespace <span style="color:#666">*</span>ns, <span style="color:#007020;font-weight:bold">struct</span> ipc_ids <span style="color:#666">*</span>ids,
+		<span style="color:#007020;font-weight:bold">struct</span> ipc_ops <span style="color:#666">*</span>ops, <span style="color:#007020;font-weight:bold">struct</span> ipc_params <span style="color:#666">*</span>params)
+{
+	<span style="color:#007020;font-weight:bold">struct</span> kern_ipc_perm <span style="color:#666">*</span>ipcp;
+	<span style="color:#902000">int</span> flg <span style="color:#666">=</span> params<span style="color:#666">-&gt;</span>flg;
+	<span style="color:#902000">int</span> err;
+<span style="color:#002070;font-weight:bold">retry</span>:
+	err <span style="color:#666">=</span> idr_pre_get(<span style="color:#666">&amp;</span>ids<span style="color:#666">-&gt;</span>ipcs_idr, GFP_KERNEL);
+
+  <span style="color:#60a0b0;font-style:italic">// 读写锁保护临界区
+</span><span style="color:#60a0b0;font-style:italic"></span>	down_write(<span style="color:#666">&amp;</span>ids<span style="color:#666">-&gt;</span>rw_mutex);
+  <span style="color:#60a0b0;font-style:italic">// 确认 KEY 是否存在
+</span><span style="color:#60a0b0;font-style:italic"></span>	ipcp <span style="color:#666">=</span> ipc_findkey(ids, params<span style="color:#666">-&gt;</span>key);
+	<span style="color:#007020;font-weight:bold">if</span> (ipcp <span style="color:#666">==</span> <span style="color:#007020">NULL</span>) {
+		<span style="color:#60a0b0;font-style:italic">/* KEY 不存在，创建新的 */</span>
+		<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>(flg <span style="color:#666">&amp;</span> IPC_CREAT))
+			err <span style="color:#666">=</span> <span style="color:#666">-</span>ENOENT;
+		<span style="color:#007020;font-weight:bold">else</span> <span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>err)
+			err <span style="color:#666">=</span> <span style="color:#666">-</span>ENOMEM;
+		<span style="color:#007020;font-weight:bold">else</span>
+			err <span style="color:#666">=</span> ops<span style="color:#666">-&gt;</span>getnew(ns, params);
+	} <span style="color:#007020;font-weight:bold">else</span> {
+		<span style="color:#60a0b0;font-style:italic">/* KEY 存在，check ACL */</span>
+		<span style="color:#007020;font-weight:bold">if</span> (flg <span style="color:#666">&amp;</span> IPC_CREAT <span style="color:#666">&amp;&amp;</span> flg <span style="color:#666">&amp;</span> IPC_EXCL)
+			err <span style="color:#666">=</span> <span style="color:#666">-</span>EEXIST;
+		<span style="color:#007020;font-weight:bold">else</span> {
+			err <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+			<span style="color:#007020;font-weight:bold">if</span> (ops<span style="color:#666">-&gt;</span>more_checks)
+				err <span style="color:#666">=</span> ops<span style="color:#666">-&gt;</span>more_checks(ipcp, params);
+			<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>err)
+				err <span style="color:#666">=</span> ipc_check_perms(ipcp, ops, params);
+		}
+		ipc_unlock(ipcp);
+	}
+  <span style="color:#60a0b0;font-style:italic">// 离开临界区
+</span><span style="color:#60a0b0;font-style:italic"></span>	up_write(<span style="color:#666">&amp;</span>ids<span style="color:#666">-&gt;</span>rw_mutex);
+
+	<span style="color:#007020;font-weight:bold">if</span> (err <span style="color:#666">==</span> <span style="color:#666">-</span>EAGAIN)
+		<span style="color:#007020;font-weight:bold">goto</span> retry;
+
+	<span style="color:#007020;font-weight:bold">return</span> err;
+}
+</code></pre></div><p><code>ipcget_new</code> 和 <code>ipcget_public</code> ，核心的目标用 key 去换取一个 id (代表 <code>struct kern_ipc_perm</code> 在 <code>ipcs_idr</code> 整数指针管理器中的 id )。</p>
+<p>如果这个 key 不存在，就考虑创建一个新的 <code>struct kern_ipc_perm</code> 。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">// from &#39;include/linux/sem.h&#39;
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">struct</span> sem_array {
+	<span style="color:#007020;font-weight:bold">struct</span> kern_ipc_perm	sem_perm;	<span style="color:#60a0b0;font-style:italic">/* permissions .. see ipc.h */</span>
+	time_t			sem_otime;	<span style="color:#60a0b0;font-style:italic">/* last semop time */</span>
+	time_t			sem_ctime;	<span style="color:#60a0b0;font-style:italic">/* last change time */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> sem		<span style="color:#666">*</span>sem_base;	<span style="color:#60a0b0;font-style:italic">/* ptr to first semaphore in array */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> sem_queue	<span style="color:#666">*</span>sem_pending;	<span style="color:#60a0b0;font-style:italic">/* pending operations to be processed */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> sem_queue	<span style="color:#666">**</span>sem_pending_last; <span style="color:#60a0b0;font-style:italic">/* last pending operation */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> sem_undo		<span style="color:#666">*</span>undo;		<span style="color:#60a0b0;font-style:italic">/* undo requests on this array */</span>
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span>		sem_nsems;	<span style="color:#60a0b0;font-style:italic">/* no. of semaphores in array */</span>
+};
+
+<span style="color:#60a0b0;font-style:italic">// from &#39;ipc/sem.c&#39;
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">int</span> <span style="color:#06287e">newary</span>(<span style="color:#007020;font-weight:bold">struct</span> ipc_namespace <span style="color:#666">*</span>ns, <span style="color:#007020;font-weight:bold">struct</span> ipc_params <span style="color:#666">*</span>params)
+{
+	<span style="color:#902000">int</span> id;
+	<span style="color:#902000">int</span> retval;
+	<span style="color:#007020;font-weight:bold">struct</span> sem_array <span style="color:#666">*</span>sma;
+	<span style="color:#902000">int</span> size;
+	key_t key <span style="color:#666">=</span> params<span style="color:#666">-&gt;</span>key;
+	<span style="color:#902000">int</span> nsems <span style="color:#666">=</span> params<span style="color:#666">-&gt;</span>u.nsems;
+	<span style="color:#902000">int</span> semflg <span style="color:#666">=</span> params<span style="color:#666">-&gt;</span>flg;
+
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>nsems)	<span style="color:#60a0b0;font-style:italic">// 信号量集合中信号量数量不能为0.
+</span><span style="color:#60a0b0;font-style:italic"></span>		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>EINVAL;
+	<span style="color:#007020;font-weight:bold">if</span> (ns<span style="color:#666">-&gt;</span>used_sems <span style="color:#666">+</span> nsems <span style="color:#666">&gt;</span> ns<span style="color:#666">-&gt;</span>sc_semmns) <span style="color:#60a0b0;font-style:italic">// 不能超过 IPC 信号量数量上限
+</span><span style="color:#60a0b0;font-style:italic"></span>		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>ENOSPC;
+
+	size <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">sizeof</span> (<span style="color:#666">*</span>sma) <span style="color:#666">+</span> nsems <span style="color:#666">*</span> <span style="color:#007020;font-weight:bold">sizeof</span> (<span style="color:#007020;font-weight:bold">struct</span> sem);
+	sma <span style="color:#666">=</span> ipc_rcu_alloc(size);
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>sma) {
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>ENOMEM;
+	}
+	memset (sma, <span style="color:#40a070">0</span>, size);
+
+	sma<span style="color:#666">-&gt;</span>sem_perm.mode <span style="color:#666">=</span> (semflg <span style="color:#666">&amp;</span> S_IRWXUGO);
+	sma<span style="color:#666">-&gt;</span>sem_perm.key <span style="color:#666">=</span> key;
+
+	sma<span style="color:#666">-&gt;</span>sem_perm.security <span style="color:#666">=</span> <span style="color:#007020">NULL</span>;
+	retval <span style="color:#666">=</span> security_sem_alloc(sma);
+	<span style="color:#007020;font-weight:bold">if</span> (retval) {
+		ipc_rcu_putref(sma);
+		<span style="color:#007020;font-weight:bold">return</span> retval;
+	}
+
+	id <span style="color:#666">=</span> ipc_addid(<span style="color:#666">&amp;</span>sem_ids(ns), <span style="color:#666">&amp;</span>sma<span style="color:#666">-&gt;</span>sem_perm, ns<span style="color:#666">-&gt;</span>sc_semmni);
+	<span style="color:#007020;font-weight:bold">if</span> (id <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span>) {
+		security_sem_free(sma);
+		ipc_rcu_putref(sma);
+		<span style="color:#007020;font-weight:bold">return</span> id;
+	}
+	ns<span style="color:#666">-&gt;</span>used_sems <span style="color:#666">+=</span> nsems;
+
+	sma<span style="color:#666">-&gt;</span>sem_perm.id <span style="color:#666">=</span> sem_buildid(id, sma<span style="color:#666">-&gt;</span>sem_perm.seq);
+	sma<span style="color:#666">-&gt;</span>sem_base <span style="color:#666">=</span> (<span style="color:#007020;font-weight:bold">struct</span> sem <span style="color:#666">*</span>) <span style="color:#666">&amp;</span>sma[<span style="color:#40a070">1</span>];
+	<span style="color:#60a0b0;font-style:italic">/* sma-&gt;sem_pending = NULL; */</span>
+	sma<span style="color:#666">-&gt;</span>sem_pending_last <span style="color:#666">=</span> <span style="color:#666">&amp;</span>sma<span style="color:#666">-&gt;</span>sem_pending;
+	<span style="color:#60a0b0;font-style:italic">/* sma-&gt;undo = NULL; */</span>
+	sma<span style="color:#666">-&gt;</span>sem_nsems <span style="color:#666">=</span> nsems;
+	sma<span style="color:#666">-&gt;</span>sem_ctime <span style="color:#666">=</span> get_seconds();
+	sem_unlock(sma);
+
+	<span style="color:#007020;font-weight:bold">return</span> sma<span style="color:#666">-&gt;</span>sem_perm.id;
+}
+</code></pre></div><h3 id="syscall-semctl">syscall <code>semctl</code></h3>
+<p>信号量控制操作。根据 <code>cmd</code> 的不同，可以获得信号集合中所有值(GETALL)，获取最后一个操作信号集合的进程号(GETPID)，统一设置信号集合中所有值(SETALL)</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">SYSCALL_DEFINE4(semctl, <span style="color:#902000">int</span>, semid, <span style="color:#902000">int</span>, semnum, <span style="color:#902000">int</span>, cmd, <span style="color:#902000">unsigned</span> <span style="color:#902000">long</span>, arg)
+{
+	<span style="color:#902000">int</span> version;
+	<span style="color:#007020;font-weight:bold">struct</span> ipc_namespace <span style="color:#666">*</span>ns;
+	<span style="color:#902000">void</span> __user <span style="color:#666">*</span>p <span style="color:#666">=</span> (<span style="color:#902000">void</span> __user <span style="color:#666">*</span>)arg;
+
+	<span style="color:#007020;font-weight:bold">if</span> (semid <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span>)
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>EINVAL;
+
+	version <span style="color:#666">=</span> ipc_parse_version(<span style="color:#666">&amp;</span>cmd);
+	ns <span style="color:#666">=</span> current<span style="color:#666">-&gt;</span>nsproxy<span style="color:#666">-&gt;</span>ipc_ns;
+
+	<span style="color:#007020;font-weight:bold">switch</span> (cmd) {
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">IPC_INFO</span>:
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">SEM_INFO</span>:
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">IPC_STAT</span>:
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">SEM_STAT</span>:
+		<span style="color:#007020;font-weight:bold">return</span> semctl_nolock(ns, semid, cmd, version, p);
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">GETALL</span>:
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">GETVAL</span>:
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">GETPID</span>:
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">GETNCNT</span>:
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">GETZCNT</span>:
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">SETALL</span>:
+		<span style="color:#007020;font-weight:bold">return</span> semctl_main(ns, semid, semnum, cmd, p);
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">SETVAL</span>:
+		<span style="color:#007020;font-weight:bold">return</span> semctl_setval(ns, semid, semnum, arg);
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">IPC_RMID</span>:
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">IPC_SET</span>:
+		<span style="color:#007020;font-weight:bold">return</span> semctl_down(ns, semid, cmd, version, p);
+	<span style="color:#007020;font-weight:bold">default</span><span style="color:#666">:</span>
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>EINVAL;
+	}
+}
+</code></pre></div><h3 id="syscall-semop">syscall <code>semop</code></h3>
+<p>信号的 P/V 操作</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">// from &#39;ipc/sem.c&#39;
+</span><span style="color:#60a0b0;font-style:italic"></span>asmlinkage <span style="color:#902000">long</span> <span style="color:#06287e">sys_semop</span> (<span style="color:#902000">int</span> semid, <span style="color:#007020;font-weight:bold">struct</span> sembuf __user <span style="color:#666">*</span>tsops, <span style="color:#902000">unsigned</span> nsops)
+{
+    <span style="color:#007020;font-weight:bold">return</span> sys_semtimedop(semid, tsops, nsops, <span style="color:#007020">NULL</span>);
+}
+
+asmlinkage <span style="color:#902000">long</span> <span style="color:#06287e">sys_semtimedop</span>(<span style="color:#902000">int</span> semid, <span style="color:#007020;font-weight:bold">struct</span> sembuf __user <span style="color:#666">*</span>tsops,
+			<span style="color:#902000">unsigned</span> nsops, <span style="color:#007020;font-weight:bold">const</span> <span style="color:#007020;font-weight:bold">struct</span> timespec __user <span style="color:#666">*</span>timeout)
+{
+	<span style="color:#902000">int</span> error <span style="color:#666">=</span> <span style="color:#666">-</span>EINVAL;
+	<span style="color:#007020;font-weight:bold">struct</span> sem_array <span style="color:#666">*</span>sma;
+	<span style="color:#007020;font-weight:bold">struct</span> sembuf fast_sops[SEMOPM_FAST];
+	<span style="color:#007020;font-weight:bold">struct</span> sembuf<span style="color:#666">*</span> sops <span style="color:#666">=</span> fast_sops, <span style="color:#666">*</span>sop;
+	<span style="color:#007020;font-weight:bold">struct</span> sem_undo <span style="color:#666">*</span>un;
+	<span style="color:#902000">int</span> undos <span style="color:#666">=</span> <span style="color:#40a070">0</span>, alter <span style="color:#666">=</span> <span style="color:#40a070">0</span>, max;
+	<span style="color:#007020;font-weight:bold">struct</span> sem_queue queue;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> jiffies_left <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+	<span style="color:#007020;font-weight:bold">struct</span> ipc_namespace <span style="color:#666">*</span>ns;
+
+  <span style="color:#60a0b0;font-style:italic">// 获取当前任务的 ipc 命名空间
+</span><span style="color:#60a0b0;font-style:italic"></span>	ns <span style="color:#666">=</span> current<span style="color:#666">-&gt;</span>nsproxy<span style="color:#666">-&gt;</span>ipc_ns;
+
+	<span style="color:#007020;font-weight:bold">if</span> (nsops <span style="color:#666">&lt;</span> <span style="color:#40a070">1</span> <span style="color:#666">||</span> semid <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span>)
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>EINVAL;
+	<span style="color:#007020;font-weight:bold">if</span> (nsops <span style="color:#666">&gt;</span> ns<span style="color:#666">-&gt;</span>sc_semopm)
+		<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>E2BIG;
+	<span style="color:#007020;font-weight:bold">if</span>(nsops <span style="color:#666">&gt;</span> SEMOPM_FAST) {
+		sops <span style="color:#666">=</span> kmalloc(<span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#666">*</span>sops)<span style="color:#666">*</span>nsops,GFP_KERNEL);
+		<span style="color:#007020;font-weight:bold">if</span>(sops<span style="color:#666">==</span><span style="color:#007020">NULL</span>)
+			<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>ENOMEM;
+	}
+	<span style="color:#007020;font-weight:bold">if</span> (copy_from_user (sops, tsops, nsops <span style="color:#666">*</span> <span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#666">*</span>tsops))) {
+		error<span style="color:#666">=-</span>EFAULT;
+		<span style="color:#007020;font-weight:bold">goto</span> out_free;
+	}
+	<span style="color:#007020;font-weight:bold">if</span> (timeout) {
+		<span style="color:#007020;font-weight:bold">struct</span> timespec _timeout;
+		<span style="color:#007020;font-weight:bold">if</span> (copy_from_user(<span style="color:#666">&amp;</span>_timeout, timeout, <span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#666">*</span>timeout))) {
+			error <span style="color:#666">=</span> <span style="color:#666">-</span>EFAULT;
+			<span style="color:#007020;font-weight:bold">goto</span> out_free;
+		}
+		<span style="color:#007020;font-weight:bold">if</span> (_timeout.tv_sec <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span> <span style="color:#666">||</span> _timeout.tv_nsec <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span> <span style="color:#666">||</span>
+			_timeout.tv_nsec <span style="color:#666">&gt;=</span> <span style="color:#40a070">1000000000L</span>) {
+			error <span style="color:#666">=</span> <span style="color:#666">-</span>EINVAL;
+			<span style="color:#007020;font-weight:bold">goto</span> out_free;
+		}
+		jiffies_left <span style="color:#666">=</span> timespec_to_jiffies(<span style="color:#666">&amp;</span>_timeout);
+	}
+	max <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+	<span style="color:#007020;font-weight:bold">for</span> (sop <span style="color:#666">=</span> sops; sop <span style="color:#666">&lt;</span> sops <span style="color:#666">+</span> nsops; sop<span style="color:#666">++</span>) {
+		<span style="color:#007020;font-weight:bold">if</span> (sop<span style="color:#666">-&gt;</span>sem_num <span style="color:#666">&gt;=</span> max)
+			max <span style="color:#666">=</span> sop<span style="color:#666">-&gt;</span>sem_num;
+		<span style="color:#007020;font-weight:bold">if</span> (sop<span style="color:#666">-&gt;</span>sem_flg <span style="color:#666">&amp;</span> SEM_UNDO)
+			undos <span style="color:#666">=</span> <span style="color:#40a070">1</span>;
+		<span style="color:#007020;font-weight:bold">if</span> (sop<span style="color:#666">-&gt;</span>sem_op <span style="color:#666">!=</span> <span style="color:#40a070">0</span>)
+			alter <span style="color:#666">=</span> <span style="color:#40a070">1</span>;
+	}
+
+<span style="color:#002070;font-weight:bold">retry_undos</span>:
+	<span style="color:#007020;font-weight:bold">if</span> (undos) {
+		un <span style="color:#666">=</span> find_undo(ns, semid);
+		<span style="color:#007020;font-weight:bold">if</span> (IS_ERR(un)) {
+			error <span style="color:#666">=</span> PTR_ERR(un);
+			<span style="color:#007020;font-weight:bold">goto</span> out_free;
+		}
+	} <span style="color:#007020;font-weight:bold">else</span>
+		un <span style="color:#666">=</span> <span style="color:#007020">NULL</span>;
+
+	sma <span style="color:#666">=</span> sem_lock_check(ns, semid);
+	<span style="color:#007020;font-weight:bold">if</span> (IS_ERR(sma)) {
+		error <span style="color:#666">=</span> PTR_ERR(sma);
+		<span style="color:#007020;font-weight:bold">goto</span> out_free;
+	}
+
+	<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">	 * semid identifiers are not unique - find_undo may have
+</span><span style="color:#60a0b0;font-style:italic">	 * allocated an undo structure, it was invalidated by an RMID
+</span><span style="color:#60a0b0;font-style:italic">	 * and now a new array with received the same id. Check and retry.
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (un <span style="color:#666">&amp;&amp;</span> un<span style="color:#666">-&gt;</span>semid <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>) {
+		sem_unlock(sma);
+		<span style="color:#007020;font-weight:bold">goto</span> retry_undos;
+	}
+	error <span style="color:#666">=</span> <span style="color:#666">-</span>EFBIG;
+	<span style="color:#007020;font-weight:bold">if</span> (max <span style="color:#666">&gt;=</span> sma<span style="color:#666">-&gt;</span>sem_nsems)
+		<span style="color:#007020;font-weight:bold">goto</span> out_unlock_free;
+
+	error <span style="color:#666">=</span> <span style="color:#666">-</span>EACCES;
+	<span style="color:#007020;font-weight:bold">if</span> (ipcperms(<span style="color:#666">&amp;</span>sma<span style="color:#666">-&gt;</span>sem_perm, alter <span style="color:#666">?</span> <span style="color:#002070;font-weight:bold">S_IWUGO</span> : S_IRUGO))
+		<span style="color:#007020;font-weight:bold">goto</span> out_unlock_free;
+
+	error <span style="color:#666">=</span> security_sem_semop(sma, sops, nsops, alter);
+	<span style="color:#007020;font-weight:bold">if</span> (error)
+		<span style="color:#007020;font-weight:bold">goto</span> out_unlock_free;
+
+	error <span style="color:#666">=</span> try_atomic_semop (sma, sops, nsops, un, task_tgid_vnr(current));
+	<span style="color:#007020;font-weight:bold">if</span> (error <span style="color:#666">&lt;=</span> <span style="color:#40a070">0</span>) {
+		<span style="color:#007020;font-weight:bold">if</span> (alter <span style="color:#666">&amp;&amp;</span> error <span style="color:#666">==</span> <span style="color:#40a070">0</span>)
+			update_queue (sma);
+		<span style="color:#007020;font-weight:bold">goto</span> out_unlock_free;
+	}
+
+	<span style="color:#60a0b0;font-style:italic">/* We need to sleep on this operation, so we put the current
+</span><span style="color:#60a0b0;font-style:italic">	 * task into the pending queue and go to sleep.
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+
+	queue.sma <span style="color:#666">=</span> sma;
+	queue.sops <span style="color:#666">=</span> sops;
+	queue.nsops <span style="color:#666">=</span> nsops;
+	queue.undo <span style="color:#666">=</span> un;
+	queue.pid <span style="color:#666">=</span> task_tgid_vnr(current);
+	queue.id <span style="color:#666">=</span> semid;
+	queue.alter <span style="color:#666">=</span> alter;
+	<span style="color:#007020;font-weight:bold">if</span> (alter)
+		append_to_queue(sma ,<span style="color:#666">&amp;</span>queue);
+	<span style="color:#007020;font-weight:bold">else</span>
+		prepend_to_queue(sma ,<span style="color:#666">&amp;</span>queue);
+
+	queue.status <span style="color:#666">=</span> <span style="color:#666">-</span>EINTR;
+	queue.sleeper <span style="color:#666">=</span> current;
+	current<span style="color:#666">-&gt;</span>state <span style="color:#666">=</span> TASK_INTERRUPTIBLE;
+	sem_unlock(sma);
+
+	<span style="color:#007020;font-weight:bold">if</span> (timeout)
+		jiffies_left <span style="color:#666">=</span> schedule_timeout(jiffies_left);
+	<span style="color:#007020;font-weight:bold">else</span>
+		schedule();
+
+	error <span style="color:#666">=</span> queue.status;
+	<span style="color:#007020;font-weight:bold">while</span>(unlikely(error <span style="color:#666">==</span> IN_WAKEUP)) {
+		cpu_relax();
+		error <span style="color:#666">=</span> queue.status;
+	}
+
+	<span style="color:#007020;font-weight:bold">if</span> (error <span style="color:#666">!=</span> <span style="color:#666">-</span>EINTR) {
+		<span style="color:#60a0b0;font-style:italic">/* fast path: update_queue already obtained all requested
+</span><span style="color:#60a0b0;font-style:italic">		 * resources */</span>
+		<span style="color:#007020;font-weight:bold">goto</span> out_free;
+	}
+
+	sma <span style="color:#666">=</span> sem_lock(ns, semid);
+	<span style="color:#007020;font-weight:bold">if</span> (IS_ERR(sma)) {
+		BUG_ON(queue.prev <span style="color:#666">!=</span> <span style="color:#007020">NULL</span>);
+		error <span style="color:#666">=</span> <span style="color:#666">-</span>EIDRM;
+		<span style="color:#007020;font-weight:bold">goto</span> out_free;
+	}
+
+	<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">	 * If queue.status != -EINTR we are woken up by another process
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+	error <span style="color:#666">=</span> queue.status;
+	<span style="color:#007020;font-weight:bold">if</span> (error <span style="color:#666">!=</span> <span style="color:#666">-</span>EINTR) {
+		<span style="color:#007020;font-weight:bold">goto</span> out_unlock_free;
+	}
+
+	<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">	 * If an interrupt occurred we have to clean up the queue
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (timeout <span style="color:#666">&amp;&amp;</span> jiffies_left <span style="color:#666">==</span> <span style="color:#40a070">0</span>)
+		error <span style="color:#666">=</span> <span style="color:#666">-</span>EAGAIN;
+	remove_from_queue(sma,<span style="color:#666">&amp;</span>queue);
+	<span style="color:#007020;font-weight:bold">goto</span> out_unlock_free;
+
+<span style="color:#002070;font-weight:bold">out_unlock_free</span>:
+	sem_unlock(sma);
+<span style="color:#002070;font-weight:bold">out_free</span>:
+	<span style="color:#007020;font-weight:bold">if</span>(sops <span style="color:#666">!=</span> fast_sops)
+		kfree(sops);
+	<span style="color:#007020;font-weight:bold">return</span> error;
+}
+</code></pre></div><h2 id="消息队列">消息队列</h2>
+<p>至于消息队列和共享内存，都利用了类似的技术，通过在 IPC 命名空间下，使用 <code>struct idr</code> 做 KEY, VALUE 的管理，从而维护起了一系列互不干扰的消息队列、共享内存。</p>
+<p><img src="https://img.ffutop.com/409ECF12-A0E5-4B0F-AD96-FE9EA73FD972.png" alt=""></p>
+<h2 id="共享内存">共享内存</h2>
+<p><img src="https://img.ffutop.com/85BB67B8-0EE1-4657-8242-760645A06ED1.png" alt=""></p>
+<h2 id="结束">结束</h2>
+<p>局限于目前未能找到 SysV IPC 的经典利用场景，加之平时工作接触甚少。本篇匆匆结尾，未详细展示不同 IPC 技术在不同使用场景下的优劣。</p>
+<p>相对而言，日常更多使用的 IPC 技术反而是管道、多进程共同读写文档等。</p>
+<p>此坑估计不会再填了&hellip;</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre></div>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2019-04-10-understand-kernel-10/">理解 Linux Kernel(10) - Context of Execution</a></li>
+    
+    <li><a href="/posts/2019-03-25-mem-dump/">如何获取运行时进程堆栈</a></li>
+    
+    <li><a href="/posts/2019-03-05-understand-kernel-9/">理解 Linux Kernel (9) - IO Multiplexing</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+ 
+  </body>
+</html>

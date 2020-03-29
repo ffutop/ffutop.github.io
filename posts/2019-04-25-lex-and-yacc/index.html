@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2019-04-25-lex-and-yacc/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2019-04-25-lex-and-yacc/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https://www.ffutop.com/"
+      },
+      "articleSection" : "posts",
+      "name" : "Lex \u0026 Yacc 学习笔记",
+      "headline" : "Lex \u0026 Yacc 学习笔记",
+      "description" : "\u003cp\u003e高级语言相较于机器语言、汇编语言，更加符合人的思考习惯。换句话说，更偏向于自然语言的风格而更偏离指令化的描述。用高级语言编写的一行代码，最终可能需要处理器执行若干条指令。如何让机器意识到高级语言代码对应的机器指令是哪些呢？当然就需要一个优秀的翻译。\u003c/p\u003e\n\u003cp\u003e无论是编译型语言还是解释型语言，总逃脱不了这样一个流程：高级语言 ➜ 目标平台的指令。所谓编译型/解释型的区别，在于其转换流程是在线的(online)还是离线的(offline)。在线的方式无法意识到后续的代码，但胜在即时反应；离线的方式可以统揽全局，进行更多的优化，但代码文本必须完整。\u003c/p\u003e\n\u003cp\u003e高级语言 ➜ 目标平台的指令，这样的流程如何实现。一般来说，划分为四个阶段：词法分析、语法分析、语义分析、目标代码生成。\u003c/p\u003e\n\u003cp\u003e\u003cimg src=\"https://ws2.sinaimg.cn/large/006tNc79ly1g2b583io0ej30wq094aa5.jpg\" alt=\"\"\u003e\u003c/p\u003e\n\u003cp\u003e本篇的主要目的，是展示“语言翻译”的几个阶段工作，以及通过 Lex \u0026amp; Yacc 工具演示一门自定义语言的“翻译”。\u003c/p\u003e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2019",
+      "datePublished": "2019-04-25T00:00:00Z",
+      "dateModified" : "2019-04-25T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2019-04-25-lex-and-yacc/",
+      "keywords" : [ "Lex","Yacc", ]
+  }
+</script>
+<title>Lex &amp; Yacc 学习笔记 - Utop&#39;s Blog</title>
+  <meta property="og:title" content="Lex &amp; Yacc 学习笔记 - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="高级语言相较于机器语言、汇编语言，更加符合人的思考习惯。换句话说，更偏向于自然语言的风格而更偏离指令化的描述。用高级语言编写的一行代码，最终可能需要处理器执行若干条指令。如何让机器意识到高级语言代码对应的机器指令是哪些呢？当然就需要一个优秀的翻译。
+无论是编译型语言还是解释型语言，总逃脱不了这样一个流程：高级语言 ➜ 目标平台的指令。所谓编译型/解释型的区别，在于其转换流程是在线的(online)还是离线的(offline)。在线的方式无法意识到后续的代码，但胜在即时反应；离线的方式可以统揽全局，进行更多的优化，但代码文本必须完整。
+高级语言 ➜ 目标平台的指令，这样的流程如何实现。一般来说，划分为四个阶段：词法分析、语法分析、语义分析、目标代码生成。
+
+本篇的主要目的，是展示“语言翻译”的几个阶段工作，以及通过 Lex &amp; Yacc 工具演示一门自定义语言的“翻译”。" />
+  <meta name="description" content="高级语言相较于机器语言、汇编语言，更加符合人的思考习惯。换句话说，更偏向于自然语言的风格而更偏离指令化的描述。用高级语言编写的一行代码，最终可能需要处理器执行若干条指令。如何让机器意识到高级语言代码对应的机器指令是哪些呢？当然就需要一个优秀的翻译。
+无论是编译型语言还是解释型语言，总逃脱不了这样一个流程：高级语言 ➜ 目标平台的指令。所谓编译型/解释型的区别，在于其转换流程是在线的(online)还是离线的(offline)。在线的方式无法意识到后续的代码，但胜在即时反应；离线的方式可以统揽全局，进行更多的优化，但代码文本必须完整。
+高级语言 ➜ 目标平台的指令，这样的流程如何实现。一般来说，划分为四个阶段：词法分析、语法分析、语义分析、目标代码生成。
+
+本篇的主要目的，是展示“语言翻译”的几个阶段工作，以及通过 Lex &amp; Yacc 工具演示一门自定义语言的“翻译”。" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">Lex &amp; Yacc 学习笔记</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2019-04-25 00:00:00 UTC">
+                25 Apr 2019
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>高级语言相较于机器语言、汇编语言，更加符合人的思考习惯。换句话说，更偏向于自然语言的风格而更偏离指令化的描述。用高级语言编写的一行代码，最终可能需要处理器执行若干条指令。如何让机器意识到高级语言代码对应的机器指令是哪些呢？当然就需要一个优秀的翻译。</p>
+<p>无论是编译型语言还是解释型语言，总逃脱不了这样一个流程：高级语言 ➜ 目标平台的指令。所谓编译型/解释型的区别，在于其转换流程是在线的(online)还是离线的(offline)。在线的方式无法意识到后续的代码，但胜在即时反应；离线的方式可以统揽全局，进行更多的优化，但代码文本必须完整。</p>
+<p>高级语言 ➜ 目标平台的指令，这样的流程如何实现。一般来说，划分为四个阶段：词法分析、语法分析、语义分析、目标代码生成。</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1g2b583io0ej30wq094aa5.jpg" alt=""></p>
+<p>本篇的主要目的，是展示“语言翻译”的几个阶段工作，以及通过 Lex &amp; Yacc 工具演示一门自定义语言的“翻译”。</p>
+<h2 id="词法分析---lex">词法分析 &lt;- Lex</h2>
+<p>词法分析的核心就是识别源代码，并将它按照特定的规则划分成一系列的标记(Token)。</p>
+<p>比如 <code>int value = 12 + 23 * 323</code> 以 C 语言的划分方式可以分成 <code>int</code>, <code>value</code>, <code>=</code>, <code>12</code>, <code>+</code>, <code>23</code>, <code>*</code>, <code>323</code> 这些标记。</p>
+<p>如何将源代码划分为标记呢？再不济不过是逐一扫描每种标记罢了。但是，规则是变化的，其它实现字符匹配的代码都是一致的。有没有一套框架，用户提供规则表就能实现词法分析呢？当然有，Lex 以及 Flex 就是这方面的好手。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1g2boqbqx3oj31pi0q0q44.jpg" alt=""></p>
+<p><strong>Lex 语法规范</strong></p>
+<p>整个 <code>&lt;name&gt;.lex</code> 规则文件分为三部分，由 <code>%%</code> 进行分隔</p>
+<pre><code>definitions
+%%
+rules
+%%
+user code
+</code></pre><p><code>definitions</code>，定义区的所有声明可以类比 C 语言中的宏，只不过无需 <code>#define</code>。</p>
+<p>例如</p>
+<pre><code>DIGIT [0-9]+
+NZDIGIT [1-9]{DIGIT}
+%%
+{NZDIGIT}   {   printf(&quot;nzdigit = %s\n&quot;, yytext);   }
+{DIGIT}     {   printf(&quot;digit = %s\n&quot;, yytext); }
+%%
+</code></pre><p>等效于</p>
+<pre><code>%%
+[1-9][0-9]+ {   printf(&quot;nzdigit = %s\n&quot;, yytext);   }
+[0-9]+      {   printf(&quot;digit = %s\n&quot;, yytext); }
+%%
+</code></pre><p><code>rule</code>，规则区就是定义标记识别规则的核心块。lex 将按最长匹配原则确定最终匹配上的标记(Token)，如果都没匹配上，则按原样输出。如果多个匹配上，则按最先声明的规则为准。</p>
+<p><code>user code</code> 用户代码区的所有代码将原样拷贝到生成的 <code>&lt;name&gt;.c</code> 文件中。</p>
+<h2 id="语法分析---yacc">语法分析 &lt;- Yacc</h2>
+<p>仅仅是词法分析还做不了太多的事情。之后的工作都将交给语法分析器来完成。Yacc、Bison 就是两个优秀的语法分析器。当然，它们也有着一些局限（由于只是学习使用，未对其中原理展开深入了解）。Yacc / Bison 只能解决能被 BNF(Backus-Naur Form, 巴科斯范式) 描述的语法规则，而且只支持符合 LALR(1) 规则的。</p>
+<p>不过，这也已经足够了。在 <a href="https://www.rfc-editor.org/">RFC</a> 上看到大量的规范性文档都通过 BNF 描述其语法规则，通过 Yacc/Bison 其实也能解决对这些规则的解析。</p>
+<p><strong>Bison 语法规范</strong></p>
+<pre><code>%{
+C declarations
+%}
+
+Bison declarations
+
+%%
+Grammar rules
+%%
+Additional C code
+</code></pre><ul>
+<li>
+<p>C 声明区将定义后面需要用到的类型和变量。当然，在这个区域使用 C 语言宏也是被允许的。比如 <code>#define</code>, <code>#include</code> 等</p>
+</li>
+<li>
+<p>Bison 声明区被用来定义<code>终止符号(terminal symbols)</code>和<code>非终止符号(nonterminal symbols)</code>，当然也可以用来定义符号操作优先级和<code>语义值</code>的数据类型。</p>
+</li>
+<li>
+<p>语法规则区将<code>非终止符号</code>是如何被组成的（在这个区域声明 BNF）</p>
+</li>
+<li>
+<p>C 代码区与 lex 的规范一致，该区所有代码将被原样拷贝到生成的解析器源文件中。</p>
+</li>
+</ul>
+<h2 id="示例">示例</h2>
+<p>简单计算器语言的实现（改编自 <a href="https://dinosaur.compilertools.net/bison/bison_5.html#SEC29">mfcalc</a>）：</p>
+<ol>
+<li>支持简单四则运算</li>
+<li>支持乘方、平方根</li>
+<li>支持三角函数</li>
+<li>支持变量声明</li>
+</ol>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ ./calc
+3*10+2*<span style="color:#666">(</span>3-1<span style="color:#666">)</span>
+	<span style="color:#40a070">34</span>
+<span style="color:#bb60d5">alpha</span><span style="color:#666">=</span><span style="color:#bb60d5">beta</span><span style="color:#666">=</span>5*3+4
+	<span style="color:#40a070">19</span>
+sin<span style="color:#666">(</span>PI/2<span style="color:#666">)</span>
+	<span style="color:#40a070">1</span>
+cos<span style="color:#666">(</span>PI<span style="color:#666">)</span>
+	-1
+ln<span style="color:#666">(</span>alpha<span style="color:#666">)</span>
+	2.944438979
+<span style="color:#bb60d5">beta</span><span style="color:#666">=</span>ln<span style="color:#666">(</span>alpha<span style="color:#666">)</span>
+	2.944438979
+sqrt<span style="color:#666">(</span>25<span style="color:#666">)</span>
+	<span style="color:#40a070">5</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">%{
+#include &lt;math.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;ctype.h&gt;
+#include &#34;calc.h&#34;
+%}
+%union {
+double val;
+symrec *tptr;
+}
+
+%token &lt;val&gt; NUM
+%token &lt;tptr&gt; VAR FNCT
+%type &lt;val&gt; expr
+
+%right &#39;=&#39;
+%left &#39;+&#39; &#39;-&#39;
+%left &#39;*&#39; &#39;/&#39;
+%left NEG
+%right &#39;^&#39;
+
+%%
+input:
+        | input line
+;
+
+line: &#39;\n&#39;
+        | expr &#39;\n&#39; {   printf(&#34;\t%.10g\n&#34;, $1);    }
+;
+
+expr: NUM   { $$ = $1;  }
+        | VAR   { $$ = $1-&gt;value.var;   }
+        | VAR &#39;=&#39; expr  { $$ = $3;  $1-&gt;value.var = $3; }
+        | FNCT &#39;(&#39; expr &#39;)&#39; { $$ = (*($1-&gt;value.fnctptr))($3);  }
+        | expr &#39;+&#39; expr { $$ = $1 + $3; }
+        | expr &#39;-&#39; expr { $$ = $1 - $3; }
+        | expr &#39;*&#39; expr { $$ = $1 * $3; }
+        | expr &#39;/&#39; expr { $$ = $1 / $3; }
+        | expr &#39;^&#39; expr { $$ = pow($1, $3); }
+        | &#39;-&#39; expr %prec NEG    { $$ = -$2; }
+        | &#39;(&#39; expr &#39;)&#39;  { $$ = $2;  }
+%%
+
+int main(int argc, char **argv)
+{
+    init_table();
+    yyparse();
+    return 0;
+}
+
+int yyerror (char *s)
+{
+    printf(&#34;%s\n&#34;, s);
+}
+
+struct init_fnct
+{
+    char *fname;
+    double (*fnct)();
+};
+
+struct init_fnct arith_fncts[] = {
+    &#34;sin&#34;, sin,
+    &#34;cos&#34;, cos,
+    &#34;atan&#34;, atan,
+    &#34;ln&#34;, log,
+    &#34;exp&#34;, exp,
+    &#34;sqrt&#34;, sqrt,
+    &#34;floor&#34;, floor,
+    &#34;ceil&#34;, ceil,
+    &#34;abs&#34;, fabs,
+    0, 0
+};
+
+struct init_var {
+    char *vname;
+    double value;
+};
+
+struct init_var constant_var[] = {
+    &#34;PI&#34;, M_PI,
+    &#34;E&#34;, M_E,
+    0, 0
+};
+
+symrec *sym_table = (symrec *) 0;
+
+int init_table()
+{
+    int i;
+    symrec *ptr;
+    for (int i=0;constant_var[i].vname != 0;i++)
+    {
+        ptr = putsym(constant_var[i].vname, VAR);
+        ptr-&gt;value.var = constant_var[i].value; 
+    }
+    for (int i=0;arith_fncts[i].fname != 0;i++)
+    {
+        ptr = putsym(arith_fncts[i].fname, FNCT);
+        ptr-&gt;value.fnctptr = arith_fncts[i].fnct;
+    }
+}
+
+symrec * putsym(char *sym_name, int sym_type)
+{
+    symrec *ptr;
+    ptr = (symrec *) malloc(sizeof(symrec));
+    ptr-&gt;name = (char *) malloc(strlen(sym_name) + 1);
+    strcpy(ptr-&gt;name, sym_name);
+    ptr-&gt;type = sym_type;
+    ptr-&gt;value.var = 0;
+    ptr-&gt;next = (struct symrec *) sym_table;
+    sym_table = ptr;
+    return ptr;
+}
+
+symrec * getsym(char *sym_name)
+{
+    symrec *ptr;
+    for (ptr = sym_table; ptr != (symrec *) 0;ptr = (symrec *) ptr-&gt;next)
+        if (strcmp(ptr-&gt;name, sym_name) == 0)
+            return ptr;
+    return 0;
+}
+
+int yylex()
+{
+    int c;
+    while ((c = getchar()) == &#39; &#39; || c == &#39;\t&#39;);
+
+    if (c == EOF)
+        return 0;
+    
+    if (c == &#39;.&#39; || isdigit(c))
+    {
+        ungetc(c, stdin);
+        scanf(&#34;%lf&#34;, &amp;yylval.val);
+        return NUM;
+    }
+
+    if (isalpha(c))
+    {
+        symrec *s;
+        static char *symbuf = 0;
+        static int length = 0;
+        int i;
+        if (length == 0)
+            length = 40, symbuf = (char *) malloc(length + 1);
+        i = 0;
+        do {
+            if (i == length)
+            {
+                length *= 2;
+                symbuf = realloc(symbuf, length + 1);
+            }
+            symbuf[i++] = c;
+            c = getchar();
+        } while (c != EOF &amp;&amp; isalnum(c));
+
+        ungetc(c, stdin);
+        symbuf[i] = &#39;\0&#39;;
+        s = getsym(symbuf);
+        if (s == 0)
+            s = putsym(symbuf, VAR);
+        yylval.tptr = s;
+        return s-&gt;type;
+    }
+
+    return c;
+}
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* Data type for links in the chain of symbols.      */</span>
+<span style="color:#007020;font-weight:bold">struct</span> symrec
+{
+    <span style="color:#902000">char</span> <span style="color:#666">*</span>name;  <span style="color:#60a0b0;font-style:italic">/* name of symbol                     */</span>
+    <span style="color:#902000">int</span> type;    <span style="color:#60a0b0;font-style:italic">/* type of symbol: either VAR or FNCT */</span>
+    <span style="color:#007020;font-weight:bold">union</span> {
+        <span style="color:#902000">double</span> var;           <span style="color:#60a0b0;font-style:italic">/* value of a VAR          */</span>
+        <span style="color:#902000">double</span> (<span style="color:#666">*</span>fnctptr)();  <span style="color:#60a0b0;font-style:italic">/* value of a FNCT         */</span>
+    } value;
+    <span style="color:#007020;font-weight:bold">struct</span> symrec <span style="color:#666">*</span>next;    <span style="color:#60a0b0;font-style:italic">/* link field              */</span>
+};
+
+<span style="color:#007020;font-weight:bold">typedef</span> <span style="color:#007020;font-weight:bold">struct</span> symrec symrec;
+
+<span style="color:#60a0b0;font-style:italic">/* The symbol table: a chain of `struct symrec&#39;.     */</span>
+<span style="color:#007020;font-weight:bold">extern</span> symrec <span style="color:#666">*</span>sym_table;
+
+symrec <span style="color:#666">*</span><span style="color:#06287e">putsym</span> ();
+symrec <span style="color:#666">*</span><span style="color:#06287e">getsym</span> ();
+
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-make" data-lang="make"><span style="color:#06287e">calc</span><span style="color:#666">:</span> calc.y calc.h
+	bison -o calc.c calc.y 
+	gcc -o calc calc.c -w
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre></div>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+ 
+  </body>
+</html>

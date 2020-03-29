@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https://www.ffutop.com/"
+      },
+      "articleSection" : "posts",
+      "name" : "GroovyClassLoader 引发的 FullGC",
+      "headline" : "GroovyClassLoader 引发的 FullGC",
+      "description" : "\u003ch2 id=\"背景\"\u003e背景\u003c/h2\u003e\n\u003cp\u003e近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，\u003cstrong\u003estop the world\u003c/strong\u003e :\u0026lt; 从 \u003ccode\u003egc.log\u003c/code\u003e 中，看到的原因是触及了 \u003ccode\u003eMetaspace\u003c/code\u003e 的阈值，进而引发了 FGC。\u003c/p\u003e\n\u003cdiv class=\"highlight\"\u003e\u003cpre style=\"background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\"\u003e\u003ccode class=\"language-plain\" data-lang=\"plain\"\u003e2019-11-05T14:31:38.880+0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880+0800: 504600.716: [CMS2019-11-05T14:31:39.364+0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs]\n (concurrent mode failure): 266828K-\u0026gt;266865K(873856K), 1.3752377 secs] 267430K-\u0026gt;266865K(1267072K), [Metaspace: 204152K-\u0026gt;204152K(1267712K)], 1.3757441 secs] [Times: user=1.36 sys=0.00, real=1.38 secs]\n2019-11-05T14:31:40.256+0800: 504602.092: [Full GC (Last ditch collection) 2019-11-05T14:31:40.256+0800: 504602.092: [CMS: 266865K-\u0026gt;266841K(873856K), 0.8590901 secs] 266865K-\u0026gt;266841K(1267072K), [Metaspace: 204152K-\u0026gt;204152K(1267712K)], 0.8595047 secs] [Times: user=0.86 sys=0.00, real=0.86 secs]\n2019-11-05T14:31:41.117+0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117+0800: 504602.953: [CMS: 266841K-\u0026gt;266816K(873856K), 0.9109948 secs] 267218K-\u0026gt;266816K(1267072K), [Metaspace: 204153K-\u0026gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]\n2019-11-05T14:31:42.028+0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028+0800: 504603.865: [CMS: 266816K-\u0026gt;266769K(873856K), 1.0351283 secs] 266816K-\u0026gt;266769K(1267072K), [Metaspace: 204153K-\u0026gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]\n\u003c/code\u003e\u003c/pre\u003e\u003c/div\u003e\u003cp\u003eFGC 前后，\u003ccode\u003eMetaspace\u003c/code\u003e 占用的内存没有得到任何释放。\u003cem\u003e[Metaspace: 204153K-\u0026gt;204153K(1267712K)]\u003c/em\u003e 。这也就是反复 FGC 的原因。\u003c/p\u003e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2019",
+      "datePublished": "2019-11-06T00:00:00Z",
+      "dateModified" : "2019-11-06T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/",
+      "keywords" : [ "Groovy","Java","FullGC","GC","Metaspace", ]
+  }
+</script>
+<title>GroovyClassLoader 引发的 FullGC - Utop&#39;s Blog</title>
+  <meta property="og:title" content="GroovyClassLoader 引发的 FullGC - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="背景
+近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，stop the world :&lt; 从 gc.log 中，看到的原因是触及了 Metaspace 的阈值，进而引发了 FGC。
+2019-11-05T14:31:38.880&#43;0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880&#43;0800: 504600.716: [CMS2019-11-05T14:31:39.364&#43;0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs]
+ (concurrent mode failure): 266828K-&gt;266865K(873856K), 1.3752377 secs] 267430K-&gt;266865K(1267072K), [Metaspace: 204152K-&gt;204152K(1267712K)], 1.3757441 secs] [Times: user=1.36 sys=0.00, real=1.38 secs]
+2019-11-05T14:31:40.256&#43;0800: 504602.092: [Full GC (Last ditch collection) 2019-11-05T14:31:40.256&#43;0800: 504602.092: [CMS: 266865K-&gt;266841K(873856K), 0.8590901 secs] 266865K-&gt;266841K(1267072K), [Metaspace: 204152K-&gt;204152K(1267712K)], 0.8595047 secs] [Times: user=0.86 sys=0.00, real=0.86 secs]
+2019-11-05T14:31:41.117&#43;0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117&#43;0800: 504602.953: [CMS: 266841K-&gt;266816K(873856K), 0.9109948 secs] 267218K-&gt;266816K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]
+2019-11-05T14:31:42.028&#43;0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028&#43;0800: 504603.865: [CMS: 266816K-&gt;266769K(873856K), 1.0351283 secs] 266816K-&gt;266769K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]
+FGC 前后，Metaspace 占用的内存没有得到任何释放。[Metaspace: 204153K-&gt;204153K(1267712K)] 。这也就是反复 FGC 的原因。" />
+  <meta name="description" content="背景
+近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，stop the world :&lt; 从 gc.log 中，看到的原因是触及了 Metaspace 的阈值，进而引发了 FGC。
+2019-11-05T14:31:38.880&#43;0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880&#43;0800: 504600.716: [CMS2019-11-05T14:31:39.364&#43;0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs]
+ (concurrent mode failure): 266828K-&gt;266865K(873856K), 1.3752377 secs] 267430K-&gt;266865K(1267072K), [Metaspace: 204152K-&gt;204152K(1267712K)], 1.3757441 secs] [Times: user=1.36 sys=0.00, real=1.38 secs]
+2019-11-05T14:31:40.256&#43;0800: 504602.092: [Full GC (Last ditch collection) 2019-11-05T14:31:40.256&#43;0800: 504602.092: [CMS: 266865K-&gt;266841K(873856K), 0.8590901 secs] 266865K-&gt;266841K(1267072K), [Metaspace: 204152K-&gt;204152K(1267712K)], 0.8595047 secs] [Times: user=0.86 sys=0.00, real=0.86 secs]
+2019-11-05T14:31:41.117&#43;0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117&#43;0800: 504602.953: [CMS: 266841K-&gt;266816K(873856K), 0.9109948 secs] 267218K-&gt;266816K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]
+2019-11-05T14:31:42.028&#43;0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028&#43;0800: 504603.865: [CMS: 266816K-&gt;266769K(873856K), 1.0351283 secs] 266816K-&gt;266769K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]
+FGC 前后，Metaspace 占用的内存没有得到任何释放。[Metaspace: 204153K-&gt;204153K(1267712K)] 。这也就是反复 FGC 的原因。" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">GroovyClassLoader 引发的 FullGC</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2019-11-06 00:00:00 UTC">
+                06 Nov 2019
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <h2 id="背景">背景</h2>
+<p>近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，<strong>stop the world</strong> :&lt; 从 <code>gc.log</code> 中，看到的原因是触及了 <code>Metaspace</code> 的阈值，进而引发了 FGC。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">2019-11-05T14:31:38.880+0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880+0800: 504600.716: [CMS2019-11-05T14:31:39.364+0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs]
+ (concurrent mode failure): 266828K-&gt;266865K(873856K), 1.3752377 secs] 267430K-&gt;266865K(1267072K), [Metaspace: 204152K-&gt;204152K(1267712K)], 1.3757441 secs] [Times: user=1.36 sys=0.00, real=1.38 secs]
+2019-11-05T14:31:40.256+0800: 504602.092: [Full GC (Last ditch collection) 2019-11-05T14:31:40.256+0800: 504602.092: [CMS: 266865K-&gt;266841K(873856K), 0.8590901 secs] 266865K-&gt;266841K(1267072K), [Metaspace: 204152K-&gt;204152K(1267712K)], 0.8595047 secs] [Times: user=0.86 sys=0.00, real=0.86 secs]
+2019-11-05T14:31:41.117+0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117+0800: 504602.953: [CMS: 266841K-&gt;266816K(873856K), 0.9109948 secs] 267218K-&gt;266816K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]
+2019-11-05T14:31:42.028+0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028+0800: 504603.865: [CMS: 266816K-&gt;266769K(873856K), 1.0351283 secs] 266816K-&gt;266769K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]
+</code></pre></div><p>FGC 前后，<code>Metaspace</code> 占用的内存没有得到任何释放。<em>[Metaspace: 204153K-&gt;204153K(1267712K)]</em> 。这也就是反复 FGC 的原因。</p>
+<h2 id="问题排查">问题排查</h2>
+<p>由于这个问题是近期第二次出现，项目代码已经跑了好几年。从最近的 Git 提交记录入手，找到了很重要的变更记录——开始启动 4 年不曾真正动用的 <code>GroovyClassLoader</code> 。用以支持在 Java 项目中的动态脚本。没曾想这就是噩梦的开始&hellip;</p>
+<p>通过 MAT 分析 Java 堆，泄露分析报告给到的三个可能的问题都很简单地排除了。由于经验的缺失，排除了占用大块内存的类实例之后，就直接放弃了这条路（后来发现分析零散的类，就可以直接定位问题了:&lt;）</p>
+<p>抽取了一些核心的代码，大体上就是下面这三个类啦。</p>
+<p><strong>Loader.java</strong></p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">com.ffutop.loader</span><span style="color:#666">;</span>
+
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">com.ffutop.api.Action</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">groovy.lang.GroovyClassLoader</span><span style="color:#666">;</span>
+
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.util.HashMap</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.util.Map</span><span style="color:#666">;</span>
+
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2019/11/6
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Loader</span> <span style="color:#666">{</span>
+
+    <span style="color:#007020;font-weight:bold">private</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#007020;font-weight:bold">final</span> String printScript <span style="color:#666">=</span> <span style="color:#4070a0">&#34;import com.ffutop.api.Action; public class HelloAction implements Action { public void print() { System.out.println(\&#34;Hello, World.\&#34;); }}&#34;</span><span style="color:#666">;</span>
+
+    <span style="color:#007020;font-weight:bold">public</span> Map<span style="color:#666">&lt;</span>String<span style="color:#666">,</span> Action<span style="color:#666">&gt;</span> <span style="color:#06287e">loadScript</span><span style="color:#666">()</span> <span style="color:#007020;font-weight:bold">throws</span> IllegalAccessException<span style="color:#666">,</span> InstantiationException <span style="color:#666">{</span>
+        Map<span style="color:#666">&lt;</span>String<span style="color:#666">,</span> Action<span style="color:#666">&gt;</span> map <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> HashMap<span style="color:#666">&lt;</span>String<span style="color:#666">,</span> Action<span style="color:#666">&gt;();</span>
+        GroovyClassLoader groovyClassLoader <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> GroovyClassLoader<span style="color:#666">();</span>
+        Class clazz <span style="color:#666">=</span> groovyClassLoader<span style="color:#666">.</span><span style="color:#4070a0">parseClass</span><span style="color:#666">(</span>printScript<span style="color:#666">);</span>
+        Action action <span style="color:#666">=</span> <span style="color:#666">(</span>Action<span style="color:#666">)</span> clazz<span style="color:#666">.</span><span style="color:#4070a0">newInstance</span><span style="color:#666">();</span>
+        map<span style="color:#666">.</span><span style="color:#4070a0">put</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;HelloAction&#34;</span><span style="color:#666">,</span> action<span style="color:#666">);</span>
+        <span style="color:#007020;font-weight:bold">return</span> map<span style="color:#666">;</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+</code></pre></div><p><strong>Action.java</strong></p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">com.ffutop.api</span><span style="color:#666">;</span>
+
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2019/11/6
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">interface</span> <span style="color:#0e84b5;font-weight:bold">Action</span> <span style="color:#666">{</span>
+    <span style="color:#902000">void</span> <span style="color:#06287e">print</span><span style="color:#666">();</span>
+<span style="color:#666">}</span>
+</code></pre></div><p><strong>Main.java</strong></p>
+<p><em>在项目中，这个 Main 其实是一个定时任务，定期去数据库抓取的 Groovy 脚本，完成编译并做缓存（请先忽略这个做法的合理性）</em></p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">package</span> <span style="color:#0e84b5;font-weight:bold">com.ffutop</span><span style="color:#666">;</span>
+
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">com.ffutop.api.Action</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">com.ffutop.loader.Loader</span><span style="color:#666">;</span>
+
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.io.IOException</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.util.Map</span><span style="color:#666">;</span>
+
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @since 2019/11/6
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Main</span> <span style="color:#666">{</span>
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">main</span><span style="color:#666">(</span>String<span style="color:#666">[]</span> args<span style="color:#666">)</span> <span style="color:#007020;font-weight:bold">throws</span> InstantiationException<span style="color:#666">,</span> IllegalAccessException<span style="color:#666">,</span> IOException <span style="color:#666">{</span>
+        Loader loader <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> Loader<span style="color:#666">();</span>
+        <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#902000">int</span> i<span style="color:#666">=</span>0<span style="color:#666">;</span>i<span style="color:#666">&lt;</span>1000000<span style="color:#666">;</span>i<span style="color:#666">++)</span> <span style="color:#666">{</span>
+            Map<span style="color:#666">&lt;</span>String<span style="color:#666">,</span> Action<span style="color:#666">&gt;</span> map <span style="color:#666">=</span> loader<span style="color:#666">.</span><span style="color:#4070a0">loadScript</span><span style="color:#666">();</span>
+            Action action <span style="color:#666">=</span> map<span style="color:#666">.</span><span style="color:#4070a0">get</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;HelloAction&#34;</span><span style="color:#666">);</span>
+            action<span style="color:#666">.</span><span style="color:#4070a0">print</span><span style="color:#666">();</span>
+        <span style="color:#666">}</span>
+        System<span style="color:#666">.</span><span style="color:#4070a0">in</span><span style="color:#666">.</span><span style="color:#4070a0">read</span><span style="color:#666">();</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+</code></pre></div><p>很遗憾，问题的根源在于 Maven 引入的 groovy 库的版本，用 2.5.7 版本反复调试了一天都没有复现，最后才从版本入手成功复现 （Version &lt;= 2.4.7）。</p>
+<h2 id="追根溯源">追根溯源</h2>
+<p>回过头来再审视了一遍 dump 下来的 Java 堆。从 <em>duplicate_classes</em> 也进一步证实了上面猜测的原因。</p>
+<p><img src="https://img.ffutop.com/11FB209B-8635-4ACC-8812-A0BA6133376F.png" alt=""></p>
+<p>每次加载的脚本都被认为是各不相同的类，并在加载的同时被 Groovy 全局的 ClassInfo 做了缓存。</p>
+<p><img src="https://img.ffutop.com/FB6CA0BF-992E-4199-BF57-35C31D6D3C51.png" alt=""></p>
+<p>至于为何 &gt;= 2.4.8 版本的 groovy 没有问题，代码出现了重要变更。<code>klass</code> 由 <code>StrongReference</code> 变成了 <code>WeakReference</code> 。因此，也就能够保证在 GC 时回收这个引用。</p>
+<p><img src="https://img.ffutop.com/9F91AA9F-BAB4-47C3-B8CE-DC8AFEE5480A.png" alt=""></p>
+<p>进一步的，Metaspace 存储的类的元数据信息，从收集到的信息来说，需要满足下列三个条件，才会被回收（未经考证）：</p>
+<ol>
+<li>
+<p>该类所有的实例都已经被回收</p>
+</li>
+<li>
+<p>加载该类的 ClassLoader 已经被回收</p>
+</li>
+<li>
+<p>该类对应的 java.lang.Class 对象没有任何地方被引用</p>
+</li>
+</ol>
+<p>而移除 <code>ClassInfo.klass</code> 下的引用，按照分析也就是阻止元数据被回收的最后一道关卡。</p>
+<h2 id="处理方案">处理方案</h2>
+<p>最后的处理方案也相当简单，由于不想直接对代码逻辑动刀，升级 <code>groovy-all.jar</code> 的版本是最简单有效的。</p>
+<p>附上升级版本后的 Metaspace 使用情况。</p>
+<p><img src="https://img.ffutop.com/944505AE-582A-4D25-80CC-F008E5DD1ECF.png" alt="optimized"></p>
+<h2 id="参考">参考</h2>
+<p>[1]. <a href="https://lovestblog.cn/blog/2016/10/29/metaspace/">JVM源码分析之Metaspace解密</a>
+[2]. <a href="https://issues.apache.org/jira/browse/GROOVY-7683?focusedCommentId=15066871&amp;page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-15066871">GROOVY-7683</a></p>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2019-10-17-random/">随机数生成器拖慢 Tomcat 启动速度</a></li>
+    
+    <li><a href="/posts/2019-02-27-java-fatal-api/">【Java】API 参数误定义的后果</a></li>
+    
+    <li><a href="/posts/2018-08-15-java-instrumentation/">Java Instrumentation</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+ 
+  </body>
+</html>

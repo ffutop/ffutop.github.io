@@ -109,7 +109,7 @@
                 <p><a href="./2019-01-15-understand-Kernel-8/">前一篇</a>已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 <code>struct sock</code> 对象，将其逐级从网络接口层逐级提升到网络层、传输层&hellip;最终添加到接收队列 <code>sk_receive_queue</code> 中；用户进程通过 <code>read</code>、<code>recv</code>、<code>recvfrom</code> 等命令检查并获取 <code>sk_receive_queue</code> 中的数据。</p>
 <p>整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。</p>
 <p>那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（<code>select</code>, <code>poll</code>, <code>epoll</code>）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 <code>select</code> 和 <code>epoll</code> 两类系统调用的实现进行探究。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-03-05-%E7%90%86%E8%A7%A3-linux-kernel-9-io-multiplexing/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-03-05-understand-kernel-9/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -138,7 +138,7 @@
 
             <div class="post-content markdown-body">
                 PDF
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-01-15-%E7%90%86%E8%A7%A3-linux-kernel-8-%E7%BD%91%E7%BB%9C/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-01-15-understand-kernel-8/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -169,7 +169,7 @@
                 <p>相比较于块设备，字符设备无论从物理认知上，抑或是理论理解上，都存在着相当大的入门门槛。特别是在将字符设备与控制台、命令行终端混淆的时候，就更加难以进行分辨了。</p>
 <p>回到字符设备本身，字符设备与块设备最主要的区别就在于块设备可以随机读写，而字符设备只能够顺序读，顺序写。</p>
 <p>那么，常见的字符设备有什么？显示器、键盘、鼠标。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-12-28-%E7%90%86%E8%A7%A3-linux-kernel-7-%E5%AD%97%E7%AC%A6%E8%AE%BE%E5%A4%87/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-12-28-understand-kernel-7/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -247,7 +247,7 @@
     <span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
 }
 </code></pre></div>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-11-11-%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -280,7 +280,7 @@
 Applications Network      Users        bin          data         etc          net          sbin         usr
 Library      System       Volumes      cores        dev          home         private      tmp          var
 </code></pre></div><p>但是，究竟什么是文件系统? 为什么需要文件系统? 难道文件不是简单地存储到存储设备一块连续区域的吗?</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-10-14-%E7%90%86%E8%A7%A3-linux-kernel-5-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AE%8F%E8%A7%82%E6%8F%8F%E8%BF%B0/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-10-14-understand-kernel-5/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -311,7 +311,7 @@ Library      System       Volumes      cores        dev          home         pr
                 <p>前面几节已经描述过，对于单核 CPU 来说。CPU 就处于不断地执行指令的过程(或者通过 <code>hlt</code> 指令直接停止工作)。</p>
 <p>针对于每一个程序来说，这个程序执行流程是通过 CPU 中几组寄存器(通用寄存器、段寄存器、控制寄存器等) 和存储在内存中的代码和数据协作完成的。</p>
 <p>如果要达到单核多任务的目的，首先要做的就是完成对几组寄存器中当前值的保存(我称之为保存现场)。而对于内存来说，多个任务的代码、数据同时存在内存是完全合理且可行的。毕竟相较于有限的寄存器，内存实在是太大了(相对而言)。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-10-12-%E7%90%86%E8%A7%A3-linux-kernel-4-%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-10-12-understand-kernel-4/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -342,7 +342,7 @@ Library      System       Volumes      cores        dev          home         pr
                 <p>这次拖得有够久的，毕竟需要将知识串联起来并不是一件容易的事情。更何况很多内容可以说和常理(个人理解的常理)有了比较大的偏差。</p>
 <p>不过确实比较有意思。从引导程序到操作系统启动，这中间究竟经历了多少流程呢？</p>
 <p>由于前几篇已经有过介绍，这里不会再对引导程序及汇编语法做过多的介绍。而着重描述整个操作系统的启动流程。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-10-06-%E7%90%86%E8%A7%A3-linux-kernel-3-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-10-06-understand-kernel-3/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -373,7 +373,7 @@ Library      System       Volumes      cores        dev          home         pr
                 <h2 id="概述">概述</h2>
 <p>《只是为了好玩》书中，林纳斯描述过他最早的试验性程序就是执行两个不同的任务（一个不断输出A，另一个输出B），同时不断地让 CPU 在两个任务间做切换。结合《Linux 内核完全注释》提供的一个多任务切换示例程序，本篇将就多任务切换程序的执行流程进行详述，并提供当下汇编工具下的适配。</p>
 <p>关于运行环境的说明，欢迎参考 <a href="https://www.ffutop.com/2018-08-19-understand-Kernel-1/#Bochs-%E4%BB%BF%E7%9C%9F%E5%99%A8">Bochs 仿真器使用简介</a></p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-26-%E7%90%86%E8%A7%A3-linux-kernel-2-%E5%A4%9A%E4%BB%BB%E5%8A%A1%E5%88%87%E6%8D%A2/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-26-understand-kernel-2/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -406,7 +406,7 @@ Library      System       Volumes      cores        dev          home         pr
 <p>时间过去了大半年，我已经简单地建立了对 Linux Kernel 的结构化认知。趁着现阶段有一些闲暇，整理过去的文章，以期删繁就简，并对错误的描述进行修正。</p>
 <p>《理解 Linux Kernel》系列最早发布于<a href="https://www.ffutop.com/">我的博客 (Utop&rsquo;s Blog)</a>。由于这些文章的完成完全出于个人兴趣，对每个内核子系统的学习往往浅尝辄止，但我依旧认为这个系列对初学者来说是大有裨益的。</p>
 <p>本系列对内核的学习完全建立在 0.11、2.6.24 两个版本源码的基础上。从 0.11 版本入门，学习硬件启动阶段进行的主要操作、任务调度、文件系统等早期版本已初现雏形的子系统；从 2.6.24 版本进阶，学习网络、内存管理等子系统的实现。在此强烈推荐，直接阅读源码对理解的帮助最为深远。请随时备上两个版本的源码，以备深入理解。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-19-%E7%90%86%E8%A7%A3-linux-kernel-0-%E6%A6%82%E8%BF%B0/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-19-understand-kernel-0/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -437,7 +437,7 @@ Library      System       Volumes      cores        dev          home         pr
                 <h2 id="前言">前言</h2>
 <p>在<a href="https://www.ffutop.com/2018-08-19-understand-Kernel-0/">概述</a>，我已经介绍过《理解 Linux Kernel》系列文章的写作原因。我不能担保我所进行的所有试验性操作都是对的，但至少操作我的环境下成功地运行了，并帮助我触及我始终敬畏的<strong>硬件&amp;OS</strong></p>
 <p>《Linux 内核完全注释》第三章——内核编程语言和环境，描述了用 as86 汇编语言构建 boot 引导程序，在 Bochs 仿真器成功模拟开机运行，最终输出 <em>Loading System&hellip;</em>。这就是本篇所要尝试的核心实验。之所以在已经有资料的基础上再写一遍，是书中缺失了仿真器模拟的环节。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-19-%E7%90%86%E8%A7%A3-linux-kernel-1-bios/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-19-understand-kernel-1/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>

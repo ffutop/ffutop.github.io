@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https://www.ffutop.com/"
+      },
+      "articleSection" : "posts",
+      "name" : "理解 Linux Kernel (12) - Linux 容器化技术",
+      "headline" : "理解 Linux Kernel (12) - Linux 容器化技术",
+      "description" : "\u003cp\u003e由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。\u003c/p\u003e\n\u003cp\u003e\u003cimg src=\"https://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png\" alt=\"Containerd VS VM\"\u003e\u003c/p\u003e\n\u003cp\u003e\u003c!-- raw HTML omitted --\u003e\u003c!-- raw HTML omitted --\u003eCopied From docker.com\u003c!-- raw HTML omitted --\u003e\u003c!-- raw HTML omitted --\u003e\u003c/p\u003e\n\u003cp\u003e如何实现容器化，显然需要从操作系统层面进行支撑。这其中涉及到的核心技术，就包括命名空间(namespace)和控制组(Control Group, cgroup)，前者用来对资源进行隔离，后者用来对资源加以限制。\u003c/p\u003e\n\u003cblockquote\u003e\n\u003cp\u003e本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04\u003c/p\u003e\n\u003c/blockquote\u003e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2019",
+      "datePublished": "2019-06-18T00:00:00Z",
+      "dateModified" : "2019-06-18T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/",
+      "keywords" : [ "Linux","Kernel","LXC", ]
+  }
+</script>
+<title>理解 Linux Kernel (12) - Linux 容器化技术 - Utop&#39;s Blog</title>
+  <meta property="og:title" content="理解 Linux Kernel (12) - Linux 容器化技术 - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。
+
+Copied From docker.com
+如何实现容器化，显然需要从操作系统层面进行支撑。这其中涉及到的核心技术，就包括命名空间(namespace)和控制组(Control Group, cgroup)，前者用来对资源进行隔离，后者用来对资源加以限制。
+
+本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04
+" />
+  <meta name="description" content="由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。
+
+Copied From docker.com
+如何实现容器化，显然需要从操作系统层面进行支撑。这其中涉及到的核心技术，就包括命名空间(namespace)和控制组(Control Group, cgroup)，前者用来对资源进行隔离，后者用来对资源加以限制。
+
+本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04
+" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">理解 Linux Kernel (12) - Linux 容器化技术</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2019-06-18 00:00:00 UTC">
+                18 Jun 2019
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。</p>
+<p><img src="https://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png" alt="Containerd VS VM"></p>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted -->Copied From docker.com<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>如何实现容器化，显然需要从操作系统层面进行支撑。这其中涉及到的核心技术，就包括命名空间(namespace)和控制组(Control Group, cgroup)，前者用来对资源进行隔离，后者用来对资源加以限制。</p>
+<blockquote>
+<p>本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04</p>
+</blockquote>
+<h2 id="namespace">Namespace</h2>
+<p>命名空间用来对资源进行隔离，每类资源都有一种命名空间，比如 <code>ipc_namespace</code> 用来对 IPC 资源进行隔离，<code>pid_namespace</code> 用来对可见的进程id进行隔离。</p>
+<p>首先确定一下命名空间与任务之间的关系。用户与操作系统的任何交互，都是基于任务开始的，内核也是基于任务进行的调度。（关于“任务”与“进程、线程”之间的关系，详见<a href="https://www.ffutop.com/2019-04-10-understand-Kernel-10/">Context of Execution</a>。下文不区分&quot;进程、线程&rdquo;，统一使用内核概念——任务）</p>
+<p>每个任务都维护一个该任务所属的命名空间集合（其中包括该任务所属的 UTS 命名空间，IPC 命名空间等）。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">struct</span> nsproxy {
+    atomic_t count;
+    <span style="color:#007020;font-weight:bold">struct</span> uts_namespace <span style="color:#666">*</span>uts_ns;
+    <span style="color:#007020;font-weight:bold">struct</span> ipc_namespace <span style="color:#666">*</span>ipc_ns;
+    <span style="color:#007020;font-weight:bold">struct</span> mnt_namespace <span style="color:#666">*</span>mnt_ns;
+    <span style="color:#007020;font-weight:bold">struct</span> pid_namespace <span style="color:#666">*</span>pid_ns;
+    <span style="color:#007020;font-weight:bold">struct</span> net 	     <span style="color:#666">*</span>net_ns;
+};
+
+<span style="color:#007020;font-weight:bold">struct</span> task_struct {
+    <span style="color:#60a0b0;font-style:italic">// ... something omitted 
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">struct</span> nsproxy nsproxy;
+}
+</code></pre></div><p>如果想要查看现有的一些任务所属的命名空间，可以使用命令 <code>ls -l /proc/[PID]/ns</code> 。如果两个任务的某类命名空间 inode 编号一致，则说明两任务处于同一命名空间之下。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ls -l /proc/20/ns
+total <span style="color:#40a070">0</span>
+lrwxrwxrwx <span style="color:#40a070">1</span> root root <span style="color:#40a070">0</span> Jun <span style="color:#40a070">15</span> 08:38 ipc -&gt; <span style="color:#4070a0">&#39;ipc:[4026531839]&#39;</span>
+lrwxrwxrwx <span style="color:#40a070">1</span> root root <span style="color:#40a070">0</span> Jun <span style="color:#40a070">15</span> 08:38 mnt -&gt; <span style="color:#4070a0">&#39;mnt:[4026531840]&#39;</span>
+lrwxrwxrwx <span style="color:#40a070">1</span> root root <span style="color:#40a070">0</span> Jun <span style="color:#40a070">15</span> 08:38 net -&gt; <span style="color:#4070a0">&#39;net:[4026531993]&#39;</span>
+lrwxrwxrwx <span style="color:#40a070">1</span> root root <span style="color:#40a070">0</span> Jun <span style="color:#40a070">15</span> 08:38 pid -&gt; <span style="color:#4070a0">&#39;pid:[4026531836]&#39;</span>
+lrwxrwxrwx <span style="color:#40a070">1</span> root root <span style="color:#40a070">0</span> Jun <span style="color:#40a070">15</span> 08:38 uts -&gt; <span style="color:#4070a0">&#39;uts:[4026531838]&#39;</span>
+</code></pre></div><h3 id="建立新的命名空间">建立新的命名空间</h3>
+<p>最常见的创建新命名空间的方式是：在 clone 新任务的同时，携带诸如 <code>CLONE_NEWNS</code>, <code>CLONE_NEWPID</code> 之类的标志，系统调用 <code>clone</code> 将根据这些标志将新的任务 <code>task</code> 与新的命名空间进行关联。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">static</span> <span style="color:#007020;font-weight:bold">struct</span> task_struct <span style="color:#666">*</span><span style="color:#06287e">copy_process</span>(...)
+{
+    <span style="color:#60a0b0;font-style:italic">// ... something omitted
+</span><span style="color:#60a0b0;font-style:italic"></span>    retval <span style="color:#666">=</span> copy_namespaces(clone_flags, p)
+    <span style="color:#60a0b0;font-style:italic">// ... something omitted 
+</span><span style="color:#60a0b0;font-style:italic"></span>}
+
+<span style="color:#902000">int</span> <span style="color:#06287e">copy_namespaces</span>(<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> flags, <span style="color:#007020;font-weight:bold">struct</span> task_struct <span style="color:#666">*</span>tsk)
+{
+    <span style="color:#007020;font-weight:bold">struct</span> nsproxy <span style="color:#666">*</span>old_ns <span style="color:#666">=</span> tsk<span style="color:#666">-&gt;</span>nsproxy;
+    <span style="color:#007020;font-weight:bold">struct</span> user_namespace <span style="color:#666">*</span>user_ns <span style="color:#666">=</span> task_cred_xxx(tsk, user_ns);
+    <span style="color:#007020;font-weight:bold">struct</span> nsproxy <span style="color:#666">*</span>new_ns;
+    <span style="color:#902000">int</span> err <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+
+    <span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>old_ns)
+        <span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
+
+    <span style="color:#60a0b0;font-style:italic">// 为 old_ns 添加一个引用计数
+</span><span style="color:#60a0b0;font-style:italic"></span>    get_nsproxy(old_ns);
+
+    <span style="color:#60a0b0;font-style:italic">// 如果不存在创建新的 CLONE_NEWxx 标志，意味着不需要创建新的命名空间
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>(flags <span style="color:#666">&amp;</span> (CLONE_NEWNS <span style="color:#666">|</span> CLONE_NEWUTS <span style="color:#666">|</span> CLONE_NEWIPC <span style="color:#666">|</span>
+                CLONE_NEWPID <span style="color:#666">|</span> CLONE_NEWNET)))
+        <span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
+
+    <span style="color:#60a0b0;font-style:italic">// 只有 CAP_SYS_ADMIN 允许创建新的命名空间
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>ns_capable(user_ns, CAP_SYS_ADMIN)) {
+        err <span style="color:#666">=</span> <span style="color:#666">-</span>EPERM;
+        <span style="color:#007020;font-weight:bold">goto</span> out;
+    }
+
+    <span style="color:#60a0b0;font-style:italic">// CLONE_NEWIPC 与 CLONE_SYSVSEM 是互斥的标志位，需要保证不同时出现
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">if</span> ((flags <span style="color:#666">&amp;</span> CLONE_NEWIPC) <span style="color:#666">&amp;&amp;</span> (flags <span style="color:#666">&amp;</span> CLONE_SYSVSEM)) {
+        err <span style="color:#666">=</span> <span style="color:#666">-</span>EINVAL;
+        <span style="color:#007020;font-weight:bold">goto</span> out;
+    }
+
+    <span style="color:#60a0b0;font-style:italic">// 创建新的命名空间
+</span><span style="color:#60a0b0;font-style:italic"></span>    new_ns <span style="color:#666">=</span> create_new_namespaces(flags, tsk, user_ns, tsk<span style="color:#666">-&gt;</span>fs);
+    <span style="color:#007020;font-weight:bold">if</span> (IS_ERR(new_ns)) {
+        err <span style="color:#666">=</span> PTR_ERR(new_ns);
+        <span style="color:#007020;font-weight:bold">goto</span> out;
+    }
+
+    <span style="color:#60a0b0;font-style:italic">// 新的命名空间绑定到新的任务上
+</span><span style="color:#60a0b0;font-style:italic"></span>    tsk<span style="color:#666">-&gt;</span>nsproxy <span style="color:#666">=</span> new_ns;
+
+<span style="color:#002070;font-weight:bold">out</span>:
+    put_nsproxy(old_ns);
+    <span style="color:#007020;font-weight:bold">return</span> err;
+}
+
+<span style="color:#007020;font-weight:bold">static</span> <span style="color:#007020;font-weight:bold">struct</span> nsproxy <span style="color:#666">*</span><span style="color:#06287e">create_new_namespaces</span>(<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> flags,
+    <span style="color:#007020;font-weight:bold">struct</span> task_struct <span style="color:#666">*</span>tsk, <span style="color:#007020;font-weight:bold">struct</span> user_namespace <span style="color:#666">*</span>user_ns,
+    <span style="color:#007020;font-weight:bold">struct</span> fs_struct <span style="color:#666">*</span>new_fs)
+{
+    <span style="color:#007020;font-weight:bold">struct</span> nsproxy <span style="color:#666">*</span>new_nsp;
+    <span style="color:#902000">int</span> err;
+
+    <span style="color:#60a0b0;font-style:italic">// 为新的 nsproxy 数据结构申请内存
+</span><span style="color:#60a0b0;font-style:italic"></span>    new_nsp <span style="color:#666">=</span> create_nsproxy();
+    <span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>new_nsp)
+        <span style="color:#007020;font-weight:bold">return</span> ERR_PTR(<span style="color:#666">-</span>ENOMEM);
+
+    <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">     * 对每类命名空间，逐一执行拷贝的动作。
+</span><span style="color:#60a0b0;font-style:italic">     * 当然，如果 flags 未配置 CLONE_NEWxx，该命名空间直接引用老的命名空间
+</span><span style="color:#60a0b0;font-style:italic">     */</span>
+    new_nsp<span style="color:#666">-&gt;</span>mnt_ns <span style="color:#666">=</span> copy_mnt_ns(flags, tsk<span style="color:#666">-&gt;</span>nsproxy<span style="color:#666">-&gt;</span>mnt_ns, user_ns, new_fs);
+    <span style="color:#60a0b0;font-style:italic">// something omitted ...
+</span><span style="color:#60a0b0;font-style:italic"></span>
+    new_nsp<span style="color:#666">-&gt;</span>uts_ns <span style="color:#666">=</span> copy_utsname(flags, user_ns, tsk<span style="color:#666">-&gt;</span>nsproxy<span style="color:#666">-&gt;</span>uts_ns);
+    <span style="color:#60a0b0;font-style:italic">// something omitted ...
+</span><span style="color:#60a0b0;font-style:italic"></span>
+    new_nsp<span style="color:#666">-&gt;</span>ipc_ns <span style="color:#666">=</span> copy_ipcs(flags, user_ns, tsk<span style="color:#666">-&gt;</span>nsproxy<span style="color:#666">-&gt;</span>ipc_ns);
+    <span style="color:#60a0b0;font-style:italic">// something omitted ...
+</span><span style="color:#60a0b0;font-style:italic"></span>
+    new_nsp<span style="color:#666">-&gt;</span>pid_ns <span style="color:#666">=</span> copy_pid_ns(flags, user_ns, tsk<span style="color:#666">-&gt;</span>nsproxy<span style="color:#666">-&gt;</span>pid_ns);
+    <span style="color:#60a0b0;font-style:italic">// something omitted ...
+</span><span style="color:#60a0b0;font-style:italic"></span>
+    new_nsp<span style="color:#666">-&gt;</span>net_ns <span style="color:#666">=</span> copy_net_ns(flags, user_ns, tsk<span style="color:#666">-&gt;</span>nsproxy<span style="color:#666">-&gt;</span>net_ns);
+    <span style="color:#60a0b0;font-style:italic">// something omitted ...
+</span><span style="color:#60a0b0;font-style:italic"></span>
+    <span style="color:#007020;font-weight:bold">return</span> new_nsp;
+}
+</code></pre></div><p><code>mnt_namespace</code> 在对应的标志位为 <code>CLONE_NEWNS</code>，这是个历史遗留问题，早期认为只有文件系统需要命名空间，所以直接把 <code>NS</code> 赋予了 <code>mnt_namespace</code> 作为标志。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">struct</span> mnt_namespace <span style="color:#666">*</span><span style="color:#06287e">copy_mnt_ns</span>(<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> flags, <span style="color:#007020;font-weight:bold">struct</span> mnt_namespace <span style="color:#666">*</span>ns,
+        <span style="color:#007020;font-weight:bold">struct</span> user_namespace <span style="color:#666">*</span>user_ns, <span style="color:#007020;font-weight:bold">struct</span> fs_struct <span style="color:#666">*</span>new_fs)
+{
+    <span style="color:#007020;font-weight:bold">struct</span> mnt_namespace <span style="color:#666">*</span>new_ns;
+
+    BUG_ON(<span style="color:#666">!</span>ns);
+    <span style="color:#60a0b0;font-style:italic">// 为 ns 添加一个引用计数
+</span><span style="color:#60a0b0;font-style:italic"></span>    get_mnt_ns(ns);
+
+    <span style="color:#60a0b0;font-style:italic">// 如果 CLONE_NEWNS 没有置位，直接返回老的 mnt 命名空间
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>(flags <span style="color:#666">&amp;</span> CLONE_NEWNS))
+        <span style="color:#007020;font-weight:bold">return</span> ns;
+
+    <span style="color:#60a0b0;font-style:italic">// 按原来的 ns 拷贝一份新的 mnt_namespace
+</span><span style="color:#60a0b0;font-style:italic"></span>    new_ns <span style="color:#666">=</span> dup_mnt_ns(ns, user_ns, new_fs);
+
+    <span style="color:#60a0b0;font-style:italic">// 释放对 ns 的引用
+</span><span style="color:#60a0b0;font-style:italic"></span>    put_mnt_ns(ns);
+    <span style="color:#007020;font-weight:bold">return</span> new_ns;
+}
+</code></pre></div><p><img src="https://img.ffutop.com/B5647B7D-4928-448F-88CA-D07A4039107A.png" alt=""></p>
+<p>其它命名空间的操作类似，都是依据相关的 clone flag 决定是拷贝一份新的命名空间，或者是继续使用老的命名空间。而通过拷贝新的命名空间，相关的资源维护也就变得独立于原有的命名空间，从而达到资源隔离的目的。</p>
+<p>完成命名空间的拷贝之后，之后的操作显得相当平凡，不管是用原来的命名空间，还是新的命名空间，总之都已经绑定到 <code>struct task_struct-&gt;nsproxy</code> 上，只需要普通的使用就可以了。</p>
+<h3 id="使用命名空间">使用命名空间</h3>
+<p>以 PID 命名空间为例，现在需要为新的任务分配一个新的任务id，调用链开始于 <code>clone -&gt; do_fork -&gt; copy_process -&gt; alloc_pid</code>。</p>
+<p><img src="https://img.ffutop.com/748138AC-65B2-489B-86F2-94FFD7A64592.png" alt=""></p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">static</span> <span style="color:#007020;font-weight:bold">struct</span> task_struct <span style="color:#666">*</span><span style="color:#06287e">copy_process</span>(...)
+{
+    <span style="color:#60a0b0;font-style:italic">// ... something omitted
+</span><span style="color:#60a0b0;font-style:italic"></span>
+    retval <span style="color:#666">=</span> copy_namespaces(clone_flags, p);
+
+    <span style="color:#60a0b0;font-style:italic">// ... something omitted 
+</span><span style="color:#60a0b0;font-style:italic"></span>
+    pid <span style="color:#666">=</span> alloc_pid(p<span style="color:#666">-&gt;</span>nsproxy<span style="color:#666">-&gt;</span>pid_ns);
+
+    <span style="color:#60a0b0;font-style:italic">// ... something omitted 
+</span><span style="color:#60a0b0;font-style:italic"></span>}
+
+<span style="color:#007020;font-weight:bold">struct</span> pid <span style="color:#666">*</span><span style="color:#06287e">alloc_pid</span>(<span style="color:#007020;font-weight:bold">struct</span> pid_namespace <span style="color:#666">*</span>ns)
+{
+    <span style="color:#007020;font-weight:bold">struct</span> pid <span style="color:#666">*</span>pid;
+    <span style="color:#007020;font-weight:bold">enum</span> pid_type type;
+    <span style="color:#902000">int</span> i, nr;
+    <span style="color:#007020;font-weight:bold">struct</span> pid_namespace <span style="color:#666">*</span>tmp;
+    <span style="color:#007020;font-weight:bold">struct</span> upid <span style="color:#666">*</span>upid;
+
+    pid <span style="color:#666">=</span> kmem_cache_alloc(ns<span style="color:#666">-&gt;</span>pid_cachep, GFP_KERNEL);
+    <span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>pid)
+        <span style="color:#007020;font-weight:bold">goto</span> out;
+
+    tmp <span style="color:#666">=</span> ns;
+    pid<span style="color:#666">-&gt;</span>level <span style="color:#666">=</span> ns<span style="color:#666">-&gt;</span>level;
+    <span style="color:#60a0b0;font-style:italic">// PID 需要在每层PID命名空间获得一个唯一的 number (known as upid.nr)
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">for</span> (i <span style="color:#666">=</span> ns<span style="color:#666">-&gt;</span>level; i <span style="color:#666">&gt;=</span> <span style="color:#40a070">0</span>; i<span style="color:#666">--</span>) {
+      	<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">         * 从 pidmap 中取出一个可用的 id
+</span><span style="color:#60a0b0;font-style:italic">         * 这里的 pidmap 是个位图，主要是为了提高效率而使用。
+</span><span style="color:#60a0b0;font-style:italic">         */</span>
+        nr <span style="color:#666">=</span> alloc_pidmap(tmp);
+        <span style="color:#007020;font-weight:bold">if</span> (nr <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span>)
+            <span style="color:#007020;font-weight:bold">goto</span> out_free;
+
+        pid<span style="color:#666">-&gt;</span>numbers[i].nr <span style="color:#666">=</span> nr;
+        pid<span style="color:#666">-&gt;</span>numbers[i].ns <span style="color:#666">=</span> tmp;
+        tmp <span style="color:#666">=</span> tmp<span style="color:#666">-&gt;</span>parent;
+    }
+
+    <span style="color:#007020;font-weight:bold">if</span> (unlikely(is_child_reaper(pid))) {
+        <span style="color:#007020;font-weight:bold">if</span> (pid_ns_prepare_proc(ns))
+            <span style="color:#007020;font-weight:bold">goto</span> out_free;
+    }
+
+    get_pid_ns(ns);
+    atomic_set(<span style="color:#666">&amp;</span>pid<span style="color:#666">-&gt;</span>count, <span style="color:#40a070">1</span>);
+    <span style="color:#007020;font-weight:bold">for</span> (type <span style="color:#666">=</span> <span style="color:#40a070">0</span>; type <span style="color:#666">&lt;</span> PIDTYPE_MAX; <span style="color:#666">++</span>type)
+        INIT_HLIST_HEAD(<span style="color:#666">&amp;</span>pid<span style="color:#666">-&gt;</span>tasks[type]);
+
+    upid <span style="color:#666">=</span> pid<span style="color:#666">-&gt;</span>numbers <span style="color:#666">+</span> ns<span style="color:#666">-&gt;</span>level;
+    spin_lock_irq(<span style="color:#666">&amp;</span>pidmap_lock);
+    <span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>(ns<span style="color:#666">-&gt;</span>nr_hashed <span style="color:#666">&amp;</span> PIDNS_HASH_ADDING))
+        <span style="color:#007020;font-weight:bold">goto</span> out_unlock;
+    <span style="color:#007020;font-weight:bold">for</span> ( ; upid <span style="color:#666">&gt;=</span> pid<span style="color:#666">-&gt;</span>numbers; <span style="color:#666">--</span>upid) {
+        hlist_add_head_rcu(<span style="color:#666">&amp;</span>upid<span style="color:#666">-&gt;</span>pid_chain,
+            	<span style="color:#666">&amp;</span>pid_hash[pid_hashfn(upid<span style="color:#666">-&gt;</span>nr, upid<span style="color:#666">-&gt;</span>ns)]);
+        upid<span style="color:#666">-&gt;</span>ns<span style="color:#666">-&gt;</span>nr_hashed<span style="color:#666">++</span>;
+    }
+    spin_unlock_irq(<span style="color:#666">&amp;</span>pidmap_lock);
+
+<span style="color:#002070;font-weight:bold">out</span>:
+    <span style="color:#007020;font-weight:bold">return</span> pid;
+
+<span style="color:#002070;font-weight:bold">out_unlock</span>:
+    spin_unlock_irq(<span style="color:#666">&amp;</span>pidmap_lock);
+<span style="color:#002070;font-weight:bold">out_free</span>:
+    <span style="color:#007020;font-weight:bold">while</span> (<span style="color:#666">++</span>i <span style="color:#666">&lt;=</span> ns<span style="color:#666">-&gt;</span>level)
+        free_pidmap(pid<span style="color:#666">-&gt;</span>numbers <span style="color:#666">+</span> i);
+
+    kmem_cache_free(ns<span style="color:#666">-&gt;</span>pid_cachep, pid);
+    pid <span style="color:#666">=</span> <span style="color:#007020">NULL</span>;
+    <span style="color:#007020;font-weight:bold">goto</span> out;
+}
+</code></pre></div><p>需要注意的是，并不是所有的命名空间都建立起了父子节点的层级关联。此处只是以 PID 作为一个简单的示例。</p>
+<h3 id="示例">示例</h3>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* fns.c */</span>
+<span style="color:#007020">#define _GNU_SOURCE
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/wait.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sched.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;string.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;stdio.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;stdlib.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;unistd.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020"></span>
+<span style="color:#007020">#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+</span><span style="color:#007020"></span>
+<span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">int</span> <span style="color:#06287e">childFunc</span>(<span style="color:#902000">void</span> <span style="color:#666">*</span>arg)
+{
+    execv(<span style="color:#4070a0">&#34;/bin/bash&#34;</span>, <span style="color:#007020">NULL</span>);
+    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
+}
+
+<span style="color:#007020">#define STACK_SIZE (1024 * 1024)
+</span><span style="color:#007020"></span>
+<span style="color:#902000">int</span> <span style="color:#06287e">main</span>(<span style="color:#902000">int</span> argc, <span style="color:#902000">char</span> <span style="color:#666">**</span>argv)
+{
+    <span style="color:#902000">char</span> <span style="color:#666">*</span>stack;
+    <span style="color:#902000">char</span> <span style="color:#666">*</span>stackTop;
+    pid_t pid;
+
+    <span style="color:#60a0b0;font-style:italic">/* 为子任务申请栈内存 */</span>
+    stack <span style="color:#666">=</span> malloc(STACK_SIZE);
+    <span style="color:#007020;font-weight:bold">if</span> (stack <span style="color:#666">==</span> <span style="color:#007020">NULL</span>)
+        errExit(<span style="color:#4070a0">&#34;malloc&#34;</span>);
+    stackTop <span style="color:#666">=</span> stack <span style="color:#666">+</span> STACK_SIZE;
+
+    pid <span style="color:#666">=</span> clone(childFunc, stackTop, CLONE_NEWUTS <span style="color:#666">|</span> CLONE_NEWNS <span style="color:#666">|</span> CLONE_NEWPID <span style="color:#666">|</span> CLONE_NEWIPC <span style="color:#666">|</span> SIGCHLD, <span style="color:#007020">NULL</span>);
+    <span style="color:#007020;font-weight:bold">if</span> (pid <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        errExit(<span style="color:#4070a0">&#34;clone&#34;</span>);
+    printf(<span style="color:#4070a0">&#34;clone() returned %ld</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, (<span style="color:#902000">long</span>) pid);
+
+    sleep(<span style="color:#40a070">1</span>);
+
+    <span style="color:#007020;font-weight:bold">if</span> (waitpid(pid, <span style="color:#007020">NULL</span>, <span style="color:#40a070">0</span>) <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        errExit(<span style="color:#4070a0">&#34;waitpid&#34;</span>);
+    printf(<span style="color:#4070a0">&#34;child has terminated</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>);
+    exit(EXIT_SUCCESS);
+}
+</code></pre></div><p>编译命令 <code>gcc -o fns fns.c -w</code></p>
+<p>执行指令 <code>./fns</code> 将进入一个新的 bash，此时的 UTS、VFS、PID、IPC 命名空间都是全新的。所有基于这些命名空间而存在的概念将不会对 root 命名空间产生影响。</p>
+<h2 id="control-group">Control Group</h2>
+<p>对命名空间有了初步的概念之后，再看看 Control Group —— 用来限制任务能够使用的资源上限，当然，还可以调整进程优先级、进行资源统计、实现进程控制等。</p>
+<p>cgroup 主要存在四大概念：</p>
+<ol>
+<li>
+<p><strong>task</strong>，任务调度的基本单位，用户认知的进程/线程(<a href="https://www.ffutop.com/2019-04-10-understand-Kernel-10/">详见 执行的上下文</a>)</p>
+</li>
+<li>
+<p><strong>subsystem</strong>，子系统，Control Group 可以进行资源控制，每类可进行控制的资源作为一种子系统而存在。</p>
+</li>
+<li>
+<p><strong>cgroup</strong>，控制组，在划分后在各个子系统下，分别都有控制组来对现有的任务(task)进行划分，每个任务在单个子系统中只能从属于一个控制组，每个任务可以从属于多个不同的子系统。</p>
+</li>
+<li>
+<p><strong>hierarchy</strong>，层级树，每个子系统下，会有多个不同的控制组，它们共同维护起来树形的结构。在没有特别配置的情况下，每个子控制组将继承父控制组的限制。</p>
+</li>
+</ol>
+<p><img src="https://img.ffutop.com/3527AE73-94CD-4F49-8ECD-2EB7163A545D.png" alt=""></p>
+<h3 id="cgroup-组织结构">Cgroup 组织结构</h3>
+<p><img src="https://img.ffutop.com/6344FE65-3A6D-42DF-9A42-046D38EA3F69.png" alt=""></p>
+<p>一个任务从属于一个控制组集合中(例如属于<code>cpu</code>子系统控制组-1，<code>mem</code>子系统控制组-3…)。将不同子系统控制组整合起来的数据结构就是 <code>css_set</code>(cgroup subsys state set)。一个控制组集合可以维护多个任务(通过列表的形式链接)。</p>
+<p><img src="https://img.ffutop.com/7C9A5B57-8A2A-47DF-B7CA-EA9BEAAFCF86.png" alt=""></p>
+<p><code>css_set</code> 控制组集合中维护了一个 css 列表，每个 <code>cgroup_subsys_state</code> 执行一个 <code>cgroup</code> 结构（包含某一子系统控制组的所有信息）。通过这样的方式，任务就和一系列的子系统控制组联系起来了。</p>
+<p><img src="https://img.ffutop.com/B454475C-D06A-4B48-B273-66AB96091CE9.png" alt=""></p>
+<p>反向的，通过 cgroup 结构查找所有处于其控制下的任务。这里的 <code>cgroup</code> 与 <code>css_set</code> 是一个多对多的关系。一个 <code>css_set</code> 整合了多个 <code>cgroup</code> ，一个 <code>cgroup</code> 可以被多个 <code>css_set</code> 利用。<code>cg_cgroup_link</code> 就是一个处于中间的关联结构。（多对多的关系可以参考数据库建表，两个实体表 A, B 间需要通过第三张表 C 来描述 (A-id, B-id) 的关系）。</p>
+<p><img src="https://img.ffutop.com/F97AEA47-8FBF-4D0D-A16F-D421816CF889.png" alt=""></p>
+<p>最后来看看 <code>cgroup_subsys_state</code> 结构，各个子系统结构的第一个参数都是 <code>cgroup_subsys_state_css</code>，通过内核的 <code>container_of</code> 函数，<code>subsys[]</code> 的每个元素都可以分别被认知为 <code>cpuset</code> , <code>mem_cgroup</code> 等。</p>
+<p>这里还能看到一个现象，<code>css_set</code> 和 <code>cgroup</code> 都维护了 <code>cgroup_subsys_state</code> 的数组，这是为了加速访问而实现的。<code>cgroup</code> 作为调整参数的控制结构，通过实现 VFS 的接口对用户暴露读写等操作。而作为 Cgroup 的被控制对象的 <code>task</code> 也需要频繁地对其所受的资源限制进行检查。由于 <code>task</code> 没有与 <code>cgroup</code> 作直接关联，是一种多对多的关系，因此额外维护了一份 <code>subsys[]</code> ，来加速频繁的读操作。</p>
+<h3 id="cgroup-实现资源控制的方式">Cgroup 实现资源控制的方式</h3>
+<p>Cgroup 归根结底是需要实现对任务的资源控制。</p>
+<p>首先是新任务如何与 Cgroup 挂钩。</p>
+<ol>
+<li>在系统启动阶段，<code>init/main.c</code> 中的代码初始化了 root cgroup ，并初始化第一个 <code>css_set</code> 挂载到创始任务上</li>
+<li>此后，所有任务的产生和终结，将调用 <code>cgroup_fork</code> 和 <code>cgroup_exit</code> 实现任务与 <code>css_set</code> 的互操作；</li>
+<li>在任务运行过程中，将任务从子系统的一个 cgroup 移动到另一个 cgroup，将使用 <code>attach</code> 和 <code>detach</code> 进行操作。</li>
+</ol>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">static</span> <span style="color:#007020;font-weight:bold">struct</span> task_struct <span style="color:#666">*</span><span style="color:#06287e">copy_process</span>(<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> clone_flags,
+        <span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> stack_start,
+        <span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> stack_size,
+        <span style="color:#902000">int</span> __user <span style="color:#666">*</span>child_tidptr,
+        <span style="color:#007020;font-weight:bold">struct</span> pid <span style="color:#666">*</span>pid,
+        <span style="color:#902000">int</span> trace)
+{
+    <span style="color:#60a0b0;font-style:italic">// something omitted ...
+</span><span style="color:#60a0b0;font-style:italic"></span>    cgroup_fork(p);
+    <span style="color:#60a0b0;font-style:italic">// something omitted ...
+</span><span style="color:#60a0b0;font-style:italic"></span>}
+
+<span style="color:#902000">void</span> <span style="color:#06287e">cgroup_fork</span>(<span style="color:#007020;font-weight:bold">struct</span> task_struct <span style="color:#666">*</span>child)
+{
+    task_lock(current);
+    <span style="color:#60a0b0;font-style:italic">// 直接引用当前任务（即父任务）的 cgroups 指针
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic">// 这里的 cgroups 变量类型是 *css_set 
+</span><span style="color:#60a0b0;font-style:italic"></span>    child<span style="color:#666">-&gt;</span>cgroups <span style="color:#666">=</span> current<span style="color:#666">-&gt;</span>cgroups;
+    <span style="color:#60a0b0;font-style:italic">// 添加一个引用计数
+</span><span style="color:#60a0b0;font-style:italic"></span>    get_css_set(child<span style="color:#666">-&gt;</span>cgroups);
+    task_unlock(current);
+    INIT_LIST_HEAD(<span style="color:#666">&amp;</span>child<span style="color:#666">-&gt;</span>cg_list);
+}
+</code></pre></div><h3 id="演示限制-cpu-密集型任务的-cpu-资源使用量">演示：限制 CPU 密集型任务的 CPU 资源使用量</h3>
+<p>演示程序</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* calc.c */</span>
+<span style="color:#902000">int</span> <span style="color:#06287e">main</span>(<span style="color:#902000">int</span> argc, <span style="color:#902000">char</span> <span style="color:#666">**</span>argv)
+{
+    <span style="color:#007020;font-weight:bold">for</span> (<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> <span style="color:#902000">long</span> i<span style="color:#666">=</span><span style="color:#40a070">0</span>;<span style="color:#40a070">1</span>;i<span style="color:#666">++</span>);
+}
+</code></pre></div><p>编译后后台执行</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ <span style="color:#60a0b0;font-style:italic"># 编译</span>
+$ cc calc.c -o calc
+$ <span style="color:#60a0b0;font-style:italic"># 后台执行</span> 
+$ ./calc &amp;
+<span style="color:#666">[</span>1<span style="color:#666">]</span> <span style="color:#40a070">25828</span>
+$ <span style="color:#60a0b0;font-style:italic"># 观察 CPU 使用量</span>
+$ top
+</code></pre></div><p>任务 <code>calc</code> 的 CPU 使用率基本上达到了 100% 左右。现在要将它限制到 50% 。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ <span style="color:#60a0b0;font-style:italic"># 找到 cgroup 虚拟文件系统的挂载路径</span>
+$ mount | grep cgroup
+tmpfs on /sys/fs/cgroup <span style="color:#007020">type</span> tmpfs <span style="color:#666">(</span>ro,nosuid,nodev,noexec,mode<span style="color:#666">=</span>755<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/unified <span style="color:#007020">type</span> cgroup2 <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/systemd <span style="color:#007020">type</span> cgroup <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime,xattr,name<span style="color:#666">=</span>systemd<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/cpu,cpuacct <span style="color:#007020">type</span> cgroup <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime,cpu,cpuacct<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/memory <span style="color:#007020">type</span> cgroup <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime,memory<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/blkio <span style="color:#007020">type</span> cgroup <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime,blkio<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/hugetlb <span style="color:#007020">type</span> cgroup <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime,hugetlb<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/cpuset <span style="color:#007020">type</span> cgroup <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime,cpuset<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/pids <span style="color:#007020">type</span> cgroup <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime,pids<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/devices <span style="color:#007020">type</span> cgroup <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime,devices<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/net_cls,net_prio <span style="color:#007020">type</span> cgroup <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime,net_cls,net_prio<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/rdma <span style="color:#007020">type</span> cgroup <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime,rdma<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/freezer <span style="color:#007020">type</span> cgroup <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime,freezer<span style="color:#666">)</span>
+cgroup on /sys/fs/cgroup/perf_event <span style="color:#007020">type</span> cgroup <span style="color:#666">(</span>rw,nosuid,nodev,noexec,relatime,perf_event<span style="color:#666">)</span>
+
+$ <span style="color:#60a0b0;font-style:italic"># 在 /sys/fs/cgroup/cpu,cpuacct/ 目录挂载的就是 cgroup cpu 子系统和 cpuacct 子系统</span>
+$ <span style="color:#007020">cd</span> /sys/fs/cgroup/cpu,cpuacct/
+$ <span style="color:#60a0b0;font-style:italic"># 创建一个新的 cgroup ，继承父 cgroup 的所有参数，但可以被修改。</span>
+$ <span style="color:#60a0b0;font-style:italic"># Cgroup 实现了虚拟文件系统的接口，可以像操作文件一样修改内核 Cgroup 的各个参数</span>
+$ mkdir ff 
+$ <span style="color:#60a0b0;font-style:italic"># 将 calc 任务加入的 ff cgroup 的管理下</span>
+$ <span style="color:#007020">echo</span> <span style="color:#4070a0">&#34;25828&#34;</span> &gt; tasks
+</code></pre></div><p>这样就把 calc 任务从一个 cgroup 转移到另一个 cgroup 的控制之下。不过，到目前为止，calc 任务仍然保持 CPU 100% 占用。毕竟这个 cgroup 的配置继承自父 cgroup ，都没有做任何限制。如何做限制呢？</p>
+<p><code>cpu.cfs_period_us</code> 和 <code>cpu.cfs_quota_us</code> 分别被用来描述完全公平调度器每微秒的周期数和每微秒使用的周期数</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ cat cpu.cfs_period_us
+<span style="color:#40a070">100000</span>
+$ cat cpu.cfs_quota_us
+-1 
+</code></pre></div><p>目前使用中的 <code>cpu.cfs_quota_us</code> 是 -1，代码没有逻辑上限。为了将 calc 任务的 CPU 使用率调整到 50% ，修改 <code>cpu.cfs_quota_us</code> ，使其恰好为 <code>cpu.cfs_period_us</code> 的一半就可以了。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ <span style="color:#007020">echo</span> <span style="color:#4070a0">&#34;50000&#34;</span> &gt; cpu.cfs_period_us
+</code></pre></div><p>OK，再检查 calc 任务，结果就基本稳定在 50% 的使用率。而 CPU 没有其它的高使用率负载。</p>
+<h2 id="小结">小结</h2>
+<p>通过命名空间和控制组的配合，就基本达成了容器化的初级要求——资源隔离、资源限额。当然，关于网络相关的仍然存在疑问。</p>
+<p>在控制组的使用中，突然回忆起以前的一个问题——如何编程实现一个任务的 CPU 使用率恰好是 X%？虽然通过编程合理计算指令执行时间也能实现，但用 Cgroup 来似乎更为简单。不过，这两者的控制层面已经有了很大的不同。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre></div>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2019-06-02-ftrace/">跟踪内核函数的工具—— Ftrace</a></li>
+    
+    <li><a href="/posts/2019-05-27-understand-kernel-11/">理解 Linux Kernel (11) - 进程间通信</a></li>
+    
+    <li><a href="/posts/2019-04-10-understand-kernel-10/">理解 Linux Kernel(10) - Context of Execution</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+ 
+  </body>
+</html>

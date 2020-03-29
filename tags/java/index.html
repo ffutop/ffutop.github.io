@@ -107,7 +107,7 @@
 
             <div class="post-content markdown-body">
                 <p>我们生产环境上所有的应用都是通过域名来访问 MySQL、Redis 等基础服务。按说域名相较于 IP，凭空多了个 DNS 解析动作，是一个劣化的方案。但好处在于，一旦需要切换基础服务，将带来巨大的利好。可是，任何忽视DNS Record TTL的切换方案，都将伴随着巨大的风险。甚至，成为否定该利好的佐证。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-02-28-%E5%9F%BA%E4%BA%8Edns%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%87%E6%8D%A2%E4%BA%8B%E6%95%85/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -143,7 +143,7 @@
 2019-11-05T14:31:41.117+0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117+0800: 504602.953: [CMS: 266841K-&gt;266816K(873856K), 0.9109948 secs] 267218K-&gt;266816K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]
 2019-11-05T14:31:42.028+0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028+0800: 504603.865: [CMS: 266816K-&gt;266769K(873856K), 1.0351283 secs] 266816K-&gt;266769K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]
 </code></pre></div><p>FGC 前后，<code>Metaspace</code> 占用的内存没有得到任何释放。<em>[Metaspace: 204153K-&gt;204153K(1267712K)]</em> 。这也就是反复 FGC 的原因。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-11-06-groovyclassloader-%E5%BC%95%E5%8F%91%E7%9A%84-fullgc/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -176,7 +176,7 @@
 ...
 16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
 </code></pre></div><p>创建 <code>SecureRandom</code> 竟然花了 6 分多钟，占了整个启动时间的 94% 。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-17-%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8%E6%8B%96%E6%85%A2-tomcat-%E5%90%AF%E5%8A%A8%E9%80%9F%E5%BA%A6/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-17-random/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -207,7 +207,7 @@
                 <p>工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。</p>
 <p>想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！</p>
 <p>想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把<code>void add(int)</code> API 改写成 <code>int add(int)</code>，可能得到的大多数回答都是可以。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-02-27-javaapi-%E5%8F%82%E6%95%B0%E8%AF%AF%E5%AE%9A%E4%B9%89%E7%9A%84%E5%90%8E%E6%9E%9C/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-02-27-java-fatal-api/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -323,7 +323,7 @@
 <span style="color:#666">});</span>
 </code></pre></div><p>诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。</p>
 <p>为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-04-java-%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE%E4%B8%8E%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-04-jdk-permission/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -390,7 +390,7 @@
 <li>SymbolTable - 用于存储常量池对象</li>
 <li>其它内容省略</li>
 </ul>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-25-asm-%E6%A0%B8%E5%BF%83%E5%8C%85%E5%9F%BA%E6%9C%AC%E5%86%85%E5%AE%B9%E6%BC%AB%E8%B0%88/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-25-asm-core/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>

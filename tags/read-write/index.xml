@@ -13,10 +13,10 @@
     
     <item>
       <title>理解 Linux Kernel (6) - read &amp; write</title>
-      <link>https://www.ffutop.com/posts/2018-11-11-%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/</link>
+      <link>https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/</link>
       <pubDate>Sun, 11 Nov 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-11-11-%E7%90%86%E8%A7%A3-linux-kernel-6-read-write/</guid>
+      <guid>https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/&#34;&gt;前一篇&lt;/a&gt;已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。&lt;/p&gt;
 &lt;p&gt;首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#007020&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;

@@ -108,7 +108,7 @@
             <div class="post-content markdown-body">
                 <p>最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。</p>
 <p>流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(<code>sk_buff</code> 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 <code>enqueue</code>, <code>dequeue</code> 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-23-linux-traffic-control/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-23-traffic-control/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -139,7 +139,7 @@
                 <p>今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：</p>
 <div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">Warning  Failed 4m  kubelet, 172.16.1.1 Failed to pull image <span style="color:#4070a0">&#34;xxx.xxx.com/&lt;image-name&gt;:&lt;version&gt;&#34;</span>: rpc error: <span style="color:#bb60d5">code</span> <span style="color:#666">=</span> Unknown <span style="color:#bb60d5">desc</span> <span style="color:#666">=</span> failed to register layer: link /data/docker/storage/overlay/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a/root/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type /data/docker/storage/overlay/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da/tmproot525452492/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type: too many links
 </code></pre></div><p>最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 <code>172.16.1.1</code>。而 Kubernetes 事件中提示的是 <code>too many links</code>，对问题原因的怀疑开始转向文件系统。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-19-too-many-links-problem/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-20-too-many-links/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -168,7 +168,7 @@
 
             <div class="post-content markdown-body">
                 <p><code>Netfilter</code>，内核中用于管理网络数据包的重要网络模块；<code>iptables</code>，运行在用户空间，用于控制 <code>Netfilter</code> 模块的一种软件。需要注意的，<code>iptables</code> 只能控制 IPv4 数据包，对于 IPv6 数据包，需要使用 <code>ip6tables</code> 。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-06-netfilter-%E5%AF%BC%E8%A7%88-based-on-iptables/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-06-netfilter/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -198,7 +198,7 @@
             <div class="post-content markdown-body">
                 <p>几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。</p>
 <p>本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-17-%E7%90%86%E8%A7%A3-linux-kernel-13-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-17-understand-kernel-13/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -241,7 +241,7 @@ JNIEXPORT <span style="color:#902000">void</span> JNICALL <span style="color:#06
     <span style="color:#007020;font-weight:bold">return</span> ;
 }
 </code></pre></div>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-06-jni-%E5%BC%95%E5%8F%91%E7%9A%84%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-06-jni_problem/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -276,7 +276,7 @@ JNIEXPORT <span style="color:#902000">void</span> JNICALL <span style="color:#06
 <blockquote>
 <p>本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04</p>
 </blockquote>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-18-%E7%90%86%E8%A7%A3-linux-kernel-12-linux-%E5%AE%B9%E5%99%A8%E5%8C%96%E6%8A%80%E6%9C%AF/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -311,7 +311,7 @@ JNIEXPORT <span style="color:#902000">void</span> JNICALL <span style="color:#06
 <p>虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。</p>
 </blockquote>
 <p>当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 <code>ffstrings</code> 出现 <code>EPERM</code> 的原因。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-02-%E8%B7%9F%E8%B8%AA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E7%9A%84%E5%B7%A5%E5%85%B7-ftrace/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-02-ftrace/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -341,7 +341,7 @@ JNIEXPORT <span style="color:#902000">void</span> JNICALL <span style="color:#06
             <div class="post-content markdown-body">
                 <p>进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。</p>
 <p><em>本篇基于 Linux 4.9.87 版本源码</em></p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-27-%E7%90%86%E8%A7%A3-linux-kernel-11-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -381,7 +381,7 @@ JNIEXPORT <span style="color:#902000">void</span> JNICALL <span style="color:#06
 <li>05-20 08:30 ，查找原因，解决问题。</li>
 </ul>
 <p>由于不是本人负责的服务，于 16 日凭兴趣开始有限介入，协助排查。现将排查流程一一记述，给自己和大家未来排查问题提供一个借鉴。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-20-pipe-%E5%AF%BC%E8%87%B4%E7%9A%84-close_wait/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-20-close_wait_problem/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -415,7 +415,7 @@ JNIEXPORT <span style="color:#902000">void</span> JNICALL <span style="color:#06
 <p>HINT 上述的 <code>.</code> 仅仅是为了指代非打印字符，并非真的是 <code>点号</code>。</p>
 </blockquote>
 <p>在 <code>PNG 签名</code> 数据之后，紧接着就是 <code>数据块(chunk)</code> 的数据。虽然统称<code>数据块</code>，但存在不同类型的数据块（例如 IHDR, PLTE, IDAT, IEND 等）。每个 PNG 文件可以有若干连续的数据块（至少 3 个数据块），其中第一个数据块和最后一个数据块类型分别是 IHDR、IEND 。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-10-png-%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-10-png-structure/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>

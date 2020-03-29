@@ -13,10 +13,10 @@
     
     <item>
       <title>理解 Linux Kernel (11) - 进程间通信</title>
-      <link>https://www.ffutop.com/posts/2019-05-27-%E7%90%86%E8%A7%A3-linux-kernel-11-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/</link>
+      <link>https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/</link>
       <pubDate>Mon, 27 May 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-05-27-%E7%90%86%E8%A7%A3-linux-kernel-11-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/</guid>
+      <guid>https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/</guid>
       <description>&lt;p&gt;进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;本篇基于 Linux 4.9.87 版本源码&lt;/em&gt;&lt;/p&gt;</description>
     </item>

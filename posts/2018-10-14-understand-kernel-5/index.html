@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2018-10-14-understand-kernel-5/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2018-10-14-understand-kernel-5/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https://www.ffutop.com/"
+      },
+      "articleSection" : "posts",
+      "name" : "理解 Linux Kernel (5) - 文件系统(宏观描述)",
+      "headline" : "理解 Linux Kernel (5) - 文件系统(宏观描述)",
+      "description" : "\u003cp\u003e用惯了类 Unix 系统，应该说文件系统是日常最常接触的一个操作系统模块之一了。\u003c/p\u003e\n\u003cdiv class=\"highlight\"\u003e\u003cpre style=\"background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\"\u003e\u003ccode class=\"language-shell\" data-lang=\"shell\"\u003e$ ls\nApplications Network      Users        bin          data         etc          net          sbin         usr\nLibrary      System       Volumes      cores        dev          home         private      tmp          var\n\u003c/code\u003e\u003c/pre\u003e\u003c/div\u003e\u003cp\u003e但是，究竟什么是文件系统? 为什么需要文件系统? 难道文件不是简单地存储到存储设备一块连续区域的吗?\u003c/p\u003e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2018",
+      "datePublished": "2018-10-14T00:00:00Z",
+      "dateModified" : "2018-10-14T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2018-10-14-understand-kernel-5/",
+      "keywords" : [ "Kernel","Linux","File System", ]
+  }
+</script>
+<title>理解 Linux Kernel (5) - 文件系统(宏观描述) - Utop&#39;s Blog</title>
+  <meta property="og:title" content="理解 Linux Kernel (5) - 文件系统(宏观描述) - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="用惯了类 Unix 系统，应该说文件系统是日常最常接触的一个操作系统模块之一了。
+$ ls
+Applications Network      Users        bin          data         etc          net          sbin         usr
+Library      System       Volumes      cores        dev          home         private      tmp          var
+但是，究竟什么是文件系统? 为什么需要文件系统? 难道文件不是简单地存储到存储设备一块连续区域的吗?" />
+  <meta name="description" content="用惯了类 Unix 系统，应该说文件系统是日常最常接触的一个操作系统模块之一了。
+$ ls
+Applications Network      Users        bin          data         etc          net          sbin         usr
+Library      System       Volumes      cores        dev          home         private      tmp          var
+但是，究竟什么是文件系统? 为什么需要文件系统? 难道文件不是简单地存储到存储设备一块连续区域的吗?" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">理解 Linux Kernel (5) - 文件系统(宏观描述)</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2018-10-14 00:00:00 UTC">
+                14 Oct 2018
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>用惯了类 Unix 系统，应该说文件系统是日常最常接触的一个操作系统模块之一了。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ls
+Applications Network      Users        bin          data         etc          net          sbin         usr
+Library      System       Volumes      cores        dev          home         private      tmp          var
+</code></pre></div><p>但是，究竟什么是文件系统? 为什么需要文件系统? 难道文件不是简单地存储到存储设备一块连续区域的吗?</p>
+<h2 id="文件系统的形式">文件系统的形式</h2>
+<p>首先我们假设文件是简单地存储在存储设备(硬盘等)某一块连续区域的。</p>
+<p>那么如何在小则几百G，大则几十T甚至更大的存储设备上找到具体的某一文件，并读取的内存中呢?</p>
+<p>最普通的，就只能在存储设备上一字节一字节的查找，直到找到相应的目标文件。是不是可以想象，这会很慢很慢。</p>
+<p>有没有快一点的？很容易想到，参考类似字典的形式就可以了。</p>
+<p><strong>目录形式</strong></p>
+<p>文件内容可能很大，但相比之下，文件名就小了很多(就算不同目录下同名文件很多，但是记录全路径名也代价不大。当然了，如果都是小文件、空文件，那就不一样了)</p>
+<p>通过为所有文件通过文件名编一个目录，指明每个文件在存储设备上的具体位置。这样需要扫描的内容就会小很多，也能更快地定位到文件内容。</p>
+<p><strong>逐级目录</strong></p>
+<p>仅仅只编制一个目录，那么层次目录又有什么实际意义吗？只是为了方便用户分类不同功能、目的的文件吗？</p>
+<p>利用逐级目录，可以考虑对次级目录的内容编制上一级目录。通过顶级目录定位次级目录的内容，次级目录定位再次级目录，最后对应目录下的文件的内容。</p>
+<h2 id="文件系统的组织">文件系统的组织</h2>
+<p>在之前的理解里，文件系统是接管了整个存储设备。似乎文件系统和存储设备就是直接关联的，两个不可分割。没有建立文件系统的硬盘就不能使用，而没有硬盘，文件系统就没有了载体。</p>
+<p>但是，在学习 Linux 的过程中，似乎发现也并不是这么一回事。没有直接硬盘，文件系统一样可以存在。一直都有在使用 <code>.img</code> 磁盘映像文件，只是没有意识到，这意识文件系统的一种载体。同样的，没有文件系统，在操作系统启动的过程中，一样是可以加载各种内容，乃至预置的文件信息。</p>
+<p>在 Linux 中，最常见的文件系统就是 ext2, ext3, ext4 之流了。偶尔也有听过用过，比如说准备接入新的硬盘的时候。但是，真正里面是什么样的。还真不了解，ext2,3,4 的区别，也根本不知道。</p>
+<p>当然了，本次也并不会对这些内容进行描述。由于一直在学习 Linux 0.11 版本的源码，接下来要描述的文件系统，也就是 0.11 版本直接使用的 minix 文件系统了。</p>
+<p>最开始，当然是应该有一个感官的印象，才能更方便地来理解文件系统的组织形式啦!</p>
+<h3 id="创建文件系统">创建文件系统</h3>
+<p>这里我们创建一个 512 KB 大小的文件系统</p>
+<p><code>mkfs</code> 应该是最简单的方式了。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ touch disk.img            <span style="color:#60a0b0;font-style:italic"># 磁盘映像文件 (由于没有额外的磁盘，就以此作为新创建的 minix 文件系统的载体)</span>
+$ dd <span style="color:#007020;font-weight:bold">if</span><span style="color:#666">=</span>/dev/zero <span style="color:#bb60d5">of</span><span style="color:#666">=</span>disk.img <span style="color:#bb60d5">bs</span><span style="color:#666">=</span><span style="color:#40a070">1024</span> <span style="color:#bb60d5">count</span><span style="color:#666">=</span><span style="color:#40a070">512</span>     <span style="color:#60a0b0;font-style:italic"># 先将文件的大小扩展到 512 KB ，否则在创建文件系统的时候会失败</span>
+512+0 records in
+512+0 records out
+<span style="color:#40a070">524288</span> bytes <span style="color:#666">(</span><span style="color:#40a070">524</span> kB, <span style="color:#40a070">512</span> KiB<span style="color:#666">)</span> copied, 0.00216049 s, <span style="color:#40a070">243</span> MB/s
+$ mkfs.minix disk.img <span style="color:#40a070">512</span>   <span style="color:#60a0b0;font-style:italic"># 创建文件系统</span>
+<span style="color:#40a070">192</span> inodes                  <span style="color:#60a0b0;font-style:italic"># inodes - 应该很熟悉吧。每个文件都占用一个 inode</span>
+<span style="color:#40a070">512</span> blocks                  <span style="color:#60a0b0;font-style:italic"># 总共 512 个磁盘块</span>
+<span style="color:#bb60d5">Firstdatazone</span><span style="color:#666">=</span><span style="color:#40a070">10</span> <span style="color:#666">(</span>10<span style="color:#666">)</span>       <span style="color:#60a0b0;font-style:italic"># 第 10 个磁盘块开始是真正的数据块。前面是什么? 大部分是目录占用的</span>
+<span style="color:#bb60d5">Zonesize</span><span style="color:#666">=</span><span style="color:#40a070">1024</span>               <span style="color:#60a0b0;font-style:italic"># 每个磁盘块的大小为 1024 B</span>
+<span style="color:#bb60d5">Maxsize</span><span style="color:#666">=</span><span style="color:#40a070">268966912</span>           <span style="color:#60a0b0;font-style:italic"># 单一文件的最大大小</span>
+</code></pre></div><p>先来看看目前 disk.img 里面的内容</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ hexdump disk.img
+<span style="color:#40a070">0000000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+*                                                   <span style="color:#60a0b0;font-style:italic"># * 表示这段数据全为 0</span>
+<span style="color:#40a070">0000400</span> 00c0 <span style="color:#40a070">0200</span> <span style="color:#40a070">0001</span> <span style="color:#40a070">0001</span> 000a <span style="color:#40a070">0000</span> 1c00 <span style="color:#40a070">1008</span>
+<span style="color:#40a070">0000410</span> 138f <span style="color:#40a070">0001</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+<span style="color:#40a070">0000420</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+*
+<span style="color:#40a070">0000800</span> <span style="color:#40a070">0003</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+<span style="color:#40a070">0000810</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> fffe ffff ffff ffff
+<span style="color:#40a070">0000820</span> ffff ffff ffff ffff ffff ffff ffff ffff
+*                                                   <span style="color:#60a0b0;font-style:italic"># * 表示这段数据全为 ff ( * 总是表示与前一段数据一致的省略)</span>
+0000c00 <span style="color:#40a070">0003</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+0000c10 <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+*
+0000c30 <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> ff80
+0000c40 ffff ffff ffff ffff ffff ffff ffff ffff
+*
+<span style="color:#40a070">0001000</span> 41ed <span style="color:#40a070">0000</span> <span style="color:#40a070">0040</span> <span style="color:#40a070">0000</span> cf12 5bd3 <span style="color:#40a070">0200</span> 000a
+<span style="color:#40a070">0001010</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+*
+<span style="color:#40a070">0002800</span> <span style="color:#40a070">0001</span> 002e <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+<span style="color:#40a070">0002810</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+<span style="color:#40a070">0002820</span> <span style="color:#40a070">0001</span> 2e2e <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+<span style="color:#40a070">0002830</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+<span style="color:#40a070">0002840</span> <span style="color:#40a070">0000</span> 622e <span style="color:#40a070">6461</span> 6c62 636f 736b <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+<span style="color:#40a070">0002850</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span> <span style="color:#40a070">0000</span>
+*
+<span style="color:#40a070">0080000</span>                                             <span style="color:#60a0b0;font-style:italic"># 截止字节，0x80000 = 512 KB 并不存在</span>
+</code></pre></div><p>似乎并没有太多的感觉，现在我们往 disk.img 这个磁盘映像文件中添些内容再来看看。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ mount disk.img /mnt   <span style="color:#60a0b0;font-style:italic"># 把 disk.img 挂载到 /mnt 目录下</span>
+$ <span style="color:#007020">cd</span> /mnt
+$ <span style="color:#007020">echo</span> <span style="color:#4070a0">&#34;#include &lt;stdio.h&gt;&#34;</span> &gt; hello.c       <span style="color:#60a0b0;font-style:italic"># 创建 hello.c 文件，并写入 #include &lt;stdio.h&gt;</span> 
+$ umount /mnt           <span style="color:#60a0b0;font-style:italic"># 解挂 disk.img</span>
+$ hexdump -C disk.img
+<span style="color:#40a070">00000000</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+*
+<span style="color:#40a070">00000400</span>  c0 <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">02</span> <span style="color:#40a070">01</span> <span style="color:#40a070">00</span> <span style="color:#40a070">01</span> <span style="color:#40a070">00</span>  0a <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> 1c <span style="color:#40a070">08</span> <span style="color:#40a070">10</span>  |................|
+<span style="color:#40a070">00000410</span>  8f <span style="color:#40a070">13</span> <span style="color:#40a070">01</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+<span style="color:#40a070">00000420</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+*
+<span style="color:#40a070">00000800</span>  <span style="color:#40a070">07</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+<span style="color:#40a070">00000810</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  fe ff ff ff ff ff ff ff  |................|
+<span style="color:#40a070">00000820</span>  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  |................|
+*
+00000c00  <span style="color:#40a070">07</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+00000c10  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+*
+00000c30  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">80</span> ff  |................|
+00000c40  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  |................|
+*
+<span style="color:#40a070">00001000</span>  ed <span style="color:#40a070">41</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">60</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  e5 0d d4 5b <span style="color:#40a070">00</span> <span style="color:#40a070">02</span> 0a <span style="color:#40a070">00</span>  |.A..<span style="color:#4070a0">`</span>......<span style="color:#666">[</span>....|
+<span style="color:#40a070">00001010</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+<span style="color:#40a070">00001020</span>  a4 <span style="color:#40a070">81</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">13</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  e5 0d d4 5b <span style="color:#40a070">00</span> <span style="color:#40a070">01</span> 0b <span style="color:#40a070">00</span>  |...........<span style="color:#666">[</span>....|
+<span style="color:#40a070">00001030</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+*
+<span style="color:#40a070">00002800</span>  <span style="color:#40a070">01</span> <span style="color:#40a070">00</span> 2e <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+<span style="color:#40a070">00002810</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+<span style="color:#40a070">00002820</span>  <span style="color:#40a070">01</span> <span style="color:#40a070">00</span> 2e 2e <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+<span style="color:#40a070">00002830</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+<span style="color:#40a070">00002840</span>  <span style="color:#40a070">02</span> <span style="color:#40a070">00</span> <span style="color:#40a070">68</span> <span style="color:#40a070">65</span> 6c 6c 6f 2e  <span style="color:#40a070">63</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |..hello.c.......|
+<span style="color:#40a070">00002850</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+*
+00002c00  <span style="color:#40a070">23</span> <span style="color:#40a070">69</span> 6e <span style="color:#40a070">63</span> 6c <span style="color:#40a070">75</span> <span style="color:#40a070">64</span> <span style="color:#40a070">65</span>  <span style="color:#40a070">20</span> 3c <span style="color:#40a070">73</span> <span style="color:#40a070">74</span> <span style="color:#40a070">64</span> <span style="color:#40a070">69</span> 6f 2e  |<span style="color:#60a0b0;font-style:italic">#include &lt;stdio.|</span>
+00002c10  <span style="color:#40a070">68</span> 3e 0a <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |h&gt;..............|
+00002c20  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+*
+<span style="color:#40a070">00080000</span>
+</code></pre></div><p>很明显，我们看到了 <code>#include &lt;stdio.h&gt;</code> 字样的内容，同时也出现了 <code>hello.c</code> 的文件名。</p>
+<p>需要注意，文件名和文件内容是相互割裂的，并没有直接存储在一起。</p>
+<h3 id="文件系统存储结构">文件系统存储结构</h3>
+<p>那么，配合着上面的内容来看看文件系统的组织结构。</p>
+<p>首先可以注意到的是，每一段非零的数据的开始地址，基本都是在 <code>0x0000, 0x0400, 0x0800, 0x0c00, 0x1000</code> 。间隔了 0x0400 = 1KB，这就是最基本的块的大小。</p>
+<p>Minix 文件系统将 1024 B 作为基本块的大小。<code>disk.img</code> 这个 512 KB 的磁盘映像文件，也就恰好被分割成 512 块。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ mkfs.minix disk.img <span style="color:#40a070">512</span>   <span style="color:#60a0b0;font-style:italic"># 创建文件系统</span>
+<span style="color:#40a070">192</span> inodes                  <span style="color:#60a0b0;font-style:italic"># inodes - 应该很熟悉吧。每个文件都占用一个 inode</span>
+<span style="color:#40a070">512</span> blocks                  <span style="color:#60a0b0;font-style:italic"># 总共 512 个磁盘块</span>
+<span style="color:#bb60d5">Firstdatazone</span><span style="color:#666">=</span><span style="color:#40a070">10</span> <span style="color:#666">(</span>10<span style="color:#666">)</span>       <span style="color:#60a0b0;font-style:italic"># 第 10 个磁盘块开始是真正的数据块。前面是什么? 大部分是目录占用的</span>
+<span style="color:#bb60d5">Zonesize</span><span style="color:#666">=</span><span style="color:#40a070">1024</span>               <span style="color:#60a0b0;font-style:italic"># 每个磁盘块的大小为 1024 B</span>
+<span style="color:#bb60d5">Maxsize</span><span style="color:#666">=</span><span style="color:#40a070">268966912</span>           <span style="color:#60a0b0;font-style:italic"># 单一文件的最大大小</span>
+</code></pre></div><p>在回过头来看看前面创建文件系统的时候的信息，相信也就能够看懂一部分了。</p>
+<p><strong>块的作用划分</strong></p>
+<p>那么，每个块如何进行使用呢？</p>
+<p>首先，最开始的一个块并不会直接使用。我们知道引导程序应该出现在引导盘最开始 512 B。但是，有些盘有引导程序，有些盘又没有，如何处理呢？</p>
+<p>文件系统结构中，默认地不对第一个 1024 B 的块进行操作，即原本是什么数据就是什么数据，与文件系统并不相干。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tNbRwly1fwnnc753epj31kw04tq35.jpg" alt=""></p>
+<p>除了引导块，之后还有超级块，inode 位图，逻辑块位图，inode 区块，数据区块</p>
+<p><strong>超级块</strong></p>
+<p>真正对 MINIX 文件系统起着统领性作用的，是超级块(第二个块)。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">struct</span> super_block {
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> s_ninodes;          <span style="color:#60a0b0;font-style:italic">/* i 节点的数量 */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> s_nzones;           <span style="color:#60a0b0;font-style:italic">/* 总区块数量 */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> s_imap_blocks;      <span style="color:#60a0b0;font-style:italic">/* i 节点位图的数量 */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> s_zmap_blocks;      <span style="color:#60a0b0;font-style:italic">/* 区块位图的数量 */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> s_firstdatazone;    <span style="color:#60a0b0;font-style:italic">/* 第一个数据块的编号 */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> s_log_zone_size;    <span style="color:#60a0b0;font-style:italic">/* log2(磁盘块大小 / 逻辑块大小) */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> s_max_size;          <span style="color:#60a0b0;font-style:italic">/* 单文件的最大长度 */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> s_magic;            <span style="color:#60a0b0;font-style:italic">/* 文件系统的魔数 */</span>
+
+ <span style="color:#60a0b0;font-style:italic">/* 下面的内容是在内存中使用的，并不会在磁盘上进行读写 */</span>
+ <span style="color:#007020;font-weight:bold">struct</span> buffer_head <span style="color:#666">*</span> s_imap[<span style="color:#40a070">8</span>];
+ <span style="color:#007020;font-weight:bold">struct</span> buffer_head <span style="color:#666">*</span> s_zmap[<span style="color:#40a070">8</span>];
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> s_dev;
+ <span style="color:#007020;font-weight:bold">struct</span> m_inode <span style="color:#666">*</span> s_isup;
+ <span style="color:#007020;font-weight:bold">struct</span> m_inode <span style="color:#666">*</span> s_imount;
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> s_time;
+ <span style="color:#007020;font-weight:bold">struct</span> task_struct <span style="color:#666">*</span> s_wait;
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">char</span> s_lock;
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">char</span> s_rd_only;
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">char</span> s_dirt;
+};
+</code></pre></div><p>结合着 <code>disk.img</code> 的数据来看看。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#40a070">00000400</span>  c0 <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">02</span> <span style="color:#40a070">01</span> <span style="color:#40a070">00</span> <span style="color:#40a070">01</span> <span style="color:#40a070">00</span>  0a <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> 1c <span style="color:#40a070">08</span> <span style="color:#40a070">10</span>  |................|
+<span style="color:#40a070">00000410</span>  8f <span style="color:#40a070">13</span> <span style="color:#40a070">01</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+
+0x00c0  -&gt; <span style="color:#40a070">192</span> 个 i 节点
+0x0200  -&gt; <span style="color:#40a070">512</span> 个逻辑块
+0x0001  -&gt; 一个i节点位图
+0x0001  -&gt; 一个逻辑块位图
+0x000a  -&gt; 第一个数据块编号为 <span style="color:#40a070">10</span> 
+0x0000  -&gt; log2<span style="color:#666">(</span>磁盘块大小 / 逻辑块大小<span style="color:#666">)</span> <span style="color:#666">=</span> <span style="color:#40a070">0</span> ，即磁盘块大小 <span style="color:#666">=</span> <span style="color:#bb60d5">逻辑块大小</span> <span style="color:#666">=</span> <span style="color:#40a070">1024</span> B
+0x10081c00 -&gt; 单文件最大 <span style="color:#40a070">268966912</span> B 
+</code></pre></div><p><strong>inode 位图</strong></p>
+<p>inode 位图的数据比较简单，是通过设置比特位 0、1 的方式，来直接表明相应编号的 i 节点是否存在。
+默认 i 节点从 1 号开始编号，0 号节点在 inode 位图上一定设置为 1</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#40a070">00000800</span>  <span style="color:#40a070">07</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  |................|
+<span style="color:#40a070">00000810</span>  <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span> <span style="color:#40a070">00</span>  fe ff ff ff ff ff ff ff  |................|
+<span style="color:#40a070">00000820</span>  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  |................|
+</code></pre></div><p>总共 192 个 i 节点，加上 0 号节点总计需占用 193 位 ( = 193 / 8 = 24 字节 + 1 位)</p>
+<p>其余多余的位，全部置位为 1 。</p>
+<p>位图存储的最初数据 0x07 (注意，小端存储法) = 0b111</p>
+<p>由此，总共有1号和2号i节点。</p>
+<p><strong>逻辑块位图</strong></p>
+<p>类似的，逻辑块位图是为了表明第n个逻辑块存储有数据，或处于空闲状态。</p>
+<p><strong>inode 区块</strong></p>
+<p>参照前面讲过的字典目录的形式，inode 就是一种分级编排后的目录。</p>
+<p>当然，说目录可能还会引发误解。这里无论是对于操作系统下的目录或是文件，每一个都对应着一个独特的 inode</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">struct</span> d_inode {
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> i_mode;     <span style="color:#60a0b0;font-style:italic">/* 文件类型和属性 (rwx 位) */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> i_uid;      <span style="color:#60a0b0;font-style:italic">/* 文件所有者 id */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> i_size;      <span style="color:#60a0b0;font-style:italic">/* 文件大小 */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> i_time;      <span style="color:#60a0b0;font-style:italic">/* 修改时间 */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">char</span> i_gid;       <span style="color:#60a0b0;font-style:italic">/* 文件所在组 id */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">char</span> i_nlinks;    <span style="color:#60a0b0;font-style:italic">/* 有多少个链接数 (有多少个文件目录项指向该 i 节点) */</span>
+ <span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> i_zone[<span style="color:#40a070">9</span>];  <span style="color:#60a0b0;font-style:italic">/* 文件数据所占用数据盘的指针 */</span>
+};
+</code></pre></div><p>每个i节点的数据分别 32 字节</p>
+<p>同样的，结合 <code>disk.img</code> 的数据来看</p>
+<pre><code>00001000  ed 41 00 00 60 00 00 00  e5 0d d4 5b 00 02 0a 00  |.A..`......[....|
+00001010  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00001020  a4 81 00 00 13 00 00 00  e5 0d d4 5b 00 01 0b 00  |...........[....|
+00001030  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+
+0x41ed  -&gt; 
+0x0000  -&gt;  文件所有者为 0 即 root
+0x00000060  -&gt;  文件大小为 96 B
+0x5bd40de5  -&gt;  文件最后修改时间为 Unix TimeStamp 1540623845 =&gt; 2018/10/27 15:4:5
+0x00    -&gt;  文件所在组 id
+0x02    -&gt;  有两个文件目录项指向1号i节点
+0x000a  -&gt;  1 号 i 节点指向的第0块数据为第10个逻辑块(即第1个数据块)
+0x0000  =&gt;  由于数据比较小，后面的 i_zone[1] ~ i_zone[8] 均为 0
+</code></pre><p>i_zone 指向的是数据实际存储的数据块的位置。</p>
+<p>但是，仅仅只有 9 个指针，每个数据块能存储 1024 B ，是远远达不到之前所描述的单文件 <code>0x10081c00 = 268966912 B</code> 的上限的。</p>
+<p>事实上，minix 在实际处理的过程中，把前7个指针作为直接数据块指针，最多存储 7168 B 数据。</p>
+<p>i_zone[7] 表示一次间接指针，指向某一个数据块，但是该数据块每2字节作为一个指针，指向真正的数据块。</p>
+<p>i_zone[8] 表示二次间接指针。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tNbRwly1fwnu3zrwuij310y0m6abj.jpg" alt="">
+<!-- raw HTML omitted -->Copied from Linux 内核完全注释V3.0<!-- raw HTML omitted --></p>
+<p><strong>数据块</strong></p>
+<p>最后，我们看看数据块的内容，也希望能够更好地来理解 Linux 目录和文件的异同。</p>
+<pre><code>00002800  01 00 2e 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00002810  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00002820  01 00 2e 2e 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00002830  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00002840  02 00 68 65 6c 6c 6f 2e  63 00 00 00 00 00 00 00  |..hello.c.......|
+00002850  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+*
+00002c00  23 69 6e 63 6c 75 64 65  20 3c 73 74 64 69 6f 2e  |#include &lt;stdio.|
+00002c10  68 3e 0a 00 00 00 00 00  00 00 00 00 00 00 00 00  |h&gt;..............|
+00002c20  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+</code></pre><p>在i节点区块上，我们看到有1号i节点和2号i节点已经被使用了。</p>
+<p>0x2800 ~ 0x2860 的位置表示的就是 1 号i节点的数据。事实上这是一个目录(当然，怎么区分目录还是文件，在i节点区块的 i_mode 字段已经描述过了)</p>
+<p>对于目录文件，当然是用来记载目录项的，每个目录项占用 32 字节。</p>
+<blockquote>
+<p>这里需要进行说明，MINIX 1.0 版本的文件系统似乎是对每个目录项占用 16 字节的。</p>
+<p>这里提供一个 Linux 0.11 版本的仿真运行结果以供证明
+<img src="https://ws4.sinaimg.cn/large/006tNbRwly1fwnuexcwx7j30nw0c8745.jpg" alt=""></p>
+<p>上面描述的 <code>disk.img</code> 是在 Ubuntu 16.04 LTS 下跑出来的结果，所有确实出现了一些差别。
+至于具体的一个规范，目前还没有找到，所有这部分只能做模糊处理了，勿怪。</p>
+</blockquote>
+<p>前2个字节用来表示该目录项所对应的 i 节点编号。之后的30个字节用来描述该目录项的名字。</p>
+<p>因此，对 0x2800 ~ 0x2860 的数据进行重建的结果就是 <code>. .. hello.c</code> 三个目录项了。其中，由于是根目录，<code>.</code> 和 <code>..</code> 所指向的i节点的相同的，都是1号i节点。</p>
+<p>而 hello.c 文件指向的是 2 号i节点。</p>
+<p>哈哈，2号i节点的数据内容就在 0x2c00 开始的位置。通过右侧的 ASCII 结果我们也可以看到。</p>
+<p>当然，之前说过每个数据块是 1024 B ，那么数据块多余的部分，就是留空咯，而不会被其它i节点占用(除非该文件or目录被完全移除了)</p>
+<h2 id="小结">小结</h2>
+<p>到此为止，文件系统宏观的描述就已经完结了。</p>
+<p>下一节将对操作系统如何使用文件系统进行描述。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre></div>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2018-10-12-understand-kernel-4/">理解 Linux Kernel (4) - 任务调度</a></li>
+    
+    <li><a href="/posts/2018-10-06-understand-kernel-3/">理解 Linux Kernel (3) - 操作系统启动</a></li>
+    
+    <li><a href="/posts/2018-08-26-understand-kernel-2/">理解 Linux Kernel (2) - 多任务切换</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+ 
+  </body>
+</html>

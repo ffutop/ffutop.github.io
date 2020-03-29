@@ -13,10 +13,10 @@
     
     <item>
       <title>理解 Linux Kernel (1) - BIOS</title>
-      <link>https://www.ffutop.com/posts/2018-08-19-%E7%90%86%E8%A7%A3-linux-kernel-1-bios/</link>
+      <link>https://www.ffutop.com/posts/2018-08-19-understand-kernel-1/</link>
       <pubDate>Sun, 19 Aug 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-08-19-%E7%90%86%E8%A7%A3-linux-kernel-1-bios/</guid>
+      <guid>https://www.ffutop.com/posts/2018-08-19-understand-kernel-1/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;在&lt;a href=&#34;https://www.ffutop.com/2018-08-19-understand-Kernel-0/&#34;&gt;概述&lt;/a&gt;，我已经介绍过《理解 Linux Kernel》系列文章的写作原因。我不能担保我所进行的所有试验性操作都是对的，但至少操作我的环境下成功地运行了，并帮助我触及我始终敬畏的&lt;strong&gt;硬件&amp;amp;OS&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;《Linux 内核完全注释》第三章——内核编程语言和环境，描述了用 as86 汇编语言构建 boot 引导程序，在 Bochs 仿真器成功模拟开机运行，最终输出 &lt;em&gt;Loading System&amp;hellip;&lt;/em&gt;。这就是本篇所要尝试的核心实验。之所以在已经有资料的基础上再写一遍，是书中缺失了仿真器模拟的环节。&lt;/p&gt;</description>

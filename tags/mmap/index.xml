@@ -13,10 +13,10 @@
     
     <item>
       <title>理解 Linux Kernel (13) - 虚拟内存</title>
-      <link>https://www.ffutop.com/posts/2019-07-17-%E7%90%86%E8%A7%A3-linux-kernel-13-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98/</link>
+      <link>https://www.ffutop.com/posts/2019-07-17-understand-kernel-13/</link>
       <pubDate>Wed, 17 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-07-17-%E7%90%86%E8%A7%A3-linux-kernel-13-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98/</guid>
+      <guid>https://www.ffutop.com/posts/2019-07-17-understand-kernel-13/</guid>
       <description>&lt;p&gt;几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。&lt;/p&gt;
 &lt;p&gt;本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。&lt;/p&gt;</description>
     </item>

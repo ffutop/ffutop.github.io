@@ -13,10 +13,10 @@
     
     <item>
       <title>如何方便地获取 CGlib 生成类</title>
-      <link>https://www.ffutop.com/posts/2018-07-13-%E5%A6%82%E4%BD%95%E6%96%B9%E4%BE%BF%E5%9C%B0%E8%8E%B7%E5%8F%96-cglib-%E7%94%9F%E6%88%90%E7%B1%BB/</link>
+      <link>https://www.ffutop.com/posts/2018-07-13-how-to-easily-get-cglib-generated-code/</link>
       <pubDate>Fri, 13 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-07-13-%E5%A6%82%E4%BD%95%E6%96%B9%E4%BE%BF%E5%9C%B0%E8%8E%B7%E5%8F%96-cglib-%E7%94%9F%E6%88%90%E7%B1%BB/</guid>
+      <guid>https://www.ffutop.com/posts/2018-07-13-how-to-easily-get-cglib-generated-code/</guid>
       <description>&lt;h2 id=&#34;配置参数&#34;&gt;配置参数&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;命令行使用&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;在 java 启动命令中添加参数配置项 &lt;code&gt;-Dcglib.debugLocation=&amp;lt;Custom Path&amp;gt;&lt;/code&gt;&lt;/p&gt;
@@ -26,10 +26,10 @@
     
     <item>
       <title>CGlib Enhancer 主流程源码解析</title>
-      <link>https://www.ffutop.com/posts/2018-07-10-cglib-enhancer-%E4%B8%BB%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</link>
+      <link>https://www.ffutop.com/posts/2018-07-10-cglib-enhancer/</link>
       <pubDate>Tue, 10 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-07-10-cglib-enhancer-%E4%B8%BB%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</guid>
+      <guid>https://www.ffutop.com/posts/2018-07-10-cglib-enhancer/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;此博文写作的目的:&lt;/p&gt;
 &lt;ul&gt;

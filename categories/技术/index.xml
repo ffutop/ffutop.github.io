@@ -13,19 +13,19 @@
     
     <item>
       <title>基于DNS的数据库切换·事故</title>
-      <link>https://www.ffutop.com/posts/2020-02-28-%E5%9F%BA%E4%BA%8Edns%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%87%E6%8D%A2%E4%BA%8B%E6%95%85/</link>
+      <link>https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/</link>
       <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2020-02-28-%E5%9F%BA%E4%BA%8Edns%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%87%E6%8D%A2%E4%BA%8B%E6%95%85/</guid>
+      <guid>https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/</guid>
       <description>&lt;p&gt;我们生产环境上所有的应用都是通过域名来访问 MySQL、Redis 等基础服务。按说域名相较于 IP，凭空多了个 DNS 解析动作，是一个劣化的方案。但好处在于，一旦需要切换基础服务，将带来巨大的利好。可是，任何忽视DNS Record TTL的切换方案，都将伴随着巨大的风险。甚至，成为否定该利好的佐证。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>分布式共识·Raft Algorithm</title>
-      <link>https://www.ffutop.com/posts/2020-02-17-%E5%88%86%E5%B8%83%E5%BC%8F%E5%85%B1%E8%AF%86raft-algorithm/</link>
+      <link>https://www.ffutop.com/posts/2020-02-17-raft/</link>
       <pubDate>Mon, 17 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2020-02-17-%E5%88%86%E5%B8%83%E5%BC%8F%E5%85%B1%E8%AF%86raft-algorithm/</guid>
+      <guid>https://www.ffutop.com/posts/2020-02-17-raft/</guid>
       <description>&lt;h2 id=&#34;分布式系统与共识&#34;&gt;分布式系统与共识&lt;/h2&gt;
 &lt;p&gt;分布式系统是一组透过网络相互连接通信与传递信息的计算机，协同来完成一件任务的系统。任务可能是大规模计算，可能是冗余存储。按此分类，又有分布式计算系统和分布式存储系统。&lt;/p&gt;
 &lt;p&gt;典型的分布式计算系统/框架有 MapReduce、Spark；分布式存储系统有 GFS 等。虽然有此划分，但分布式计算几乎必然地涉及到存储的需求。存储为计算提供支持，计算促进存储的发展。&lt;/p&gt;
@@ -42,37 +42,37 @@
     
     <item>
       <title>Goroutine 与调度</title>
-      <link>https://www.ffutop.com/posts/2020-01-27-goroutine-%E4%B8%8E%E8%B0%83%E5%BA%A6/</link>
+      <link>https://www.ffutop.com/posts/2020-01-27-go-routine/</link>
       <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2020-01-27-goroutine-%E4%B8%8E%E8%B0%83%E5%BA%A6/</guid>
+      <guid>https://www.ffutop.com/posts/2020-01-27-go-routine/</guid>
       <description>&lt;p&gt;虽然我们在日常沟通中把 Goroutine 和线程、协程之类的执行流概念混杂着沟通，但 Go 语言一直坚持 &amp;ldquo;Goroutine&amp;rdquo;。 宣称这一名词的产生是由于线程、协程、进程等无法准确表达其概念。本篇将就这一声明进行探究，Goroutine 与线程、协程究竟有何不同。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Calico 网络通信解析</title>
-      <link>https://www.ffutop.com/posts/2019-12-24-calico-%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E8%A7%A3%E6%9E%90/</link>
+      <link>https://www.ffutop.com/posts/2019-12-24-how-calico-works/</link>
       <pubDate>Tue, 24 Dec 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-12-24-calico-%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E8%A7%A3%E6%9E%90/</guid>
+      <guid>https://www.ffutop.com/posts/2019-12-24-how-calico-works/</guid>
       <description>&lt;p&gt;在 Kubernetes 集群中，Calico 区别于 Flannel 的最显著特征，就是其宣称可以不借助隧道技术，是建立在纯三层协议上的解决方案。也就是说，Calico 通过建立一些路由信息，就构建了单节点/多节点网络命名空间隔离下的通信网络。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>HTTPS 安全通讯如何上演？</title>
-      <link>https://www.ffutop.com/posts/2019-12-14-https-%E5%AE%89%E5%85%A8%E9%80%9A%E8%AE%AF%E5%A6%82%E4%BD%95%E4%B8%8A%E6%BC%94/</link>
+      <link>https://www.ffutop.com/posts/2019-12-14-https/</link>
       <pubDate>Sat, 14 Dec 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-12-14-https-%E5%AE%89%E5%85%A8%E9%80%9A%E8%AE%AF%E5%A6%82%E4%BD%95%E4%B8%8A%E6%BC%94/</guid>
+      <guid>https://www.ffutop.com/posts/2019-12-14-https/</guid>
       <description>&lt;p&gt;最初的 HTTP 以明文传输方式运行在 Internet 上。随着越来越多安全敏感型应用的出现，HTTP over TCP 无法提供足够的安全性保障。SSL 及其继任者 TLS 在这样的背景下产生，提供面向信道的安全性。本文着力于展现 HTTP over TLS (即 HTTPS)的工作方式，以及与此密切相关的数字证书、对称/非对称加密等，但不涉及密码学相关实现及 SSL/TLS 的安全性证明。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>GroovyClassLoader 引发的 FullGC</title>
-      <link>https://www.ffutop.com/posts/2019-11-06-groovyclassloader-%E5%BC%95%E5%8F%91%E7%9A%84-fullgc/</link>
+      <link>https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/</link>
       <pubDate>Wed, 06 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-11-06-groovyclassloader-%E5%BC%95%E5%8F%91%E7%9A%84-fullgc/</guid>
+      <guid>https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/</guid>
       <description>&lt;h2 id=&#34;背景&#34;&gt;背景&lt;/h2&gt;
 &lt;p&gt;近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，&lt;strong&gt;stop the world&lt;/strong&gt; :&amp;lt; 从 &lt;code&gt;gc.log&lt;/code&gt; 中，看到的原因是触及了 &lt;code&gt;Metaspace&lt;/code&gt; 的阈值，进而引发了 FGC。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-plain&#34; data-lang=&#34;plain&#34;&gt;2019-11-05T14:31:38.880+0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880+0800: 504600.716: [CMS2019-11-05T14:31:39.364+0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs]
@@ -85,10 +85,10 @@
     
     <item>
       <title>随机数生成器拖慢 Tomcat 启动速度</title>
-      <link>https://www.ffutop.com/posts/2019-10-17-%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8%E6%8B%96%E6%85%A2-tomcat-%E5%90%AF%E5%8A%A8%E9%80%9F%E5%BA%A6/</link>
+      <link>https://www.ffutop.com/posts/2019-10-17-random/</link>
       <pubDate>Thu, 17 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-10-17-%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8%E6%8B%96%E6%85%A2-tomcat-%E5%90%AF%E5%8A%A8%E9%80%9F%E5%BA%A6/</guid>
+      <guid>https://www.ffutop.com/posts/2019-10-17-random/</guid>
       <description>&lt;p&gt;最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-plain&#34; data-lang=&#34;plain&#34;&gt;16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
 ...
@@ -98,10 +98,10 @@
     
     <item>
       <title>理解 Linux Kernel (14) - cBPF</title>
-      <link>https://www.ffutop.com/posts/2019-10-12-%E7%90%86%E8%A7%A3-linux-kernel-14-cbpf/</link>
+      <link>https://www.ffutop.com/posts/2019-10-12-bpf/</link>
       <pubDate>Sat, 12 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-10-12-%E7%90%86%E8%A7%A3-linux-kernel-14-cbpf/</guid>
+      <guid>https://www.ffutop.com/posts/2019-10-12-bpf/</guid>
       <description>&lt;p&gt;BPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控/过滤网络数据包的任务，必然地会涉及到内核空间/用户空间的拷贝。而众所周知的，内核空间/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。&lt;/p&gt;
 &lt;p&gt;BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。&lt;/p&gt;
 &lt;p&gt;本篇只着眼于传统的 BPF 技术，探求 BPF 如何在内核埋入包过滤相关的钩子以实现其功能。&lt;/p&gt;</description>
@@ -109,10 +109,10 @@
     
     <item>
       <title>系统平均负载分析</title>
-      <link>https://www.ffutop.com/posts/2019-09-16-%E7%B3%BB%E7%BB%9F%E5%B9%B3%E5%9D%87%E8%B4%9F%E8%BD%BD%E5%88%86%E6%9E%90/</link>
+      <link>https://www.ffutop.com/posts/2019-09-16-load-average/</link>
       <pubDate>Mon, 16 Sep 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-09-16-%E7%B3%BB%E7%BB%9F%E5%B9%B3%E5%9D%87%E8%B4%9F%E8%BD%BD%E5%88%86%E6%9E%90/</guid>
+      <guid>https://www.ffutop.com/posts/2019-09-16-load-average/</guid>
       <description>&lt;p&gt;&lt;code&gt;Load Average&lt;/code&gt; 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ffutop $ &lt;span style=&#34;color:#007020&#34;&gt;time&lt;/span&gt; ./a
 ./a  59.48s user 0.04s system 98% cpu 1:00.59 total
@@ -123,10 +123,10 @@ ffutop $ uptime
     
     <item>
       <title>Linux Traffic Control</title>
-      <link>https://www.ffutop.com/posts/2019-08-23-linux-traffic-control/</link>
+      <link>https://www.ffutop.com/posts/2019-08-23-traffic-control/</link>
       <pubDate>Fri, 23 Aug 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-08-23-linux-traffic-control/</guid>
+      <guid>https://www.ffutop.com/posts/2019-08-23-traffic-control/</guid>
       <description>&lt;p&gt;最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。&lt;/p&gt;
 &lt;p&gt;流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(&lt;code&gt;sk_buff&lt;/code&gt; 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 &lt;code&gt;enqueue&lt;/code&gt;, &lt;code&gt;dequeue&lt;/code&gt; 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。&lt;/p&gt;</description>
     </item>

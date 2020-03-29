@@ -13,10 +13,10 @@
     
     <item>
       <title>分布式共识·Raft Algorithm</title>
-      <link>https://www.ffutop.com/posts/2020-02-17-%E5%88%86%E5%B8%83%E5%BC%8F%E5%85%B1%E8%AF%86raft-algorithm/</link>
+      <link>https://www.ffutop.com/posts/2020-02-17-raft/</link>
       <pubDate>Mon, 17 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2020-02-17-%E5%88%86%E5%B8%83%E5%BC%8F%E5%85%B1%E8%AF%86raft-algorithm/</guid>
+      <guid>https://www.ffutop.com/posts/2020-02-17-raft/</guid>
       <description>&lt;h2 id=&#34;分布式系统与共识&#34;&gt;分布式系统与共识&lt;/h2&gt;
 &lt;p&gt;分布式系统是一组透过网络相互连接通信与传递信息的计算机，协同来完成一件任务的系统。任务可能是大规模计算，可能是冗余存储。按此分类，又有分布式计算系统和分布式存储系统。&lt;/p&gt;
 &lt;p&gt;典型的分布式计算系统/框架有 MapReduce、Spark；分布式存储系统有 GFS 等。虽然有此划分，但分布式计算几乎必然地涉及到存储的需求。存储为计算提供支持，计算促进存储的发展。&lt;/p&gt;

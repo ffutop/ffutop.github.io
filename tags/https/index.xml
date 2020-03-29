@@ -13,10 +13,10 @@
     
     <item>
       <title>HTTPS 安全通讯如何上演？</title>
-      <link>https://www.ffutop.com/posts/2019-12-14-https-%E5%AE%89%E5%85%A8%E9%80%9A%E8%AE%AF%E5%A6%82%E4%BD%95%E4%B8%8A%E6%BC%94/</link>
+      <link>https://www.ffutop.com/posts/2019-12-14-https/</link>
       <pubDate>Sat, 14 Dec 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-12-14-https-%E5%AE%89%E5%85%A8%E9%80%9A%E8%AE%AF%E5%A6%82%E4%BD%95%E4%B8%8A%E6%BC%94/</guid>
+      <guid>https://www.ffutop.com/posts/2019-12-14-https/</guid>
       <description>&lt;p&gt;最初的 HTTP 以明文传输方式运行在 Internet 上。随着越来越多安全敏感型应用的出现，HTTP over TCP 无法提供足够的安全性保障。SSL 及其继任者 TLS 在这样的背景下产生，提供面向信道的安全性。本文着力于展现 HTTP over TLS (即 HTTPS)的工作方式，以及与此密切相关的数字证书、对称/非对称加密等，但不涉及密码学相关实现及 SSL/TLS 的安全性证明。&lt;/p&gt;</description>
     </item>
     

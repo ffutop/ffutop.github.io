@@ -13,10 +13,10 @@
     
     <item>
       <title>跟踪内核函数的工具—— Ftrace</title>
-      <link>https://www.ffutop.com/posts/2019-06-02-%E8%B7%9F%E8%B8%AA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E7%9A%84%E5%B7%A5%E5%85%B7-ftrace/</link>
+      <link>https://www.ffutop.com/posts/2019-06-02-ftrace/</link>
       <pubDate>Sun, 02 Jun 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-06-02-%E8%B7%9F%E8%B8%AA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E7%9A%84%E5%B7%A5%E5%85%B7-ftrace/</guid>
+      <guid>https://www.ffutop.com/posts/2019-06-02-ftrace/</guid>
       <description>&lt;p&gt;前两天仿照 &lt;code&gt;strings&lt;/code&gt; 工具写了个打印进程运行时堆栈可打印字符的工具 &lt;a href=&#34;https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c&#34;&gt;ffstrings&lt;/a&gt; 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&amp;lt;&lt;/p&gt;
 &lt;p&gt;在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— &lt;code&gt;ftrace&lt;/code&gt; 。&lt;/p&gt;
 &lt;blockquote&gt;

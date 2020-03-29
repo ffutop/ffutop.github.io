@@ -13,10 +13,10 @@
     
     <item>
       <title>MySQL TIMESTAMP 时间精度问题</title>
-      <link>https://www.ffutop.com/posts/2019-04-26-mysql-timestamp-%E6%97%B6%E9%97%B4%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/</link>
+      <link>https://www.ffutop.com/posts/2019-04-26-time-accuracy/</link>
       <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-04-26-mysql-timestamp-%E6%97%B6%E9%97%B4%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/</guid>
+      <guid>https://www.ffutop.com/posts/2019-04-26-time-accuracy/</guid>
       <description>&lt;p&gt;最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;/**
 &lt;/span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;  * 表结构

@@ -13,10 +13,10 @@
     
     <item>
       <title>Understand MAIL</title>
-      <link>https://www.ffutop.com/posts/2018-09-27-understand-mail/</link>
+      <link>https://www.ffutop.com/posts/2018-09-27-mail/</link>
       <pubDate>Thu, 27 Sep 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-09-27-understand-mail/</guid>
+      <guid>https://www.ffutop.com/posts/2018-09-27-mail/</guid>
       <description>&lt;p&gt;在网络协议上，高层协议确实比底层协议更容易理解，也更加的人性化。
 传输层的 TCP, UDP 都还停留在各种字节内容的整合和校验上，而更上层的应用层协议就已经能够直观到通过直接解读就能理解其每条消息的含义了。&lt;/p&gt;</description>
     </item>

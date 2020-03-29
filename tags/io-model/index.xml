@@ -13,10 +13,10 @@
     
     <item>
       <title>理解 Linux Kernel (9) - IO Multiplexing</title>
-      <link>https://www.ffutop.com/posts/2019-03-05-%E7%90%86%E8%A7%A3-linux-kernel-9-io-multiplexing/</link>
+      <link>https://www.ffutop.com/posts/2019-03-05-understand-kernel-9/</link>
       <pubDate>Tue, 05 Mar 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-03-05-%E7%90%86%E8%A7%A3-linux-kernel-9-io-multiplexing/</guid>
+      <guid>https://www.ffutop.com/posts/2019-03-05-understand-kernel-9/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;./2019-01-15-understand-Kernel-8/&#34;&gt;前一篇&lt;/a&gt;已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 &lt;code&gt;struct sock&lt;/code&gt; 对象，将其逐级从网络接口层逐级提升到网络层、传输层&amp;hellip;最终添加到接收队列 &lt;code&gt;sk_receive_queue&lt;/code&gt; 中；用户进程通过 &lt;code&gt;read&lt;/code&gt;、&lt;code&gt;recv&lt;/code&gt;、&lt;code&gt;recvfrom&lt;/code&gt; 等命令检查并获取 &lt;code&gt;sk_receive_queue&lt;/code&gt; 中的数据。&lt;/p&gt;
 &lt;p&gt;整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。&lt;/p&gt;
 &lt;p&gt;那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（&lt;code&gt;select&lt;/code&gt;, &lt;code&gt;poll&lt;/code&gt;, &lt;code&gt;epoll&lt;/code&gt;）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 &lt;code&gt;select&lt;/code&gt; 和 &lt;code&gt;epoll&lt;/code&gt; 两类系统调用的实现进行探究。&lt;/p&gt;</description>

@@ -13,10 +13,10 @@
     
     <item>
       <title>Calico 网络通信解析</title>
-      <link>https://www.ffutop.com/posts/2019-12-24-calico-%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E8%A7%A3%E6%9E%90/</link>
+      <link>https://www.ffutop.com/posts/2019-12-24-how-calico-works/</link>
       <pubDate>Tue, 24 Dec 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2019-12-24-calico-%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E8%A7%A3%E6%9E%90/</guid>
+      <guid>https://www.ffutop.com/posts/2019-12-24-how-calico-works/</guid>
       <description>&lt;p&gt;在 Kubernetes 集群中，Calico 区别于 Flannel 的最显著特征，就是其宣称可以不借助隧道技术，是建立在纯三层协议上的解决方案。也就是说，Calico 通过建立一些路由信息，就构建了单节点/多节点网络命名空间隔离下的通信网络。&lt;/p&gt;</description>
     </item>
     

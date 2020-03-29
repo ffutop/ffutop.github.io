@@ -107,7 +107,7 @@
 
             <div class="post-content markdown-body">
                 <p>我们生产环境上所有的应用都是通过域名来访问 MySQL、Redis 等基础服务。按说域名相较于 IP，凭空多了个 DNS 解析动作，是一个劣化的方案。但好处在于，一旦需要切换基础服务，将带来巨大的利好。可是，任何忽视DNS Record TTL的切换方案，都将伴随着巨大的风险。甚至，成为否定该利好的佐证。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-02-28-%E5%9F%BA%E4%BA%8Edns%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%87%E6%8D%A2%E4%BA%8B%E6%95%85/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -147,7 +147,7 @@
 <p>一致性(Consistency)：一致性表述为机器对外提供服务时的表现。向机器 A 或机器 B 读取同一数据，两者的返回值是相同的。当然，也有不同的弱化版本，允许一些特定条件下的不一致</p>
 </blockquote>
 <p>在 2014 年之前，Paxos [1] 几乎是解决共识问题的唯一选择。但难懂是一个致命的问题，并且难以工程化也是重大的缺陷。Raft 的出现无疑是一道曙光，熟读，实践，豁然开朗。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-02-17-%E5%88%86%E5%B8%83%E5%BC%8F%E5%85%B1%E8%AF%86raft-algorithm/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-02-17-raft/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -176,7 +176,7 @@
 
             <div class="post-content markdown-body">
                 <p>虽然我们在日常沟通中把 Goroutine 和线程、协程之类的执行流概念混杂着沟通，但 Go 语言一直坚持 &ldquo;Goroutine&rdquo;。 宣称这一名词的产生是由于线程、协程、进程等无法准确表达其概念。本篇将就这一声明进行探究，Goroutine 与线程、协程究竟有何不同。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-01-27-goroutine-%E4%B8%8E%E8%B0%83%E5%BA%A6/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-01-27-go-routine/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -205,7 +205,7 @@
 
             <div class="post-content markdown-body">
                 <p>在 Kubernetes 集群中，Calico 区别于 Flannel 的最显著特征，就是其宣称可以不借助隧道技术，是建立在纯三层协议上的解决方案。也就是说，Calico 通过建立一些路由信息，就构建了单节点/多节点网络命名空间隔离下的通信网络。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-12-24-calico-%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E8%A7%A3%E6%9E%90/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-12-24-how-calico-works/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -234,7 +234,7 @@
 
             <div class="post-content markdown-body">
                 <p>最初的 HTTP 以明文传输方式运行在 Internet 上。随着越来越多安全敏感型应用的出现，HTTP over TCP 无法提供足够的安全性保障。SSL 及其继任者 TLS 在这样的背景下产生，提供面向信道的安全性。本文着力于展现 HTTP over TLS (即 HTTPS)的工作方式，以及与此密切相关的数字证书、对称/非对称加密等，但不涉及密码学相关实现及 SSL/TLS 的安全性证明。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-12-14-https-%E5%AE%89%E5%85%A8%E9%80%9A%E8%AE%AF%E5%A6%82%E4%BD%95%E4%B8%8A%E6%BC%94/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-12-14-https/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -270,7 +270,7 @@
 2019-11-05T14:31:41.117+0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117+0800: 504602.953: [CMS: 266841K-&gt;266816K(873856K), 0.9109948 secs] 267218K-&gt;266816K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]
 2019-11-05T14:31:42.028+0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028+0800: 504603.865: [CMS: 266816K-&gt;266769K(873856K), 1.0351283 secs] 266816K-&gt;266769K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]
 </code></pre></div><p>FGC 前后，<code>Metaspace</code> 占用的内存没有得到任何释放。<em>[Metaspace: 204153K-&gt;204153K(1267712K)]</em> 。这也就是反复 FGC 的原因。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-11-06-groovyclassloader-%E5%BC%95%E5%8F%91%E7%9A%84-fullgc/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -303,7 +303,7 @@
 ...
 16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
 </code></pre></div><p>创建 <code>SecureRandom</code> 竟然花了 6 分多钟，占了整个启动时间的 94% 。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-17-%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8%E6%8B%96%E6%85%A2-tomcat-%E5%90%AF%E5%8A%A8%E9%80%9F%E5%BA%A6/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-17-random/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -334,7 +334,7 @@
                 <p>BPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控/过滤网络数据包的任务，必然地会涉及到内核空间/用户空间的拷贝。而众所周知的，内核空间/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。</p>
 <p>BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。</p>
 <p>本篇只着眼于传统的 BPF 技术，探求 BPF 如何在内核埋入包过滤相关的钩子以实现其功能。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-12-%E7%90%86%E8%A7%A3-linux-kernel-14-cbpf/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-12-bpf/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -368,7 +368,7 @@
 ffutop $ uptime
 09:58:56 up <span style="color:#40a070">165</span> days, 20:14,  <span style="color:#40a070">2</span> users,  load average: 0.63, 0.24, 0.09
 </code></pre></div><p>是什么原因导致平均负载与预期值不符呢？</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-09-16-%E7%B3%BB%E7%BB%9F%E5%B9%B3%E5%9D%87%E8%B4%9F%E8%BD%BD%E5%88%86%E6%9E%90/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-09-16-load-average/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -398,7 +398,7 @@ ffutop $ uptime
             <div class="post-content markdown-body">
                 <p>最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。</p>
 <p>流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(<code>sk_buff</code> 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 <code>enqueue</code>, <code>dequeue</code> 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-23-linux-traffic-control/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-23-traffic-control/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>

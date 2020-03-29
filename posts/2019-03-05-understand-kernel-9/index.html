@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2019-03-05-understand-kernel-9/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2019-03-05-understand-kernel-9/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https://www.ffutop.com/"
+      },
+      "articleSection" : "posts",
+      "name" : "理解 Linux Kernel (9) - IO Multiplexing",
+      "headline" : "理解 Linux Kernel (9) - IO Multiplexing",
+      "description" : "\u003cp\u003e\u003ca href=\"./2019-01-15-understand-Kernel-8/\"\u003e前一篇\u003c/a\u003e已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 \u003ccode\u003estruct sock\u003c/code\u003e 对象，将其逐级从网络接口层逐级提升到网络层、传输层\u0026hellip;最终添加到接收队列 \u003ccode\u003esk_receive_queue\u003c/code\u003e 中；用户进程通过 \u003ccode\u003eread\u003c/code\u003e、\u003ccode\u003erecv\u003c/code\u003e、\u003ccode\u003erecvfrom\u003c/code\u003e 等命令检查并获取 \u003ccode\u003esk_receive_queue\u003c/code\u003e 中的数据。\u003c/p\u003e\n\u003cp\u003e整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。\u003c/p\u003e\n\u003cp\u003e那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（\u003ccode\u003eselect\u003c/code\u003e, \u003ccode\u003epoll\u003c/code\u003e, \u003ccode\u003eepoll\u003c/code\u003e）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 \u003ccode\u003eselect\u003c/code\u003e 和 \u003ccode\u003eepoll\u003c/code\u003e 两类系统调用的实现进行探究。\u003c/p\u003e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2019",
+      "datePublished": "2019-03-05T00:00:00Z",
+      "dateModified" : "2019-03-05T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2019-03-05-understand-kernel-9/",
+      "keywords" : [ "Linux","Kernel","IO Model", ]
+  }
+</script>
+<title>理解 Linux Kernel (9) - IO Multiplexing - Utop&#39;s Blog</title>
+  <meta property="og:title" content="理解 Linux Kernel (9) - IO Multiplexing - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="前一篇已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 struct sock 对象，将其逐级从网络接口层逐级提升到网络层、传输层&hellip;最终添加到接收队列 sk_receive_queue 中；用户进程通过 read、recv、recvfrom 等命令检查并获取 sk_receive_queue 中的数据。
+整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。
+那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（select, poll, epoll）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 select 和 epoll 两类系统调用的实现进行探究。" />
+  <meta name="description" content="前一篇已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 struct sock 对象，将其逐级从网络接口层逐级提升到网络层、传输层&hellip;最终添加到接收队列 sk_receive_queue 中；用户进程通过 read、recv、recvfrom 等命令检查并获取 sk_receive_queue 中的数据。
+整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。
+那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（select, poll, epoll）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 select 和 epoll 两类系统调用的实现进行探究。" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">理解 Linux Kernel (9) - IO Multiplexing</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2019-03-05 00:00:00 UTC">
+                05 Mar 2019
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p><a href="./2019-01-15-understand-Kernel-8/">前一篇</a>已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 <code>struct sock</code> 对象，将其逐级从网络接口层逐级提升到网络层、传输层&hellip;最终添加到接收队列 <code>sk_receive_queue</code> 中；用户进程通过 <code>read</code>、<code>recv</code>、<code>recvfrom</code> 等命令检查并获取 <code>sk_receive_queue</code> 中的数据。</p>
+<p>整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。</p>
+<p>那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（<code>select</code>, <code>poll</code>, <code>epoll</code>）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 <code>select</code> 和 <code>epoll</code> 两类系统调用的实现进行探究。</p>
+<h2 id="select">SELECT</h2>
+<p><code>select</code> 是一种比较古老的系统调用方式，存在着许多的调用限制。当然，相对的也就比较容易理解。</p>
+<p><code>select</code> 系统调用最初的逻辑就是对超时时间的相关操作，完成从用户数据段到内核数据段的数据拷贝工作，而使用 <code>copy_from_user</code> 的目的，虽然看似比较晦涩，不如大家在用户程序中普通调用的memcpy，但究其原因，是为了处理MMU相关的问题。将内核复制的数据timeval做一定的取整操作（因为硬件中断的精度可能达不到timeval所描述的粒度，故根据HZ做取整，恰好为时钟中断周期的整数倍）。调用 <code>core_sys_select</code> 进行真正的轮询操作（当然，好像也算不上真正的逻辑，还有一层核心的调用呢）。结束后的操作当然是准备更新timeval。因为进行轮询的结果有两种，一种是因为超时而结束 <code>core_sys_select</code> 函数调用；另一种是得到了一个或多个准备就绪的数据，才结束调用并返回。显然，因为第二种结果而更新timeval有着一定的实际意义——到底等待了多久。不过这里需要注意的是，不是所有的Linux系统都支持对timeval做更新。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">asmlinkage <span style="color:#902000">long</span> <span style="color:#06287e">sys_select</span>(<span style="color:#902000">int</span> n, fd_set __user <span style="color:#666">*</span>inp, fd_set __user <span style="color:#666">*</span>outp,
+			fd_set __user <span style="color:#666">*</span>exp, <span style="color:#007020;font-weight:bold">struct</span> timeval __user <span style="color:#666">*</span>tvp)
+{
+	s64 timeout <span style="color:#666">=</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>;
+	<span style="color:#007020;font-weight:bold">struct</span> timeval tv;
+	<span style="color:#902000">int</span> ret;
+
+    <span style="color:#60a0b0;font-style:italic">/* 如果设置了超时时间 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (tvp) {
+		<span style="color:#007020;font-weight:bold">if</span> (copy_from_user(<span style="color:#666">&amp;</span>tv, tvp, <span style="color:#007020;font-weight:bold">sizeof</span>(tv)))
+			<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>EFAULT;
+
+        <span style="color:#60a0b0;font-style:italic">/* 计时器不能设置为负数 */</span>
+		<span style="color:#007020;font-weight:bold">if</span> (tv.tv_sec <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span> <span style="color:#666">||</span> tv.tv_usec <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span>)
+			<span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span>EINVAL;
+
+		<span style="color:#60a0b0;font-style:italic">/* Cast to u64 to make GCC stop complaining */</span>
+        <span style="color:#60a0b0;font-style:italic">/* 对 timeout 做一定的处理，根据时钟周期对 usec 进行取整 */</span>
+		<span style="color:#007020;font-weight:bold">if</span> ((u64)tv.tv_sec <span style="color:#666">&gt;=</span> (u64)MAX_INT64_SECONDS)
+			timeout <span style="color:#666">=</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>;	<span style="color:#60a0b0;font-style:italic">/* 无限等待 */</span>
+		<span style="color:#007020;font-weight:bold">else</span> {
+			timeout <span style="color:#666">=</span> DIV_ROUND_UP(tv.tv_usec, USEC_PER_SEC<span style="color:#666">/</span>HZ);
+			timeout <span style="color:#666">+=</span> tv.tv_sec <span style="color:#666">*</span> HZ;
+		}
+	}
+
+    <span style="color:#60a0b0;font-style:italic">/* 核心的 select 实现逻辑 */</span>
+	ret <span style="color:#666">=</span> core_sys_select(n, inp, outp, exp, <span style="color:#666">&amp;</span>timeout);
+
+    <span style="color:#60a0b0;font-style:italic">/* 如果设置了超时时间 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (tvp) {
+		<span style="color:#007020;font-weight:bold">struct</span> timeval rtv;
+
+		<span style="color:#007020;font-weight:bold">if</span> (current<span style="color:#666">-&gt;</span>personality <span style="color:#666">&amp;</span> STICKY_TIMEOUTS)
+			<span style="color:#007020;font-weight:bold">goto</span> sticky;
+		rtv.tv_usec <span style="color:#666">=</span> jiffies_to_usecs(do_div((<span style="color:#666">*</span>(u64<span style="color:#666">*</span>)<span style="color:#666">&amp;</span>timeout), HZ));
+		rtv.tv_sec <span style="color:#666">=</span> timeout;
+		<span style="color:#007020;font-weight:bold">if</span> (timeval_compare(<span style="color:#666">&amp;</span>rtv, <span style="color:#666">&amp;</span>tv) <span style="color:#666">&gt;=</span> <span style="color:#40a070">0</span>)
+			rtv <span style="color:#666">=</span> tv;
+        <span style="color:#60a0b0;font-style:italic">/* 内核数据-&gt;用户数据的拷贝，更新距离超时剩余的时间间隔 */</span>
+		<span style="color:#007020;font-weight:bold">if</span> (copy_to_user(tvp, <span style="color:#666">&amp;</span>rtv, <span style="color:#007020;font-weight:bold">sizeof</span>(rtv))) {
+<span style="color:#002070;font-weight:bold">sticky</span>:
+			<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">             * 如果应用程序把timeval放在只读内存中，内核就无需特别的更新它
+</span><span style="color:#60a0b0;font-style:italic">			 * If an application puts its timeval in read-only
+</span><span style="color:#60a0b0;font-style:italic">			 * memory, we don&#39;t want the Linux-specific update to
+</span><span style="color:#60a0b0;font-style:italic">			 * the timeval to cause a fault after the select has
+</span><span style="color:#60a0b0;font-style:italic">			 * completed successfully. However, because we&#39;re not
+</span><span style="color:#60a0b0;font-style:italic">			 * updating the timeval, we can&#39;t restart the system
+</span><span style="color:#60a0b0;font-style:italic">			 * call.
+</span><span style="color:#60a0b0;font-style:italic">			 */</span>
+			<span style="color:#007020;font-weight:bold">if</span> (ret <span style="color:#666">==</span> <span style="color:#666">-</span>ERESTARTNOHAND)
+				ret <span style="color:#666">=</span> <span style="color:#666">-</span>EINTR;
+		}
+	}
+
+	<span style="color:#007020;font-weight:bold">return</span> ret;
+}
+</code></pre></div><p><code>core_sys_select</code> 也没有太多核心操作，完全是在为三个位图——输入、输出、错误从用户数据段到内核数据段的拷贝工作，以及在结束 <code>do_select</code> 调用后的反向拷贝操作。不过，无论是 <code>sys_select</code> 还是 <code>core_sys_select</code> 都将各自需要完成的工作分割得非常清晰，一个完成timeval的处理工作，另一个完成位图的处理。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic"> * 内核数据-位图的准备，调用do_select完成核心的逻辑
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">int</span> <span style="color:#06287e">core_sys_select</span>(<span style="color:#902000">int</span> n, fd_set __user <span style="color:#666">*</span>inp, fd_set __user <span style="color:#666">*</span>outp,
+			   fd_set __user <span style="color:#666">*</span>exp, s64 <span style="color:#666">*</span>timeout)
+{
+	fd_set_bits fds;
+	<span style="color:#902000">void</span> <span style="color:#666">*</span>bits;
+	<span style="color:#902000">int</span> ret, max_fds;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span> size;
+	<span style="color:#007020;font-weight:bold">struct</span> fdtable <span style="color:#666">*</span>fdt;
+    <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">     * 在栈中定义较小的数组，减少堆内存的占用，同时可以更快；
+</span><span style="color:#60a0b0;font-style:italic">     * SELECT_STACK_ALLOC = 256
+</span><span style="color:#60a0b0;font-style:italic">     */</span>
+	<span style="color:#902000">long</span> stack_fds[SELECT_STACK_ALLOC<span style="color:#666">/</span><span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#902000">long</span>)];
+
+	ret <span style="color:#666">=</span> <span style="color:#666">-</span>EINVAL;
+	<span style="color:#007020;font-weight:bold">if</span> (n <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span>)
+		<span style="color:#007020;font-weight:bold">goto</span> out_nofds;
+
+	<span style="color:#60a0b0;font-style:italic">/* max_fds can increase, so grab it once to avoid race */</span>
+    <span style="color:#60a0b0;font-style:italic">/* max_fds 可能同时在增加，所以提前获取一份固定的拷贝避免竞争 */</span>
+	rcu_read_lock();
+    <span style="color:#60a0b0;font-style:italic">/* 获取当前任务的文件描述符表 */</span>
+	fdt <span style="color:#666">=</span> files_fdtable(current<span style="color:#666">-&gt;</span>files);
+	max_fds <span style="color:#666">=</span> fdt<span style="color:#666">-&gt;</span>max_fds;
+	rcu_read_unlock();
+	<span style="color:#007020;font-weight:bold">if</span> (n <span style="color:#666">&gt;</span> max_fds)
+		n <span style="color:#666">=</span> max_fds;
+
+	<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">	 * We need 6 bitmaps (in/out/ex for both incoming and outgoing),
+</span><span style="color:#60a0b0;font-style:italic">	 * since we used fdset we need to allocate memory in units of
+</span><span style="color:#60a0b0;font-style:italic">	 * long-words.
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+	size <span style="color:#666">=</span> FDS_BYTES(n);
+	bits <span style="color:#666">=</span> stack_fds;
+	<span style="color:#007020;font-weight:bold">if</span> (size <span style="color:#666">&gt;</span> <span style="color:#007020;font-weight:bold">sizeof</span>(stack_fds) <span style="color:#666">/</span> <span style="color:#40a070">6</span>) {
+		<span style="color:#60a0b0;font-style:italic">/* Not enough space in on-stack array; must use kmalloc */</span>
+        <span style="color:#60a0b0;font-style:italic">/* 栈数组大小不足；使用 kmalloc 获取新的空间 */</span>
+		ret <span style="color:#666">=</span> <span style="color:#666">-</span>ENOMEM;
+		bits <span style="color:#666">=</span> kmalloc(<span style="color:#40a070">6</span> <span style="color:#666">*</span> size, GFP_KERNEL);
+		<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>bits)
+			<span style="color:#007020;font-weight:bold">goto</span> out_nofds;
+	}
+	fds.in      <span style="color:#666">=</span> bits;
+	fds.out     <span style="color:#666">=</span> bits <span style="color:#666">+</span>   size;
+	fds.ex      <span style="color:#666">=</span> bits <span style="color:#666">+</span> <span style="color:#40a070">2</span><span style="color:#666">*</span>size;
+	fds.res_in  <span style="color:#666">=</span> bits <span style="color:#666">+</span> <span style="color:#40a070">3</span><span style="color:#666">*</span>size;
+	fds.res_out <span style="color:#666">=</span> bits <span style="color:#666">+</span> <span style="color:#40a070">4</span><span style="color:#666">*</span>size;
+	fds.res_ex  <span style="color:#666">=</span> bits <span style="color:#666">+</span> <span style="color:#40a070">5</span><span style="color:#666">*</span>size;
+
+    <span style="color:#60a0b0;font-style:italic">/* 用户数据段的数据 inp、outp、exp 往内核数据段 fds.xxx 拷贝 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> ((ret <span style="color:#666">=</span> get_fd_set(n, inp, fds.in)) <span style="color:#666">||</span>
+	    (ret <span style="color:#666">=</span> get_fd_set(n, outp, fds.out)) <span style="color:#666">||</span>
+	    (ret <span style="color:#666">=</span> get_fd_set(n, exp, fds.ex)))
+		<span style="color:#007020;font-weight:bold">goto</span> out;
+    <span style="color:#60a0b0;font-style:italic">/* fds.res_xxx 作为 do_select 的执行结果，预置为0，表示每一位相应的fd都未准备就绪 */</span>
+	zero_fd_set(n, fds.res_in);
+	zero_fd_set(n, fds.res_out);
+	zero_fd_set(n, fds.res_ex);
+
+    <span style="color:#60a0b0;font-style:italic">/* 交由 do_select 完成真正核心的操作 */</span>
+	ret <span style="color:#666">=</span> do_select(n, <span style="color:#666">&amp;</span>fds, timeout);
+
+	<span style="color:#007020;font-weight:bold">if</span> (ret <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span>)
+		<span style="color:#007020;font-weight:bold">goto</span> out;
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>ret) {
+		ret <span style="color:#666">=</span> <span style="color:#666">-</span>ERESTARTNOHAND;
+		<span style="color:#007020;font-weight:bold">if</span> (signal_pending(current))
+			<span style="color:#007020;font-weight:bold">goto</span> out;
+		ret <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+	}
+
+    <span style="color:#60a0b0;font-style:italic">/* 将结果集拷贝回用户数据段的 inp、outp、exp 中 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (set_fd_set(n, inp, fds.res_in) <span style="color:#666">||</span>
+	    set_fd_set(n, outp, fds.res_out) <span style="color:#666">||</span>
+	    set_fd_set(n, exp, fds.res_ex))
+		ret <span style="color:#666">=</span> <span style="color:#666">-</span>EFAULT;
+
+<span style="color:#002070;font-weight:bold">out</span>:
+	<span style="color:#007020;font-weight:bold">if</span> (bits <span style="color:#666">!=</span> stack_fds)
+		kfree(bits);
+<span style="color:#002070;font-weight:bold">out_nofds</span>:
+	<span style="color:#007020;font-weight:bold">return</span> ret;
+}
+</code></pre></div><p>终于是核心的逻辑了，逐一地将当前任务挂到相应文件的等待队列上，并等待调用 <code>poll</code> 函数被唤醒</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#902000">int</span> <span style="color:#06287e">do_select</span>(<span style="color:#902000">int</span> n, fd_set_bits <span style="color:#666">*</span>fds, s64 <span style="color:#666">*</span>timeout)
+{
+	<span style="color:#007020;font-weight:bold">struct</span> poll_wqueues table;
+	poll_table <span style="color:#666">*</span>wait;
+	<span style="color:#902000">int</span> retval, i;
+
+	rcu_read_lock();
+    <span style="color:#60a0b0;font-style:italic">/* 确认fds.xxx所需轮询的fd全部全部处于打开状态，同时返回最大的fd */</span>
+	retval <span style="color:#666">=</span> max_select_fd(n, fds);
+	rcu_read_unlock();
+
+	<span style="color:#007020;font-weight:bold">if</span> (retval <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span>)
+		<span style="color:#007020;font-weight:bold">return</span> retval;
+	n <span style="color:#666">=</span> retval;
+
+    <span style="color:#60a0b0;font-style:italic">/* 把当前任务放入自己的等待队列中 */</span>
+	poll_initwait(<span style="color:#666">&amp;</span>table);
+	wait <span style="color:#666">=</span> <span style="color:#666">&amp;</span>table.pt;
+    <span style="color:#60a0b0;font-style:italic">/* 如果超时时间为0，即无需等待 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!*</span>timeout)
+		wait <span style="color:#666">=</span> <span style="color:#007020">NULL</span>;
+	retval <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+    <span style="color:#60a0b0;font-style:italic">/* 无限循环 */</span>
+	<span style="color:#007020;font-weight:bold">for</span> (;;) {
+		<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> <span style="color:#666">*</span>rinp, <span style="color:#666">*</span>routp, <span style="color:#666">*</span>rexp, <span style="color:#666">*</span>inp, <span style="color:#666">*</span>outp, <span style="color:#666">*</span>exp;
+		<span style="color:#902000">long</span> __timeout;
+
+		set_current_state(TASK_INTERRUPTIBLE);
+
+		inp <span style="color:#666">=</span> fds<span style="color:#666">-&gt;</span>in; outp <span style="color:#666">=</span> fds<span style="color:#666">-&gt;</span>out; exp <span style="color:#666">=</span> fds<span style="color:#666">-&gt;</span>ex;
+		rinp <span style="color:#666">=</span> fds<span style="color:#666">-&gt;</span>res_in; routp <span style="color:#666">=</span> fds<span style="color:#666">-&gt;</span>res_out; rexp <span style="color:#666">=</span> fds<span style="color:#666">-&gt;</span>res_ex;
+
+		<span style="color:#007020;font-weight:bold">for</span> (i <span style="color:#666">=</span> <span style="color:#40a070">0</span>; i <span style="color:#666">&lt;</span> n; <span style="color:#666">++</span>rinp, <span style="color:#666">++</span>routp, <span style="color:#666">++</span>rexp) {
+			<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> in, out, ex, all_bits, bit <span style="color:#666">=</span> <span style="color:#40a070">1</span>, mask, j;
+			<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> res_in <span style="color:#666">=</span> <span style="color:#40a070">0</span>, res_out <span style="color:#666">=</span> <span style="color:#40a070">0</span>, res_ex <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+			<span style="color:#007020;font-weight:bold">const</span> <span style="color:#007020;font-weight:bold">struct</span> file_operations <span style="color:#666">*</span>f_op <span style="color:#666">=</span> <span style="color:#007020">NULL</span>;
+			<span style="color:#007020;font-weight:bold">struct</span> file <span style="color:#666">*</span>file <span style="color:#666">=</span> <span style="color:#007020">NULL</span>;
+
+			in <span style="color:#666">=</span> <span style="color:#666">*</span>inp<span style="color:#666">++</span>; out <span style="color:#666">=</span> <span style="color:#666">*</span>outp<span style="color:#666">++</span>; ex <span style="color:#666">=</span> <span style="color:#666">*</span>exp<span style="color:#666">++</span>;
+			all_bits <span style="color:#666">=</span> in <span style="color:#666">|</span> out <span style="color:#666">|</span> ex;
+			<span style="color:#007020;font-weight:bold">if</span> (all_bits <span style="color:#666">==</span> <span style="color:#40a070">0</span>) {
+				i <span style="color:#666">+=</span> __NFDBITS;
+				<span style="color:#007020;font-weight:bold">continue</span>;
+			}
+
+            <span style="color:#60a0b0;font-style:italic">/* 对 unsigned long 的每一位进行确认 */</span>
+			<span style="color:#007020;font-weight:bold">for</span> (j <span style="color:#666">=</span> <span style="color:#40a070">0</span>; j <span style="color:#666">&lt;</span> __NFDBITS; <span style="color:#666">++</span>j, <span style="color:#666">++</span>i, bit <span style="color:#666">&lt;&lt;=</span> <span style="color:#40a070">1</span>) {
+				<span style="color:#902000">int</span> fput_needed;
+                <span style="color:#60a0b0;font-style:italic">/* 超过需检测的最大的文件描述符 */</span>
+				<span style="color:#007020;font-weight:bold">if</span> (i <span style="color:#666">&gt;=</span> n)
+					<span style="color:#007020;font-weight:bold">break</span>;
+                <span style="color:#60a0b0;font-style:italic">/* 该 fd 无需检测，直接下一个 */</span>
+				<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>(bit <span style="color:#666">&amp;</span> all_bits))
+					<span style="color:#007020;font-weight:bold">continue</span>;
+                <span style="color:#60a0b0;font-style:italic">/* 获取相应的文件实例 */</span>
+				file <span style="color:#666">=</span> fget_light(i, <span style="color:#666">&amp;</span>fput_needed);
+				<span style="color:#007020;font-weight:bold">if</span> (file) {
+					f_op <span style="color:#666">=</span> file<span style="color:#666">-&gt;</span>f_op;
+					mask <span style="color:#666">=</span> DEFAULT_POLLMASK;
+                    <span style="color:#60a0b0;font-style:italic">/* 对于套接字，调用的是sock_poll，在poll成功时将唤醒wait队列的任务（即把当前任务唤醒）*/</span>
+					<span style="color:#007020;font-weight:bold">if</span> (f_op <span style="color:#666">&amp;&amp;</span> f_op<span style="color:#666">-&gt;</span>poll)
+						mask <span style="color:#666">=</span> (<span style="color:#666">*</span>f_op<span style="color:#666">-&gt;</span>poll)(file, retval <span style="color:#666">?</span> <span style="color:#007020">NULL</span> <span style="color:#666">:</span> wait);
+					fput_light(file, fput_needed);
+					<span style="color:#007020;font-weight:bold">if</span> ((mask <span style="color:#666">&amp;</span> POLLIN_SET) <span style="color:#666">&amp;&amp;</span> (in <span style="color:#666">&amp;</span> bit)) {
+						res_in <span style="color:#666">|=</span> bit;
+						retval<span style="color:#666">++</span>;
+					}
+					<span style="color:#007020;font-weight:bold">if</span> ((mask <span style="color:#666">&amp;</span> POLLOUT_SET) <span style="color:#666">&amp;&amp;</span> (out <span style="color:#666">&amp;</span> bit)) {
+						res_out <span style="color:#666">|=</span> bit;
+						retval<span style="color:#666">++</span>;
+					}
+					<span style="color:#007020;font-weight:bold">if</span> ((mask <span style="color:#666">&amp;</span> POLLEX_SET) <span style="color:#666">&amp;&amp;</span> (ex <span style="color:#666">&amp;</span> bit)) {
+						res_ex <span style="color:#666">|=</span> bit;
+						retval<span style="color:#666">++</span>;
+					}
+				}
+                <span style="color:#60a0b0;font-style:italic">/* 主动让出CPU片，等待重新调度（提前设置了最高优先级PREEMPT_ACTIVE）*/</span>
+				cond_resched();
+			}
+			<span style="color:#007020;font-weight:bold">if</span> (res_in)
+				<span style="color:#666">*</span>rinp <span style="color:#666">=</span> res_in;
+			<span style="color:#007020;font-weight:bold">if</span> (res_out)
+				<span style="color:#666">*</span>routp <span style="color:#666">=</span> res_out;
+			<span style="color:#007020;font-weight:bold">if</span> (res_ex)
+				<span style="color:#666">*</span>rexp <span style="color:#666">=</span> res_ex;
+		}
+		wait <span style="color:#666">=</span> <span style="color:#007020">NULL</span>;
+		<span style="color:#007020;font-weight:bold">if</span> (retval <span style="color:#666">||</span> <span style="color:#666">!*</span>timeout <span style="color:#666">||</span> signal_pending(current))
+			<span style="color:#007020;font-weight:bold">break</span>;
+		<span style="color:#007020;font-weight:bold">if</span>(table.error) {
+			retval <span style="color:#666">=</span> table.error;
+			<span style="color:#007020;font-weight:bold">break</span>;
+		}
+
+		<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">*</span>timeout <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span>) {
+			<span style="color:#60a0b0;font-style:italic">/* Wait indefinitely */</span>
+			__timeout <span style="color:#666">=</span> MAX_SCHEDULE_TIMEOUT;
+		} <span style="color:#007020;font-weight:bold">else</span> <span style="color:#007020;font-weight:bold">if</span> (unlikely(<span style="color:#666">*</span>timeout <span style="color:#666">&gt;=</span> (s64)MAX_SCHEDULE_TIMEOUT <span style="color:#666">-</span> <span style="color:#40a070">1</span>)) {
+			<span style="color:#60a0b0;font-style:italic">/* Wait for longer than MAX_SCHEDULE_TIMEOUT. Do it in a loop */</span>
+			__timeout <span style="color:#666">=</span> MAX_SCHEDULE_TIMEOUT <span style="color:#666">-</span> <span style="color:#40a070">1</span>;
+			<span style="color:#666">*</span>timeout <span style="color:#666">-=</span> __timeout;
+		} <span style="color:#007020;font-weight:bold">else</span> {
+			__timeout <span style="color:#666">=</span> <span style="color:#666">*</span>timeout;
+			<span style="color:#666">*</span>timeout <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+		}
+        <span style="color:#60a0b0;font-style:italic">/* 进入延时唤醒状态，待定预定的超时时间 */</span>
+		__timeout <span style="color:#666">=</span> schedule_timeout(__timeout);
+		<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">*</span>timeout <span style="color:#666">&gt;=</span> <span style="color:#40a070">0</span>)
+			<span style="color:#666">*</span>timeout <span style="color:#666">+=</span> __timeout;
+	}
+	__set_current_state(TASK_RUNNING);
+
+	poll_freewait(<span style="color:#666">&amp;</span>table);
+
+	<span style="color:#007020;font-weight:bold">return</span> retval;
+}
+</code></pre></div><p>总结来看，<code>select</code> 完全能够支持IO多路复用。至少比用户程序自行实现轮询优秀得多。但是，也存在着一些明显的缺陷：</p>
+<ol>
+<li>支持的文件描述符存在上限，默认是1024。</li>
+<li>每次陷入内核态 <code>select</code> 函数之后，都需要按位遍历所有的文件描述符（无论该fd是否存在），max(fd)越大，开销越大。</li>
+<li>每次调用 <code>select</code> 都需要将fd集合从用户态复制到内核态，max(fd)越大，开销越大。</li>
+</ol>
+<h2 id="epoll">EPOLL</h2>
+<p>简单地描述过 <code>select</code> 系统调用之后，我们着重来聊一聊 <code>epoll</code> 的实现。毕竟 <code>select</code> 和 <code>poll</code> 的复杂度是 $O(N)$，而 <code>epoll</code> 只是 $O(\log{N})$ （当然，这里对时间复杂度的比较维度不同，稍候细讲）。<code>epoll</code> 区别于传统I/O复用模型的最大特色在于：它将创建并维护一个 <code>eventpoll</code> 实例，并通过注册请 <code>epoll</code> 对新的文件描述符进行监听，这意味着数据从用户数据区到内核数据区的拷贝只有一次；相对的，传统方式在每次轮询时，都需要全量地将数据从用户数据区拷贝到内核数据区。</p>
+<h3 id="epoll_create"><code>epoll_create</code></h3>
+<p><code>epoll_create</code> 负责创建一个新的 <code>eventpoll</code> 实例。这里的size并没有实际意义（由于历史原因而存在），传入的参数将被忽略。看源码总是件有意思的事，这个size被描述成了检查精神健全的标志&hellip;</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">asmlinkage <span style="color:#902000">long</span> <span style="color:#06287e">sys_epoll_create</span>(<span style="color:#902000">int</span> size)
+{
+	<span style="color:#902000">int</span> error, fd <span style="color:#666">=</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>;
+	<span style="color:#007020;font-weight:bold">struct</span> eventpoll <span style="color:#666">*</span>ep;
+	<span style="color:#007020;font-weight:bold">struct</span> inode <span style="color:#666">*</span>inode;
+	<span style="color:#007020;font-weight:bold">struct</span> file <span style="color:#666">*</span>file;
+
+	DNPRINTK(<span style="color:#40a070">3</span>, (KERN_INFO <span style="color:#4070a0">&#34;[%p] eventpoll: sys_epoll_create(%d)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>,
+		     current, size));
+
+	<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">     * 精神健全检测(size)；同时建立内部数据结构 struct eventpoll
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+	error <span style="color:#666">=</span> <span style="color:#666">-</span>EINVAL;
+	<span style="color:#007020;font-weight:bold">if</span> (size <span style="color:#666">&lt;=</span> <span style="color:#40a070">0</span> <span style="color:#666">||</span> (error <span style="color:#666">=</span> ep_alloc(<span style="color:#666">&amp;</span>ep)) <span style="color:#666">!=</span> <span style="color:#40a070">0</span>)
+		<span style="color:#007020;font-weight:bold">goto</span> error_return;
+
+	<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">     * 创建一个新的文件描述符，文件数据结构和i节点
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+	error <span style="color:#666">=</span> anon_inode_getfd(<span style="color:#666">&amp;</span>fd, <span style="color:#666">&amp;</span>inode, <span style="color:#666">&amp;</span>file, <span style="color:#4070a0">&#34;[eventpoll]&#34;</span>,
+				 <span style="color:#666">&amp;</span>eventpoll_fops, ep);
+	<span style="color:#007020;font-weight:bold">if</span> (error)
+		<span style="color:#007020;font-weight:bold">goto</span> error_free;
+
+	DNPRINTK(<span style="color:#40a070">3</span>, (KERN_INFO <span style="color:#4070a0">&#34;[%p] eventpoll: sys_epoll_create(%d) = %d</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>,
+		     current, size, fd));
+
+	<span style="color:#007020;font-weight:bold">return</span> fd;
+
+<span style="color:#002070;font-weight:bold">error_free</span>:
+	ep_free(ep);
+<span style="color:#002070;font-weight:bold">error_return</span>:
+	DNPRINTK(<span style="color:#40a070">3</span>, (KERN_INFO <span style="color:#4070a0">&#34;[%p] eventpoll: sys_epoll_create(%d) = %d</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>,
+		     current, size, error));
+	<span style="color:#007020;font-weight:bold">return</span> error;
+}
+</code></pre></div><p><img src="https://img.ffutop.com/223EAB4E-D126-4CC1-A9B4-254873DA4676.jpg" alt="Epoll Create Mode"></p>
+<h3 id="epoll_ctl"><code>epoll_ctl</code></h3>
+<p><code>epoll_ctl</code> 顾名思义——<code>epoll</code>控制器，用于增加、修改、删除监听的事件。这里 <code>epfd</code> 用于找到 <code>eventpoll</code> 实例，<code>fd</code> 表示需要监听的文件描述符，<code>op</code> 区分增删改，<code>event</code> 表示监听的具体事件描述。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">asmlinkage <span style="color:#902000">long</span> <span style="color:#06287e">sys_epoll_ctl</span>(<span style="color:#902000">int</span> epfd, <span style="color:#902000">int</span> op, <span style="color:#902000">int</span> fd,
+			      <span style="color:#007020;font-weight:bold">struct</span> epoll_event __user <span style="color:#666">*</span>event)
+{
+	<span style="color:#902000">int</span> error;
+	<span style="color:#007020;font-weight:bold">struct</span> file <span style="color:#666">*</span>file, <span style="color:#666">*</span>tfile;
+	<span style="color:#007020;font-weight:bold">struct</span> eventpoll <span style="color:#666">*</span>ep;
+	<span style="color:#007020;font-weight:bold">struct</span> epitem <span style="color:#666">*</span>epi;
+	<span style="color:#007020;font-weight:bold">struct</span> epoll_event epds;
+
+	DNPRINTK(<span style="color:#40a070">3</span>, (KERN_INFO <span style="color:#4070a0">&#34;[%p] eventpoll: sys_epoll_ctl(%d, %d, %d, %p)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>,
+		     current, epfd, op, fd, event));
+
+	error <span style="color:#666">=</span> <span style="color:#666">-</span>EFAULT;
+    <span style="color:#60a0b0;font-style:italic">/* 如果是增改操作，需要把事件描述拷贝到内核数据区; 删除操作不需要 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (ep_op_has_event(op) <span style="color:#666">&amp;&amp;</span>
+	    copy_from_user(<span style="color:#666">&amp;</span>epds, event, <span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#007020;font-weight:bold">struct</span> epoll_event)))
+		<span style="color:#007020;font-weight:bold">goto</span> error_return;
+
+	<span style="color:#60a0b0;font-style:italic">/* Get the &#34;struct file *&#34; for the eventpoll file */</span>
+	error <span style="color:#666">=</span> <span style="color:#666">-</span>EBADF;
+	file <span style="color:#666">=</span> fget(epfd);
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>file)
+		<span style="color:#007020;font-weight:bold">goto</span> error_return;
+
+	<span style="color:#60a0b0;font-style:italic">/* Get the &#34;struct file *&#34; for the target file */</span>
+	tfile <span style="color:#666">=</span> fget(fd);
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>tfile)
+		<span style="color:#007020;font-weight:bold">goto</span> error_fput;
+
+    <span style="color:#60a0b0;font-style:italic">/* 需要监听的文件描述符必须支持文件操作 poll */</span>
+	error <span style="color:#666">=</span> <span style="color:#666">-</span>EPERM;
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>tfile<span style="color:#666">-&gt;</span>f_op <span style="color:#666">||</span> <span style="color:#666">!</span>tfile<span style="color:#666">-&gt;</span>f_op<span style="color:#666">-&gt;</span>poll)
+		<span style="color:#007020;font-weight:bold">goto</span> error_tgt_fput;
+
+    <span style="color:#60a0b0;font-style:italic">/* 需要确保不能把epfd作为被监听的fd加入 */</span>
+	error <span style="color:#666">=</span> <span style="color:#666">-</span>EINVAL;
+	<span style="color:#007020;font-weight:bold">if</span> (file <span style="color:#666">==</span> tfile <span style="color:#666">||</span> <span style="color:#666">!</span>is_file_epoll(file))
+		<span style="color:#007020;font-weight:bold">goto</span> error_tgt_fput;
+
+    <span style="color:#60a0b0;font-style:italic">/* 
+</span><span style="color:#60a0b0;font-style:italic">     * 这里的文件描述符一定是指eventpoll实例对应的文件描述符
+</span><span style="color:#60a0b0;font-style:italic">     * 因此直接从中拿私有数据--预定义的*eventpoll
+</span><span style="color:#60a0b0;font-style:italic">     */</span>
+	ep <span style="color:#666">=</span> file<span style="color:#666">-&gt;</span>private_data;
+
+	mutex_lock(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>mtx);
+
+	<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">     * 从RB树中查找已经维护起来的监听事件
+</span><span style="color:#60a0b0;font-style:italic">     * 当然，必须先把这个RB树结构锁定，防止查找时结构改变
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+	epi <span style="color:#666">=</span> ep_find(ep, tfile, fd);
+
+	error <span style="color:#666">=</span> <span style="color:#666">-</span>EINVAL;
+	<span style="color:#007020;font-weight:bold">switch</span> (op) {
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">EPOLL_CTL_ADD</span>:     <span style="color:#60a0b0;font-style:italic">// 新增监听
+</span><span style="color:#60a0b0;font-style:italic"></span>		<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>epi) {
+			epds.events <span style="color:#666">|=</span> POLLERR <span style="color:#666">|</span> POLLHUP;
+
+			error <span style="color:#666">=</span> ep_insert(ep, <span style="color:#666">&amp;</span>epds, tfile, fd);
+		} <span style="color:#007020;font-weight:bold">else</span>
+			error <span style="color:#666">=</span> <span style="color:#666">-</span>EEXIST;
+		<span style="color:#007020;font-weight:bold">break</span>;
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">EPOLL_CTL_DEL</span>:     <span style="color:#60a0b0;font-style:italic">// 删除监听
+</span><span style="color:#60a0b0;font-style:italic"></span>		<span style="color:#007020;font-weight:bold">if</span> (epi)
+			error <span style="color:#666">=</span> ep_remove(ep, epi);
+		<span style="color:#007020;font-weight:bold">else</span>
+			error <span style="color:#666">=</span> <span style="color:#666">-</span>ENOENT;
+		<span style="color:#007020;font-weight:bold">break</span>;
+	<span style="color:#007020;font-weight:bold">case</span> <span style="color:#002070;font-weight:bold">EPOLL_CTL_MOD</span>:     <span style="color:#60a0b0;font-style:italic">// 修改监听
+</span><span style="color:#60a0b0;font-style:italic"></span>		<span style="color:#007020;font-weight:bold">if</span> (epi) {
+			epds.events <span style="color:#666">|=</span> POLLERR <span style="color:#666">|</span> POLLHUP;
+			error <span style="color:#666">=</span> ep_modify(ep, epi, <span style="color:#666">&amp;</span>epds);
+		} <span style="color:#007020;font-weight:bold">else</span>
+			error <span style="color:#666">=</span> <span style="color:#666">-</span>ENOENT;
+		<span style="color:#007020;font-weight:bold">break</span>;
+	}
+	mutex_unlock(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>mtx);
+
+<span style="color:#002070;font-weight:bold">error_tgt_fput</span>:
+	fput(tfile);
+<span style="color:#002070;font-weight:bold">error_fput</span>:
+	fput(file);
+<span style="color:#002070;font-weight:bold">error_return</span>:
+	DNPRINTK(<span style="color:#40a070">3</span>, (KERN_INFO <span style="color:#4070a0">&#34;[%p] eventpoll: sys_epoll_ctl(%d, %d, %d, %p) = %d</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>,
+		     current, epfd, op, fd, event, error));
+
+	<span style="color:#007020;font-weight:bold">return</span> error;
+}
+</code></pre></div><p>这里的核心操作，就是往 <code>eventpoll</code> 实例中增删改监听的事件。以 <code>ep_insert</code> 为例，先看看怎么新增监听。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* 实例化 epitem */</span>
+<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>(epi <span style="color:#666">=</span> kmem_cache_alloc(epi_cache, GFP_KERNEL)))
+    <span style="color:#007020;font-weight:bold">goto</span> error_return;
+<span style="color:#60a0b0;font-style:italic">/* 对 epitem 实例进行初始化数据 */</span>
+ep_rb_initnode(<span style="color:#666">&amp;</span>epi<span style="color:#666">-&gt;</span>rbn);
+INIT_LIST_HEAD(<span style="color:#666">&amp;</span>epi<span style="color:#666">-&gt;</span>rdllink);
+INIT_LIST_HEAD(<span style="color:#666">&amp;</span>epi<span style="color:#666">-&gt;</span>fllink);
+INIT_LIST_HEAD(<span style="color:#666">&amp;</span>epi<span style="color:#666">-&gt;</span>pwqlist);
+epi<span style="color:#666">-&gt;</span>ep <span style="color:#666">=</span> ep;
+<span style="color:#60a0b0;font-style:italic">/* 构建struct epoll_filefd，作为rb_tree比较不同的key */</span>
+ep_set_ffd(<span style="color:#666">&amp;</span>epi<span style="color:#666">-&gt;</span>ffd, tfile, fd);
+epi<span style="color:#666">-&gt;</span>event <span style="color:#666">=</span> <span style="color:#666">*</span>event;
+epi<span style="color:#666">-&gt;</span>nwait <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+epi<span style="color:#666">-&gt;</span>next <span style="color:#666">=</span> EP_UNACTIVE_PTR;
+</code></pre></div><p>接下来要接触的就是一段比较烧脑的逻辑。</p>
+<p><code>poll_table</code> 是在 VFS 实现中相当重要的一个数据结构，用来与<code>poll</code>配合（这里的<code>poll</code>是指文件操作中的，而不是<code>poll()</code>系统调用）</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">typedef</span> <span style="color:#007020;font-weight:bold">struct</span> poll_table_struct {
+	poll_queue_proc _qproc;
+} poll_table;
+</code></pre></div><p>其中<code>poll_queue_proc</code>是一个函数指针</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">typedef</span> <span style="color:#06287e">void</span> (<span style="color:#666">*</span>poll_queue_proc)(<span style="color:#007020;font-weight:bold">struct</span> file <span style="color:#666">*</span>, wait_queue_head_t <span style="color:#666">*</span>, <span style="color:#007020;font-weight:bold">struct</span> poll_table_struct <span style="color:#666">*</span>);
+</code></pre></div><p>为了让 <code>epitem</code> 更方便地追踪 <code>poll_queue_proc</code>，<code>epoll_ctl</code> 中使用了一个 <code>ep_pqueue</code> 的数据结构来包装 <code>poll_table</code>。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* 使用 queue 回调函数初始化 poll table */</span>
+epq.epi <span style="color:#666">=</span> epi;
+init_poll_funcptr(<span style="color:#666">&amp;</span>epq.pt, ep_ptable_queue_proc);
+</code></pre></div><p><img src="https://img.ffutop.com/9EFE10FC-31F9-4CC1-8E03-6255DA94EF26.jpg" alt=""></p>
+<p>之后就是把这个 <code>poll_table</code> 作为钩子方法挂载到被监控的文件上</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">revents <span style="color:#666">=</span> tfile<span style="color:#666">-&gt;</span>f_op<span style="color:#666">-&gt;</span>poll(tfile, <span style="color:#666">&amp;</span>epq.pt);
+</code></pre></div><p>这里以 <code>tcp_poll</code> 为例，先看看这段逻辑怎么实现的。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">unsigned</span> <span style="color:#902000">int</span> <span style="color:#06287e">sock_poll</span>(<span style="color:#007020;font-weight:bold">struct</span> file <span style="color:#666">*</span>file, poll_table <span style="color:#666">*</span>wait)
+{
+    <span style="color:#007020;font-weight:bold">struct</span> socket <span style="color:#666">*</span>sock;
+    <span style="color:#60a0b0;font-style:italic">/* 获取 struct sock 内核套接字数据结构 */</span>
+    sock <span style="color:#666">=</span> file<span style="color:#666">-&gt;</span>private_data;
+    <span style="color:#007020;font-weight:bold">return</span> sock<span style="color:#666">-&gt;</span>ops<span style="color:#666">-&gt;</span>poll(file, sock, wait);
+}
+
+<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span> <span style="color:#06287e">tcp_poll</span>(<span style="color:#007020;font-weight:bold">struct</span> file <span style="color:#666">*</span>file, <span style="color:#007020;font-weight:bold">struct</span> socket <span style="color:#666">*</span>sock, poll_table <span style="color:#666">*</span>wait)
+{
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">int</span> mask;
+	<span style="color:#007020;font-weight:bold">struct</span> sock <span style="color:#666">*</span>sk <span style="color:#666">=</span> sock<span style="color:#666">-&gt;</span>sk;
+	<span style="color:#007020;font-weight:bold">struct</span> tcp_sock <span style="color:#666">*</span>tp <span style="color:#666">=</span> tcp_sk(sk);
+
+    <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">     * 这里将调用 poll_table *wait 维护的回调函数
+</span><span style="color:#60a0b0;font-style:italic">     * 将持有 eventpoll 实例的进程注册到 sk 的等待队列中
+</span><span style="color:#60a0b0;font-style:italic">     */</span>
+	poll_wait(file, sk<span style="color:#666">-&gt;</span>sk_sleep, wait);
+	<span style="color:#007020;font-weight:bold">if</span> (sk<span style="color:#666">-&gt;</span>sk_state <span style="color:#666">==</span> TCP_LISTEN)
+		<span style="color:#007020;font-weight:bold">return</span> inet_csk_listen_poll(sk);
+
+    <span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">     * 这里省略了部分逻辑，主要是负责处理 struct sock 接收到的事件
+</span><span style="color:#60a0b0;font-style:italic">     * 处理成 mask 并返回
+</span><span style="color:#60a0b0;font-style:italic">     */</span>
+    ...
+
+    <span style="color:#007020;font-weight:bold">return</span> mask;
+}
+
+<span style="color:#007020;font-weight:bold">static</span> <span style="color:#007020;font-weight:bold">inline</span> <span style="color:#902000">void</span> <span style="color:#06287e">poll_wait</span>(<span style="color:#007020;font-weight:bold">struct</span> file <span style="color:#666">*</span> filp, wait_queue_head_t <span style="color:#666">*</span> wait_address, poll_table <span style="color:#666">*</span>p)
+{
+    <span style="color:#007020;font-weight:bold">if</span> (p <span style="color:#666">&amp;&amp;</span> wait_address)
+        p<span style="color:#666">-&gt;</span>qproc(filp, wait_address, p);
+}
+</code></pre></div><p>再来看看epoll定义的回调函数的实现。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">ep_ptable_queue_proc</span>(<span style="color:#007020;font-weight:bold">struct</span> file <span style="color:#666">*</span>file, wait_queue_head_t <span style="color:#666">*</span>whead,
+				 poll_table <span style="color:#666">*</span>pt)
+{
+	<span style="color:#007020;font-weight:bold">struct</span> epitem <span style="color:#666">*</span>epi <span style="color:#666">=</span> ep_item_from_epqueue(pt);
+	<span style="color:#007020;font-weight:bold">struct</span> eppoll_entry <span style="color:#666">*</span>pwq;
+
+	<span style="color:#007020;font-weight:bold">if</span> (epi<span style="color:#666">-&gt;</span>nwait <span style="color:#666">&gt;=</span> <span style="color:#40a070">0</span> <span style="color:#666">&amp;&amp;</span> (pwq <span style="color:#666">=</span> kmem_cache_alloc(pwq_cache, GFP_KERNEL))) {
+		init_waitqueue_func_entry(<span style="color:#666">&amp;</span>pwq<span style="color:#666">-&gt;</span>wait, ep_poll_callback);
+		pwq<span style="color:#666">-&gt;</span>whead <span style="color:#666">=</span> whead;
+		pwq<span style="color:#666">-&gt;</span>base <span style="color:#666">=</span> epi;
+        <span style="color:#60a0b0;font-style:italic">/* 添加到 struct sock 等待队列队首 */</span>
+		add_wait_queue(whead, <span style="color:#666">&amp;</span>pwq<span style="color:#666">-&gt;</span>wait);
+		list_add_tail(<span style="color:#666">&amp;</span>pwq<span style="color:#666">-&gt;</span>llink, <span style="color:#666">&amp;</span>epi<span style="color:#666">-&gt;</span>pwqlist);
+		epi<span style="color:#666">-&gt;</span>nwait<span style="color:#666">++</span>;
+	} <span style="color:#007020;font-weight:bold">else</span> {
+		<span style="color:#60a0b0;font-style:italic">/* We have to signal that an error occurred */</span>
+		epi<span style="color:#666">-&gt;</span>nwait <span style="color:#666">=</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>;
+	}
+}
+</code></pre></div><p>到此为止，<code>ep_insert</code> 核心的逻辑已经介绍完毕。主要就是将当前的 <code>eventpoll</code> 实例注册到监听目标（文件描述符）的等待队列上，并注册<code>ep_poll_callback</code>作为回调函数。回调函数实现是怎样呢？</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">int</span> <span style="color:#06287e">ep_poll_callback</span>(wait_queue_t <span style="color:#666">*</span>wait, <span style="color:#902000">unsigned</span> mode, <span style="color:#902000">int</span> sync, <span style="color:#902000">void</span> <span style="color:#666">*</span>key)
+{
+	<span style="color:#902000">int</span> pwake <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> flags;
+    <span style="color:#60a0b0;font-style:italic">/* 获取 wait 结构维护的 epitem 实例 */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> epitem <span style="color:#666">*</span>epi <span style="color:#666">=</span> ep_item_from_wait(wait);
+	<span style="color:#007020;font-weight:bold">struct</span> eventpoll <span style="color:#666">*</span>ep <span style="color:#666">=</span> epi<span style="color:#666">-&gt;</span>ep;
+
+    <span style="color:#60a0b0;font-style:italic">// ... code omitted...
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic">/* 
+</span><span style="color:#60a0b0;font-style:italic">     * 把当前的 epitem 实例添加到 eventpoll 实例的就绪队列中 
+</span><span style="color:#60a0b0;font-style:italic">     * 这是显然的，毕竟此回调函数只有在fd准备就绪后被回调
+</span><span style="color:#60a0b0;font-style:italic">     */</span>
+	list_add_tail(<span style="color:#666">&amp;</span>epi<span style="color:#666">-&gt;</span>rdllink, <span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>rdllist);
+
+<span style="color:#002070;font-weight:bold">is_linked</span>:
+    <span style="color:#60a0b0;font-style:italic">/* 如果 wait 结构维护的进程处于Sleeping状态，则将其唤醒并加入任务就绪队列 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (waitqueue_active(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>wq))
+		__wake_up_locked(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>wq, TASK_UNINTERRUPTIBLE <span style="color:#666">|</span>
+				 TASK_INTERRUPTIBLE);
+	<span style="color:#007020;font-weight:bold">if</span> (waitqueue_active(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>poll_wait))
+		pwake<span style="color:#666">++</span>;
+
+<span style="color:#002070;font-weight:bold">out_unlock</span>:
+	spin_unlock_irqrestore(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>lock, flags);
+
+	<span style="color:#60a0b0;font-style:italic">/* We have to call this outside the lock */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (pwake)
+		ep_poll_safewake(<span style="color:#666">&amp;</span>psw, <span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>poll_wait);
+
+	<span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">1</span>;
+}
+</code></pre></div><h3 id="epoll_wait"><code>epoll_wait</code></h3>
+<p>处理完所有的监听事件的维护，用户程序需要通过 <code>epoll_wait</code> 与 <code>eventpoll</code> 实例进行交互，并被告知所有正在监听中的事件是否发生。由于 <code>epoll_wait</code> 的整个逻辑基本上都是在进行错误检测，此处不表。我们只关注其中的核心逻辑，即调用的 <code>ep_poll</code> 函数。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">int</span> <span style="color:#06287e">ep_poll</span>(<span style="color:#007020;font-weight:bold">struct</span> eventpoll <span style="color:#666">*</span>ep, <span style="color:#007020;font-weight:bold">struct</span> epoll_event __user <span style="color:#666">*</span>events,
+		   <span style="color:#902000">int</span> maxevents, <span style="color:#902000">long</span> timeout)
+{
+	<span style="color:#902000">int</span> res, eavail;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> flags;
+	<span style="color:#902000">long</span> jtimeout;
+	wait_queue_t wait;
+
+	<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">	 * Calculate the timeout by checking for the &#34;infinite&#34; value ( -1 )
+</span><span style="color:#60a0b0;font-style:italic">	 * and the overflow condition. The passed timeout is in milliseconds,
+</span><span style="color:#60a0b0;font-style:italic">	 * that why (t * HZ) / 1000.
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+	jtimeout <span style="color:#666">=</span> (timeout <span style="color:#666">&lt;</span> <span style="color:#40a070">0</span> <span style="color:#666">||</span> timeout <span style="color:#666">&gt;=</span> EP_MAX_MSTIMEO) <span style="color:#666">?</span>
+		<span style="color:#002070;font-weight:bold">MAX_SCHEDULE_TIMEOUT</span> : (timeout <span style="color:#666">*</span> HZ <span style="color:#666">+</span> <span style="color:#40a070">999</span>) <span style="color:#666">/</span> <span style="color:#40a070">1000</span>;
+
+<span style="color:#002070;font-weight:bold">retry</span>:
+	spin_lock_irqsave(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>lock, flags);
+
+	res <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+    <span style="color:#60a0b0;font-style:italic">/* 
+</span><span style="color:#60a0b0;font-style:italic">     * 如果 eventpoll 实例的就绪队列为空，表明有没任何监听的事件发生。
+</span><span style="color:#60a0b0;font-style:italic">     * 主动让进程陷入Sleeping状态，知道被 ep_poll_callback() 唤醒
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (list_empty(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>rdllist)) {
+		init_waitqueue_entry(<span style="color:#666">&amp;</span>wait, current);
+		wait.flags <span style="color:#666">|=</span> WQ_FLAG_EXCLUSIVE;
+		__add_wait_queue(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>wq, <span style="color:#666">&amp;</span>wait);
+
+		<span style="color:#007020;font-weight:bold">for</span> (;;) {
+			<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">			 * We don&#39;t want to sleep if the ep_poll_callback() sends us
+</span><span style="color:#60a0b0;font-style:italic">			 * a wakeup in between. That&#39;s why we set the task state
+</span><span style="color:#60a0b0;font-style:italic">			 * to TASK_INTERRUPTIBLE before doing the checks.
+</span><span style="color:#60a0b0;font-style:italic">			 */</span>
+			set_current_state(TASK_INTERRUPTIBLE);
+			<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>list_empty(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>rdllist) <span style="color:#666">||</span> <span style="color:#666">!</span>jtimeout)
+				<span style="color:#007020;font-weight:bold">break</span>;
+			<span style="color:#007020;font-weight:bold">if</span> (signal_pending(current)) {
+				res <span style="color:#666">=</span> <span style="color:#666">-</span>EINTR;
+				<span style="color:#007020;font-weight:bold">break</span>;
+			}
+
+			spin_unlock_irqrestore(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>lock, flags);
+            <span style="color:#60a0b0;font-style:italic">/* 主动陷入Sleeping状态 */</span>
+			jtimeout <span style="color:#666">=</span> schedule_timeout(jtimeout);
+			spin_lock_irqsave(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>lock, flags);
+		}
+		__remove_wait_queue(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>wq, <span style="color:#666">&amp;</span>wait);
+
+		set_current_state(TASK_RUNNING);
+	}
+
+	<span style="color:#60a0b0;font-style:italic">/* Is it worth to try to dig for events ? */</span>
+	eavail <span style="color:#666">=</span> <span style="color:#666">!</span>list_empty(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>rdllist);
+
+	spin_unlock_irqrestore(<span style="color:#666">&amp;</span>ep<span style="color:#666">-&gt;</span>lock, flags);
+
+	<span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic">     * 将监听到的事件拷贝到用户空间。如果没有事件就绪且还没超时，就再抱着
+</span><span style="color:#60a0b0;font-style:italic">     * 希望试一次。
+</span><span style="color:#60a0b0;font-style:italic">	 */</span>
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>res <span style="color:#666">&amp;&amp;</span> eavail <span style="color:#666">&amp;&amp;</span>
+	    <span style="color:#666">!</span>(res <span style="color:#666">=</span> ep_send_events(ep, events, maxevents)) <span style="color:#666">&amp;&amp;</span> jtimeout)
+		<span style="color:#007020;font-weight:bold">goto</span> retry;
+
+	<span style="color:#007020;font-weight:bold">return</span> res;
+}
+</code></pre></div><h3 id="extra">Extra</h3>
+<p>这部分的数据结构配合着一些胶水代码比较难以理解，最好配合着类图看看（个人使用，不一定适合各位）</p>
+<p><img src="https://img.ffutop.com/E98BEF4A-FECC-4160-84F2-67D1B74CD029.jpg" alt=""></p>
+<h2 id="参考">参考</h2>
+<ol>
+<li>Linux Kernel 2.6.24</li>
+<li><a href="https://idndx.com/2014/09/01/the-implementation-of-epoll-1/">The Implementation of epoll(1)</a></li>
+<li><a href="https://idndx.com/2014/09/02/the-implementation-of-epoll-2/">The Implementation of epoll(2)</a></li>
+<li><a href="https://idndx.com/2014/09/22/the-implementation-of-epoll-3/">The Implementation of epoll(3)</a></li>
+<li><a href="https://idndx.com/2015/07/08/the-implementation-of-epoll-4/">The Implementation of epoll(4)</a></li>
+</ol>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre></div>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2019-01-15-understand-kernel-8/">理解 Linux Kernel (8) - 网络</a></li>
+    
+    <li><a href="/posts/2018-12-28-understand-kernel-7/">理解 Linux Kernel (7) - 字符设备</a></li>
+    
+    <li><a href="/posts/2018-11-11-understand-kernel-6/">理解 Linux Kernel (6) - read &amp; write</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+ 
+  </body>
+</html>

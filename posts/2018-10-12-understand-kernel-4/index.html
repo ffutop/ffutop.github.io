@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2018-10-12-understand-kernel-4/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2018-10-12-understand-kernel-4/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https://www.ffutop.com/"
+      },
+      "articleSection" : "posts",
+      "name" : "理解 Linux Kernel (4) - 任务调度",
+      "headline" : "理解 Linux Kernel (4) - 任务调度",
+      "description" : "\u003cp\u003e前面几节已经描述过，对于单核 CPU 来说。CPU 就处于不断地执行指令的过程(或者通过 \u003ccode\u003ehlt\u003c/code\u003e 指令直接停止工作)。\u003c/p\u003e\n\u003cp\u003e针对于每一个程序来说，这个程序执行流程是通过 CPU 中几组寄存器(通用寄存器、段寄存器、控制寄存器等) 和存储在内存中的代码和数据协作完成的。\u003c/p\u003e\n\u003cp\u003e如果要达到单核多任务的目的，首先要做的就是完成对几组寄存器中当前值的保存(我称之为保存现场)。而对于内存来说，多个任务的代码、数据同时存在内存是完全合理且可行的。毕竟相较于有限的寄存器，内存实在是太大了(相对而言)。\u003c/p\u003e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2018",
+      "datePublished": "2018-10-12T00:00:00Z",
+      "dateModified" : "2018-10-12T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2018-10-12-understand-kernel-4/",
+      "keywords" : [ "Kernel","Linux","time interrupt", ]
+  }
+</script>
+<title>理解 Linux Kernel (4) - 任务调度 - Utop&#39;s Blog</title>
+  <meta property="og:title" content="理解 Linux Kernel (4) - 任务调度 - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="前面几节已经描述过，对于单核 CPU 来说。CPU 就处于不断地执行指令的过程(或者通过 hlt 指令直接停止工作)。
+针对于每一个程序来说，这个程序执行流程是通过 CPU 中几组寄存器(通用寄存器、段寄存器、控制寄存器等) 和存储在内存中的代码和数据协作完成的。
+如果要达到单核多任务的目的，首先要做的就是完成对几组寄存器中当前值的保存(我称之为保存现场)。而对于内存来说，多个任务的代码、数据同时存在内存是完全合理且可行的。毕竟相较于有限的寄存器，内存实在是太大了(相对而言)。" />
+  <meta name="description" content="前面几节已经描述过，对于单核 CPU 来说。CPU 就处于不断地执行指令的过程(或者通过 hlt 指令直接停止工作)。
+针对于每一个程序来说，这个程序执行流程是通过 CPU 中几组寄存器(通用寄存器、段寄存器、控制寄存器等) 和存储在内存中的代码和数据协作完成的。
+如果要达到单核多任务的目的，首先要做的就是完成对几组寄存器中当前值的保存(我称之为保存现场)。而对于内存来说，多个任务的代码、数据同时存在内存是完全合理且可行的。毕竟相较于有限的寄存器，内存实在是太大了(相对而言)。" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-92258941-1"></script>
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">理解 Linux Kernel (4) - 任务调度</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2018-10-12 00:00:00 UTC">
+                12 Oct 2018
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>前面几节已经描述过，对于单核 CPU 来说。CPU 就处于不断地执行指令的过程(或者通过 <code>hlt</code> 指令直接停止工作)。</p>
+<p>针对于每一个程序来说，这个程序执行流程是通过 CPU 中几组寄存器(通用寄存器、段寄存器、控制寄存器等) 和存储在内存中的代码和数据协作完成的。</p>
+<p>如果要达到单核多任务的目的，首先要做的就是完成对几组寄存器中当前值的保存(我称之为保存现场)。而对于内存来说，多个任务的代码、数据同时存在内存是完全合理且可行的。毕竟相较于有限的寄存器，内存实在是太大了(相对而言)。</p>
+<h2 id="任务调度的宏观描述">任务调度的宏观描述</h2>
+<p>从宏观上来说，操作系统维护了若干个任务(假设有 0, 1, 5, 6)。</p>
+<p>下面以一个假象的例子来对任务调度做一些形象的说明:</p>
+<ol>
+<li>
+<p>假设当前任务是任务 5 ，操作系统分配给它的 CPU 使用时间是 30ms。</p>
+</li>
+<li>
+<p>每 10ms 计时器(Intel 8253, 可编程计数器/定时器) 向 CPU 发起一个时钟中断。</p>
+</li>
+<li>
+<p>CPU 开始处理时钟中断(此时是<strong>内核态</strong>)。当前任务剩余可用时间 -10ms。</p>
+</li>
+<li>
+<p>检查当前任务的剩余时间片，有剩余 -&gt; 步骤 5 ; 否则 -&gt; 步骤 6</p>
+</li>
+<li>
+<p>直接退出对时钟中断的处理函数(回到 <strong>用户态</strong>), 重复步骤 1</p>
+</li>
+<li>
+<p>根据每个任务的优先级及其它一些因素确定把接下来的一段时间分配给哪个任务。(假设分配给任务 6 ，30ms 的 CPU 使用时间) -&gt; 重复步骤 2 。</p>
+</li>
+</ol>
+<p>当然，上面的描述中忽略了很多的因素。</p>
+<h2 id="任务调度准备阶段">任务调度准备阶段</h2>
+<p>这里都将以 Linux 0.11 版本代码作为实例。当然，其中一些代码为了适应现在的 GCC 做了一些修改，另外还可能直接摆出 GCC 编译后的汇编代码来解释说明。</p>
+<p>首先，内核代码在经过一系列的准备流程(包括设置一些寄存器以及在内存中暂存某些值，读取计算机的硬件配置等)。真正开始出现任务 0 始于下列这段代码:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* 来自 Linux0.11 init/main.c */</span>
+<span style="color:#902000">void</span> <span style="color:#06287e">main</span>(<span style="color:#902000">void</span>)	
+{
+    ...
+
+	sched_init();       <span style="color:#60a0b0;font-style:italic">/* schedule, 顾名思义就是时间安排咯 */</span>
+    
+    ...
+	sti();
+	move_to_user_mode();
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>fork()) {	
+		init();
+	}
+	<span style="color:#007020;font-weight:bold">for</span>(;;) pause();
+}
+</code></pre></div><p>在操作系统的主函数中，开始对任务调度进行一定的准备工作。看看具体代码吧</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/* 这里给出的是 Linux0.11 kernel/sched.c 经过预编译的函数(里面有一些内联汇编) */</span>
+<span style="color:#902000">void</span> <span style="color:#06287e">sched_init</span>(<span style="color:#902000">void</span>)
+{
+    <span style="color:#902000">int</span> i;
+    <span style="color:#007020;font-weight:bold">struct</span> desc_struct <span style="color:#666">*</span> p;    <span style="color:#60a0b0;font-style:italic">/* 声明一个描述符指针 */</span>
+
+    <span style="color:#007020;font-weight:bold">if</span> (<span style="color:#007020;font-weight:bold">sizeof</span>(<span style="color:#007020;font-weight:bold">struct</span> sigaction) <span style="color:#666">!=</span> <span style="color:#40a070">16</span>)
+        panic(<span style="color:#4070a0">&#34;Struct sigaction MUST be 16 bytes&#34;</span>);
+    __asm__ (                           <span style="color:#60a0b0;font-style:italic">/* 这段是为了设置全局描述符表GDT的第4项，是一个 0 号任务(当前任务)的任务调用门*/</span>
+            <span style="color:#4070a0">&#34;movw $104,%1</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;movw %%ax,%2</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;rorl $16,%%eax</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;movb %%al,%3</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;movb $&#34;</span> <span style="color:#4070a0">&#34;0x89&#34;</span> <span style="color:#4070a0">&#34;,%4</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;movb $0x00,%5</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;movb %%ah,%6</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;rorl $16,%%eax&#34;</span> 
+            <span style="color:#666">::</span><span style="color:#4070a0">&#34;a&#34;</span> (<span style="color:#666">&amp;</span>(init_task.task.tss)), <span style="color:#4070a0">&#34;m&#34;</span> (<span style="color:#666">*</span>(((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (gdt<span style="color:#666">+</span><span style="color:#40a070">4</span>)))), <span style="color:#4070a0">&#34;m&#34;</span> (<span style="color:#666">*</span>(((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (gdt<span style="color:#666">+</span><span style="color:#40a070">4</span>))<span style="color:#666">+</span><span style="color:#40a070">2</span>)), <span style="color:#4070a0">&#34;m&#34;</span> (<span style="color:#666">*</span>(((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (gdt<span style="color:#666">+</span><span style="color:#40a070">4</span>))<span style="color:#666">+</span><span style="color:#40a070">4</span>)), <span style="color:#4070a0">&#34;m&#34;</span> (<span style="color:#666">*</span>(((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (gdt<span style="color:#666">+</span><span style="color:#40a070">4</span>))<span style="color:#666">+</span><span style="color:#40a070">5</span>)), <span style="color:#4070a0">&#34;m&#34;</span> (<span style="color:#666">*</span>(((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (gdt<span style="color:#666">+</span><span style="color:#40a070">4</span>))<span style="color:#666">+</span><span style="color:#40a070">6</span>)), <span style="color:#4070a0">&#34;m&#34;</span> (<span style="color:#666">*</span>(((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (gdt<span style="color:#666">+</span><span style="color:#40a070">4</span>))<span style="color:#666">+</span><span style="color:#40a070">7</span>)) 
+            );
+    __asm__ (                           <span style="color:#60a0b0;font-style:italic">/* 这里设置全局描述符表的第5项，0号任务的局部描述符表基址选择符 */</span>
+            <span style="color:#4070a0">&#34;movw $104,%1</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;movw %%ax,%2</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;rorl $16,%%eax</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;movb %%al,%3</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;movb $&#34;</span> <span style="color:#4070a0">&#34;0x82&#34;</span> <span style="color:#4070a0">&#34;,%4</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;movb $0x00,%5</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;movb %%ah,%6</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> 
+            <span style="color:#4070a0">&#34;rorl $16,%%eax&#34;</span> 
+            <span style="color:#666">::</span><span style="color:#4070a0">&#34;a&#34;</span> (<span style="color:#666">&amp;</span>(init_task.task.ldt)), <span style="color:#4070a0">&#34;m&#34;</span> (<span style="color:#666">*</span>(((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (gdt<span style="color:#666">+</span>(<span style="color:#40a070">4</span> <span style="color:#666">+</span><span style="color:#40a070">1</span>))))), <span style="color:#4070a0">&#34;m&#34;</span> (<span style="color:#666">*</span>(((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (gdt<span style="color:#666">+</span>(<span style="color:#40a070">4</span> <span style="color:#666">+</span><span style="color:#40a070">1</span>)))<span style="color:#666">+</span><span style="color:#40a070">2</span>)), <span style="color:#4070a0">&#34;m&#34;</span> (<span style="color:#666">*</span>(((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (gdt<span style="color:#666">+</span>(<span style="color:#40a070">4</span> <span style="color:#666">+</span><span style="color:#40a070">1</span>)))<span style="color:#666">+</span><span style="color:#40a070">4</span>)), <span style="color:#4070a0">&#34;m&#34;</span> (<span style="color:#666">*</span>(((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (gdt<span style="color:#666">+</span>(<span style="color:#40a070">4</span> <span style="color:#666">+</span><span style="color:#40a070">1</span>)))<span style="color:#666">+</span><span style="color:#40a070">5</span>)), <span style="color:#4070a0">&#34;m&#34;</span> (<span style="color:#666">*</span>(((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (gdt<span style="color:#666">+</span>(<span style="color:#40a070">4</span> <span style="color:#666">+</span><span style="color:#40a070">1</span>)))<span style="color:#666">+</span><span style="color:#40a070">6</span>)), <span style="color:#4070a0">&#34;m&#34;</span> (<span style="color:#666">*</span>(((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (gdt<span style="color:#666">+</span>(<span style="color:#40a070">4</span> <span style="color:#666">+</span><span style="color:#40a070">1</span>)))<span style="color:#666">+</span><span style="color:#40a070">7</span>)) 
+            );
+    p <span style="color:#666">=</span> gdt<span style="color:#666">+</span><span style="color:#40a070">2</span><span style="color:#666">+</span><span style="color:#40a070">4</span>;        <span style="color:#60a0b0;font-style:italic">/* 描述符指针指向 GDT 第6项。因为前面已经占用了第4，5项。由内核占用了 0，1，2，3。*/</span>
+    <span style="color:#007020;font-weight:bold">for</span>(i<span style="color:#666">=</span><span style="color:#40a070">1</span>;i<span style="color:#666">&lt;</span><span style="color:#40a070">64</span>;i<span style="color:#666">++</span>) {         <span style="color:#60a0b0;font-style:italic">/* 循环 63 次，这是 Linux0.11 最大支持 64 个任务同时存在。当前任务已经占了一个任务了*/</span>
+        task[i] <span style="color:#666">=</span> ((<span style="color:#902000">void</span> <span style="color:#666">*</span>) <span style="color:#40a070">0</span>); <span style="color:#60a0b0;font-style:italic">/* 63个任务指针全部值为 NULL */</span>
+        p<span style="color:#666">-&gt;</span>a<span style="color:#666">=</span>p<span style="color:#666">-&gt;</span>b<span style="color:#666">=</span><span style="color:#40a070">0</span>;            <span style="color:#60a0b0;font-style:italic">/* GDT 累积 126 项(126 * 8 字节)全部置为 0 。每个任务占用 GDT 两项，一为任务门，一为局部描述符表选择符*/</span>
+        p<span style="color:#666">++</span>;
+        p<span style="color:#666">-&gt;</span>a<span style="color:#666">=</span>p<span style="color:#666">-&gt;</span>b<span style="color:#666">=</span><span style="color:#40a070">0</span>;
+        p<span style="color:#666">++</span>;
+    }
+
+    __asm__(<span style="color:#4070a0">&#34;pushfl ; andl $0xffffbfff,(%esp) ; popfl&#34;</span>);
+    __asm__(<span style="color:#4070a0">&#34;ltr %%ax&#34;</span><span style="color:#666">::</span><span style="color:#4070a0">&#34;a&#34;</span> (((((<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span>) <span style="color:#40a070">0</span>)<span style="color:#666">&lt;&lt;</span><span style="color:#40a070">4</span>)<span style="color:#666">+</span>(<span style="color:#40a070">4</span><span style="color:#666">&lt;&lt;</span><span style="color:#40a070">3</span>))));           <span style="color:#60a0b0;font-style:italic">/* load Task Register TR 记录当前任务门为 gdt 第4项 */</span>
+    __asm__(<span style="color:#4070a0">&#34;lldt %%ax&#34;</span><span style="color:#666">::</span><span style="color:#4070a0">&#34;a&#34;</span> (((((<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span>) <span style="color:#40a070">0</span>)<span style="color:#666">&lt;&lt;</span><span style="color:#40a070">4</span>)<span style="color:#666">+</span>((<span style="color:#40a070">4</span> <span style="color:#666">+</span><span style="color:#40a070">1</span>)<span style="color:#666">&lt;&lt;</span><span style="color:#40a070">3</span>))));     <span style="color:#60a0b0;font-style:italic">/* load Local Descriptor Table Register LDTR 记录当前选择符为 gdt 第5项 */</span>
+    <span style="color:#60a0b0;font-style:italic">/* 给8253芯片编程，每 10ms 发起一次时钟中断(下面3行的工作) */</span>
+    __asm__ (<span style="color:#4070a0">&#34;outb %%al,%%dx</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;</span><span style="color:#4070a0;font-weight:bold">\t</span><span style="color:#4070a0">jmp 1f</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;1:</span><span style="color:#4070a0;font-weight:bold">\t</span><span style="color:#4070a0">jmp 1f</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;1:&#34;</span><span style="color:#666">::</span><span style="color:#4070a0">&#34;a&#34;</span> (<span style="color:#40a070">0x36</span>),<span style="color:#4070a0">&#34;d&#34;</span> (<span style="color:#40a070">0x43</span>));   
+    __asm__ (<span style="color:#4070a0">&#34;outb %%al,%%dx</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;</span><span style="color:#4070a0;font-weight:bold">\t</span><span style="color:#4070a0">jmp 1f</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;1:</span><span style="color:#4070a0;font-weight:bold">\t</span><span style="color:#4070a0">jmp 1f</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;1:&#34;</span><span style="color:#666">::</span><span style="color:#4070a0">&#34;a&#34;</span> ((<span style="color:#40a070">1193180</span><span style="color:#666">/</span><span style="color:#40a070">100</span>) <span style="color:#666">&amp;</span> <span style="color:#40a070">0xff</span>),<span style="color:#4070a0">&#34;d&#34;</span> (<span style="color:#40a070">0x40</span>));
+    __asm__ (<span style="color:#4070a0">&#34;outb %%al,%%dx&#34;</span><span style="color:#666">::</span><span style="color:#4070a0">&#34;a&#34;</span> ((<span style="color:#40a070">1193180</span><span style="color:#666">/</span><span style="color:#40a070">100</span>) <span style="color:#666">&gt;&gt;</span> <span style="color:#40a070">8</span>),<span style="color:#4070a0">&#34;d&#34;</span> (<span style="color:#40a070">0x40</span>));
+    __asm__ (<span style="color:#4070a0">&#34;movw %%dx,%%ax</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;movw %0,%%dx</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;movl %%eax,%1</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;movl %%edx,%2&#34;</span> <span style="color:#666">:</span> <span style="color:#666">:</span> <span style="color:#4070a0">&#34;i&#34;</span> ((<span style="color:#902000">short</span>) (<span style="color:#40a070">0x8000</span><span style="color:#666">+</span>(<span style="color:#40a070">0</span><span style="color:#666">&lt;&lt;</span><span style="color:#40a070">13</span>)<span style="color:#666">+</span>(<span style="color:#40a070">14</span><span style="color:#666">&lt;&lt;</span><span style="color:#40a070">8</span>))), <span style="color:#4070a0">&#34;o&#34;</span> (<span style="color:#666">*</span>((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (<span style="color:#666">&amp;</span>idt[<span style="color:#40a070">0x20</span>]))), <span style="color:#4070a0">&#34;o&#34;</span> (<span style="color:#666">*</span>(<span style="color:#40a070">4</span><span style="color:#666">+</span>(<span style="color:#902000">char</span> <span style="color:#666">*</span>) (<span style="color:#666">&amp;</span>idt[<span style="color:#40a070">0x20</span>]))), <span style="color:#4070a0">&#34;d&#34;</span> ((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (<span style="color:#666">&amp;</span>timer_interrupt)),<span style="color:#4070a0">&#34;a&#34;</span> (<span style="color:#40a070">0x00080000</span>)); <span style="color:#60a0b0;font-style:italic">/* 在 IDT 中设置时钟中断描述符项，第32项为时钟中断*/</span>
+    __asm__ (<span style="color:#4070a0">&#34;outb %%al,%%dx&#34;</span><span style="color:#666">::</span><span style="color:#4070a0">&#34;a&#34;</span> (({ <span style="color:#902000">unsigned</span> <span style="color:#902000">char</span> _v; __asm__ <span style="color:#007020;font-weight:bold">volatile</span> (<span style="color:#4070a0">&#34;inb %%dx,%%al</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;</span><span style="color:#4070a0;font-weight:bold">\t</span><span style="color:#4070a0">jmp 1f</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;1:</span><span style="color:#4070a0;font-weight:bold">\t</span><span style="color:#4070a0">jmp 1f</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;1:&#34;</span><span style="color:#666">:</span><span style="color:#4070a0">&#34;=a&#34;</span> (_v)<span style="color:#666">:</span><span style="color:#4070a0">&#34;d&#34;</span> (<span style="color:#40a070">0x21</span>)); _v; })<span style="color:#666">&amp;~</span><span style="color:#40a070">0x01</span>),<span style="color:#4070a0">&#34;d&#34;</span> (<span style="color:#40a070">0x21</span>)); <span style="color:#60a0b0;font-style:italic">/*重新设置时钟中断的可屏蔽属性，这样就可在调用 hlt 后被时钟中断唤醒 */</span>
+    __asm__ (<span style="color:#4070a0">&#34;movw %%dx,%%ax</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;movw %0,%%dx</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;movl %%eax,%1</span><span style="color:#4070a0;font-weight:bold">\n\t</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0">&#34;movl %%edx,%2&#34;</span> <span style="color:#666">:</span> <span style="color:#666">:</span> <span style="color:#4070a0">&#34;i&#34;</span> ((<span style="color:#902000">short</span>) (<span style="color:#40a070">0x8000</span><span style="color:#666">+</span>(<span style="color:#40a070">3</span><span style="color:#666">&lt;&lt;</span><span style="color:#40a070">13</span>)<span style="color:#666">+</span>(<span style="color:#40a070">15</span><span style="color:#666">&lt;&lt;</span><span style="color:#40a070">8</span>))), <span style="color:#4070a0">&#34;o&#34;</span> (<span style="color:#666">*</span>((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (<span style="color:#666">&amp;</span>idt[<span style="color:#40a070">0x80</span>]))), <span style="color:#4070a0">&#34;o&#34;</span> (<span style="color:#666">*</span>(<span style="color:#40a070">4</span><span style="color:#666">+</span>(<span style="color:#902000">char</span> <span style="color:#666">*</span>) (<span style="color:#666">&amp;</span>idt[<span style="color:#40a070">0x80</span>]))), <span style="color:#4070a0">&#34;d&#34;</span> ((<span style="color:#902000">char</span> <span style="color:#666">*</span>) (<span style="color:#666">&amp;</span>system_call)),<span style="color:#4070a0">&#34;a&#34;</span> (<span style="color:#40a070">0x00080000</span>)); <span style="color:#60a0b0;font-style:italic">/* 在 IDT 中设置系统中断，第128项为时钟中断 */</span>
+}
+</code></pre></div><p>通过执行 <code>sched_init()</code> ，操作系统开始有了任务的概念。并且把当前任务作为任务 0 来加以认识。</p>
+<p>同时，预置了 64 个任务状态数组，用来辅助任务调度器完成未来调度任务时确认目前所有任务的基础性支持。</p>
+<p>最重要的，当然是对 8253 芯片的编程，使其每 10ms 向 CPU 发起一个硬件时钟中断。由此将把系统暂时性的带入<strong>内核态</strong> 来完成 CPU 下一个 10ms 需要进行的任务的决策工作。</p>
+<p>最后的设置时钟中断描述符和系统中断描述符自不用说。不设置的话，对于接收到的中断根本就没办法确认处理中断的代码在哪(毕竟中断处理逻辑也是由 CPU 执行指令来解决的)</p>
+<h2 id="任务调度实施阶段">任务调度实施阶段</h2>
+<p>由于时钟中断是由硬件芯片进行控制，根本不会顾及当前 CPU 正在执行的任务已经执行到了哪个指令 (哈哈，这不得是当然的嘛，不然要任务调度做什么，所有任务流水线作业得了)。</p>
+<p>因此，下面的描述将借着一次时钟中断，来看一下整一个任务调度操作。</p>
+<h3 id="定位时钟中断处理逻辑">定位时钟中断处理逻辑</h3>
+<p>Intel 8253芯片发起时钟中断之后，CPU 立即开始处理该中断</p>
+<ol>
+<li>
+<p>通过 IDTR 芯片查找中断描述符表(IDT, 最多256项，每项8字节) 的基址。</p>
+</li>
+<li>
+<p>结合中断号作为偏移量，定位表中某一项具体的中断描述符 (时钟中断是0x20，因此偏移就是 0x20 * 8 = 256)</p>
+</li>
+</ol>
+<p><img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fw51zkvo2nj313q0mm3z3.jpg" alt="">
+<!-- raw HTML omitted -->Copied from Intel® 64 and IA-32 Architectures Software Developer’s Manual<!-- raw HTML omitted --></p>
+<ol start="3">
+<li>每一个中断描述符项都将是任务门，中断门，陷阱门三类中的一类，其所占用的 8 字节数据将按如下的形式进行存储</li>
+</ol>
+<p><img src="https://ws2.sinaimg.cn/large/006tNbRwgy1fw527o8903j314614ita0.jpg" alt="">
+<!-- raw HTML omitted -->Copied from Intel® 64 and IA-32 Architectures Software Developer’s Manual<!-- raw HTML omitted --></p>
+<ol start="4">
+<li>时钟中断是一种中断门，可以看到低 0~15 位和高 48~63 位共同组成了段内偏移量，而低16~31位组成了一个段选择符(可以去 GDT 找到相应的段)。</li>
+</ol>
+<p><img src="https://ws3.sinaimg.cn/large/006tNbRwgy1fw52a4jbe0j31440zeq3j.jpg" alt="">
+<!-- raw HTML omitted -->Copied from Intel® 64 and IA-32 Architectures Software Developer’s Manual<!-- raw HTML omitted --></p>
+<ol start="5">
+<li>至此，我们就可以定位到处理时钟中断的代码究竟在呢。之后也就是普通的 CPU 继续执行指令的过程(当然，需要注意，这个时候需要注意当前段选择符所表示的 DPL=0 ，即已经进入了内核态)</li>
+</ol>
+<h3 id="模板式的保存现场-timer_interrupt">模板式的保存现场 timer_interrupt</h3>
+<p>在上一小节第 5 步定位时钟中断的代码时，由于发生了特权级的切换，因此中断处理流程会自动地在新的栈(这里指处理时钟中断使用的内核栈)中保存原来任务的信息，依次入新栈的数据有原任务的 SS, ESP, EFLAGS, CS, EIP, (Error Code) 。</p>
+<p>然后将正式进入到 IDT 定位的时钟中断处理逻辑的开始位置 (当然了，到这里也还是在保存现场。毕竟还有好多寄存器的数据要保存的)</p>
+<pre><code class="language-assembly" data-lang="assembly">.align 4
+_timer_interrupt:
+	push %ds		# save ds,es and put kernel data space
+	push %es		# into them. %fs is used by _system_call
+	push %fs
+	pushl %edx		# we save %eax,%ecx,%edx as gcc doesn't
+	pushl %ecx		# save those across function calls. %ebx
+	pushl %ebx		# is saved as we use that in ret_sys_call
+	pushl %eax
+	movl $0x10,%eax # 0x10 是内核数据段选择符，即 GDT 第二项
+	mov %ax,%ds
+	mov %ax,%es
+	movl $0x17,%eax # 0x17 是当前任务数据段选择符，LDT 第二项 (区分选择符是使用 GDT or LDT ，看 val &amp; 0x4 的结果，如果为 1 使用 LDT，否则 GDT
+	mov %ax,%fs
+	incl _jiffies   # 反正每次时钟中断 +1 ，想不到合适的中文翻译
+	movb $0x20,%al		# EOI to interrupt controller #1 发送指令请求硬件结束这次时钟中断的报告
+	outb %al,$0x20
+	movl CS(%esp),%eax  # 这个 CS 是个常量，取出内核栈暂存的原来正在执行的任务的代码段选择符
+	andl $3,%eax		# %eax is CPL (0 or 3, 0=supervisor)    判断一下在中断开始前代码的特权级 0 是内核态，3 是用户态
+	pushl %eax
+	call _do_timer		# 调用 do_timer(long CPL) 。真正的处理时钟中断
+	addl $4,%esp		# task switching to accounting ...
+	jmp ret_from_sys_call
+</code></pre><h3 id="任务调度-do_timer">任务调度 do_timer</h3>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#902000">void</span> <span style="color:#06287e">do_timer</span>(<span style="color:#902000">long</span> cpl)     <span style="color:#60a0b0;font-style:italic">/* 这个 cpl 是上一小节获取的原任务正在执行的指令的特权级 */</span>
+{
+    <span style="color:#007020;font-weight:bold">extern</span> <span style="color:#902000">int</span> beepcount;       <span style="color:#60a0b0;font-style:italic">/* 扬声器发声计数 */</span>
+    <span style="color:#007020;font-weight:bold">extern</span> <span style="color:#902000">void</span> sysbeepstop(<span style="color:#902000">void</span>);  <span style="color:#60a0b0;font-style:italic">/* 关闭扬声器的函数声明 */</span>
+
+    <span style="color:#007020;font-weight:bold">if</span> (beepcount)              <span style="color:#60a0b0;font-style:italic">/* 这段逻辑作用很不清晰，可能是富有年代感的产物 */</span>
+        <span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!--</span>beepcount)
+            sysbeepstop();
+
+    <span style="color:#007020;font-weight:bold">if</span> (cpl)                    <span style="color:#60a0b0;font-style:italic">/* 判断特权级 然后给当前任务的用户态/内核态用时计数 */</span>
+        current<span style="color:#666">-&gt;</span>utime<span style="color:#666">++</span>;
+    <span style="color:#007020;font-weight:bold">else</span>
+        current<span style="color:#666">-&gt;</span>stime<span style="color:#666">++</span>;
+
+    <span style="color:#60a0b0;font-style:italic">/* 这段逻辑是给操作系统定时任务用的，用兴趣的欢迎自己学习 */</span>
+    <span style="color:#007020;font-weight:bold">if</span> (next_timer) {
+        next_timer<span style="color:#666">-&gt;</span>jiffies<span style="color:#666">--</span>;
+        <span style="color:#007020;font-weight:bold">while</span> (next_timer <span style="color:#666">&amp;&amp;</span> next_timer<span style="color:#666">-&gt;</span>jiffies <span style="color:#666">&lt;=</span> <span style="color:#40a070">0</span>) {
+            <span style="color:#902000">void</span> (<span style="color:#666">*</span>fn)(<span style="color:#902000">void</span>);
+
+            fn <span style="color:#666">=</span> next_timer<span style="color:#666">-&gt;</span>fn;
+            next_timer<span style="color:#666">-&gt;</span>fn <span style="color:#666">=</span> ((<span style="color:#902000">void</span> <span style="color:#666">*</span>) <span style="color:#40a070">0</span>);
+            next_timer <span style="color:#666">=</span> next_timer<span style="color:#666">-&gt;</span>next;
+            (fn)();
+        }
+    }
+    <span style="color:#007020;font-weight:bold">if</span> (current_DOR <span style="color:#666">&amp;</span> <span style="color:#40a070">0xf0</span>)
+        do_floppy_timer();
+    <span style="color:#007020;font-weight:bold">if</span> ((<span style="color:#666">--</span>current<span style="color:#666">-&gt;</span>counter)<span style="color:#666">&gt;</span><span style="color:#40a070">0</span>) <span style="color:#007020;font-weight:bold">return</span>;     <span style="color:#60a0b0;font-style:italic">/* 分配给当前任务的时间片 -1 。如果不为0，那么直接退出时钟中断，让任务继续执行 */</span>
+    current<span style="color:#666">-&gt;</span>counter<span style="color:#666">=</span><span style="color:#40a070">0</span>;     <span style="color:#60a0b0;font-style:italic">/* 否则，当前任务的时间片记为 0 */</span>
+    <span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>cpl) <span style="color:#007020;font-weight:bold">return</span>;       <span style="color:#60a0b0;font-style:italic">/* 如果当前任务正处于内核态(比如用户程序中使用了一些系统调用)，那么先让这个任务继续执行，避免任务切换引起的麻烦 */</span>
+    schedule();             <span style="color:#60a0b0;font-style:italic">/* 任务调用，决定下一个时间片的主人 */</span>
+}
+</code></pre></div><h3 id="任务调度-schedule">任务调度 schedule()</h3>
+<p>schedule() 就开始对 CPU 之后要把时间片分配给哪个任务做一次决策了。</p>
+<p>但是，在开始之前，我们有必要先了解一下结构体 task_struct</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020;font-weight:bold">struct</span> task_struct {
+	<span style="color:#902000">long</span> state;	<span style="color:#60a0b0;font-style:italic">/* -1 unrunnable, 0 runnable, &gt;0 stopped */</span>
+	<span style="color:#902000">long</span> counter;
+	<span style="color:#902000">long</span> priority;
+	<span style="color:#902000">long</span> signal;
+	<span style="color:#007020;font-weight:bold">struct</span> sigaction sigaction[<span style="color:#40a070">32</span>];
+	<span style="color:#902000">long</span> blocked;	<span style="color:#60a0b0;font-style:italic">/* bitmap of masked signals */</span>
+<span style="color:#60a0b0;font-style:italic">/* various fields */</span>
+	<span style="color:#902000">int</span> exit_code;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> start_code,end_code,end_data,brk,start_stack;
+	<span style="color:#902000">long</span> pid,father,pgrp,session,leader;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> uid,euid,suid;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> gid,egid,sgid;
+	<span style="color:#902000">long</span> alarm;
+	<span style="color:#902000">long</span> utime,stime,cutime,cstime,start_time;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> used_math;
+<span style="color:#60a0b0;font-style:italic">/* file system info */</span>
+	<span style="color:#902000">int</span> tty;		<span style="color:#60a0b0;font-style:italic">/* -1 if no tty, so it must be signed */</span>
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">short</span> umask;
+	<span style="color:#007020;font-weight:bold">struct</span> m_inode <span style="color:#666">*</span> pwd;
+	<span style="color:#007020;font-weight:bold">struct</span> m_inode <span style="color:#666">*</span> root;
+	<span style="color:#007020;font-weight:bold">struct</span> m_inode <span style="color:#666">*</span> executable;
+	<span style="color:#902000">unsigned</span> <span style="color:#902000">long</span> close_on_exec;
+	<span style="color:#007020;font-weight:bold">struct</span> file <span style="color:#666">*</span> filp[NR_OPEN];
+<span style="color:#60a0b0;font-style:italic">/* ldt for this task 0 - zero 1 - cs 2 - ds&amp;ss */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> desc_struct ldt[<span style="color:#40a070">3</span>];
+<span style="color:#60a0b0;font-style:italic">/* tss for this task */</span>
+	<span style="color:#007020;font-weight:bold">struct</span> tss_struct tss;
+};
+</code></pre></div><p>匆匆一瞥，不过是不是觉得有些变量名还是很熟悉的，比如说 priority, utime, uid, eid, gid 等等。
+但是暂时还用不上这么多。只要有个概念就好。操作系统通过上述这些值共同维护起了一个任务的方方面面的信息。</p>
+<p>其中，需要再次注意的是，Linux0.11 版本最多只支持 64 个任务 (这是硬编码决定的上限，因为这个 task_struct 结构实例只声明了 64 个)</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#60a0b0;font-style:italic">/*
+</span><span style="color:#60a0b0;font-style:italic"> *  &#39;schedule()&#39; is the scheduler function. This is GOOD CODE! There
+</span><span style="color:#60a0b0;font-style:italic"> * probably won&#39;t be any reason to change this, as it should work well
+</span><span style="color:#60a0b0;font-style:italic"> * in all circumstances (ie gives IO-bound processes good response etc).
+</span><span style="color:#60a0b0;font-style:italic"> * The one thing you might take a look at is the signal-handler code here.
+</span><span style="color:#60a0b0;font-style:italic"> *
+</span><span style="color:#60a0b0;font-style:italic"> *   NOTE!!  Task 0 is the &#39;idle&#39; task, which gets called when no other
+</span><span style="color:#60a0b0;font-style:italic"> * tasks can run. It can not be killed, and it cannot sleep. The &#39;state&#39;
+</span><span style="color:#60a0b0;font-style:italic"> * information in task[0] is never used.
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#902000">void</span> <span style="color:#06287e">schedule</span>(<span style="color:#902000">void</span>)
+{
+	<span style="color:#902000">int</span> i,next,c;
+	<span style="color:#007020;font-weight:bold">struct</span> task_struct <span style="color:#666">**</span> p;
+
+<span style="color:#60a0b0;font-style:italic">/* check alarm, wake up any interruptible tasks that have got a signal */</span>
+<span style="color:#60a0b0;font-style:italic">/* 检测 alarm (任务定时报警信号)，并唤醒可中断的任务来完成预定义的工作, 好像自己用得少，还不太了解 alarm(xxx) 的细节
+</span><span style="color:#60a0b0;font-style:italic"> * 从任务 63 号开始(总共 64 个任务, 0~63) ，倒着遍历所有任务，检测 alarm 
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+	<span style="color:#007020;font-weight:bold">for</span>(p <span style="color:#666">=</span> <span style="color:#666">&amp;</span>LAST_TASK ; p <span style="color:#666">&gt;</span> <span style="color:#666">&amp;</span>FIRST_TASK ; <span style="color:#666">--</span>p)
+		<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">*</span>p) {
+			<span style="color:#007020;font-weight:bold">if</span> ((<span style="color:#666">*</span>p)<span style="color:#666">-&gt;</span>alarm <span style="color:#666">&amp;&amp;</span> (<span style="color:#666">*</span>p)<span style="color:#666">-&gt;</span>alarm <span style="color:#666">&lt;</span> jiffies) {
+					(<span style="color:#666">*</span>p)<span style="color:#666">-&gt;</span>signal <span style="color:#666">|=</span> (<span style="color:#40a070">1</span><span style="color:#666">&lt;&lt;</span>(SIGALRM<span style="color:#666">-</span><span style="color:#40a070">1</span>));
+					(<span style="color:#666">*</span>p)<span style="color:#666">-&gt;</span>alarm <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+				}
+			<span style="color:#007020;font-weight:bold">if</span> (((<span style="color:#666">*</span>p)<span style="color:#666">-&gt;</span>signal <span style="color:#666">&amp;</span> <span style="color:#666">~</span>(_BLOCKABLE <span style="color:#666">&amp;</span> (<span style="color:#666">*</span>p)<span style="color:#666">-&gt;</span>blocked)) <span style="color:#666">&amp;&amp;</span>
+			(<span style="color:#666">*</span>p)<span style="color:#666">-&gt;</span>state<span style="color:#666">==</span>TASK_INTERRUPTIBLE)
+				(<span style="color:#666">*</span>p)<span style="color:#666">-&gt;</span>state<span style="color:#666">=</span>TASK_RUNNING;
+		}
+
+<span style="color:#60a0b0;font-style:italic">/* this is the scheduler proper: */</span>
+
+	<span style="color:#007020;font-weight:bold">while</span> (<span style="color:#40a070">1</span>) {
+		c <span style="color:#666">=</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>;
+		next <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+		i <span style="color:#666">=</span> NR_TASKS;   <span style="color:#60a0b0;font-style:italic">/* 这里的宏 NR_TASKS = 64 */</span>
+		p <span style="color:#666">=</span> <span style="color:#666">&amp;</span>task[NR_TASKS];
+		<span style="color:#007020;font-weight:bold">while</span> (<span style="color:#666">--</span>i) {
+			<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!*--</span>p)
+				<span style="color:#007020;font-weight:bold">continue</span>;
+            <span style="color:#60a0b0;font-style:italic">/* 选择任务状态为 就绪态，且 counter 值最大的任务号作为下一个占用 CPU 的任务
+</span><span style="color:#60a0b0;font-style:italic">			if ((*p)-&gt;state == TASK_RUNNING &amp;&amp; (*p)-&gt;counter &gt; c) 
+</span><span style="color:#60a0b0;font-style:italic">				c = (*p)-&gt;counter, next = i;
+</span><span style="color:#60a0b0;font-style:italic">		}
+</span><span style="color:#60a0b0;font-style:italic">        /* 如果没有其它任务，那么 next = 0 ，即接下来占用 cpu 的任务就是 0号任务(0号任务一定存在，不能被 kill ) */</span>
+		<span style="color:#007020;font-weight:bold">if</span> (c) <span style="color:#007020;font-weight:bold">break</span>;
+        <span style="color:#60a0b0;font-style:italic">/* 如果 1~63 号任务(不存在或不在就绪态)至少存在一个任务，且时间片都为 0 ，那么重新计算分配给每个任务的 counter 值 */</span>
+		<span style="color:#007020;font-weight:bold">for</span>(p <span style="color:#666">=</span> <span style="color:#666">&amp;</span>LAST_TASK ; p <span style="color:#666">&gt;</span> <span style="color:#666">&amp;</span>FIRST_TASK ; <span style="color:#666">--</span>p)
+			<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">*</span>p)
+				(<span style="color:#666">*</span>p)<span style="color:#666">-&gt;</span>counter <span style="color:#666">=</span> ((<span style="color:#666">*</span>p)<span style="color:#666">-&gt;</span>counter <span style="color:#666">&gt;&gt;</span> <span style="color:#40a070">1</span>) <span style="color:#666">+</span> (<span style="color:#666">*</span>p)<span style="color:#666">-&gt;</span>priority;
+	}
+    <span style="color:#60a0b0;font-style:italic">/* 将当前任务切换为 next ，然后就可以一切就绪，退出时钟中断，就变成新的占用cpu的任务来执行了 */</span>
+	switch_to(next);
+}
+</code></pre></div><p><strong>switch_to(next)</strong></p>
+<p>switch_to(next) 这个函数，是通过内嵌汇编写的。下面我们来看看细节(这里选用 GCC 编译出来的汇编指令，不直接使用内嵌汇编)</p>
+<pre><code class="language-assembly" data-lang="assembly"># 这里的汇编指令紧跟在 if(c) break; 之后
+.L36:
+	movl	%ebx, %edx          # 这里 ebx 存储的是 next 变量的值，现在复制到 edx 上
+	sall	$4, %edx            # sall、addl 两行的目的是计算得到一个 TSS 选择符，TSS0 在 GDT 是第4项，TSS1 在 GDT 是第 6 项，类推...其中选择符后3位为DPL和 GDTR/LDTR 选项
+	addl	$32, %edx
+	movl	_task(,%ebx,4), %ecx    # 找到 next 号任务的 task_struct 的指针 (存储在 task[64] 的数组中)
+#APP
+# 141 &quot;sched.c&quot; 1
+	cmpl %ecx,_current          # 确认是不是原任务
+	je 1f                       # 是的话直接跳出 (跳到最近的标签 1 )
+	movw %dx,8(%esp)
+	xchgl %ecx,_current         # 交换 ecx 和 _current 存储的值
+	ljmp 4(%esp)                # 通过间接跳转完成任务切换。通用的形式是 jmp CS:IP，但是使用间接跳转，在内存中的值先读取 32 位偏移量，再读 16 位段选择符
+	cmpl %ecx,_last_task_used_math
+	jne 1f
+	clts                        # 清除 CR0 寄存器中的 TS Flag 
+1:
+# 0 &quot;&quot; 2
+#NO_AP
+</code></pre><p>上面这段程序有必要将它割裂成两部分来看待，以 <code>ljmp 4(%esp)</code> 为界。</p>
+<p><code>jmp</code> ，这是一个相当明显的程序跳转。这里 jmp 给出的选择符是 GDT 上某个任务的 TSS 描述符</p>
+<p>通过 <code>jmp</code> CPU 将完成老的任务所有寄存器的保存现场，以及新的任务所有寄存器暂存结果的载入。</p>
+<p>CPU 执行的下一条指令，将是新的任务 CS:EIP 所指明的指令。</p>
+<p>相应的，<code>ljmp</code> 之后的指令将在该任务重新获得占用 CPU 后获得执行。</p>
+<h2 id="任务调度的结束阶段">任务调度的结束阶段</h2>
+<p>这段就比较绕了，现在假设一个前提，就是任务 A 也是在时钟中断重新进行任务调度的时候被替换掉的，现在 CPU 分配的时间片又轮到了任务 A 。</p>
+<p>也就是紧随着上一小节 <code>ljmp</code> 看看从任务内核态回到用户态的流程。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm">    <span style="color:#60a0b0;font-style:italic"># 这段与上面一段指令是直接承接的
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#06287e">movl</span>	<span style="color:#40a070">12</span>(<span style="color:#bb60d5">%esp</span>), <span style="color:#bb60d5">%eax</span>
+	<span style="color:#06287e">xorl</span>	<span style="color:#bb60d5">%gs</span>:<span style="color:#40a070">20</span>, <span style="color:#bb60d5">%eax</span>
+	<span style="color:#06287e">je</span>	<span style="color:#60add5">.L40</span>
+	<span style="color:#06287e">call</span>	<span style="color:#60add5">___stack_chk_fail</span>
+<span style="color:#002070;font-weight:bold">.L40:</span>
+	<span style="color:#06287e">addl</span>	<span style="color:#60add5">$24</span>, <span style="color:#bb60d5">%esp</span>           <span style="color:#60a0b0;font-style:italic"># 这里返还这次 call 额外申请的内核栈空间
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#60add5">.cfi_def_cfa_offset</span> <span style="color:#40a070">8</span>
+	<span style="color:#06287e">popl</span>	<span style="color:#bb60d5">%ebx</span>                <span style="color:#60a0b0;font-style:italic"># 恢复进入 call 的时候暂存的 ebx
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#60add5">.cfi_restore</span> <span style="color:#40a070">3</span>
+	<span style="color:#4070a0">.cfi_def_cfa_offset</span> <span style="color:#40a070">4</span>
+	<span style="color:#06287e">ret</span>                         <span style="color:#60a0b0;font-style:italic"># return 跳转回到当初调用的地方
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#60add5">.cfi_endproc</span>
+</code></pre></div><p>还是从汇编指令来看</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm">	<span style="color:#06287e">call</span>	<span style="color:#60add5">_schedule</span>           <span style="color:#60a0b0;font-style:italic"># 原先调用 schedule() 的地方
+</span><span style="color:#60a0b0;font-style:italic"></span><span style="color:#60add5">.L93</span>:
+    <span style="color:#60a0b0;font-style:italic"># return 跳转回来，直接承接的指令
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#06287e">addl</span>	<span style="color:#60add5">$8</span>, <span style="color:#bb60d5">%esp</span>
+	<span style="color:#4070a0">.cfi_def_cfa_offset</span> <span style="color:#40a070">8</span>
+	<span style="color:#06287e">popl</span>	<span style="color:#bb60d5">%ebx</span>
+	<span style="color:#4070a0">.cfi_restore</span> <span style="color:#40a070">3</span>
+	<span style="color:#4070a0">.cfi_def_cfa_offset</span> <span style="color:#40a070">4</span>
+	<span style="color:#06287e">ret</span>                         <span style="color:#60a0b0;font-style:italic"># 继续 return ，跳出 do_timer() 
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#60add5">.cfi_endproc</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm">    <span style="color:#06287e">call</span> <span style="color:#60add5">_do_timer</span>		<span style="color:#60a0b0;font-style:italic"># &#39;do_timer(long CPL)&#39; does everything from
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#60add5">addl</span> <span style="color:#60add5">$4</span>,<span style="color:#bb60d5">%esp</span>		<span style="color:#60a0b0;font-style:italic"># task switching to accounting ...
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#60add5">jmp</span> <span style="color:#60add5">ret_from_sys_call</span>
+</code></pre></div><p><strong>ret_from_sys_call</strong></p>
+<p>这里就打算正式结束由于这次时钟中断所引发的内核态指令执行的流程，正式回归用户态了。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm"><span style="color:#002070;font-weight:bold">ret_from_sys_call:</span>
+    <span style="color:#60a0b0;font-style:italic"># 这 3 行来判断是不是任务0，如果是就不进行信号量的处理了
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#06287e">movl</span> <span style="color:#60add5">_current</span>,<span style="color:#bb60d5">%eax</span>		<span style="color:#60a0b0;font-style:italic"># task[0] cannot have signals
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#60add5">cmpl</span> <span style="color:#60add5">_task</span>,<span style="color:#bb60d5">%eax</span>
+	<span style="color:#06287e">je</span> <span style="color:#40a070">3</span><span style="color:#60add5">f</span>
+    <span style="color:#60a0b0;font-style:italic"># 判断在发生时钟中断前，CS 表示的是不是 LDT 第 1 项 (局部变量表的代码段)
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic"># 否则 CS 就应该内核态代码段了，不进行信号量处理
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#06287e">cmpw</span> <span style="color:#60add5">$0x0f</span>,<span style="color:#60add5">CS</span>(<span style="color:#bb60d5">%esp</span>)		<span style="color:#60a0b0;font-style:italic"># was old code segment supervisor ?
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#60add5">jne</span> <span style="color:#40a070">3</span><span style="color:#60add5">f</span>
+    <span style="color:#60a0b0;font-style:italic"># 判断在发生时钟中断前，SS 表示的是不是 LDT 第 2 项 (局部变量表的数据段)
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic"># 否则认为程序还处在内核态，不进行信号量处理
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#06287e">cmpw</span> <span style="color:#60add5">$0x17</span>,<span style="color:#60add5">OLDSS</span>(<span style="color:#bb60d5">%esp</span>)		<span style="color:#60a0b0;font-style:italic"># was stack segment = 0x17 ?
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#60add5">jne</span> <span style="color:#40a070">3</span><span style="color:#60add5">f</span>
+    <span style="color:#60a0b0;font-style:italic"># 设置信号量 (不清楚，先挖个坑)
+</span><span style="color:#60a0b0;font-style:italic"></span>	<span style="color:#06287e">movl</span> <span style="color:#60add5">signal</span>(<span style="color:#bb60d5">%eax</span>),<span style="color:#bb60d5">%ebx</span>
+	<span style="color:#06287e">movl</span> <span style="color:#60add5">blocked</span>(<span style="color:#bb60d5">%eax</span>),<span style="color:#bb60d5">%ecx</span>
+	<span style="color:#06287e">notl</span> <span style="color:#bb60d5">%ecx</span>
+	<span style="color:#06287e">andl</span> <span style="color:#bb60d5">%ebx</span>,<span style="color:#bb60d5">%ecx</span>
+	<span style="color:#06287e">bsfl</span> <span style="color:#bb60d5">%ecx</span>,<span style="color:#bb60d5">%ecx</span>
+	<span style="color:#06287e">je</span> <span style="color:#40a070">3</span><span style="color:#60add5">f</span>
+	<span style="color:#06287e">btrl</span> <span style="color:#bb60d5">%ecx</span>,<span style="color:#bb60d5">%ebx</span>
+	<span style="color:#06287e">movl</span> <span style="color:#bb60d5">%ebx</span>,<span style="color:#60add5">signal</span>(<span style="color:#bb60d5">%eax</span>)
+	<span style="color:#06287e">incl</span> <span style="color:#bb60d5">%ecx</span>
+	<span style="color:#06287e">pushl</span> <span style="color:#bb60d5">%ecx</span>
+	<span style="color:#06287e">call</span> <span style="color:#60add5">_do_signal</span>
+	<span style="color:#06287e">popl</span> <span style="color:#bb60d5">%eax</span>
+<span style="">3:</span>	<span style="color:#06287e">popl</span> <span style="color:#bb60d5">%eax</span>
+	<span style="color:#06287e">popl</span> <span style="color:#bb60d5">%ebx</span>
+	<span style="color:#06287e">popl</span> <span style="color:#bb60d5">%ecx</span>
+	<span style="color:#06287e">popl</span> <span style="color:#bb60d5">%edx</span>
+	<span style="color:#06287e">pop</span> <span style="color:#bb60d5">%fs</span>
+	<span style="color:#06287e">pop</span> <span style="color:#bb60d5">%es</span>
+	<span style="color:#06287e">pop</span> <span style="color:#bb60d5">%ds</span>
+	<span style="color:#06287e">iret</span>
+</code></pre></div><p>至此，通过 iret 将跳转回到用户态代码被中断的位置，并继续执行</p>
+<h2 id="补充">补充</h2>
+<h3 id="pause">pause()</h3>
+<p><a href="https://dormouse-none.github.io/2018-10-06-understand-Kernel-3/">Linux Kernel(3) - 操作系统启动</a> 中，描述过任务0在完成了整个操作系统的启动流程之后，唯一在做的事情，就是调用 <code>for(;;) pause();</code></p>
+<p>CPU 每次把时间片分配给它，它就开始浪费权力，直接不要了这个时间片。</p>
+<p>之前一直以为 pause() 会选择执行 <code>HLT</code> 指令让 CPU 暂时地陷入停止状态。但是出乎意料，并不是这个结果(当然，最终是不是还是另一个说法。毕竟代码都是人写的，每个人都可以各自有一套实现)。</p>
+<p>当 CPU 把执行指令的权力交个任务 0 时，选择让 CPU 停止，直到接收到硬件中断为止也不失为一种选择。当然，不论其它，Linux0.11版本的代码不是这样的。</p>
+<p>通过 <code>INT 0x80</code> 配合系统调用函数查表，最后定位到的就是 sys_pause() 了</p>
+<pre><code>_sys_pause:
+.LFB13:
+	.cfi_startproc
+	subl	$12, %esp
+	.cfi_def_cfa_offset 16
+	movl	_current, %eax
+	movl	$1, (%eax)
+	call	_schedule       # 调用 schedule() 重新划分时间片
+	movl	$0, %eax
+	addl	$12, %esp
+	.cfi_def_cfa_offset 4
+	ret
+	.cfi_endproc
+</code></pre><h3 id="timer-定时器">timer 定时器</h3>
+<p>之前在 <code>do_timer()</code> 函数中也看过了每次时钟中断，都会检查一遍定时器，并决定是否触发预置的定时器处理函数。</p>
+<p>当然了，既然是触发定时器，总是要有一个前提——设置定时器</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#902000">void</span> <span style="color:#06287e">add_timer</span>(<span style="color:#902000">long</span> jiffies, <span style="color:#902000">void</span> (<span style="color:#666">*</span>fn)(<span style="color:#902000">void</span>))
+{
+	<span style="color:#007020;font-weight:bold">struct</span> timer_list <span style="color:#666">*</span> p;
+
+	<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>fn)
+		<span style="color:#007020;font-weight:bold">return</span>;
+	cli();
+	<span style="color:#007020;font-weight:bold">if</span> (jiffies <span style="color:#666">&lt;=</span> <span style="color:#40a070">0</span>)
+		(fn)();
+	<span style="color:#007020;font-weight:bold">else</span> {
+		<span style="color:#007020;font-weight:bold">for</span> (p <span style="color:#666">=</span> timer_list ; p <span style="color:#666">&lt;</span> timer_list <span style="color:#666">+</span> TIME_REQUESTS ; p<span style="color:#666">++</span>)
+			<span style="color:#007020;font-weight:bold">if</span> (<span style="color:#666">!</span>p<span style="color:#666">-&gt;</span>fn)
+				<span style="color:#007020;font-weight:bold">break</span>;
+		<span style="color:#007020;font-weight:bold">if</span> (p <span style="color:#666">&gt;=</span> timer_list <span style="color:#666">+</span> TIME_REQUESTS)
+			panic(<span style="color:#4070a0">&#34;No more time requests free&#34;</span>);
+		p<span style="color:#666">-&gt;</span>fn <span style="color:#666">=</span> fn;
+		p<span style="color:#666">-&gt;</span>jiffies <span style="color:#666">=</span> jiffies;
+		p<span style="color:#666">-&gt;</span>next <span style="color:#666">=</span> next_timer;
+		next_timer <span style="color:#666">=</span> p;
+		<span style="color:#007020;font-weight:bold">while</span> (p<span style="color:#666">-&gt;</span>next <span style="color:#666">&amp;&amp;</span> p<span style="color:#666">-&gt;</span>next<span style="color:#666">-&gt;</span>jiffies <span style="color:#666">&lt;</span> p<span style="color:#666">-&gt;</span>jiffies) {
+			p<span style="color:#666">-&gt;</span>jiffies <span style="color:#666">-=</span> p<span style="color:#666">-&gt;</span>next<span style="color:#666">-&gt;</span>jiffies;
+			fn <span style="color:#666">=</span> p<span style="color:#666">-&gt;</span>fn;
+			p<span style="color:#666">-&gt;</span>fn <span style="color:#666">=</span> p<span style="color:#666">-&gt;</span>next<span style="color:#666">-&gt;</span>fn;
+			p<span style="color:#666">-&gt;</span>next<span style="color:#666">-&gt;</span>fn <span style="color:#666">=</span> fn;
+			jiffies <span style="color:#666">=</span> p<span style="color:#666">-&gt;</span>jiffies;
+			p<span style="color:#666">-&gt;</span>jiffies <span style="color:#666">=</span> p<span style="color:#666">-&gt;</span>next<span style="color:#666">-&gt;</span>jiffies;
+			p<span style="color:#666">-&gt;</span>next<span style="color:#666">-&gt;</span>jiffies <span style="color:#666">=</span> jiffies;
+			p <span style="color:#666">=</span> p<span style="color:#666">-&gt;</span>next;
+		}
+	}
+	sti();
+}
+</code></pre></div><h2 id="小结">小结</h2>
+<p>对于任务调度，更难的是对一个时间断层的理解。在调度过程中，旧任务被暂停，新的任务被重新启动, 直到旧的任务又被启动。这里就必须人为地将被中断的任务主动的连接起来看待。</p>
+<p>早期版本的任务调度模块确实比较简单，累计不过百行 C 代码。哈哈。一点一点继续来吧。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">  __                    __                  
+ / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+| |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
+|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+                 |___/                |___/ 
+</code></pre></div>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2018-10-06-understand-kernel-3/">理解 Linux Kernel (3) - 操作系统启动</a></li>
+    
+    <li><a href="/posts/2018-08-26-understand-kernel-2/">理解 Linux Kernel (2) - 多任务切换</a></li>
+    
+    <li><a href="/posts/2018-08-19-understand-kernel-0/">理解 Linux Kernel (0) - 概述</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+ 
+  </body>
+</html>

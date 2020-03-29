@@ -109,7 +109,7 @@
                 <p>BPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控/过滤网络数据包的任务，必然地会涉及到内核空间/用户空间的拷贝。而众所周知的，内核空间/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。</p>
 <p>BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。</p>
 <p>本篇只着眼于传统的 BPF 技术，探求 BPF 如何在内核埋入包过滤相关的钩子以实现其功能。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-12-%E7%90%86%E8%A7%A3-linux-kernel-14-cbpf/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-12-bpf/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -143,7 +143,7 @@
 ffutop $ uptime
 09:58:56 up <span style="color:#40a070">165</span> days, 20:14,  <span style="color:#40a070">2</span> users,  load average: 0.63, 0.24, 0.09
 </code></pre></div><p>是什么原因导致平均负载与预期值不符呢？</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-09-16-%E7%B3%BB%E7%BB%9F%E5%B9%B3%E5%9D%87%E8%B4%9F%E8%BD%BD%E5%88%86%E6%9E%90/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-09-16-load-average/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -173,7 +173,7 @@ ffutop $ uptime
             <div class="post-content markdown-body">
                 <p>最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。</p>
 <p>流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(<code>sk_buff</code> 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 <code>enqueue</code>, <code>dequeue</code> 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-23-linux-traffic-control/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-23-traffic-control/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -202,7 +202,7 @@ ffutop $ uptime
 
             <div class="post-content markdown-body">
                 <p><code>Netfilter</code>，内核中用于管理网络数据包的重要网络模块；<code>iptables</code>，运行在用户空间，用于控制 <code>Netfilter</code> 模块的一种软件。需要注意的，<code>iptables</code> 只能控制 IPv4 数据包，对于 IPv6 数据包，需要使用 <code>ip6tables</code> 。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-06-netfilter-%E5%AF%BC%E8%A7%88-based-on-iptables/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-06-netfilter/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -232,7 +232,7 @@ ffutop $ uptime
             <div class="post-content markdown-body">
                 <p>几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。</p>
 <p>本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-17-%E7%90%86%E8%A7%A3-linux-kernel-13-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-17-understand-kernel-13/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -267,7 +267,7 @@ ffutop $ uptime
 <blockquote>
 <p>本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04</p>
 </blockquote>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-18-%E7%90%86%E8%A7%A3-linux-kernel-12-linux-%E5%AE%B9%E5%99%A8%E5%8C%96%E6%8A%80%E6%9C%AF/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -302,7 +302,7 @@ ffutop $ uptime
 <p>虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。</p>
 </blockquote>
 <p>当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 <code>ffstrings</code> 出现 <code>EPERM</code> 的原因。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-02-%E8%B7%9F%E8%B8%AA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E7%9A%84%E5%B7%A5%E5%85%B7-ftrace/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-02-ftrace/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -332,7 +332,7 @@ ffutop $ uptime
             <div class="post-content markdown-body">
                 <p>进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。</p>
 <p><em>本篇基于 Linux 4.9.87 版本源码</em></p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-27-%E7%90%86%E8%A7%A3-linux-kernel-11-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -361,7 +361,7 @@ ffutop $ uptime
 
             <div class="post-content markdown-body">
                 <p>在进行<a href="https://www.ffutop.com/2018-10-12-understand-Kernel-4/">第四篇(任务调度)</a>行文描述时，就一直闹不清内核所谓的<code>task</code>的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：<strong>我们错误地将理论和实践不加区分地混淆了</strong>。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，<code>task</code> 也就是 <code>Context of Execution</code> 概念在实现上的表征。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-10-%E7%90%86%E8%A7%A3-linux-kernel10-context-of-execution/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-10-understand-kernel-10/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>
@@ -412,7 +412,7 @@ ffutop $ uptime
 7ffe2cff0000-7ffe2cff2000 r-xp 00000000 00:00 0                          [vdso]
 ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
 </code></pre>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-03-25-%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E8%BF%90%E8%A1%8C%E6%97%B6%E8%BF%9B%E7%A8%8B%E5%A0%86%E6%A0%88/'><nobr class="summary-read-more">Read more →</nobr></a>
+                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-03-25-mem-dump/'><nobr class="summary-read-more">Read more →</nobr></a>
                 <div class="post-line"></div>
             </div>
           </section>

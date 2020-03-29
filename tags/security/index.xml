@@ -13,10 +13,10 @@
     
     <item>
       <title>SQL 注入</title>
-      <link>https://www.ffutop.com/posts/2018-12-15-sql-%E6%B3%A8%E5%85%A5/</link>
+      <link>https://www.ffutop.com/posts/2018-12-15-sql-injection/</link>
       <pubDate>Sat, 15 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-12-15-sql-%E6%B3%A8%E5%85%A5/</guid>
+      <guid>https://www.ffutop.com/posts/2018-12-15-sql-injection/</guid>
       <description>&lt;p&gt;说实话此前对 SQL 注入的理解仅仅只是皮毛。当然，目前也是，只是有了一定程度的理解。&lt;/p&gt;
 &lt;p&gt;最近好像工具用得有些过头了，需要停下来整理下工具的实现原理。&lt;/p&gt;
 &lt;p&gt;更好地理解了工具实现，才能更加心安理得地使用工具。毕竟等别人怼的时候，还能够比较安心地回道: &amp;ldquo;我用不用现成的工具只是取决于我想不想自己再写一套&amp;rdquo;&lt;/p&gt;
@@ -25,10 +25,10 @@
     
     <item>
       <title>Java 安全访问与权限控制</title>
-      <link>https://www.ffutop.com/posts/2018-07-04-java-%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE%E4%B8%8E%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/</link>
+      <link>https://www.ffutop.com/posts/2018-07-04-jdk-permission/</link>
       <pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.ffutop.com/posts/2018-07-04-java-%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE%E4%B8%8E%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/</guid>
+      <guid>https://www.ffutop.com/posts/2018-07-04-jdk-permission/</guid>
       <description>&lt;h2 id=&#34;绪论&#34;&gt;绪论&lt;/h2&gt;
 &lt;p&gt;&lt;em&gt;本文只是对 Java 安全访问与权限控制的基础性探究。&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;本节与全文内容无关，如无兴趣阅读，可以跳过&lt;/strong&gt;&lt;/p&gt;
