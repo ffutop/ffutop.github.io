@@ -21,12 +21,12 @@
       "@type" : "BlogPosting",
       "mainEntityOfPage": {
            "@type": "WebPage",
-           "@id": "https:\/\/www.ffutop.com\/"
+           "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "posts",
       "name" : "理解 Linux Kernel (9) - IO Multiplexing",
       "headline" : "理解 Linux Kernel (9) - IO Multiplexing",
-      "description" : "\x3cp\x3e\x3ca href=\x22.\/2019-01-15-understand-Kernel-8\/\x22\x3e前一篇\x3c\/a\x3e已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程\/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 \x3ccode\x3estruct sock\x3c\/code\x3e 对象，将其逐级从网络接口层逐级提升到网络层、传输层\x26hellip;最终添加到接收队列 \x3ccode\x3esk_receive_queue\x3c\/code\x3e 中；用户进程通过 \x3ccode\x3eread\x3c\/code\x3e、\x3ccode\x3erecv\x3c\/code\x3e、\x3ccode\x3erecvfrom\x3c\/code\x3e 等命令检查并获取 \x3ccode\x3esk_receive_queue\x3c\/code\x3e 中的数据。\x3c\/p\x3e\n\x3cp\x3e整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。\x3c\/p\x3e\n\x3cp\x3e那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（\x3ccode\x3eselect\x3c\/code\x3e, \x3ccode\x3epoll\x3c\/code\x3e, \x3ccode\x3eepoll\x3c\/code\x3e）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 \x3ccode\x3eselect\x3c\/code\x3e 和 \x3ccode\x3eepoll\x3c\/code\x3e 两类系统调用的实现进行探究。\x3c\/p\x3e",
+      "description" : "\u003cp\u003e\u003ca href=\"./2019-01-15-understand-Kernel-8/\"\u003e前一篇\u003c/a\u003e已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 \u003ccode\u003estruct sock\u003c/code\u003e 对象，将其逐级从网络接口层逐级提升到网络层、传输层\u0026hellip;最终添加到接收队列 \u003ccode\u003esk_receive_queue\u003c/code\u003e 中；用户进程通过 \u003ccode\u003eread\u003c/code\u003e、\u003ccode\u003erecv\u003c/code\u003e、\u003ccode\u003erecvfrom\u003c/code\u003e 等命令检查并获取 \u003ccode\u003esk_receive_queue\u003c/code\u003e 中的数据。\u003c/p\u003e\n\u003cp\u003e整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。\u003c/p\u003e\n\u003cp\u003e那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（\u003ccode\u003eselect\u003c/code\u003e, \u003ccode\u003epoll\u003c/code\u003e, \u003ccode\u003eepoll\u003c/code\u003e）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 \u003ccode\u003eselect\u003c/code\u003e 和 \u003ccode\u003eepoll\u003c/code\u003e 两类系统调用的实现进行探究。\u003c/p\u003e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -34,9 +34,9 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2019",
-      "datePublished": "2019-03-05 00:00:00 \x2b0000 UTC",
-      "dateModified" : "2019-03-05 00:00:00 \x2b0000 UTC",
-      "url" : "https:\/\/www.ffutop.com\/posts\/2019-03-05-%E7%90%86%E8%A7%A3-linux-kernel-9-io-multiplexing\/",
+      "datePublished": "2019-03-05T00:00:00Z",
+      "dateModified" : "2019-03-05T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2019-03-05-%E7%90%86%E8%A7%A3-linux-kernel-9-io-multiplexing/",
       "keywords" : [ "Linux","Kernel","IO Model", ]
   }
 </script>

@@ -21,12 +21,12 @@
       "@type" : "BlogPosting",
       "mainEntityOfPage": {
            "@type": "WebPage",
-           "@id": "https:\/\/www.ffutop.com\/"
+           "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "posts",
       "name" : "JNI 引发的堆外内存泄露",
       "headline" : "JNI 引发的堆外内存泄露",
-      "description" : "\x3cp\x3e本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。\x3c\/p\x3e\n\x3cp\x3e为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。\x3c\/p\x3e\n\x3cp\x3e问题代码类似于下列代码：\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-c\x22 data-lang=\x22c\x22\x3e\x3cspan style=\x22color:#007020\x22\x3e#include\x3c\/span\x3e \x3cspan style=\x22color:#007020\x22\x3e\x26#34;Main.h\x26#34;\x3c\/span\x3e\x3cspan style=\x22color:#007020\x22\x3e\n\x3c\/span\x3e\x3cspan style=\x22color:#007020\x22\x3e\x3c\/span\x3e\nJNIEXPORT \x3cspan style=\x22color:#902000\x22\x3evoid\x3c\/span\x3e JNICALL \x3cspan style=\x22color:#06287e\x22\x3eJava_Main_sayHi\x3c\/span\x3e (JNIEnv \x3cspan style=\x22color:#666\x22\x3e*\x3c\/span\x3eenv, jobject jobj, jstring jstr)\n{\n    \x3cspan style=\x22color:#007020;font-weight:bold\x22\x3econst\x3c\/span\x3e \x3cspan style=\x22color:#902000\x22\x3echar\x3c\/span\x3e \x3cspan style=\x22color:#666\x22\x3e*\x3c\/span\x3estr \x3cspan style=\x22color:#666\x22\x3e=\x3c\/span\x3e (\x3cspan style=\x22color:#666\x22\x3e*\x3c\/span\x3eenv)\x3cspan style=\x22color:#666\x22\x3e-\x26gt;\x3c\/span\x3eGetStringUTFChars(env, jstr, \x3cspan style=\x22color:#40a070\x22\x3e0\x3c\/span\x3e);\n    \x3cspan style=\x22color:#902000\x22\x3eint\x3c\/span\x3e len \x3cspan style=\x22color:#666\x22\x3e=\x3c\/span\x3e (\x3cspan style=\x22color:#666\x22\x3e*\x3c\/span\x3eenv)\x3cspan style=\x22color:#666\x22\x3e-\x26gt;\x3c\/span\x3eGetStringUTFLength(env, jstr);\n\n    \x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\/\/ ... some code omitted \n\x3c\/span\x3e\x3cspan style=\x22color:#60a0b0;font-style:italic\x22\x3e\x3c\/span\x3e\n    \x3cspan style=\x22color:#007020;font-weight:bold\x22\x3ereturn\x3c\/span\x3e ;\n}\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e",
+      "description" : "\u003cp\u003e本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。\u003c/p\u003e\n\u003cp\u003e为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。\u003c/p\u003e\n\u003cp\u003e问题代码类似于下列代码：\u003c/p\u003e\n\u003cdiv class=\"highlight\"\u003e\u003cpre style=\"background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\"\u003e\u003ccode class=\"language-c\" data-lang=\"c\"\u003e\u003cspan style=\"color:#007020\"\u003e#include\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003e\u0026#34;Main.h\u0026#34;\u003c/span\u003e\u003cspan style=\"color:#007020\"\u003e\n\u003c/span\u003e\u003cspan style=\"color:#007020\"\u003e\u003c/span\u003e\nJNIEXPORT \u003cspan style=\"color:#902000\"\u003evoid\u003c/span\u003e JNICALL \u003cspan style=\"color:#06287e\"\u003eJava_Main_sayHi\u003c/span\u003e (JNIEnv \u003cspan style=\"color:#666\"\u003e*\u003c/span\u003eenv, jobject jobj, jstring jstr)\n{\n    \u003cspan style=\"color:#007020;font-weight:bold\"\u003econst\u003c/span\u003e \u003cspan style=\"color:#902000\"\u003echar\u003c/span\u003e \u003cspan style=\"color:#666\"\u003e*\u003c/span\u003estr \u003cspan style=\"color:#666\"\u003e=\u003c/span\u003e (\u003cspan style=\"color:#666\"\u003e*\u003c/span\u003eenv)\u003cspan style=\"color:#666\"\u003e-\u0026gt;\u003c/span\u003eGetStringUTFChars(env, jstr, \u003cspan style=\"color:#40a070\"\u003e0\u003c/span\u003e);\n    \u003cspan style=\"color:#902000\"\u003eint\u003c/span\u003e len \u003cspan style=\"color:#666\"\u003e=\u003c/span\u003e (\u003cspan style=\"color:#666\"\u003e*\u003c/span\u003eenv)\u003cspan style=\"color:#666\"\u003e-\u0026gt;\u003c/span\u003eGetStringUTFLength(env, jstr);\n\n    \u003cspan style=\"color:#60a0b0;font-style:italic\"\u003e// ... some code omitted \n\u003c/span\u003e\u003cspan style=\"color:#60a0b0;font-style:italic\"\u003e\u003c/span\u003e\n    \u003cspan style=\"color:#007020;font-weight:bold\"\u003ereturn\u003c/span\u003e ;\n}\n\u003c/code\u003e\u003c/pre\u003e\u003c/div\u003e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -34,9 +34,9 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2019",
-      "datePublished": "2019-07-06 00:00:00 \x2b0000 UTC",
-      "dateModified" : "2019-07-06 00:00:00 \x2b0000 UTC",
-      "url" : "https:\/\/www.ffutop.com\/posts\/2019-07-06-jni-%E5%BC%95%E5%8F%91%E7%9A%84%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2\/",
+      "datePublished": "2019-07-06T00:00:00Z",
+      "dateModified" : "2019-07-06T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2019-07-06-jni-%E5%BC%95%E5%8F%91%E7%9A%84%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/",
       "keywords" : [ "JNI","memory leak", ]
   }
 </script>

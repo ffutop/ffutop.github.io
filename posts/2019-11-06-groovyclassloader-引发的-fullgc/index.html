@@ -21,12 +21,12 @@
       "@type" : "BlogPosting",
       "mainEntityOfPage": {
            "@type": "WebPage",
-           "@id": "https:\/\/www.ffutop.com\/"
+           "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "posts",
       "name" : "GroovyClassLoader 引发的 FullGC",
       "headline" : "GroovyClassLoader 引发的 FullGC",
-      "description" : "\x3ch2 id=\x22背景\x22\x3e背景\x3c\/h2\x3e\n\x3cp\x3e近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，\x3cstrong\x3estop the world\x3c\/strong\x3e :\x26lt; 从 \x3ccode\x3egc.log\x3c\/code\x3e 中，看到的原因是触及了 \x3ccode\x3eMetaspace\x3c\/code\x3e 的阈值，进而引发了 FGC。\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-plain\x22 data-lang=\x22plain\x22\x3e2019-11-05T14:31:38.880\x2b0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880\x2b0800: 504600.716: [CMS2019-11-05T14:31:39.364\x2b0800: 504601.201: [CMS-concurrent-mark: 0.485\/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs]\n (concurrent mode failure): 266828K-\x26gt;266865K(873856K), 1.3752377 secs] 267430K-\x26gt;266865K(1267072K), [Metaspace: 204152K-\x26gt;204152K(1267712K)], 1.3757441 secs] [Times: user=1.36 sys=0.00, real=1.38 secs]\n2019-11-05T14:31:40.256\x2b0800: 504602.092: [Full GC (Last ditch collection) 2019-11-05T14:31:40.256\x2b0800: 504602.092: [CMS: 266865K-\x26gt;266841K(873856K), 0.8590901 secs] 266865K-\x26gt;266841K(1267072K), [Metaspace: 204152K-\x26gt;204152K(1267712K)], 0.8595047 secs] [Times: user=0.86 sys=0.00, real=0.86 secs]\n2019-11-05T14:31:41.117\x2b0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117\x2b0800: 504602.953: [CMS: 266841K-\x26gt;266816K(873856K), 0.9109948 secs] 267218K-\x26gt;266816K(1267072K), [Metaspace: 204153K-\x26gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]\n2019-11-05T14:31:42.028\x2b0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028\x2b0800: 504603.865: [CMS: 266816K-\x26gt;266769K(873856K), 1.0351283 secs] 266816K-\x26gt;266769K(1267072K), [Metaspace: 204153K-\x26gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e\x3cp\x3eFGC 前后，\x3ccode\x3eMetaspace\x3c\/code\x3e 占用的内存没有得到任何释放。\x3cem\x3e[Metaspace: 204153K-\x26gt;204153K(1267712K)]\x3c\/em\x3e 。这也就是反复 FGC 的原因。\x3c\/p\x3e",
+      "description" : "\u003ch2 id=\"背景\"\u003e背景\u003c/h2\u003e\n\u003cp\u003e近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，\u003cstrong\u003estop the world\u003c/strong\u003e :\u0026lt; 从 \u003ccode\u003egc.log\u003c/code\u003e 中，看到的原因是触及了 \u003ccode\u003eMetaspace\u003c/code\u003e 的阈值，进而引发了 FGC。\u003c/p\u003e\n\u003cdiv class=\"highlight\"\u003e\u003cpre style=\"background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\"\u003e\u003ccode class=\"language-plain\" data-lang=\"plain\"\u003e2019-11-05T14:31:38.880+0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880+0800: 504600.716: [CMS2019-11-05T14:31:39.364+0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs]\n (concurrent mode failure): 266828K-\u0026gt;266865K(873856K), 1.3752377 secs] 267430K-\u0026gt;266865K(1267072K), [Metaspace: 204152K-\u0026gt;204152K(1267712K)], 1.3757441 secs] [Times: user=1.36 sys=0.00, real=1.38 secs]\n2019-11-05T14:31:40.256+0800: 504602.092: [Full GC (Last ditch collection) 2019-11-05T14:31:40.256+0800: 504602.092: [CMS: 266865K-\u0026gt;266841K(873856K), 0.8590901 secs] 266865K-\u0026gt;266841K(1267072K), [Metaspace: 204152K-\u0026gt;204152K(1267712K)], 0.8595047 secs] [Times: user=0.86 sys=0.00, real=0.86 secs]\n2019-11-05T14:31:41.117+0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117+0800: 504602.953: [CMS: 266841K-\u0026gt;266816K(873856K), 0.9109948 secs] 267218K-\u0026gt;266816K(1267072K), [Metaspace: 204153K-\u0026gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]\n2019-11-05T14:31:42.028+0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028+0800: 504603.865: [CMS: 266816K-\u0026gt;266769K(873856K), 1.0351283 secs] 266816K-\u0026gt;266769K(1267072K), [Metaspace: 204153K-\u0026gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]\n\u003c/code\u003e\u003c/pre\u003e\u003c/div\u003e\u003cp\u003eFGC 前后，\u003ccode\u003eMetaspace\u003c/code\u003e 占用的内存没有得到任何释放。\u003cem\u003e[Metaspace: 204153K-\u0026gt;204153K(1267712K)]\u003c/em\u003e 。这也就是反复 FGC 的原因。\u003c/p\u003e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -34,9 +34,9 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2019",
-      "datePublished": "2019-11-06 00:00:00 \x2b0000 UTC",
-      "dateModified" : "2019-11-06 00:00:00 \x2b0000 UTC",
-      "url" : "https:\/\/www.ffutop.com\/posts\/2019-11-06-groovyclassloader-%E5%BC%95%E5%8F%91%E7%9A%84-fullgc\/",
+      "datePublished": "2019-11-06T00:00:00Z",
+      "dateModified" : "2019-11-06T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2019-11-06-groovyclassloader-%E5%BC%95%E5%8F%91%E7%9A%84-fullgc/",
       "keywords" : [ "Groovy","Java","FullGC","GC","Metaspace", ]
   }
 </script>

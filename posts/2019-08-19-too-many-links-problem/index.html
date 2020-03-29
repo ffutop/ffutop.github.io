@@ -21,12 +21,12 @@
       "@type" : "BlogPosting",
       "mainEntityOfPage": {
            "@type": "WebPage",
-           "@id": "https:\/\/www.ffutop.com\/"
+           "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "posts",
       "name" : "Too many links problem",
       "headline" : "Too many links problem",
-      "description" : "\x3cp\x3e今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-sh\x22 data-lang=\x22sh\x22\x3eWarning  Failed 4m  kubelet, 172.16.1.1 Failed to pull image \x3cspan style=\x22color:#4070a0\x22\x3e\x26#34;xxx.xxx.com\/\x26lt;image-name\x26gt;:\x26lt;version\x26gt;\x26#34;\x3c\/span\x3e: rpc error: \x3cspan style=\x22color:#bb60d5\x22\x3ecode\x3c\/span\x3e \x3cspan style=\x22color:#666\x22\x3e=\x3c\/span\x3e Unknown \x3cspan style=\x22color:#bb60d5\x22\x3edesc\x3c\/span\x3e \x3cspan style=\x22color:#666\x22\x3e=\x3c\/span\x3e failed to register layer: link \/data\/docker\/storage\/overlay\/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a\/root\/var\/lib\/yum\/yumdb\/o\/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64\/checksum_type \/data\/docker\/storage\/overlay\/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da\/tmproot525452492\/var\/lib\/yum\/yumdb\/o\/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64\/checksum_type: too many links\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e\x3cp\x3e最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 \x3ccode\x3e172.16.1.1\x3c\/code\x3e。而 Kubernetes 事件中提示的是 \x3ccode\x3etoo many links\x3c\/code\x3e，对问题原因的怀疑开始转向文件系统。\x3c\/p\x3e",
+      "description" : "\u003cp\u003e今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：\u003c/p\u003e\n\u003cdiv class=\"highlight\"\u003e\u003cpre style=\"background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\"\u003e\u003ccode class=\"language-sh\" data-lang=\"sh\"\u003eWarning  Failed 4m  kubelet, 172.16.1.1 Failed to pull image \u003cspan style=\"color:#4070a0\"\u003e\u0026#34;xxx.xxx.com/\u0026lt;image-name\u0026gt;:\u0026lt;version\u0026gt;\u0026#34;\u003c/span\u003e: rpc error: \u003cspan style=\"color:#bb60d5\"\u003ecode\u003c/span\u003e \u003cspan style=\"color:#666\"\u003e=\u003c/span\u003e Unknown \u003cspan style=\"color:#bb60d5\"\u003edesc\u003c/span\u003e \u003cspan style=\"color:#666\"\u003e=\u003c/span\u003e failed to register layer: link /data/docker/storage/overlay/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a/root/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type /data/docker/storage/overlay/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da/tmproot525452492/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type: too many links\n\u003c/code\u003e\u003c/pre\u003e\u003c/div\u003e\u003cp\u003e最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 \u003ccode\u003e172.16.1.1\u003c/code\u003e。而 Kubernetes 事件中提示的是 \u003ccode\u003etoo many links\u003c/code\u003e，对问题原因的怀疑开始转向文件系统。\u003c/p\u003e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -34,9 +34,9 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2019",
-      "datePublished": "2019-08-19 00:00:00 \x2b0000 UTC",
-      "dateModified" : "2019-08-19 00:00:00 \x2b0000 UTC",
-      "url" : "https:\/\/www.ffutop.com\/posts\/2019-08-19-too-many-links-problem\/",
+      "datePublished": "2019-08-19T00:00:00Z",
+      "dateModified" : "2019-08-19T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2019-08-19-too-many-links-problem/",
       "keywords" : [ "docker","fs","ext4", ]
   }
 </script>

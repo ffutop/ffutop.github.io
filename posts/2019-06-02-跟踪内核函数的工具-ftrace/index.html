@@ -21,12 +21,12 @@
       "@type" : "BlogPosting",
       "mainEntityOfPage": {
            "@type": "WebPage",
-           "@id": "https:\/\/www.ffutop.com\/"
+           "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "posts",
       "name" : "跟踪内核函数的工具—— Ftrace",
       "headline" : "跟踪内核函数的工具—— Ftrace",
-      "description" : "\x3cp\x3e前两天仿照 \x3ccode\x3estrings\x3c\/code\x3e 工具写了个打印进程运行时堆栈可打印字符的工具 \x3ca href=\x22https:\/\/github.com\/DorMOUSE-None\/ff-proc-utils\/blob\/master\/ffstrings.c\x22\x3effstrings\x3c\/a\x3e 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):\x26lt;\x3c\/p\x3e\n\x3cp\x3e在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— \x3ccode\x3eftrace\x3c\/code\x3e 。\x3c\/p\x3e\n\x3cblockquote\x3e\n\x3cp\x3eFtrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。\x3c\/p\x3e\n\x3cp\x3e虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。\x3c\/p\x3e\n\x3c\/blockquote\x3e\n\x3cp\x3e当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 \x3ccode\x3effstrings\x3c\/code\x3e 出现 \x3ccode\x3eEPERM\x3c\/code\x3e 的原因。\x3c\/p\x3e",
+      "description" : "\u003cp\u003e前两天仿照 \u003ccode\u003estrings\u003c/code\u003e 工具写了个打印进程运行时堆栈可打印字符的工具 \u003ca href=\"https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c\"\u003effstrings\u003c/a\u003e 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):\u0026lt;\u003c/p\u003e\n\u003cp\u003e在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— \u003ccode\u003eftrace\u003c/code\u003e 。\u003c/p\u003e\n\u003cblockquote\u003e\n\u003cp\u003eFtrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。\u003c/p\u003e\n\u003cp\u003e虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003cp\u003e当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 \u003ccode\u003effstrings\u003c/code\u003e 出现 \u003ccode\u003eEPERM\u003c/code\u003e 的原因。\u003c/p\u003e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -34,9 +34,9 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2019",
-      "datePublished": "2019-06-02 00:00:00 \x2b0000 UTC",
-      "dateModified" : "2019-06-02 00:00:00 \x2b0000 UTC",
-      "url" : "https:\/\/www.ffutop.com\/posts\/2019-06-02-%E8%B7%9F%E8%B8%AA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E7%9A%84%E5%B7%A5%E5%85%B7-ftrace\/",
+      "datePublished": "2019-06-02T00:00:00Z",
+      "dateModified" : "2019-06-02T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2019-06-02-%E8%B7%9F%E8%B8%AA%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0%E7%9A%84%E5%B7%A5%E5%85%B7-ftrace/",
       "keywords" : [ "Linux","Kernel","ftrace", ]
   }
 </script>

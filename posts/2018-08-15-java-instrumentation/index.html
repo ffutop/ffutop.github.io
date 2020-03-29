@@ -21,12 +21,12 @@
       "@type" : "BlogPosting",
       "mainEntityOfPage": {
            "@type": "WebPage",
-           "@id": "https:\/\/www.ffutop.com\/"
+           "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "posts",
       "name" : "Java Instrumentation",
       "headline" : "Java Instrumentation",
-      "description" : "\x3ch2 id=\x22start\x22\x3eStart\x3c\/h2\x3e\n\x3cp\x3e从现有的前置知识来说，我们能够认识到两个事实:\x3c\/p\x3e\n\x3col\x3e\n\x3cli\x3eJava Class 通过 ClassLoader 进行加载。\n通过\x3ccode\x3e全限定名\x3c\/code\x3e进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。\n换句话说: Class 一经加载，就不会尝试重复加载 (至少按绝大多数人的认知来说，确实是的)\x3c\/li\x3e\n\x3cli\x3e有没有可能让被加载的 Class 与物理存储上的 .class 内容不同。\n当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧\n(虽然可能不了解细节。在此，欢迎学习前置技能 \x3ca href=\x22https:\/\/dormouse-none.github.io\/2018-07-10-CGlib-Enhancer\/\x22\x3eCGlib Enhancer 主流程源码解析\x3c\/a\x3e 和 \x3ca href=\x22https:\/\/dormouse-none.github.io\/2018-07-20-Java-Proxy\/\x22\x3eJava Proxy 源码解析\x3c\/a\x3e。不过不影响本文后续内容)\x3c\/li\x3e\n\x3c\/ol\x3e\n\x3cp\x3e另一个方面，也许绝大多数人都听说过所谓的\x3ccode\x3e热部署\x3c\/code\x3e。但是究竟怎么才能做到 \x3ccode\x3e热部署\x3c\/code\x3e(话题开得有点大哈。Y_Y 本文不讲这个)\x3c\/p\x3e\n\x3cp\x3e操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。\x3c\/p\x3e\n\x3cp\x3e如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚\x26hellip;\x3c\/p\x3e\n\x3cp\x3eJava 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的\x3c\/p\x3e\n\x3ch2 id=\x22instrumentation\x22\x3eInstrumentation\x3c\/h2\x3e\n\x3cp\x3e\x3ccode\x3ejava.lang.instrument.Instrumentation\x3c\/code\x3e 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)\x3c\/p\x3e\n\x3cp\x3e相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。\x3c\/p\x3e\n\x3cp\x3e下列有两种方法可以达到目的\x3c\/p\x3e\n\x3col\x3e\n\x3cli\x3e当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。\x3c\/li\x3e\n\x3cli\x3e当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。\x3c\/li\x3e\n\x3c\/ol\x3e\n\x3cp\x3e话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了\x3cem\x3e检测\x3c\/em\x3e的目的)的使用\x3c\/p\x3e",
+      "description" : "\u003ch2 id=\"start\"\u003eStart\u003c/h2\u003e\n\u003cp\u003e从现有的前置知识来说，我们能够认识到两个事实:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003eJava Class 通过 ClassLoader 进行加载。\n通过\u003ccode\u003e全限定名\u003c/code\u003e进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。\n换句话说: Class 一经加载，就不会尝试重复加载 (至少按绝大多数人的认知来说，确实是的)\u003c/li\u003e\n\u003cli\u003e有没有可能让被加载的 Class 与物理存储上的 .class 内容不同。\n当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧\n(虽然可能不了解细节。在此，欢迎学习前置技能 \u003ca href=\"https://dormouse-none.github.io/2018-07-10-CGlib-Enhancer/\"\u003eCGlib Enhancer 主流程源码解析\u003c/a\u003e 和 \u003ca href=\"https://dormouse-none.github.io/2018-07-20-Java-Proxy/\"\u003eJava Proxy 源码解析\u003c/a\u003e。不过不影响本文后续内容)\u003c/li\u003e\n\u003c/ol\u003e\n\u003cp\u003e另一个方面，也许绝大多数人都听说过所谓的\u003ccode\u003e热部署\u003c/code\u003e。但是究竟怎么才能做到 \u003ccode\u003e热部署\u003c/code\u003e(话题开得有点大哈。Y_Y 本文不讲这个)\u003c/p\u003e\n\u003cp\u003e操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。\u003c/p\u003e\n\u003cp\u003e如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚\u0026hellip;\u003c/p\u003e\n\u003cp\u003eJava 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的\u003c/p\u003e\n\u003ch2 id=\"instrumentation\"\u003eInstrumentation\u003c/h2\u003e\n\u003cp\u003e\u003ccode\u003ejava.lang.instrument.Instrumentation\u003c/code\u003e 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)\u003c/p\u003e\n\u003cp\u003e相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。\u003c/p\u003e\n\u003cp\u003e下列有两种方法可以达到目的\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。\u003c/li\u003e\n\u003cli\u003e当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。\u003c/li\u003e\n\u003c/ol\u003e\n\u003cp\u003e话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了\u003cem\u003e检测\u003c/em\u003e的目的)的使用\u003c/p\u003e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -34,9 +34,9 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2018",
-      "datePublished": "2018-08-15 00:00:00 \x2b0000 UTC",
-      "dateModified" : "2018-08-15 00:00:00 \x2b0000 UTC",
-      "url" : "https:\/\/www.ffutop.com\/posts\/2018-08-15-java-instrumentation\/",
+      "datePublished": "2018-08-15T00:00:00Z",
+      "dateModified" : "2018-08-15T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2018-08-15-java-instrumentation/",
       "keywords" : [ "Java","ASM","BTrace", ]
   }
 </script>

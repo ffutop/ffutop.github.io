@@ -21,12 +21,12 @@
       "@type" : "BlogPosting",
       "mainEntityOfPage": {
            "@type": "WebPage",
-           "@id": "https:\/\/www.ffutop.com\/"
+           "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "posts",
       "name" : "随机数生成器拖慢 Tomcat 启动速度",
       "headline" : "随机数生成器拖慢 Tomcat 启动速度",
-      "description" : "\x3cp\x3e最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-plain\x22 data-lang=\x22plain\x22\x3e16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.\n...\n16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e\x3cp\x3e创建 \x3ccode\x3eSecureRandom\x3c\/code\x3e 竟然花了 6 分多钟，占了整个启动时间的 94% 。\x3c\/p\x3e",
+      "description" : "\u003cp\u003e最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。\u003c/p\u003e\n\u003cdiv class=\"highlight\"\u003e\u003cpre style=\"background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\"\u003e\u003ccode class=\"language-plain\" data-lang=\"plain\"\u003e16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.\n...\n16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms\n\u003c/code\u003e\u003c/pre\u003e\u003c/div\u003e\u003cp\u003e创建 \u003ccode\u003eSecureRandom\u003c/code\u003e 竟然花了 6 分多钟，占了整个启动时间的 94% 。\u003c/p\u003e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -34,9 +34,9 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2019",
-      "datePublished": "2019-10-17 00:00:00 \x2b0000 UTC",
-      "dateModified" : "2019-10-17 00:00:00 \x2b0000 UTC",
-      "url" : "https:\/\/www.ffutop.com\/posts\/2019-10-17-%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8%E6%8B%96%E6%85%A2-tomcat-%E5%90%AF%E5%8A%A8%E9%80%9F%E5%BA%A6\/",
+      "datePublished": "2019-10-17T00:00:00Z",
+      "dateModified" : "2019-10-17T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2019-10-17-%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8%E6%8B%96%E6%85%A2-tomcat-%E5%90%AF%E5%8A%A8%E9%80%9F%E5%BA%A6/",
       "keywords" : [ "Java","random","urandom", ]
   }
 </script>

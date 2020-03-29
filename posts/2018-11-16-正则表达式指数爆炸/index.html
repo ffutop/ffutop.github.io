@@ -21,12 +21,12 @@
       "@type" : "BlogPosting",
       "mainEntityOfPage": {
            "@type": "WebPage",
-           "@id": "https:\/\/www.ffutop.com\/"
+           "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "posts",
       "name" : "正则表达式指数爆炸",
       "headline" : "正则表达式指数爆炸",
-      "description" : "\x3ch2 id=\x22背景\x22\x3e背景\x3c\/h2\x3e\n\x3cp\x3e昨天接触到一个很有意思的问题, 公司测试环境一台机器 CPU 跑到了 400%，导致该机器上的所有服务都挂掉了。\x3c\/p\x3e\n\x3cp\x3e最后查到的原因竟然是正则表达式所引起的，大大出乎意料啊。虽然早就知道正则效率很差，但绝对没有想到会导致整个机器上服务崩溃的情况。\x3c\/p\x3e\n\x3cp\x3e先简单展示下问题正则:\x3c\/p\x3e\n\x3cdiv class=\x22highlight\x22\x3e\x3cpre style=\x22background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\x22\x3e\x3ccode class=\x22language-java\x22 data-lang=\x22java\x22\x3eString regex \x3cspan style=\x22color:#666\x22\x3e=\x3c\/span\x3e \x3cspan style=\x22color:#4070a0\x22\x3e\x26#34;(\\\\w\x2b,?)\x2b\x26#34;\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e;\x3c\/span\x3e\nString val \x3cspan style=\x22color:#666\x22\x3e=\x3c\/span\x3e \x3cspan style=\x22color:#4070a0\x22\x3e\x26#34;abcdefghijklmno,abcdefghijklmno\x2b\x26#34;\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e;\x3c\/span\x3e\nSystem\x3cspan style=\x22color:#666\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3eout\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3eprintln\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e(\x3c\/span\x3eval\x3cspan style=\x22color:#666\x22\x3e.\x3c\/span\x3e\x3cspan style=\x22color:#4070a0\x22\x3ematches\x3c\/span\x3e\x3cspan style=\x22color:#666\x22\x3e(\x3c\/span\x3eregex\x3cspan style=\x22color:#666\x22\x3e));\x3c\/span\x3e\n\x3c\/code\x3e\x3c\/pre\x3e\x3c\/div\x3e\x3cp\x3e最终的执行时间是 17s 左右。\x3c\/p\x3e\n\x3cp\x3e相反，如果改成 \x3ccode\x3eString val = \x26quot;abcdefghijklmno,abcdefghijklmno\x26quot;\x3c\/code\x3e ，实际执行时间 1ms 左右。\x3c\/p\x3e\n\x3cp\x3e哈哈，完全不是一个量级的结果。\x3c\/p\x3e\n\x3cp\x3e最后，当然是要找原因了:\x26lt; 当然，有其它重要的事在耽搁，没时间去看 Java Regex 源码。不过，从正则本身下手反而是个好事情。毕竟几乎所有的编程语言都有对正则的支持。而同样的，都存在着这样的问题。那就可以大胆猜想其实是和语言本身无关，而在于正则规范本身了。\x3c\/p\x3e\n\x3cp\x3e先给个结果，罪魁祸首就是\x3ccode\x3e指数爆炸\x3c\/code\x3e\x3c\/p\x3e",
+      "description" : "\u003ch2 id=\"背景\"\u003e背景\u003c/h2\u003e\n\u003cp\u003e昨天接触到一个很有意思的问题, 公司测试环境一台机器 CPU 跑到了 400%，导致该机器上的所有服务都挂掉了。\u003c/p\u003e\n\u003cp\u003e最后查到的原因竟然是正则表达式所引起的，大大出乎意料啊。虽然早就知道正则效率很差，但绝对没有想到会导致整个机器上服务崩溃的情况。\u003c/p\u003e\n\u003cp\u003e先简单展示下问题正则:\u003c/p\u003e\n\u003cdiv class=\"highlight\"\u003e\u003cpre style=\"background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\"\u003e\u003ccode class=\"language-java\" data-lang=\"java\"\u003eString regex \u003cspan style=\"color:#666\"\u003e=\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#34;(\\\\w+,?)+\u0026#34;\u003c/span\u003e\u003cspan style=\"color:#666\"\u003e;\u003c/span\u003e\nString val \u003cspan style=\"color:#666\"\u003e=\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#34;abcdefghijklmno,abcdefghijklmno+\u0026#34;\u003c/span\u003e\u003cspan style=\"color:#666\"\u003e;\u003c/span\u003e\nSystem\u003cspan style=\"color:#666\"\u003e.\u003c/span\u003e\u003cspan style=\"color:#4070a0\"\u003eout\u003c/span\u003e\u003cspan style=\"color:#666\"\u003e.\u003c/span\u003e\u003cspan style=\"color:#4070a0\"\u003eprintln\u003c/span\u003e\u003cspan style=\"color:#666\"\u003e(\u003c/span\u003eval\u003cspan style=\"color:#666\"\u003e.\u003c/span\u003e\u003cspan style=\"color:#4070a0\"\u003ematches\u003c/span\u003e\u003cspan style=\"color:#666\"\u003e(\u003c/span\u003eregex\u003cspan style=\"color:#666\"\u003e));\u003c/span\u003e\n\u003c/code\u003e\u003c/pre\u003e\u003c/div\u003e\u003cp\u003e最终的执行时间是 17s 左右。\u003c/p\u003e\n\u003cp\u003e相反，如果改成 \u003ccode\u003eString val = \u0026quot;abcdefghijklmno,abcdefghijklmno\u0026quot;\u003c/code\u003e ，实际执行时间 1ms 左右。\u003c/p\u003e\n\u003cp\u003e哈哈，完全不是一个量级的结果。\u003c/p\u003e\n\u003cp\u003e最后，当然是要找原因了:\u0026lt; 当然，有其它重要的事在耽搁，没时间去看 Java Regex 源码。不过，从正则本身下手反而是个好事情。毕竟几乎所有的编程语言都有对正则的支持。而同样的，都存在着这样的问题。那就可以大胆猜想其实是和语言本身无关，而在于正则规范本身了。\u003c/p\u003e\n\u003cp\u003e先给个结果，罪魁祸首就是\u003ccode\u003e指数爆炸\u003c/code\u003e\u003c/p\u003e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -34,9 +34,9 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2018",
-      "datePublished": "2018-11-16 00:00:00 \x2b0000 UTC",
-      "dateModified" : "2018-11-16 00:00:00 \x2b0000 UTC",
-      "url" : "https:\/\/www.ffutop.com\/posts\/2018-11-16-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%8C%87%E6%95%B0%E7%88%86%E7%82%B8\/",
+      "datePublished": "2018-11-16T00:00:00Z",
+      "dateModified" : "2018-11-16T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2018-11-16-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%8C%87%E6%95%B0%E7%88%86%E7%82%B8/",
       "keywords" : [ "regular expression","指数爆炸", ]
   }
 </script>

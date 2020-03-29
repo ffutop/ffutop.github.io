@@ -21,12 +21,12 @@
       "@type" : "BlogPosting",
       "mainEntityOfPage": {
            "@type": "WebPage",
-           "@id": "https:\/\/www.ffutop.com\/"
+           "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "posts",
       "name" : "ASM 核心包基本内容漫谈",
       "headline" : "ASM 核心包基本内容漫谈",
-      "description" : "\x3cblockquote\x3e\n\x3cp\x3e本文描述的 ASM 指的是 OW2 ASM\x3c\/p\x3e\n\x3c\/blockquote\x3e\n\x3ch2 id=\x22asm-core-的结构\x22\x3eASM-Core 的结构\x3c\/h2\x3e\n\x3cp\x3e\x3cem\x3e首先是一些概述性的内容。\x3c\/em\x3e\x3c\/p\x3e\n\x3cp\x3e由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。\n因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)\x3c\/p\x3e\n\x3cp\x3e从核心包声明的类来看，主要包括:\x3c\/p\x3e\n\x3col\x3e\n\x3cli\x3e\n\x3cp\x3eClassReader - 作为结构化对象，将接收(accept)访问者的访问\x3c\/p\x3e\n\x3c\/li\x3e\n\x3cli\x3e\n\x3cp\x3e几种访问者抽象类以及相应的实现类\x3c\/p\x3e\n\x3c\/li\x3e\n\x3c\/ol\x3e\n\x3cul\x3e\n\x3cli\x3eAnnotationVisitor -\x26gt; AnnotationWriter\x3c\/li\x3e\n\x3cli\x3eClassVisitor -\x26gt; ClassWriter\x3c\/li\x3e\n\x3cli\x3eFieldVisitor -\x26gt; FieldWriter\x3c\/li\x3e\n\x3cli\x3eMethodVisitor -\x26gt; MethodWriter\x3c\/li\x3e\n\x3cli\x3eModuleVisitor -\x26gt; ModuleWriter\x3c\/li\x3e\n\x3c\/ul\x3e\n\x3col start=\x223\x22\x3e\n\x3cli\x3e\n\x3cp\x3eOpcodes \x26amp; Constants - ClassFile 中描述的大量常量符号与值\x3c\/p\x3e\n\x3c\/li\x3e\n\x3cli\x3e\n\x3cp\x3e其它一些辅助的类\x3c\/p\x3e\n\x3c\/li\x3e\n\x3c\/ol\x3e\n\x3cul\x3e\n\x3cli\x3eAttribute - 用于处理非标准化的属性(ClassFile 允许\x3ca href=\x22https:\/\/docs.oracle.com\/javase\/specs\/jvms\/se8\/html\/jvms-4.html\x22\x3eJVMS\x3c\/a\x3e 中未定义的 Attribute)\x3c\/li\x3e\n\x3cli\x3eByteArray - 动态可自适应的 byte[] (字节数组)\x3c\/li\x3e\n\x3cli\x3eContext - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类\/对象\x3c\/li\x3e\n\x3cli\x3eSymbol - 用于表示 ClassFile 中描述的 Constant 的基类\x3c\/li\x3e\n\x3cli\x3eSymbolTable - 用于存储常量池对象\x3c\/li\x3e\n\x3cli\x3e其它内容省略\x3c\/li\x3e\n\x3c\/ul\x3e",
+      "description" : "\u003cblockquote\u003e\n\u003cp\u003e本文描述的 ASM 指的是 OW2 ASM\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003ch2 id=\"asm-core-的结构\"\u003eASM-Core 的结构\u003c/h2\u003e\n\u003cp\u003e\u003cem\u003e首先是一些概述性的内容。\u003c/em\u003e\u003c/p\u003e\n\u003cp\u003e由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。\n因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)\u003c/p\u003e\n\u003cp\u003e从核心包声明的类来看，主要包括:\u003c/p\u003e\n\u003col\u003e\n\u003cli\u003e\n\u003cp\u003eClassReader - 作为结构化对象，将接收(accept)访问者的访问\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e几种访问者抽象类以及相应的实现类\u003c/p\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003cul\u003e\n\u003cli\u003eAnnotationVisitor -\u0026gt; AnnotationWriter\u003c/li\u003e\n\u003cli\u003eClassVisitor -\u0026gt; ClassWriter\u003c/li\u003e\n\u003cli\u003eFieldVisitor -\u0026gt; FieldWriter\u003c/li\u003e\n\u003cli\u003eMethodVisitor -\u0026gt; MethodWriter\u003c/li\u003e\n\u003cli\u003eModuleVisitor -\u0026gt; ModuleWriter\u003c/li\u003e\n\u003c/ul\u003e\n\u003col start=\"3\"\u003e\n\u003cli\u003e\n\u003cp\u003eOpcodes \u0026amp; Constants - ClassFile 中描述的大量常量符号与值\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\n\u003cp\u003e其它一些辅助的类\u003c/p\u003e\n\u003c/li\u003e\n\u003c/ol\u003e\n\u003cul\u003e\n\u003cli\u003eAttribute - 用于处理非标准化的属性(ClassFile 允许\u003ca href=\"https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html\"\u003eJVMS\u003c/a\u003e 中未定义的 Attribute)\u003c/li\u003e\n\u003cli\u003eByteArray - 动态可自适应的 byte[] (字节数组)\u003c/li\u003e\n\u003cli\u003eContext - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象\u003c/li\u003e\n\u003cli\u003eSymbol - 用于表示 ClassFile 中描述的 Constant 的基类\u003c/li\u003e\n\u003cli\u003eSymbolTable - 用于存储常量池对象\u003c/li\u003e\n\u003cli\u003e其它内容省略\u003c/li\u003e\n\u003c/ul\u003e",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -34,9 +34,9 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2018",
-      "datePublished": "2018-06-25 00:00:00 \x2b0000 UTC",
-      "dateModified" : "2018-06-25 00:00:00 \x2b0000 UTC",
-      "url" : "https:\/\/www.ffutop.com\/posts\/2018-06-25-asm-%E6%A0%B8%E5%BF%83%E5%8C%85%E5%9F%BA%E6%9C%AC%E5%86%85%E5%AE%B9%E6%BC%AB%E8%B0%88\/",
+      "datePublished": "2018-06-25T00:00:00Z",
+      "dateModified" : "2018-06-25T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2018-06-25-asm-%E6%A0%B8%E5%BF%83%E5%8C%85%E5%9F%BA%E6%9C%AC%E5%86%85%E5%AE%B9%E6%BC%AB%E8%B0%88/",
       "keywords" : [ "Java","ASM","Visitor Pattern", ]
   }
 </script>
