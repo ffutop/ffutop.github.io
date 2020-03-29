@@ -96,119 +96,129 @@ if (!doNotTrack) {
         <h1 class="taxonomy-term">技术</h1>
         <div id="posts-list">
           
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">Too many links problem</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-08-19 00:00:00 UTC">
-                    19 Aug 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
 
-            <div class="post-content markdown-body">
-                <p>今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：</p>
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-08-20-too-many-links/">Too many links problem</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-08-19 00:00:00 UTC">
+          19 Aug 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：</p>
 <div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">Warning  Failed 4m  kubelet, 172.16.1.1 Failed to pull image <span style="color:#4070a0">&#34;xxx.xxx.com/&lt;image-name&gt;:&lt;version&gt;&#34;</span>: rpc error: <span style="color:#bb60d5">code</span> <span style="color:#666">=</span> Unknown <span style="color:#bb60d5">desc</span> <span style="color:#666">=</span> failed to register layer: link /data/docker/storage/overlay/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a/root/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type /data/docker/storage/overlay/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da/tmproot525452492/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type: too many links
 </code></pre></div><p>最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 <code>172.16.1.1</code>。而 Kubernetes 事件中提示的是 <code>too many links</code>，对问题原因的怀疑开始转向文件系统。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-20-too-many-links/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">Netfilter 导览 - based on iptables</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-08-06 00:00:00 UTC">
-                    06 Aug 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-20-too-many-links/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p><code>Netfilter</code>，内核中用于管理网络数据包的重要网络模块；<code>iptables</code>，运行在用户空间，用于控制 <code>Netfilter</code> 模块的一种软件。需要注意的，<code>iptables</code> 只能控制 IPv4 数据包，对于 IPv6 数据包，需要使用 <code>ip6tables</code> 。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-06-netfilter/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
+                  
           
           
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">理解 Linux Kernel (13) - 虚拟内存</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-07-17 00:00:00 UTC">
-                    17 Jul 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
 
-            <div class="post-content markdown-body">
-                <p>几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。</p>
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-08-06-netfilter/">Netfilter 导览 - based on iptables</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-08-06 00:00:00 UTC">
+          06 Aug 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p><code>Netfilter</code>，内核中用于管理网络数据包的重要网络模块；<code>iptables</code>，运行在用户空间，用于控制 <code>Netfilter</code> 模块的一种软件。需要注意的，<code>iptables</code> 只能控制 IPv4 数据包，对于 IPv6 数据包，需要使用 <code>ip6tables</code> 。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-06-netfilter/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-07-17-understand-kernel-13/">理解 Linux Kernel (13) - 虚拟内存</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-07-17 00:00:00 UTC">
+          17 Jul 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。</p>
 <p>本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-17-understand-kernel-13/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">JNI 引发的堆外内存泄露</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-07-06 00:00:00 UTC">
-                    06 Jul 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-17-understand-kernel-13/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-07-06-jni_problem/">JNI 引发的堆外内存泄露</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-07-06 00:00:00 UTC">
+          06 Jul 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。</p>
 <p>为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。</p>
 <p>问题代码类似于下列代码：</p>
 <div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020">#include</span> <span style="color:#007020">&#34;Main.h&#34;</span><span style="color:#007020">
@@ -223,135 +233,147 @@ JNIEXPORT <span style="color:#902000">void</span> JNICALL <span style="color:#06
     <span style="color:#007020;font-weight:bold">return</span> ;
 }
 </code></pre></div>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-06-jni_problem/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">理解 Linux Kernel (12) - Linux 容器化技术</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-06-18 00:00:00 UTC">
-                    18 Jun 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-06-jni_problem/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/">理解 Linux Kernel (12) - Linux 容器化技术</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-06-18 00:00:00 UTC">
+          18 Jun 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。</p>
 <p><img src="https://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png" alt="Containerd VS VM"></p>
 <p><!-- raw HTML omitted --><!-- raw HTML omitted -->Copied From docker.com<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
 <p>如何实现容器化，显然需要从操作系统层面进行支撑。这其中涉及到的核心技术，就包括命名空间(namespace)和控制组(Control Group, cgroup)，前者用来对资源进行隔离，后者用来对资源加以限制。</p>
 <blockquote>
 <p>本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04</p>
 </blockquote>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">跟踪内核函数的工具—— Ftrace</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-06-02 00:00:00 UTC">
-                    02 Jun 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>前两天仿照 <code>strings</code> 工具写了个打印进程运行时堆栈可打印字符的工具 <a href="https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c">ffstrings</a> 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&lt;</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-06-02-ftrace/">跟踪内核函数的工具—— Ftrace</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-06-02 00:00:00 UTC">
+          02 Jun 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>前两天仿照 <code>strings</code> 工具写了个打印进程运行时堆栈可打印字符的工具 <a href="https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c">ffstrings</a> 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&lt;</p>
 <p>在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— <code>ftrace</code> 。</p>
 <blockquote>
 <p>Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。</p>
 <p>虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。</p>
 </blockquote>
 <p>当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 <code>ffstrings</code> 出现 <code>EPERM</code> 的原因。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-02-ftrace/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">理解 Linux Kernel (11) - 进程间通信</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-05-27 00:00:00 UTC">
-                    27 May 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-02-ftrace/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/">理解 Linux Kernel (11) - 进程间通信</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-05-27 00:00:00 UTC">
+          27 May 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。</p>
 <p><em>本篇基于 Linux 4.9.87 版本源码</em></p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">pipe 导致的 CLOSE_WAIT</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-05-20 00:00:00 UTC">
-                    20 May 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>历时一周总算把导致服务大量 <code>CLOSE_WAIT</code> 的原因给找到了。打印任务调用栈果然的必备手段啊！</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-05-20-close_wait_problem/">pipe 导致的 CLOSE_WAIT</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-05-20 00:00:00 UTC">
+          20 May 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>历时一周总算把导致服务大量 <code>CLOSE_WAIT</code> 的原因给找到了。打印任务调用栈果然的必备手段啊！</p>
 <h2 id="问题描述">问题描述</h2>
 <p>Python 服务 A，用于接收心跳包确认其他服务是否存活。其他服务每 5 分钟向 A 发送一次心跳包；总计 &lt; 100 个其他服务。</p>
 <ul>
@@ -363,69 +385,75 @@ JNIEXPORT <span style="color:#902000">void</span> JNICALL <span style="color:#06
 <li>05-20 08:30 ，查找原因，解决问题。</li>
 </ul>
 <p>由于不是本人负责的服务，于 16 日凭兴趣开始有限介入，协助排查。现将排查流程一一记述，给自己和大家未来排查问题提供一个借鉴。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-20-close_wait_problem/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">PNG 文件格式</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-05-10 00:00:00 UTC">
-                    10 May 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-20-close_wait_problem/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>PNG (Portable Network Graphics) 文件格式(第二版)。PNG 文件格式由两类结构——<code>PNG 签名(PNG Signature)</code>和若干<code>数据块(chunk)</code>组成。</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-05-10-png-structure/">PNG 文件格式</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-05-10 00:00:00 UTC">
+          10 May 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>PNG (Portable Network Graphics) 文件格式(第二版)。PNG 文件格式由两类结构——<code>PNG 签名(PNG Signature)</code>和若干<code>数据块(chunk)</code>组成。</p>
 <p>PNG 签名相当于其他文件格式中的魔数，用于声明二进制数据所代表的格式。类似的有 <code>JAVA</code> class 文件的 <code>ca fe ba be</code>、<code>ELF</code> 文件的 <code>7f 45 4c 46</code> (.ELF) 。PNG 签名使用 <code>89 50 4e 47 0d 0a 1a 0a</code> (.PNG&hellip;.) 作为魔数。</p>
 <blockquote>
 <p>HINT 上述的 <code>.</code> 仅仅是为了指代非打印字符，并非真的是 <code>点号</code>。</p>
 </blockquote>
 <p>在 <code>PNG 签名</code> 数据之后，紧接着就是 <code>数据块(chunk)</code> 的数据。虽然统称<code>数据块</code>，但存在不同类型的数据块（例如 IHDR, PLTE, IDAT, IEND 等）。每个 PNG 文件可以有若干连续的数据块（至少 3 个数据块），其中第一个数据块和最后一个数据块类型分别是 IHDR、IEND 。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-10-png-structure/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">MySQL TIMESTAMP 时间精度问题</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-04-26 00:00:00 UTC">
-                    26 Apr 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-10-png-structure/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-04-26-time-accuracy/">MySQL TIMESTAMP 时间精度问题</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-04-26 00:00:00 UTC">
+          26 Apr 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:</p>
 <div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#60a0b0;font-style:italic">/**
 </span><span style="color:#60a0b0;font-style:italic">  * 表结构
 </span><span style="color:#60a0b0;font-style:italic">  * CREATE TABLE `time_0` (
@@ -440,10 +468,12 @@ JNIEXPORT <span style="color:#902000">void</span> JNICALL <span style="color:#06
 </span><span style="color:#60a0b0;font-style:italic"></span>Date timeout <span style="color:#666">=</span> jdbcTemplate<span style="color:#666">.</span><span style="color:#4070a0">queryForObject</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;SELECT `timeout` FROM `time_0` WHERE `id` = xxx;&#34;</span><span style="color:#666">,</span> Date<span style="color:#666">.</span><span style="color:#4070a0">class</span><span style="color:#666">);</span>
 Assert<span style="color:#666">.</span><span style="color:#4070a0">assertTrue</span><span style="color:#666">(</span>timeout<span style="color:#666">.</span><span style="color:#4070a0">getTime</span><span style="color:#666">()</span> <span style="color:#666">&lt;</span> System<span style="color:#666">.</span><span style="color:#4070a0">currentTimeMillis</span><span style="color:#666">());</span>
 </code></pre></div><p>在绝大多数模拟中，先执行 <code>part 1</code>，紧跟着执行 <code>part 2</code> 都能通过测试。但偶尔还是挂掉了。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-26-time-accuracy/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-26-time-accuracy/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
           
           
         </div>

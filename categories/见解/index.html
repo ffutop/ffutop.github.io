@@ -96,34 +96,37 @@ if (!doNotTrack) {
         <h1 class="taxonomy-term">见解</h1>
         <div id="posts-list">
           
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">Idempotent Pattern</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2020-03-26 00:00:00 UTC">
-                    26 Mar 2020
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
 
-            <div class="post-content markdown-body">
-                <p><!-- raw HTML omitted -->“同样是 KV-Server ，为什么基于 Raft Algorithm 的 KV-Server 需要对客户端操作实现幂等，而 Redis 却不需要？” 此前在实现基于 Raft 的容错 Key/Value Service 时，为了能够实现幂等的 <code>Put(key, value)</code>、<code>Append(key, arg)</code> 操作，可谓是费尽心思。但同为提供键值服务的 Redis ，怎么从来没见被要求幂等呢？</p>
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2020-03-26-idempotent/">Idempotent Pattern</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2020-03-26 00:00:00 UTC">
+          26 Mar 2020
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p><!-- raw HTML omitted -->“同样是 KV-Server ，为什么基于 Raft Algorithm 的 KV-Server 需要对客户端操作实现幂等，而 Redis 却不需要？” 此前在实现基于 Raft 的容错 Key/Value Service 时，为了能够实现幂等的 <code>Put(key, value)</code>、<code>Append(key, arg)</code> 操作，可谓是费尽心思。但同为提供键值服务的 Redis ，怎么从来没见被要求幂等呢？</p>
 <p>基于这个问题，本篇将整理并总结个人的结论。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-03-26-idempotent/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-03-26-idempotent/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
           
           
         </div>

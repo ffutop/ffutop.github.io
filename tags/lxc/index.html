@@ -96,39 +96,42 @@ if (!doNotTrack) {
         <h1 class="taxonomy-term">LXC</h1>
         <div id="posts-list">
           
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">理解 Linux Kernel (12) - Linux 容器化技术</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-06-18 00:00:00 UTC">
-                    18 Jun 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
 
-            <div class="post-content markdown-body">
-                <p>由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。</p>
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/">理解 Linux Kernel (12) - Linux 容器化技术</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-06-18 00:00:00 UTC">
+          18 Jun 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。</p>
 <p><img src="https://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png" alt="Containerd VS VM"></p>
 <p><!-- raw HTML omitted --><!-- raw HTML omitted -->Copied From docker.com<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
 <p>如何实现容器化，显然需要从操作系统层面进行支撑。这其中涉及到的核心技术，就包括命名空间(namespace)和控制组(Control Group, cgroup)，前者用来对资源进行隔离，后者用来对资源加以限制。</p>
 <blockquote>
 <p>本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04</p>
 </blockquote>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
           
           
         </div>

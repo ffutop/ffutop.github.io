@@ -96,312 +96,340 @@ if (!doNotTrack) {
         <h1 class="taxonomy-term">Linux</h1>
         <div id="posts-list">
           
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">理解 Linux Kernel (14) - cBPF</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-10-12 00:00:00 UTC">
-                    12 Oct 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
 
-            <div class="post-content markdown-body">
-                <p>BPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控/过滤网络数据包的任务，必然地会涉及到内核空间/用户空间的拷贝。而众所周知的，内核空间/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。</p>
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-10-12-bpf/">理解 Linux Kernel (14) - cBPF</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-10-12 00:00:00 UTC">
+          12 Oct 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>BPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控/过滤网络数据包的任务，必然地会涉及到内核空间/用户空间的拷贝。而众所周知的，内核空间/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。</p>
 <p>BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。</p>
 <p>本篇只着眼于传统的 BPF 技术，探求 BPF 如何在内核埋入包过滤相关的钩子以实现其功能。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-12-bpf/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">系统平均负载分析</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-09-16 00:00:00 UTC">
-                    16 Sep 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-12-bpf/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p><code>Load Average</code> 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-09-16-load-average/">系统平均负载分析</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-09-16 00:00:00 UTC">
+          16 Sep 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p><code>Load Average</code> 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。</p>
 <div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ffutop $ <span style="color:#007020">time</span> ./a
 ./a  59.48s user 0.04s system 98% cpu 1:00.59 total
 ffutop $ uptime
 09:58:56 up <span style="color:#40a070">165</span> days, 20:14,  <span style="color:#40a070">2</span> users,  load average: 0.63, 0.24, 0.09
 </code></pre></div><p>是什么原因导致平均负载与预期值不符呢？</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-09-16-load-average/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">Linux Traffic Control</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-08-23 00:00:00 UTC">
-                    23 Aug 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-09-16-load-average/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-08-23-traffic-control/">Linux Traffic Control</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-08-23 00:00:00 UTC">
+          23 Aug 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。</p>
 <p>流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(<code>sk_buff</code> 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 <code>enqueue</code>, <code>dequeue</code> 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-23-traffic-control/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">Netfilter 导览 - based on iptables</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-08-06 00:00:00 UTC">
-                    06 Aug 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-23-traffic-control/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p><code>Netfilter</code>，内核中用于管理网络数据包的重要网络模块；<code>iptables</code>，运行在用户空间，用于控制 <code>Netfilter</code> 模块的一种软件。需要注意的，<code>iptables</code> 只能控制 IPv4 数据包，对于 IPv6 数据包，需要使用 <code>ip6tables</code> 。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-06-netfilter/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
+                  
           
           
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">理解 Linux Kernel (13) - 虚拟内存</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-07-17 00:00:00 UTC">
-                    17 Jul 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
 
-            <div class="post-content markdown-body">
-                <p>几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。</p>
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-08-06-netfilter/">Netfilter 导览 - based on iptables</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-08-06 00:00:00 UTC">
+          06 Aug 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p><code>Netfilter</code>，内核中用于管理网络数据包的重要网络模块；<code>iptables</code>，运行在用户空间，用于控制 <code>Netfilter</code> 模块的一种软件。需要注意的，<code>iptables</code> 只能控制 IPv4 数据包，对于 IPv6 数据包，需要使用 <code>ip6tables</code> 。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-06-netfilter/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-07-17-understand-kernel-13/">理解 Linux Kernel (13) - 虚拟内存</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-07-17 00:00:00 UTC">
+          17 Jul 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。</p>
 <p>本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-17-understand-kernel-13/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">理解 Linux Kernel (12) - Linux 容器化技术</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-06-18 00:00:00 UTC">
-                    18 Jun 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-07-17-understand-kernel-13/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/">理解 Linux Kernel (12) - Linux 容器化技术</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-06-18 00:00:00 UTC">
+          18 Jun 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>由于工作上的一些调整，目前开始接触容器化技术了。容器化技术相对于虚拟机的最大区别，在于其只是在操作系统上做了资源隔离和控制，而虚拟机则会基于原有的操作系统，模拟一整套硬件设备接口，运行一个新的操作系统及相关的 Lib 库。</p>
 <p><img src="https://img.ffutop.com/9FD2522D-BBEB-443A-8267-26F1EC77BA87.png" alt="Containerd VS VM"></p>
 <p><!-- raw HTML omitted --><!-- raw HTML omitted -->Copied From docker.com<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
 <p>如何实现容器化，显然需要从操作系统层面进行支撑。这其中涉及到的核心技术，就包括命名空间(namespace)和控制组(Control Group, cgroup)，前者用来对资源进行隔离，后者用来对资源加以限制。</p>
 <blockquote>
 <p>本文所有涉及的内核代码基于版本 3.10.1 ；所有命令执行结果基于 Ubuntu 18.04</p>
 </blockquote>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">跟踪内核函数的工具—— Ftrace</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-06-02 00:00:00 UTC">
-                    02 Jun 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-18-understand-kernel-12/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>前两天仿照 <code>strings</code> 工具写了个打印进程运行时堆栈可打印字符的工具 <a href="https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c">ffstrings</a> 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&lt;</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-06-02-ftrace/">跟踪内核函数的工具—— Ftrace</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-06-02 00:00:00 UTC">
+          02 Jun 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>前两天仿照 <code>strings</code> 工具写了个打印进程运行时堆栈可打印字符的工具 <a href="https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c">ffstrings</a> 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&lt;</p>
 <p>在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— <code>ftrace</code> 。</p>
 <blockquote>
 <p>Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。</p>
 <p>虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。</p>
 </blockquote>
 <p>当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 <code>ffstrings</code> 出现 <code>EPERM</code> 的原因。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-02-ftrace/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">理解 Linux Kernel (11) - 进程间通信</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-05-27 00:00:00 UTC">
-                    27 May 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-02-ftrace/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/">理解 Linux Kernel (11) - 进程间通信</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-05-27 00:00:00 UTC">
+          27 May 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。</p>
 <p><em>本篇基于 Linux 4.9.87 版本源码</em></p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">理解 Linux Kernel(10) - Context of Execution</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-04-10 00:00:00 UTC">
-                    10 Apr 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-27-understand-kernel-11/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>在进行<a href="https://www.ffutop.com/2018-10-12-understand-Kernel-4/">第四篇(任务调度)</a>行文描述时，就一直闹不清内核所谓的<code>task</code>的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：<strong>我们错误地将理论和实践不加区分地混淆了</strong>。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，<code>task</code> 也就是 <code>Context of Execution</code> 概念在实现上的表征。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-10-understand-kernel-10/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
+                  
           
           
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">如何获取运行时进程堆栈</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-03-25 00:00:00 UTC">
-                    25 Mar 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
 
-            <div class="post-content markdown-body">
-                <p>前些天看了关于在密码学应用中使用<code>java.lang.String</code>与<code>byte[]</code>的相关讨论，不推荐使用<code>java.lang.String</code>的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。</p>
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-04-10-understand-kernel-10/">理解 Linux Kernel(10) - Context of Execution</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-04-10 00:00:00 UTC">
+          10 Apr 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>在进行<a href="https://www.ffutop.com/2018-10-12-understand-Kernel-4/">第四篇(任务调度)</a>行文描述时，就一直闹不清内核所谓的<code>task</code>的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：<strong>我们错误地将理论和实践不加区分地混淆了</strong>。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，<code>task</code> 也就是 <code>Context of Execution</code> 概念在实现上的表征。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-10-understand-kernel-10/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-03-25-mem-dump/">如何获取运行时进程堆栈</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-03-25 00:00:00 UTC">
+          25 Mar 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>前些天看了关于在密码学应用中使用<code>java.lang.String</code>与<code>byte[]</code>的相关讨论，不推荐使用<code>java.lang.String</code>的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。</p>
 <h2 id="procpidmaps">/proc/${pid}/maps</h2>
 <p>首先当然是确定进程堆栈在物理内存的位置啦。很遗憾，没有找到相关的方案。毕竟进程记录的都是虚拟线性地址，而通过内核分段、分页机制最终映射到物理内存。不过，从<code>/proc</code>虚拟文件系统中，提供了进程虚拟地址映射。</p>
 <pre><code>address                   perm offset   dev   inode                      pathname
@@ -424,10 +452,12 @@ ffutop $ uptime
 7ffe2cff0000-7ffe2cff2000 r-xp 00000000 00:00 0                          [vdso]
 ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
 </code></pre>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-03-25-mem-dump/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-03-25-mem-dump/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
           
           
         </div>

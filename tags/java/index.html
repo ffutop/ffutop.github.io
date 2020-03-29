@@ -96,58 +96,62 @@ if (!doNotTrack) {
         <h1 class="taxonomy-term">Java</h1>
         <div id="posts-list">
           
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">基于DNS的数据库切换·事故</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2020-02-28 00:00:00 UTC">
-                    28 Feb 2020
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
 
-            <div class="post-content markdown-body">
-                <p>我们生产环境上所有的应用都是通过域名来访问 MySQL、Redis 等基础服务。按说域名相较于 IP，凭空多了个 DNS 解析动作，是一个劣化的方案。但好处在于，一旦需要切换基础服务，将带来巨大的利好。可是，任何忽视DNS Record TTL的切换方案，都将伴随着巨大的风险。甚至，成为否定该利好的佐证。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/">基于DNS的数据库切换·事故</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2020-02-28 00:00:00 UTC">
+          28 Feb 2020
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>我们生产环境上所有的应用都是通过域名来访问 MySQL、Redis 等基础服务。按说域名相较于 IP，凭空多了个 DNS 解析动作，是一个劣化的方案。但好处在于，一旦需要切换基础服务，将带来巨大的利好。可是，任何忽视DNS Record TTL的切换方案，都将伴随着巨大的风险。甚至，成为否定该利好的佐证。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
           
           
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">GroovyClassLoader 引发的 FullGC</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-11-06 00:00:00 UTC">
-                    06 Nov 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
 
-            <div class="post-content markdown-body">
-                <h2 id="背景">背景</h2>
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/">GroovyClassLoader 引发的 FullGC</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-11-06 00:00:00 UTC">
+          06 Nov 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <h2 id="背景">背景</h2>
 <p>近日，一个线上应用的存活探针频繁报警。几分钟内 Full GC 次数暴涨上百次，<strong>stop the world</strong> :&lt; 从 <code>gc.log</code> 中，看到的原因是触及了 <code>Metaspace</code> 的阈值，进而引发了 FGC。</p>
 <div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">2019-11-05T14:31:38.880+0800: 504600.716: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:38.880+0800: 504600.716: [CMS2019-11-05T14:31:39.364+0800: 504601.201: [CMS-concurrent-mark: 0.485/0.488 secs] [Times: user=0.48 sys=0.00, real=0.49 secs]
  (concurrent mode failure): 266828K-&gt;266865K(873856K), 1.3752377 secs] 267430K-&gt;266865K(1267072K), [Metaspace: 204152K-&gt;204152K(1267712K)], 1.3757441 secs] [Times: user=1.36 sys=0.00, real=1.38 secs]
@@ -155,99 +159,108 @@ if (!doNotTrack) {
 2019-11-05T14:31:41.117+0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117+0800: 504602.953: [CMS: 266841K-&gt;266816K(873856K), 0.9109948 secs] 267218K-&gt;266816K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]
 2019-11-05T14:31:42.028+0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028+0800: 504603.865: [CMS: 266816K-&gt;266769K(873856K), 1.0351283 secs] 266816K-&gt;266769K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]
 </code></pre></div><p>FGC 前后，<code>Metaspace</code> 占用的内存没有得到任何释放。<em>[Metaspace: 204153K-&gt;204153K(1267712K)]</em> 。这也就是反复 FGC 的原因。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">随机数生成器拖慢 Tomcat 启动速度</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-10-17 00:00:00 UTC">
-                    17 Oct 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-10-17-random/">随机数生成器拖慢 Tomcat 启动速度</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-10-17 00:00:00 UTC">
+          17 Oct 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。</p>
 <div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
 ...
 16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
 </code></pre></div><p>创建 <code>SecureRandom</code> 竟然花了 6 分多钟，占了整个启动时间的 94% 。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-17-random/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">【Java】API 参数误定义的后果</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-02-27 00:00:00 UTC">
-                    27 Feb 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-17-random/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <p>工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。</p>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-02-27-java-fatal-api/">【Java】API 参数误定义的后果</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-02-27 00:00:00 UTC">
+          27 Feb 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。</p>
 <p>想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！</p>
 <p>想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把<code>void add(int)</code> API 改写成 <code>int add(int)</code>，可能得到的大多数回答都是可以。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-02-27-java-fatal-api/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">Java Instrumentation</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2018-08-15 00:00:00 UTC">
-                    15 Aug 2018
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-02-27-java-fatal-api/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <h2 id="start">Start</h2>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-08-15-java-instrumentation/">Java Instrumentation</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2018-08-15 00:00:00 UTC">
+          15 Aug 2018
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <h2 id="start">Start</h2>
 <p>从现有的前置知识来说，我们能够认识到两个事实:</p>
 <ol>
 <li>Java Class 通过 ClassLoader 进行加载。
@@ -270,35 +283,38 @@ if (!doNotTrack) {
 <li>当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。</li>
 </ol>
 <p>话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了<em>检测</em>的目的)的使用</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-15-java-instrumentation/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">Java 安全访问与权限控制</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2018-07-04 00:00:00 UTC">
-                    04 Jul 2018
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-15-java-instrumentation/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <h2 id="绪论">绪论</h2>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-07-04-jdk-permission/">Java 安全访问与权限控制</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2018-07-04 00:00:00 UTC">
+          04 Jul 2018
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <h2 id="绪论">绪论</h2>
 <p><em>本文只是对 Java 安全访问与权限控制的基础性探究。</em></p>
 <p><strong>本节与全文内容无关，如无兴趣阅读，可以跳过</strong></p>
 <p>了解 Java 安全访问相关内容的初衷，是准备在项目中利用 Java 标准库提供的 ServiceLoader 对 SPI 实现类进行&quot;自动发现&quot;和加载。
@@ -335,35 +351,38 @@ if (!doNotTrack) {
 <span style="color:#666">});</span>
 </code></pre></div><p>诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。</p>
 <p>为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-04-jdk-permission/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">ASM 核心包基本内容漫谈</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2018-06-25 00:00:00 UTC">
-                    25 Jun 2018
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-04-jdk-permission/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <blockquote>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-06-25-asm-core/">ASM 核心包基本内容漫谈</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2018-06-25 00:00:00 UTC">
+          25 Jun 2018
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <blockquote>
 <p>本文描述的 ASM 指的是 OW2 ASM</p>
 </blockquote>
 <h2 id="asm-core-的结构">ASM-Core 的结构</h2>
@@ -402,40 +421,45 @@ if (!doNotTrack) {
 <li>SymbolTable - 用于存储常量池对象</li>
 <li>其它内容省略</li>
 </ul>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-25-asm-core/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
-          
-          
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">java-memory-model</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2018-06-21 00:00:00 UTC">
-                    21 Jun 2018
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-25-asm-core/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
 
-            <div class="post-content markdown-body">
-                <h2 id="jvm-运行时数据区">JVM 运行时数据区</h2>
+                  
+          
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-06-21-java-memory-model/">java-memory-model</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2018-06-21 00:00:00 UTC">
+          21 Jun 2018
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <h2 id="jvm-运行时数据区">JVM 运行时数据区</h2>
 <p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg" alt=""></p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-21-java-memory-model/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-21-java-memory-model/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
           
           
         </div>

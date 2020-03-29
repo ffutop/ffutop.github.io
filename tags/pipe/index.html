@@ -96,29 +96,30 @@ if (!doNotTrack) {
         <h1 class="taxonomy-term">pipe</h1>
         <div id="posts-list">
           
-          <section>
-            <header class="post-header">
-              <h1 class="post-title">pipe 导致的 CLOSE_WAIT</h1>
-              <div class="row post-desc">
-                <div class="col-xs-6">
-                  
-                  <time class="post-date" datetime="2019-05-20 00:00:00 UTC">
-                    20 May 2019
-                  </time>
-                  
-                </div>
-                <div class="col-xs-6">
-                  
-                  <div class="post-author">
-                    <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-                  </div>
-                  
-                </div>
-              </div>
-            </header>
 
-            <div class="post-content markdown-body">
-                <p>历时一周总算把导致服务大量 <code>CLOSE_WAIT</code> 的原因给找到了。打印任务调用栈果然的必备手段啊！</p>
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-05-20-close_wait_problem/">pipe 导致的 CLOSE_WAIT</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-05-20 00:00:00 UTC">
+          20 May 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>历时一周总算把导致服务大量 <code>CLOSE_WAIT</code> 的原因给找到了。打印任务调用栈果然的必备手段啊！</p>
 <h2 id="问题描述">问题描述</h2>
 <p>Python 服务 A，用于接收心跳包确认其他服务是否存活。其他服务每 5 分钟向 A 发送一次心跳包；总计 &lt; 100 个其他服务。</p>
 <ul>
@@ -130,10 +131,12 @@ if (!doNotTrack) {
 <li>05-20 08:30 ，查找原因，解决问题。</li>
 </ul>
 <p>由于不是本人负责的服务，于 16 日凭兴趣开始有限介入，协助排查。现将排查流程一一记述，给自己和大家未来排查问题提供一个借鉴。</p>
-                <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-20-close_wait_problem/'><nobr class="summary-read-more">Read more →</nobr></a>
-                <div class="post-line"></div>
-            </div>
-          </section>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-20-close_wait_problem/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
           
           
         </div>
