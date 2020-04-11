@@ -6,10 +6,46 @@
     <description>Recent content in Tags on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cmn-Hans-CN</language>
-    <lastBuildDate>Thu, 26 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 11 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>HTTP</title>
+      <link>https://www.ffutop.com/tags/http/</link>
+      <pubDate>Sat, 11 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/tags/http/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Java</title>
+      <link>https://www.ffutop.com/tags/java/</link>
+      <pubDate>Sat, 11 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/tags/java/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>NGINX</title>
+      <link>https://www.ffutop.com/tags/nginx/</link>
+      <pubDate>Sat, 11 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/tags/nginx/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tomcat</title>
+      <link>https://www.ffutop.com/tags/tomcat/</link>
+      <pubDate>Sat, 11 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/tags/tomcat/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>idempotent</title>
@@ -48,15 +84,6 @@
     </item>
     
     <item>
-      <title>Java</title>
-      <link>https://www.ffutop.com/tags/java/</link>
-      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/tags/java/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>C</title>
       <link>https://www.ffutop.com/tags/c/</link>
       <pubDate>Mon, 17 Feb 2020 00:00:00 +0000</pubDate>
@@ -71,33 +98,6 @@
       <pubDate>Mon, 17 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>https://www.ffutop.com/tags/consensus/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Distributed</title>
-      <link>https://www.ffutop.com/tags/distributed/</link>
-      <pubDate>Mon, 17 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/tags/distributed/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Go</title>
-      <link>https://www.ffutop.com/tags/go/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/tags/go/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Goroutine</title>
-      <link>https://www.ffutop.com/tags/goroutine/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/tags/goroutine/</guid>
       <description></description>
     </item>
     

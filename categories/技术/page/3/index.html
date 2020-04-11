@@ -34,8 +34,8 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2020",
-      "datePublished": "2020-02-28T00:00:00Z",
-      "dateModified" : "2020-02-28T00:00:00Z",
+      "datePublished": "2020-04-11T00:00:00Z",
+      "dateModified" : "2020-04-11T00:00:00Z",
       "url" : "https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/",
       "keywords" : [  ]
   }
@@ -95,6 +95,52 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term">技术</h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-04-26-time-accuracy/">MySQL TIMESTAMP 时间精度问题</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-04-26 00:00:00 UTC">
+          26 Apr 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic">  * 表结构
+</span><span style="color:#60a0b0;font-style:italic">  * CREATE TABLE `time_0` (
+</span><span style="color:#60a0b0;font-style:italic">  *     `timeout` timestamp NOT NULL
+</span><span style="color:#60a0b0;font-style:italic">  * )
+</span><span style="color:#60a0b0;font-style:italic">  */</span>
+
+<span style="color:#60a0b0;font-style:italic">// part 1
+</span><span style="color:#60a0b0;font-style:italic"></span>jdbcTemplate<span style="color:#666">.</span><span style="color:#4070a0">execute</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;UPDATE `time_0` SET `timeout`=now() WHERE `id` = xxx;&#34;</span><span style="color:#666">);</span>
+
+<span style="color:#60a0b0;font-style:italic">// part 2
+</span><span style="color:#60a0b0;font-style:italic"></span>Date timeout <span style="color:#666">=</span> jdbcTemplate<span style="color:#666">.</span><span style="color:#4070a0">queryForObject</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;SELECT `timeout` FROM `time_0` WHERE `id` = xxx;&#34;</span><span style="color:#666">,</span> Date<span style="color:#666">.</span><span style="color:#4070a0">class</span><span style="color:#666">);</span>
+Assert<span style="color:#666">.</span><span style="color:#4070a0">assertTrue</span><span style="color:#666">(</span>timeout<span style="color:#666">.</span><span style="color:#4070a0">getTime</span><span style="color:#666">()</span> <span style="color:#666">&lt;</span> System<span style="color:#666">.</span><span style="color:#4070a0">currentTimeMillis</span><span style="color:#666">());</span>
+</code></pre></div><p>在绝大多数模拟中，先执行 <code>part 1</code>，紧跟着执行 <code>part 2</code> 都能通过测试。但偶尔还是挂掉了。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-26-time-accuracy/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -413,41 +459,6 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
 <p>回到字符设备本身，字符设备与块设备最主要的区别就在于块设备可以随机读写，而字符设备只能够顺序读，顺序写。</p>
 <p>那么，常见的字符设备有什么？显示器、键盘、鼠标。</p>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-12-28-understand-kernel-7/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-12-15-sql-injection/">SQL 注入</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2018-12-15 00:00:00 UTC">
-          15 Dec 2018
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <p>说实话此前对 SQL 注入的理解仅仅只是皮毛。当然，目前也是，只是有了一定程度的理解。</p>
-<p>最近好像工具用得有些过头了，需要停下来整理下工具的实现原理。</p>
-<p>更好地理解了工具实现，才能更加心安理得地使用工具。毕竟等别人怼的时候，还能够比较安心地回道: &ldquo;我用不用现成的工具只是取决于我想不想自己再写一套&rdquo;</p>
-<p>当然，毕竟成熟的工具有更多的优化，这就不是短时间内我想不想自己写的问题了，哈哈。</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-12-15-sql-injection/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>

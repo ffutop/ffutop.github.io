@@ -10,8 +10,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="author" content="ffutop" />
-  <meta property="og:url" content="https://www.ffutop.com/tags/" />
-  <link rel="canonical" href="https://www.ffutop.com/tags/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <meta property="og:url" content="https://www.ffutop.com/tags/tomcat/" />
+  <link rel="canonical" href="https://www.ffutop.com/tags/tomcat/" /><link rel="apple-touch-icon" href="favicon.ico" />
   <link rel="icon" href="favicon.ico" />
   <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
 
@@ -24,8 +24,8 @@
            "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "tags",
-      "name" : "Tags",
-      "headline" : "Tags",
+      "name" : "Tomcat",
+      "headline" : "Tomcat",
       "description" : "",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
@@ -36,12 +36,12 @@
       "copyrightYear" : "2020",
       "datePublished": "2020-04-11T00:00:00Z",
       "dateModified" : "2020-04-11T00:00:00Z",
-      "url" : "https://www.ffutop.com/tags/",
+      "url" : "https://www.ffutop.com/tags/tomcat/",
       "keywords" : [  ]
   }
 </script>
-<title>Tags - Utop&#39;s Blog</title>
-  <meta property="og:title" content="Tags - Utop&#39;s Blog" />
+<title>Tomcat - Utop&#39;s Blog</title>
+  <meta property="og:title" content="Tomcat - Utop&#39;s Blog" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="" />
   <meta name="description" content="" />
@@ -93,20 +93,57 @@ if (!doNotTrack) {
 <div class="header-line"></div>
 
 
-        <h1 class="taxonomy-term"></h1>
+        <h1 class="taxonomy-term">Tomcat</h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2020-04-11-large-http-header/">HTTP Large Header Fields Problem</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2020-04-11 00:00:00 UTC">
+          11 Apr 2020
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p><em>首次遇到请求头过大的问题，做个记录。特别是在本次处理陷入了误区，做了太多无谓的猜测</em></p>
+<p>请求头过大导致响应错误码 400 (Bad Request)、414 (URI Too Long)、431 (Request Header Fields Too Large) 的情况不多，不过原因和解决方案都是比较清晰的。客户端请求的请求头过大导致超出了服务器支持的缓冲区。如果客户端可控，控制请求头的大小；否则，适当调大服务器配置的缓冲区大小。</p>
+<p>最近生产上碰到了这个问题，颇费了一番功夫。接手问题时得到了几个错误的信息，干扰到了处理的全过程。甚至为此去重读了 NGINX Directive <code>client_header_buffer_size</code> 和 <code>large_client_header_buffers</code> 在 1.8.1 版本的实现。</p>
+<p>最原始的问题是：NGINX 接收到了大请求头(4.5k)的请求，最终响应了错误码 400 Bad Request 。</p>
+<p>真实的背景因素包括：</p>
+<ul>
+<li>请求链路 NGINX -&gt; k8s nginx ingress -&gt; k8s pods (Tomcat)</li>
+<li>NGINX <code>large_client_header_buffers</code> 使用了默认配置 <code>4 8k</code>。</li>
+<li>Tomcat maxHttpHeaderSize 使用了默认配置 (default 8192)</li>
+</ul>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-04-11-large-http-header/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
         </div>
         <div class="pagination">
   <div class="row between-xs">
     <div class="col-xs-6 col-md-2 pagination-prev">
       
-      <a href="/tags/page/5/">上一页</a>
-      
     </div>
     <div class="col-xs-6 col-md-2 pagination-next">
-      
-      <a href="/tags/page/7/">下一页</a>
       
     </div>
 </div>

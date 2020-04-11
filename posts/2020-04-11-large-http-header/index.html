@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2020-04-11-large-http-header/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2020-04-11-large-http-header/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https://www.ffutop.com/"
+      },
+      "articleSection" : "posts",
+      "name" : "HTTP Large Header Fields Problem",
+      "headline" : "HTTP Large Header Fields Problem",
+      "description" : "\u003cp\u003e\u003cem\u003e首次遇到请求头过大的问题，做个记录。特别是在本次处理陷入了误区，做了太多无谓的猜测\u003c/em\u003e\u003c/p\u003e\n\u003cp\u003e请求头过大导致响应错误码 400 (Bad Request)、414 (URI Too Long)、431 (Request Header Fields Too Large) 的情况不多，不过原因和解决方案都是比较清晰的。客户端请求的请求头过大导致超出了服务器支持的缓冲区。如果客户端可控，控制请求头的大小；否则，适当调大服务器配置的缓冲区大小。\u003c/p\u003e\n\u003cp\u003e最近生产上碰到了这个问题，颇费了一番功夫。接手问题时得到了几个错误的信息，干扰到了处理的全过程。甚至为此去重读了 NGINX Directive \u003ccode\u003eclient_header_buffer_size\u003c/code\u003e 和 \u003ccode\u003elarge_client_header_buffers\u003c/code\u003e 在 1.8.1 版本的实现。\u003c/p\u003e\n\u003cp\u003e最原始的问题是：NGINX 接收到了大请求头(4.5k)的请求，最终响应了错误码 400 Bad Request 。\u003c/p\u003e\n\u003cp\u003e真实的背景因素包括：\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e请求链路 NGINX -\u0026gt; k8s nginx ingress -\u0026gt; k8s pods (Tomcat)\u003c/li\u003e\n\u003cli\u003eNGINX \u003ccode\u003elarge_client_header_buffers\u003c/code\u003e 使用了默认配置 \u003ccode\u003e4 8k\u003c/code\u003e。\u003c/li\u003e\n\u003cli\u003eTomcat maxHttpHeaderSize 使用了默认配置 (default 8192)\u003c/li\u003e\n\u003c/ul\u003e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2020",
+      "datePublished": "2020-04-11T00:00:00Z",
+      "dateModified" : "2020-04-11T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2020-04-11-large-http-header/",
+      "keywords" : [ "NGINX","Tomcat","Java","HTTP", ]
+  }
+</script>
+<title>HTTP Large Header Fields Problem - Utop&#39;s Blog</title>
+  <meta property="og:title" content="HTTP Large Header Fields Problem - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="首次遇到请求头过大的问题，做个记录。特别是在本次处理陷入了误区，做了太多无谓的猜测
+请求头过大导致响应错误码 400 (Bad Request)、414 (URI Too Long)、431 (Request Header Fields Too Large) 的情况不多，不过原因和解决方案都是比较清晰的。客户端请求的请求头过大导致超出了服务器支持的缓冲区。如果客户端可控，控制请求头的大小；否则，适当调大服务器配置的缓冲区大小。
+最近生产上碰到了这个问题，颇费了一番功夫。接手问题时得到了几个错误的信息，干扰到了处理的全过程。甚至为此去重读了 NGINX Directive client_header_buffer_size 和 large_client_header_buffers 在 1.8.1 版本的实现。
+最原始的问题是：NGINX 接收到了大请求头(4.5k)的请求，最终响应了错误码 400 Bad Request 。
+真实的背景因素包括：
+
+请求链路 NGINX -&gt; k8s nginx ingress -&gt; k8s pods (Tomcat)
+NGINX large_client_header_buffers 使用了默认配置 4 8k。
+Tomcat maxHttpHeaderSize 使用了默认配置 (default 8192)
+" />
+  <meta name="description" content="首次遇到请求头过大的问题，做个记录。特别是在本次处理陷入了误区，做了太多无谓的猜测
+请求头过大导致响应错误码 400 (Bad Request)、414 (URI Too Long)、431 (Request Header Fields Too Large) 的情况不多，不过原因和解决方案都是比较清晰的。客户端请求的请求头过大导致超出了服务器支持的缓冲区。如果客户端可控，控制请求头的大小；否则，适当调大服务器配置的缓冲区大小。
+最近生产上碰到了这个问题，颇费了一番功夫。接手问题时得到了几个错误的信息，干扰到了处理的全过程。甚至为此去重读了 NGINX Directive client_header_buffer_size 和 large_client_header_buffers 在 1.8.1 版本的实现。
+最原始的问题是：NGINX 接收到了大请求头(4.5k)的请求，最终响应了错误码 400 Bad Request 。
+真实的背景因素包括：
+
+请求链路 NGINX -&gt; k8s nginx ingress -&gt; k8s pods (Tomcat)
+NGINX large_client_header_buffers 使用了默认配置 4 8k。
+Tomcat maxHttpHeaderSize 使用了默认配置 (default 8192)
+" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-92258941-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">HTTP Large Header Fields Problem</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2020-04-11 00:00:00 UTC">
+                11 Apr 2020
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p><em>首次遇到请求头过大的问题，做个记录。特别是在本次处理陷入了误区，做了太多无谓的猜测</em></p>
+<p>请求头过大导致响应错误码 400 (Bad Request)、414 (URI Too Long)、431 (Request Header Fields Too Large) 的情况不多，不过原因和解决方案都是比较清晰的。客户端请求的请求头过大导致超出了服务器支持的缓冲区。如果客户端可控，控制请求头的大小；否则，适当调大服务器配置的缓冲区大小。</p>
+<p>最近生产上碰到了这个问题，颇费了一番功夫。接手问题时得到了几个错误的信息，干扰到了处理的全过程。甚至为此去重读了 NGINX Directive <code>client_header_buffer_size</code> 和 <code>large_client_header_buffers</code> 在 1.8.1 版本的实现。</p>
+<p>最原始的问题是：NGINX 接收到了大请求头(4.5k)的请求，最终响应了错误码 400 Bad Request 。</p>
+<p>真实的背景因素包括：</p>
+<ul>
+<li>请求链路 NGINX -&gt; k8s nginx ingress -&gt; k8s pods (Tomcat)</li>
+<li>NGINX <code>large_client_header_buffers</code> 使用了默认配置 <code>4 8k</code>。</li>
+<li>Tomcat maxHttpHeaderSize 使用了默认配置 (default 8192)</li>
+</ul>
+<h2 id="背景">背景</h2>
+<p><strong>HTTP Request message syntax</strong></p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">Request = Request-Line
+        *(( general-header
+        | request-header
+        | entity-header ) CRLF)
+        CRLF
+        [ message-body ]
+
+Request-Line = Method SP Request-URI SP HTTP-Version CRLF
+</code></pre></div><p><strong>HTTP Response message syntax</strong></p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">Response = Status-Line
+         *(( general-header
+         | response-header
+         | entity-header ) CRLF)
+         CRLF
+         [ message-body ]
+Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+</code></pre></div><p><strong>Related Response Status Code</strong></p>
+<ul>
+<li>400 Bad Request</li>
+<li>414 URI Too Long</li>
+<li>431 Request Header Fields Too Large
+<ul>
+<li>Total size of request headers too large</li>
+<li>Or, a single header field is too large</li>
+</ul>
+</li>
+</ul>
+<p><strong>NGINX Configuration</strong></p>
+<p>Nginx 与请求头缓冲区相关的指令有两个：<code>client_header_buffer_size</code> 和 <code>large_client_header_buffers</code> 。</p>
+<p><img src="https://img.ffutop.com/2A3B45A8-72BB-4D6C-9C46-0126C09FE157.png" alt="Nginx 处理请求头逻辑"></p>
+<p><code>client_header_buffer_size</code> (default 1k)</p>
+<p>定义用于读取请求头的缓冲区大小。如果请求头过大，将依据 <code>large_client_header_buffers</code> 指令临时申请大缓冲区来处理。</p>
+<p><code>large_client_header_buffers</code> (default 4 8k)</p>
+<p>用来处理偶尔出现的过大的请求头，该缓冲区创建后，先拷贝原缓冲区读取的内容，然后继续读取未读完的内容。此类缓冲区力求达到的是临时申请，迅速释放的目的。</p>
+<ul>
+<li>
+<p>如果 request line 过大，超出缓冲区大小，NGINX 将响应 414 错误码</p>
+</li>
+<li>
+<p>如果 request header field 过大，NGINX 将相应 400 错误码（事实上，个人认为用 431 错误码更合适）</p>
+</li>
+</ul>
+<h2 id="问题原因">问题原因</h2>
+<p>重新梳理过 NGINX、Tomcat 配置之后，它们对请求头的极限大小应该是 8k 。按理说 4.5k 的请求头无论如何都不会触发任何的问题。而且，即使 NGINX 反向代理增加了类似 X-Forwarded-For 之类的来源描述，整个请求头不会超过 5k 。</p>
+<p>但是，也正是这个错误信息影响了整个处理流程。直接到 Tomcat 所在的 Kubernetes Pod 里面抓个包，马上就能明白，被 NGINX 额外添加的远远不止想象的这么点东西。</p>
+<p><code>X-Original-Uri</code> 将整个请求头大小做了倍乘。Tomcat 收到了大约 9k 的请求头，从而也就直接导致了 400 错误码的出现。</p>
+<p>那么，这个 <code>X-Original-Uri</code> 又是怎么被引入的呢？查了 <a href="https://github.com/kubernetes/ingress-nginx">ingress-nginx</a> 的仓库:</p>
+<ul>
+<li>
+<p>2017 年 3 月，<code>proxy_pass X-Original-URI</code> 首次出现，具体原因没有找到相应的 Issues (怀疑仓库迁移到 GitHub 发生在 2017 年中)，不过从当时 commit 信息来看，大约是为了 oauth 而引入的</p>
+</li>
+<li>
+<p>2018 年 8 月，<a href="https://github.com/kubernetes/ingress-nginx/pull/2353">Issue #2353</a> 为 <code>X-Original-Uri</code> 提供了一个可选的开关 (<code>proxy-add-original-uri-header</code>)。但为了兼容性考虑，默认值被配置为开启</p>
+</li>
+<li>
+<p>2019 年 9 月，<a href="https://github.com/kubernetes/ingress-nginx/pull/4604">Issue #4604</a> 调整了开关，将其默认值配置为关闭。此 Issue 产生的原因，也正是 <code>X-Original-Uri</code> 引起了后端服务器 Code 431 的错误响应。</p>
+</li>
+</ul>
+<h2 id="解决方案">解决方案</h2>
+<ol>
+<li>
+<p>由于目前使用的 nginx-ingress 版本存在选项 <code>proxy-add-original-uri-header</code> 。直接将其置为关闭即可。</p>
+</li>
+<li>
+<p>升级 nginx-ingress，不过这个动作就不得不进行兼容性测试了。</p>
+</li>
+</ol>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2020-02-28-db-transfer-based-on-dns/">基于DNS的数据库切换·事故</a></li>
+    
+    <li><a href="/posts/2019-11-07-groovyclassloader-fullgc/">GroovyClassLoader 引发的 FullGC</a></li>
+    
+    <li><a href="/posts/2019-10-17-random/">随机数生成器拖慢 Tomcat 启动速度</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+ 
+  </body>
+</html>

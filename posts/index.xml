@@ -6,10 +6,28 @@
     <description>Recent content in Posts on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cmn-Hans-CN</language>
-    <lastBuildDate>Thu, 26 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 11 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>HTTP Large Header Fields Problem</title>
+      <link>https://www.ffutop.com/posts/2020-04-11-large-http-header/</link>
+      <pubDate>Sat, 11 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/posts/2020-04-11-large-http-header/</guid>
+      <description>&lt;p&gt;&lt;em&gt;首次遇到请求头过大的问题，做个记录。特别是在本次处理陷入了误区，做了太多无谓的猜测&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;请求头过大导致响应错误码 400 (Bad Request)、414 (URI Too Long)、431 (Request Header Fields Too Large) 的情况不多，不过原因和解决方案都是比较清晰的。客户端请求的请求头过大导致超出了服务器支持的缓冲区。如果客户端可控，控制请求头的大小；否则，适当调大服务器配置的缓冲区大小。&lt;/p&gt;
+&lt;p&gt;最近生产上碰到了这个问题，颇费了一番功夫。接手问题时得到了几个错误的信息，干扰到了处理的全过程。甚至为此去重读了 NGINX Directive &lt;code&gt;client_header_buffer_size&lt;/code&gt; 和 &lt;code&gt;large_client_header_buffers&lt;/code&gt; 在 1.8.1 版本的实现。&lt;/p&gt;
+&lt;p&gt;最原始的问题是：NGINX 接收到了大请求头(4.5k)的请求，最终响应了错误码 400 Bad Request 。&lt;/p&gt;
+&lt;p&gt;真实的背景因素包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;请求链路 NGINX -&amp;gt; k8s nginx ingress -&amp;gt; k8s pods (Tomcat)&lt;/li&gt;
+&lt;li&gt;NGINX &lt;code&gt;large_client_header_buffers&lt;/code&gt; 使用了默认配置 &lt;code&gt;4 8k&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;Tomcat maxHttpHeaderSize 使用了默认配置 (default 8192)&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
     
     <item>
       <title>Idempotent Pattern</title>
@@ -115,20 +133,6 @@
       <description>&lt;p&gt;BPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控/过滤网络数据包的任务，必然地会涉及到内核空间/用户空间的拷贝。而众所周知的，内核空间/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。&lt;/p&gt;
 &lt;p&gt;BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。&lt;/p&gt;
 &lt;p&gt;本篇只着眼于传统的 BPF 技术，探求 BPF 如何在内核埋入包过滤相关的钩子以实现其功能。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>系统平均负载分析</title>
-      <link>https://www.ffutop.com/posts/2019-09-16-load-average/</link>
-      <pubDate>Mon, 16 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/posts/2019-09-16-load-average/</guid>
-      <description>&lt;p&gt;&lt;code&gt;Load Average&lt;/code&gt; 是监控系统负载的重要指标。但是，在最近的测试中，使用简单的 CPU 密集型程序执行 1 分钟，系统 1 分钟的平均负载却只能达到 0.63。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ffutop $ &lt;span style=&#34;color:#007020&#34;&gt;time&lt;/span&gt; ./a
-./a  59.48s user 0.04s system 98% cpu 1:00.59 total
-ffutop $ uptime
-09:58:56 up &lt;span style=&#34;color:#40a070&#34;&gt;165&lt;/span&gt; days, 20:14,  &lt;span style=&#34;color:#40a070&#34;&gt;2&lt;/span&gt; users,  load average: 0.63, 0.24, 0.09
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;是什么原因导致平均负载与预期值不符呢？&lt;/p&gt;</description>
     </item>
     
   </channel>
