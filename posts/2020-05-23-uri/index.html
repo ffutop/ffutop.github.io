@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2020-05-23-uri/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2020-05-23-uri/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https://www.ffutop.com/"
+      },
+      "articleSection" : "posts",
+      "name" : "URI 与资源定义",
+      "headline" : "URI 与资源定义",
+      "description" : "\u003cblockquote\u003e\n\u003cp\u003eURI syntax:\n\u003ccode\u003e\u0026lt;scheme\u0026gt;:\u0026lt;scheme-specific-part\u0026gt;\u003c/code\u003e\u003c/p\u003e\n\u003cp\u003egeneric URI syntax:\n\u003ccode\u003e\u0026lt;scheme\u0026gt;://\u0026lt;authority\u0026gt;\u0026lt;path\u0026gt;?\u0026lt;query\u0026gt;\u003c/code\u003e\u003c/p\u003e\n\u003c/blockquote\u003e\n\u003cp\u003e此前对 URI、URL 的定义一知半解，网上充斥着大量文档试图描述 URI、URL、URN 的区别。其中一种经典的观点是：URI 是 URN、URL 的超集。其中 URN 被用来描述资源的名称(身份ID)，而 URL 被用来描述查找该资源的方法。这个表述确实没有问题，但对于理解 URx 无法提供切实的帮助。最近阅读了 \u003ca href=\"https://tools.ietf.org/html/rfc3305\"\u003eRFC 3305\u003c/a\u003e、\u003ca href=\"https://tools.ietf.org/html/rfc3986\"\u003eRFC 3986\u003c/a\u003e、\u003ca href=\"https://tools.ietf.org/html/rfc7595\"\u003eRFC 7595\u003c/a\u003e 等资料，本文将聊聊个人对 URI 的见解，以及借此回顾此前参与的公司权限系统的设计。\u003c/p\u003e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2020",
+      "datePublished": "2020-05-23T00:00:00Z",
+      "dateModified" : "2020-05-23T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2020-05-23-uri/",
+      "keywords" : [ "Permission","URI", ]
+  }
+</script>
+<title>URI 与资源定义 - Utop&#39;s Blog</title>
+  <meta property="og:title" content="URI 与资源定义 - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="
+URI syntax:
+&lt;scheme&gt;:&lt;scheme-specific-part&gt;
+generic URI syntax:
+&lt;scheme&gt;://&lt;authority&gt;&lt;path&gt;?&lt;query&gt;
+
+此前对 URI、URL 的定义一知半解，网上充斥着大量文档试图描述 URI、URL、URN 的区别。其中一种经典的观点是：URI 是 URN、URL 的超集。其中 URN 被用来描述资源的名称(身份ID)，而 URL 被用来描述查找该资源的方法。这个表述确实没有问题，但对于理解 URx 无法提供切实的帮助。最近阅读了 RFC 3305、RFC 3986、RFC 7595 等资料，本文将聊聊个人对 URI 的见解，以及借此回顾此前参与的公司权限系统的设计。" />
+  <meta name="description" content="
+URI syntax:
+&lt;scheme&gt;:&lt;scheme-specific-part&gt;
+generic URI syntax:
+&lt;scheme&gt;://&lt;authority&gt;&lt;path&gt;?&lt;query&gt;
+
+此前对 URI、URL 的定义一知半解，网上充斥着大量文档试图描述 URI、URL、URN 的区别。其中一种经典的观点是：URI 是 URN、URL 的超集。其中 URN 被用来描述资源的名称(身份ID)，而 URL 被用来描述查找该资源的方法。这个表述确实没有问题，但对于理解 URx 无法提供切实的帮助。最近阅读了 RFC 3305、RFC 3986、RFC 7595 等资料，本文将聊聊个人对 URI 的见解，以及借此回顾此前参与的公司权限系统的设计。" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-92258941-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">URI 与资源定义</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2020-05-23 00:00:00 UTC">
+                23 May 2020
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <blockquote>
+<p>URI syntax:
+<code>&lt;scheme&gt;:&lt;scheme-specific-part&gt;</code></p>
+<p>generic URI syntax:
+<code>&lt;scheme&gt;://&lt;authority&gt;&lt;path&gt;?&lt;query&gt;</code></p>
+</blockquote>
+<p>此前对 URI、URL 的定义一知半解，网上充斥着大量文档试图描述 URI、URL、URN 的区别。其中一种经典的观点是：URI 是 URN、URL 的超集。其中 URN 被用来描述资源的名称(身份ID)，而 URL 被用来描述查找该资源的方法。这个表述确实没有问题，但对于理解 URx 无法提供切实的帮助。最近阅读了 <a href="https://tools.ietf.org/html/rfc3305">RFC 3305</a>、<a href="https://tools.ietf.org/html/rfc3986">RFC 3986</a>、<a href="https://tools.ietf.org/html/rfc7595">RFC 7595</a> 等资料，本文将聊聊个人对 URI 的见解，以及借此回顾此前参与的公司权限系统的设计。</p>
+<h2 id="uri-的定义">URI 的定义</h2>
+<p>早期充斥着大量的 RFC 在分别尝试规范 <a href="https://tools.ietf.org/html/rfc2396">URI</a>、<a href="https://tools.ietf.org/html/rfc2717">URL</a>、<a href="https://tools.ietf.org/html/rfc2276">URN</a>，并且对 URx 做差异化定位。但这事实上造成了使用上的混乱，甚至一定程度上造成 “VIM or Emacs” 式的技术人员经典辩论。</p>
+<p>URI (Uniform Resource Identifier):</p>
+<ul>
+<li>
+<p>Uniform: 指统一的，保证向前向后兼容，一套标准适配所有场景。在标准中体现为 URI 句法中的 <code>&lt;scheme&gt;</code></p>
+</li>
+<li>
+<p>Resource: 资源，所有的一切，抽象的、具体的，人、公司、电子文件、服务等均可被标识为资源</p>
+</li>
+<li>
+<p>Identifier: 数字化所必须的对资源的标识，就像如何在中国唯一定位一个公民，用身份证号就可以了。</p>
+</li>
+</ul>
+<p>总的来说，URI 就是为标记资源提供一套统一标准，为不同类资源的区分提供一套可供扩展的框架。<code>&lt;scheme&gt;:&lt;scheme-specific-part&gt;</code> 句法由 URI 定义，<code>&lt;scheme&gt;</code> 注册列表由 <a href="https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml">IANA</a> 负责维护，而 <code>&lt;scheme-specific-part&gt;</code> 部分，就交由 scheme 注册方负责定义了。</p>
+<p>至于 URL ，被划入了 URI 的子集，被通用的 URI 所包容。从个人的观点看，是一个被互联网标准淘汰了的产物，只是因为 WWW 使用太过于广泛，这个历史名词一直停留在日常用语中。但翻阅标准文档，近些年的文档已经选择性地规避 URL 的使用。而更多地被 URI 所囊括。</p>
+<p>另外还有一个 <a href="https://tools.ietf.org/html/rfc3987">IRI (Internationalized Resource Identifiers)</a> ，提出要替代 URI ，但目前更多的是作为 URI 的扩展而存在。URI 只支持 ASCII 字符集，而 IRI 使用 Unicode 来适应国际化的需求。</p>
+<h2 id="权限与资源标识">权限与资源标识</h2>
+<p>借着对 URI 的重新认识，又想起了去年参与做的权限系统。当时在设计中就提出了所有的资源都可以作为权限，唯一的需求就是对资源进行标识。不过如何对资源的标识就陷入了一个极其痛苦决策。就需求来说，面对的标准和非标的资源有：</p>
+<ul>
+<li>大前端的组件</li>
+<li>服务端的方法块</li>
+<li>数据库表的字段</li>
+<li>HTTP(s) scheme 的 URI 等。</li>
+</ul>
+<p>如何将资源纳入统一的标识框架？从现在的观点来看，URI 早就为这种问题提供了可供扩展的解决方案。但在知识面狭隘的前提下，自定义协议往往是技术人员的第一选择，恰恰是标准化的 HTTP(s) scheme 直接被权限系统放弃，我们对非标资源进行了自定义的命名(<code>&lt;type&gt;:&lt;unique name&gt;</code>)</p>
+<p>回顾这一年多的实践，非标的资源被诟病最多的就是代码侵入，虽然切面编程缓解了问题，但无法根除。而被直接放弃的 HTTP(s) scheme ，恰恰拥有更广泛地群众基础。虽然通过扩展自定义协议可以重新引入对 HTTP(s) scheme 的支持，但终归来说是协议上的重大缺陷。</p>
+<h2 id="微不足道的总结">微不足道的总结</h2>
+<p>自定义协议可以解决眼前的问题，但立场决定了设计的高度。URI 试图为标识资源提供统一标准，提供了高度可扩展的标准；而我此前的资源权限命名，局限于将需求中的资源纳入，最终也只是将部分需求做了统一化。</p>
+<p>历史为整个互联网储备了大量优秀的技术和解决方案。公开标准可能无法次次都完美地符合需求，但至少先了解了解标准制定者所面临的问题和提供的解决方案，可以扩展解决问题的思路，查漏补缺。</p>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e8%a7%81%e8%a7%a3/">
+                见解
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2018-07-04-jdk-permission/">Java 安全访问与权限控制</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+ 
+  </body>
+</html>

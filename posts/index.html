@@ -34,8 +34,8 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2020",
-      "datePublished": "2020-04-11T00:00:00Z",
-      "dateModified" : "2020-04-11T00:00:00Z",
+      "datePublished": "2020-05-23T00:00:00Z",
+      "dateModified" : "2020-05-23T00:00:00Z",
       "url" : "https://www.ffutop.com/posts/",
       "keywords" : [  ]
   }
@@ -95,6 +95,44 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term"></h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2020-05-23-uri/">URI 与资源定义</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2020-05-23 00:00:00 UTC">
+          23 May 2020
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <blockquote>
+<p>URI syntax:
+<code>&lt;scheme&gt;:&lt;scheme-specific-part&gt;</code></p>
+<p>generic URI syntax:
+<code>&lt;scheme&gt;://&lt;authority&gt;&lt;path&gt;?&lt;query&gt;</code></p>
+</blockquote>
+<p>此前对 URI、URL 的定义一知半解，网上充斥着大量文档试图描述 URI、URL、URN 的区别。其中一种经典的观点是：URI 是 URN、URL 的超集。其中 URN 被用来描述资源的名称(身份ID)，而 URL 被用来描述查找该资源的方法。这个表述确实没有问题，但对于理解 URx 无法提供切实的帮助。最近阅读了 <a href="https://tools.ietf.org/html/rfc3305">RFC 3305</a>、<a href="https://tools.ietf.org/html/rfc3986">RFC 3986</a>、<a href="https://tools.ietf.org/html/rfc7595">RFC 7595</a> 等资料，本文将聊聊个人对 URI 的见解，以及借此回顾此前参与的公司权限系统的设计。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-05-23-uri/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -409,40 +447,6 @@ if (!doNotTrack) {
 16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
 </code></pre></div><p>创建 <code>SecureRandom</code> 竟然花了 6 分多钟，占了整个启动时间的 94% 。</p>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-17-random/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-10-12-bpf/">理解 Linux Kernel (14) - cBPF</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2019-10-12 00:00:00 UTC">
-          12 Oct 2019
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <p>BPF (Berkeley Packet Filter) 相比于其他包过滤技术，最重要的突破就是实现了一种全新的内核态/用户态隔离下的内核数据过滤方案。自由定制的网络监控程序，总是作为用户级程序运行，为完成监控/过滤网络数据包的任务，必然地会涉及到内核空间/用户空间的拷贝。而众所周知的，内核空间/用户空间的拷贝代价极大，特别在大流量的情况下。BPF 的方案，通过部署一个安全的、沙箱化的内核代理直接实现在内核空间下的包过滤(Packet Filter)，尽早地将非目标网络包剔除，只对真正有效的目标网络包实施拷贝。</p>
-<p>BPF 最早于 1992 年被提出，1997 年起也被 Linux 内核吸收，定名 LSF (Linux Socket Filter, (aka) BPF:)。早期作用仅仅停留在过滤网络报文；在 2013 年由大牛 Alexei Starovoitov 彻底改造形成全新的 eBPF，并开始面向内核跟踪与事件监控、网络编程两大领域展示其强大的功能。</p>
-<p>本篇只着眼于传统的 BPF 技术，探求 BPF 如何在内核埋入包过滤相关的钩子以实现其功能。</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-12-bpf/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>
