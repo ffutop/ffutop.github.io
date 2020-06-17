@@ -34,8 +34,8 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2020",
-      "datePublished": "2020-04-11T00:00:00Z",
-      "dateModified" : "2020-04-11T00:00:00Z",
+      "datePublished": "2020-06-17T00:00:00Z",
+      "dateModified" : "2020-06-17T00:00:00Z",
       "url" : "https://www.ffutop.com/tags/java/",
       "keywords" : [  ]
   }
@@ -95,6 +95,41 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term">Java</h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2020-06-17-dubbo-telnet/">Dubbo Telnet 调试</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2020-06-17 00:00:00 UTC">
+          17 Jun 2020
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>始于 Dubbo 2.0.6 的 Telnet Command 是一个令人兴奋的特性，极大地降低了服务化测试的成本，但是，<a href="http://dubbo.apache.org/zh-cn/docs/user/references/telnet.html">寥寥数行的可怜文档</a>无形地为使用增加了成本。此前虽然一直在使用 Telnet Command，但基本上是浅尝辄止，字符集的问题、重载方法的错误筛选等，都让我不得不对这个特性敬而远之，无法作为高频的生产力工具。最近，频繁出现的调试需求让我不得不尝试接受并熟悉 Dubbo Telnet Command。</p>
+<p><em>本文只针对 invoke 命令，基于 Dubbo 版本 2.6.7</em></p>
+<p>Dubbo Telnet Command <code>invoke</code> 命令的一般格式为 <code>invoke &lt;全限定名&gt;.&lt;方法名&gt;(&lt;参数&gt;,...,&lt;参数&gt;)</code>。其中参数需要能被 JSON 解析，即提取命令中的 <code>&lt;参数&gt;,...,&lt;参数&gt;</code> 部分，并包装上 <code>[]</code> 构成 <code>[&lt;参数&gt;,...,&lt;参数&gt;]</code> ，需要保证这个串是一个合法的 JSON Array。</p>
+<p>本文提供的示例均可在 <a href="https://github.com/ffutop/dubbo-telnet-playground">dubbo-telnet-playground</a> 中找到。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-06-17-dubbo-telnet/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>

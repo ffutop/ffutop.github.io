@@ -34,8 +34,8 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2020",
-      "datePublished": "2020-05-23T00:00:00Z",
-      "dateModified" : "2020-05-23T00:00:00Z",
+      "datePublished": "2020-06-17T00:00:00Z",
+      "dateModified" : "2020-06-17T00:00:00Z",
       "url" : "https://www.ffutop.com/posts/",
       "keywords" : [  ]
   }
@@ -95,6 +95,41 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term"></h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2020-06-17-dubbo-telnet/">Dubbo Telnet 调试</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2020-06-17 00:00:00 UTC">
+          17 Jun 2020
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>始于 Dubbo 2.0.6 的 Telnet Command 是一个令人兴奋的特性，极大地降低了服务化测试的成本，但是，<a href="http://dubbo.apache.org/zh-cn/docs/user/references/telnet.html">寥寥数行的可怜文档</a>无形地为使用增加了成本。此前虽然一直在使用 Telnet Command，但基本上是浅尝辄止，字符集的问题、重载方法的错误筛选等，都让我不得不对这个特性敬而远之，无法作为高频的生产力工具。最近，频繁出现的调试需求让我不得不尝试接受并熟悉 Dubbo Telnet Command。</p>
+<p><em>本文只针对 invoke 命令，基于 Dubbo 版本 2.6.7</em></p>
+<p>Dubbo Telnet Command <code>invoke</code> 命令的一般格式为 <code>invoke &lt;全限定名&gt;.&lt;方法名&gt;(&lt;参数&gt;,...,&lt;参数&gt;)</code>。其中参数需要能被 JSON 解析，即提取命令中的 <code>&lt;参数&gt;,...,&lt;参数&gt;</code> 部分，并包装上 <code>[]</code> 构成 <code>[&lt;参数&gt;,...,&lt;参数&gt;]</code> ，需要保证这个串是一个合法的 JSON Array。</p>
+<p>本文提供的示例均可在 <a href="https://github.com/ffutop/dubbo-telnet-playground">dubbo-telnet-playground</a> 中找到。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-06-17-dubbo-telnet/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -411,42 +446,6 @@ if (!doNotTrack) {
 2019-11-05T14:31:42.028+0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028+0800: 504603.865: [CMS: 266816K-&gt;266769K(873856K), 1.0351283 secs] 266816K-&gt;266769K(1267072K), [Metaspace: 204153K-&gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]
 </code></pre></div><p>FGC 前后，<code>Metaspace</code> 占用的内存没有得到任何释放。<em>[Metaspace: 204153K-&gt;204153K(1267712K)]</em> 。这也就是反复 FGC 的原因。</p>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-11-07-groovyclassloader-fullgc/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-10-17-random/">随机数生成器拖慢 Tomcat 启动速度</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2019-10-17 00:00:00 UTC">
-          17 Oct 2019
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <p>最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
-...
-16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
-</code></pre></div><p>创建 <code>SecureRandom</code> 竟然花了 6 分多钟，占了整个启动时间的 94% 。</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-10-17-random/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>

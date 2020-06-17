@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Telnet on Utop&#39;s Blog</title>
+    <link>https://www.ffutop.com/tags/telnet/</link>
+    <description>Recent content in Telnet on Utop&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cmn-Hans-CN</language>
+    <lastBuildDate>Wed, 17 Jun 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://www.ffutop.com/tags/telnet/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Dubbo Telnet 调试</title>
+      <link>https://www.ffutop.com/posts/2020-06-17-dubbo-telnet/</link>
+      <pubDate>Wed, 17 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/posts/2020-06-17-dubbo-telnet/</guid>
+      <description>&lt;p&gt;始于 Dubbo 2.0.6 的 Telnet Command 是一个令人兴奋的特性，极大地降低了服务化测试的成本，但是，&lt;a href=&#34;http://dubbo.apache.org/zh-cn/docs/user/references/telnet.html&#34;&gt;寥寥数行的可怜文档&lt;/a&gt;无形地为使用增加了成本。此前虽然一直在使用 Telnet Command，但基本上是浅尝辄止，字符集的问题、重载方法的错误筛选等，都让我不得不对这个特性敬而远之，无法作为高频的生产力工具。最近，频繁出现的调试需求让我不得不尝试接受并熟悉 Dubbo Telnet Command。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;本文只针对 invoke 命令，基于 Dubbo 版本 2.6.7&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Dubbo Telnet Command &lt;code&gt;invoke&lt;/code&gt; 命令的一般格式为 &lt;code&gt;invoke &amp;lt;全限定名&amp;gt;.&amp;lt;方法名&amp;gt;(&amp;lt;参数&amp;gt;,...,&amp;lt;参数&amp;gt;)&lt;/code&gt;。其中参数需要能被 JSON 解析，即提取命令中的 &lt;code&gt;&amp;lt;参数&amp;gt;,...,&amp;lt;参数&amp;gt;&lt;/code&gt; 部分，并包装上 &lt;code&gt;[]&lt;/code&gt; 构成 &lt;code&gt;[&amp;lt;参数&amp;gt;,...,&amp;lt;参数&amp;gt;]&lt;/code&gt; ，需要保证这个串是一个合法的 JSON Array。&lt;/p&gt;
+&lt;p&gt;本文提供的示例均可在 &lt;a href=&#34;https://github.com/ffutop/dubbo-telnet-playground&#34;&gt;dubbo-telnet-playground&lt;/a&gt; 中找到。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
