@@ -34,8 +34,8 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2020",
-      "datePublished": "2020-07-17T00:00:00Z",
-      "dateModified" : "2020-07-17T00:00:00Z",
+      "datePublished": "2020-04-11T00:00:00Z",
+      "dateModified" : "2020-04-11T00:00:00Z",
       "url" : "https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/",
       "keywords" : [  ]
   }
@@ -95,76 +95,6 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term">技术</h1>
         <div id="posts-list">
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-06-25-asm-core/">ASM 核心包基本内容漫谈</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2018-06-25 00:00:00 UTC">
-          25 Jun 2018
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <blockquote>
-<p>本文描述的 ASM 指的是 OW2 ASM</p>
-</blockquote>
-<h2 id="asm-core-的结构">ASM-Core 的结构</h2>
-<p><em>首先是一些概述性的内容。</em></p>
-<p>由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。
-因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)</p>
-<p>从核心包声明的类来看，主要包括:</p>
-<ol>
-<li>
-<p>ClassReader - 作为结构化对象，将接收(accept)访问者的访问</p>
-</li>
-<li>
-<p>几种访问者抽象类以及相应的实现类</p>
-</li>
-</ol>
-<ul>
-<li>AnnotationVisitor -&gt; AnnotationWriter</li>
-<li>ClassVisitor -&gt; ClassWriter</li>
-<li>FieldVisitor -&gt; FieldWriter</li>
-<li>MethodVisitor -&gt; MethodWriter</li>
-<li>ModuleVisitor -&gt; ModuleWriter</li>
-</ul>
-<ol start="3">
-<li>
-<p>Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值</p>
-</li>
-<li>
-<p>其它一些辅助的类</p>
-</li>
-</ol>
-<ul>
-<li>Attribute - 用于处理非标准化的属性(ClassFile 允许<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVMS</a> 中未定义的 Attribute)</li>
-<li>ByteArray - 动态可自适应的 byte[] (字节数组)</li>
-<li>Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象</li>
-<li>Symbol - 用于表示 ClassFile 中描述的 Constant 的基类</li>
-<li>SymbolTable - 用于存储常量池对象</li>
-<li>其它内容省略</li>
-</ul>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-25-asm-core/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
           
 
           <section>
