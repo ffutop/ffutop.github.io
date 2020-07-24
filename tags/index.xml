@@ -6,10 +6,28 @@
     <description>Recent content in Tags on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cmn-Hans-CN</language>
-    <lastBuildDate>Wed, 17 Jun 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 17 Jul 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Authenticate</title>
+      <link>https://www.ffutop.com/tags/authenticate/</link>
+      <pubDate>Fri, 17 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/tags/authenticate/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Authorize</title>
+      <link>https://www.ffutop.com/tags/authorize/</link>
+      <pubDate>Fri, 17 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/tags/authorize/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Dubbo</title>
@@ -80,24 +98,6 @@
       <pubDate>Sat, 11 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>https://www.ffutop.com/tags/tomcat/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>idempotent</title>
-      <link>https://www.ffutop.com/tags/idempotent/</link>
-      <pubDate>Thu, 26 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/tags/idempotent/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Raft</title>
-      <link>https://www.ffutop.com/tags/raft/</link>
-      <pubDate>Thu, 26 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/tags/raft/</guid>
       <description></description>
     </item>
     
