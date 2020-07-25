@@ -6,10 +6,28 @@
     <description>Recent content in Tags on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cmn-Hans-CN</language>
-    <lastBuildDate>Fri, 17 Jul 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 25 Jul 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>precent-encoding</title>
+      <link>https://www.ffutop.com/tags/precent-encoding/</link>
+      <pubDate>Sat, 25 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/tags/precent-encoding/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>URI</title>
+      <link>https://www.ffutop.com/tags/uri/</link>
+      <pubDate>Sat, 25 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/tags/uri/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Authenticate</title>
@@ -66,15 +84,6 @@
     </item>
     
     <item>
-      <title>URI</title>
-      <link>https://www.ffutop.com/tags/uri/</link>
-      <pubDate>Sat, 23 May 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/tags/uri/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>HTTP</title>
       <link>https://www.ffutop.com/tags/http/</link>
       <pubDate>Sat, 11 Apr 2020 00:00:00 +0000</pubDate>
@@ -89,15 +98,6 @@
       <pubDate>Sat, 11 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>https://www.ffutop.com/tags/nginx/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Tomcat</title>
-      <link>https://www.ffutop.com/tags/tomcat/</link>
-      <pubDate>Sat, 11 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/tags/tomcat/</guid>
       <description></description>
     </item>
     

@@ -34,8 +34,8 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2020",
-      "datePublished": "2020-07-17T00:00:00Z",
-      "dateModified" : "2020-07-17T00:00:00Z",
+      "datePublished": "2020-07-25T00:00:00Z",
+      "dateModified" : "2020-07-25T00:00:00Z",
       "url" : "https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/",
       "keywords" : [  ]
   }
@@ -95,6 +95,56 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term">技术</h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-09-08-preprocessor-output/">Preprocessor Output</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2018-09-08 00:00:00 UTC">
+          08 Sep 2018
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>最近重新开始回顾 C 语言以及其编译后的文件格式 ELF。
+暂时告别一步到位的命令 <code>gcc main.c</code>，如果从 <code>.c</code> 文件的编译来说，主要分为预编译(preprocess)、编译(Compilation)、汇编(Assembly)、链接(Linking) 四个步骤。
+但是，仅仅从第一个流程 <strong>预编译</strong> 而言，就已经遇到了一些麻烦。</p>
+<p><!-- raw HTML omitted -->program.i<!-- raw HTML omitted --></p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020"># 1 &#34;program.c&#34;
+</span><span style="color:#007020"># 1 &#34;&lt;built-in&gt;&#34;
+</span><span style="color:#007020"># 1 &#34;&lt;command-line&gt;&#34;
+</span><span style="color:#007020"># 1 &#34;/usr/include</span><span style="color:#007020">/stdc-predef.h&#34; 1 3 4</span><span style="color:#007020">
+</span><span style="color:#007020"># 1 &#34;&lt;command-line&gt;&#34; 2
+</span><span style="color:#007020"># 1 &#34;program.c&#34;
+</span><span style="color:#007020"># 1 &#34;header.h&#34; 1
+</span><span style="color:#007020"></span><span style="color:#902000">char</span> <span style="color:#666">*</span><span style="color:#06287e">test</span>(<span style="color:#902000">void</span>);
+<span style="color:#007020"># 2 &#34;program.c&#34; 2
+</span><span style="color:#007020"></span>
+<span style="color:#902000">int</span> <span style="color:#06287e">main</span>(<span style="color:#902000">void</span>)
+{
+}
+</code></pre></div><p>预编译后的问题出现了诸如 <code># 1 &quot;program.c&quot;</code> 的 <em>注释?</em></p>
+<p>这里简单记录预处理输出文件的基本格式，方便今后回顾。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-09-08-preprocessor-output/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -457,40 +507,6 @@ if (!doNotTrack) {
 </code></pre></div><p>诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。</p>
 <p>为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。</p>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-07-04-jdk-permission/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-06-28-asm-verifyerror/">ASM-VerifyError错误信息解决</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2018-06-28 00:00:00 UTC">
-          28 Jun 2018
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <h2 id="报错信息">报错信息</h2>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">java<span style="color:#666">.</span><span style="color:#4070a0">lang</span><span style="color:#666">.</span><span style="color:#4070a0">VerifyError</span><span style="color:#666">:</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">net</span><span style="color:#666">.</span><span style="color:#4070a0">sf</span><span style="color:#666">.</span><span style="color:#4070a0">cglib</span><span style="color:#666">.</span><span style="color:#4070a0">core</span><span style="color:#666">.</span><span style="color:#4070a0">DebuggingClassWriter</span> overrides <span style="color:#007020;font-weight:bold">final</span> method visit<span style="color:#666">.(</span>IILjava<span style="color:#666">/</span>lang<span style="color:#666">/</span>String<span style="color:#666">;</span>Ljava<span style="color:#666">/</span>lang<span style="color:#666">/</span>String<span style="color:#666">;</span>Ljava<span style="color:#666">/</span>lang<span style="color:#666">/</span>String<span style="color:#666">;[</span>Ljava<span style="color:#666">/</span>lang<span style="color:#666">/</span>String<span style="color:#666">;)</span>V
-</code></pre></div>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-28-asm-verifyerror/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>
