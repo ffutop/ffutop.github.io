@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>iptables on Utop&#39;s Blog</title>
-    <link>https://www.ffutop.com/tags/iptables/</link>
-    <description>Recent content in iptables on Utop&#39;s Blog</description>
+    <title>tun/tap on Utop&#39;s Blog</title>
+    <link>https://www.ffutop.com/tags/tun/tap/</link>
+    <description>Recent content in tun/tap on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cmn-Hans-CN</language>
-    <lastBuildDate>Thu, 06 Aug 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://www.ffutop.com/tags/iptables/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.ffutop.com/tags/tun/tap/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -49,15 +48,6 @@
 |                       B 地区                          |
 +-------------------------------------------------------+
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
-    </item>
-    
-    <item>
-      <title>Netfilter 导览 - based on iptables</title>
-      <link>https://www.ffutop.com/posts/2019-08-06-netfilter/</link>
-      <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/posts/2019-08-06-netfilter/</guid>
-      <description>&lt;p&gt;&lt;code&gt;Netfilter&lt;/code&gt;，内核中用于管理网络数据包的重要网络模块；&lt;code&gt;iptables&lt;/code&gt;，运行在用户空间，用于控制 &lt;code&gt;Netfilter&lt;/code&gt; 模块的一种软件。需要注意的，&lt;code&gt;iptables&lt;/code&gt; 只能控制 IPv4 数据包，对于 IPv6 数据包，需要使用 &lt;code&gt;ip6tables&lt;/code&gt; 。&lt;/p&gt;</description>
     </item>
     
   </channel>

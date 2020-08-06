@@ -6,10 +6,50 @@
     <description>Recent content in 技术 on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cmn-Hans-CN</language>
-    <lastBuildDate>Sat, 25 Jul 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 06 Aug 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>tcp Tunnel</title>
+      <link>https://www.ffutop.com/posts/2020-08-06-tun/</link>
+      <pubDate>Thu, 06 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/posts/2020-08-06-tun/</guid>
+      <description>&lt;p&gt;所谓专用网络(Private Network)，本质上不过是物理上局域网概念的延伸，将分属两地的局域网络联通，构建一个更大的逻辑局域网，并保证通信的私密性和独占性。最质朴的物理解决方案——在两个局域网络之间拉一个网线；不过距离越远，成本越高，还得考虑信号衰减等问题。相对而言租用运营商的线路就比较实际。但终究物理上的解决方案相较于使用互联网还是过于高昂，如何通过互联网构建一个逻辑上的专用网络？虚拟专用网络(Virtual Private Network, VPN) 提供了答案。&lt;/p&gt;
+&lt;p&gt;要构建 VPN ，最基本的要求是两地局域网络互通。即如下图中的设备 &lt;code&gt;172.16.1.1&lt;/code&gt; 要像在同一个局域网内，对内网 IP (分属不同的局域网)为 &lt;code&gt;172.20.1.2&lt;/code&gt; 的设备发起并建立连接。但从基本的网络协议栈来看，IP 报文根本无法到达 B 区域的局域网。得益于分层的协议栈，TCP/IP 的五个层次，上下层次间通过接口和服务来通信，每个层次仅仅承载数据(payload)而不关心数据的格式和内容。理论上任何层次的数据都可以由其它任何层次或者它当前的层次所承载，也就出现了很多 XX over YY 的网络模型。在 A 区域将 IP 报文通过 YY 协议封装，到 B 区域再解包，像是从局域网内收到 IP 报文一样，发送给目的主机，就像是 IP 报文穿越了一条隧道。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-plain&#34; data-lang=&#34;plain&#34;&gt;+-------------------------------------------------------+
+|                       A 地区                          |
+| +------------+  +------------+       +--------------+ |
+| | 172.16.1.1 |  | 172.16.1.2 |  .... | 172.16.39.60 | |
+| +------+-----+  +------+-----+       +-------+------+ |
+|        |               |                     |        |
+|        +---------------+-----+---------------+        |
+|                              |                        |
+|                         +----+----+                   |
+|                         |   NAT   |                   |
+|                         +----^----+                   |
+                               |
+                               |
+    +--------------------------v------------------+
+    |    INTERNET                     INTERNET    |
+    +--------------------------^------------------+
+                               |
+|                              |                        |
+|                         +----v----+                   |
+|                         |   NAT   |                   |
+|                         +----+----+                   |
+|                              |                        |
+|        +---------------+-----+---------------+        |
+|        |               |                     |        |
+| +------------+  +------------+       +--------------+ |
+| | 172.20.1.1 |  | 172.20.1.2 |  .... | 172.20.39.60 | |
+| +------+-----+  +------+-----+       +-------+------+ |
+|                       B 地区                          |
++-------------------------------------------------------+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
     
     <item>
       <title>URI不规范编码解决方案</title>
@@ -134,19 +174,6 @@ java.lang.IllegalArgumentException: Invalid character found in the request targe
 2019-11-05T14:31:41.117+0800: 504602.953: [Full GC (Metadata GC Threshold) 2019-11-05T14:31:41.117+0800: 504602.953: [CMS: 266841K-&amp;gt;266816K(873856K), 0.9109948 secs] 267218K-&amp;gt;266816K(1267072K), [Metaspace: 204153K-&amp;gt;204153K(1267712K)], 0.9114975 secs] [Times: user=0.91 sys=0.00, real=0.91 secs]
 2019-11-05T14:31:42.028+0800: 504603.865: [Full GC (Last ditch collection) 2019-11-05T14:31:42.028+0800: 504603.865: [CMS: 266816K-&amp;gt;266769K(873856K), 1.0351283 secs] 266816K-&amp;gt;266769K(1267072K), [Metaspace: 204153K-&amp;gt;204153K(1267712K)], 1.0355630 secs] [Times: user=0.92 sys=0.00, real=1.04 secs]
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;FGC 前后，&lt;code&gt;Metaspace&lt;/code&gt; 占用的内存没有得到任何释放。&lt;em&gt;[Metaspace: 204153K-&amp;gt;204153K(1267712K)]&lt;/em&gt; 。这也就是反复 FGC 的原因。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>随机数生成器拖慢 Tomcat 启动速度</title>
-      <link>https://www.ffutop.com/posts/2019-10-17-random/</link>
-      <pubDate>Thu, 17 Oct 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/posts/2019-10-17-random/</guid>
-      <description>&lt;p&gt;最近频繁发布应用，Tomcat 的启动效率竟然莫名其妙地出现了断崖式下降。正常 30 秒左右启动的应用，硬生生花了将近 7 分钟。通过检索日志发现了一些有意思的内容。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-plain&#34; data-lang=&#34;plain&#34;&gt;16-Oct-2019 14:23:31.999 WARNING [localhost-startStop-1] org.apache.catalina.util.SessionIdGeneratorBase.createSecureRandom Creation of SecureRandom instance for session ID generation using [SHA1PRNG] took [386,690] milliseconds.
-...
-16-Oct-2019 14:23:33.111 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in 410675 ms
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;创建 &lt;code&gt;SecureRandom&lt;/code&gt; 竟然花了 6 分多钟，占了整个启动时间的 94% 。&lt;/p&gt;</description>
     </item>
     
   </channel>

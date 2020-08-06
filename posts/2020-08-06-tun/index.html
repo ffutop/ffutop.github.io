@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2020-08-06-tun/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2020-08-06-tun/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https://www.ffutop.com/"
+      },
+      "articleSection" : "posts",
+      "name" : "tcp Tunnel",
+      "headline" : "tcp Tunnel",
+      "description" : "\u003cp\u003e所谓专用网络(Private Network)，本质上不过是物理上局域网概念的延伸，将分属两地的局域网络联通，构建一个更大的逻辑局域网，并保证通信的私密性和独占性。最质朴的物理解决方案——在两个局域网络之间拉一个网线；不过距离越远，成本越高，还得考虑信号衰减等问题。相对而言租用运营商的线路就比较实际。但终究物理上的解决方案相较于使用互联网还是过于高昂，如何通过互联网构建一个逻辑上的专用网络？虚拟专用网络(Virtual Private Network, VPN) 提供了答案。\u003c/p\u003e\n\u003cp\u003e要构建 VPN ，最基本的要求是两地局域网络互通。即如下图中的设备 \u003ccode\u003e172.16.1.1\u003c/code\u003e 要像在同一个局域网内，对内网 IP (分属不同的局域网)为 \u003ccode\u003e172.20.1.2\u003c/code\u003e 的设备发起并建立连接。但从基本的网络协议栈来看，IP 报文根本无法到达 B 区域的局域网。得益于分层的协议栈，TCP/IP 的五个层次，上下层次间通过接口和服务来通信，每个层次仅仅承载数据(payload)而不关心数据的格式和内容。理论上任何层次的数据都可以由其它任何层次或者它当前的层次所承载，也就出现了很多 XX over YY 的网络模型。在 A 区域将 IP 报文通过 YY 协议封装，到 B 区域再解包，像是从局域网内收到 IP 报文一样，发送给目的主机，就像是 IP 报文穿越了一条隧道。\u003c/p\u003e\n\u003cdiv class=\"highlight\"\u003e\u003cpre style=\"background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\"\u003e\u003ccode class=\"language-plain\" data-lang=\"plain\"\u003e+-------------------------------------------------------+\n|                       A 地区                          |\n| +------------+  +------------+       +--------------+ |\n| | 172.16.1.1 |  | 172.16.1.2 |  .... | 172.16.39.60 | |\n| +------+-----+  +------+-----+       +-------+------+ |\n|        |               |                     |        |\n|        +---------------+-----+---------------+        |\n|                              |                        |\n|                         +----+----+                   |\n|                         |   NAT   |                   |\n|                         +----^----+                   |\n                               |\n                               |\n    +--------------------------v------------------+\n    |    INTERNET                     INTERNET    |\n    +--------------------------^------------------+\n                               |\n|                              |                        |\n|                         +----v----+                   |\n|                         |   NAT   |                   |\n|                         +----+----+                   |\n|                              |                        |\n|        +---------------+-----+---------------+        |\n|        |               |                     |        |\n| +------------+  +------------+       +--------------+ |\n| | 172.20.1.1 |  | 172.20.1.2 |  .... | 172.20.39.60 | |\n| +------+-----+  +------+-----+       +-------+------+ |\n|                       B 地区                          |\n+-------------------------------------------------------+\n\u003c/code\u003e\u003c/pre\u003e\u003c/div\u003e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2020",
+      "datePublished": "2020-08-06T00:00:00Z",
+      "dateModified" : "2020-08-06T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2020-08-06-tun/",
+      "keywords" : [ "VPN","tun\/tap","iptables", ]
+  }
+</script>
+<title>tcp Tunnel - Utop&#39;s Blog</title>
+  <meta property="og:title" content="tcp Tunnel - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="所谓专用网络(Private Network)，本质上不过是物理上局域网概念的延伸，将分属两地的局域网络联通，构建一个更大的逻辑局域网，并保证通信的私密性和独占性。最质朴的物理解决方案——在两个局域网络之间拉一个网线；不过距离越远，成本越高，还得考虑信号衰减等问题。相对而言租用运营商的线路就比较实际。但终究物理上的解决方案相较于使用互联网还是过于高昂，如何通过互联网构建一个逻辑上的专用网络？虚拟专用网络(Virtual Private Network, VPN) 提供了答案。
+要构建 VPN ，最基本的要求是两地局域网络互通。即如下图中的设备 172.16.1.1 要像在同一个局域网内，对内网 IP (分属不同的局域网)为 172.20.1.2 的设备发起并建立连接。但从基本的网络协议栈来看，IP 报文根本无法到达 B 区域的局域网。得益于分层的协议栈，TCP/IP 的五个层次，上下层次间通过接口和服务来通信，每个层次仅仅承载数据(payload)而不关心数据的格式和内容。理论上任何层次的数据都可以由其它任何层次或者它当前的层次所承载，也就出现了很多 XX over YY 的网络模型。在 A 区域将 IP 报文通过 YY 协议封装，到 B 区域再解包，像是从局域网内收到 IP 报文一样，发送给目的主机，就像是 IP 报文穿越了一条隧道。
+&#43;-------------------------------------------------------&#43;
+|                       A 地区                          |
+| &#43;------------&#43;  &#43;------------&#43;       &#43;--------------&#43; |
+| | 172.16.1.1 |  | 172.16.1.2 |  .... | 172.16.39.60 | |
+| &#43;------&#43;-----&#43;  &#43;------&#43;-----&#43;       &#43;-------&#43;------&#43; |
+|        |               |                     |        |
+|        &#43;---------------&#43;-----&#43;---------------&#43;        |
+|                              |                        |
+|                         &#43;----&#43;----&#43;                   |
+|                         |   NAT   |                   |
+|                         &#43;----^----&#43;                   |
+                               |
+                               |
+    &#43;--------------------------v------------------&#43;
+    |    INTERNET                     INTERNET    |
+    &#43;--------------------------^------------------&#43;
+                               |
+|                              |                        |
+|                         &#43;----v----&#43;                   |
+|                         |   NAT   |                   |
+|                         &#43;----&#43;----&#43;                   |
+|                              |                        |
+|        &#43;---------------&#43;-----&#43;---------------&#43;        |
+|        |               |                     |        |
+| &#43;------------&#43;  &#43;------------&#43;       &#43;--------------&#43; |
+| | 172.20.1.1 |  | 172.20.1.2 |  .... | 172.20.39.60 | |
+| &#43;------&#43;-----&#43;  &#43;------&#43;-----&#43;       &#43;-------&#43;------&#43; |
+|                       B 地区                          |
+&#43;-------------------------------------------------------&#43;
+" />
+  <meta name="description" content="所谓专用网络(Private Network)，本质上不过是物理上局域网概念的延伸，将分属两地的局域网络联通，构建一个更大的逻辑局域网，并保证通信的私密性和独占性。最质朴的物理解决方案——在两个局域网络之间拉一个网线；不过距离越远，成本越高，还得考虑信号衰减等问题。相对而言租用运营商的线路就比较实际。但终究物理上的解决方案相较于使用互联网还是过于高昂，如何通过互联网构建一个逻辑上的专用网络？虚拟专用网络(Virtual Private Network, VPN) 提供了答案。
+要构建 VPN ，最基本的要求是两地局域网络互通。即如下图中的设备 172.16.1.1 要像在同一个局域网内，对内网 IP (分属不同的局域网)为 172.20.1.2 的设备发起并建立连接。但从基本的网络协议栈来看，IP 报文根本无法到达 B 区域的局域网。得益于分层的协议栈，TCP/IP 的五个层次，上下层次间通过接口和服务来通信，每个层次仅仅承载数据(payload)而不关心数据的格式和内容。理论上任何层次的数据都可以由其它任何层次或者它当前的层次所承载，也就出现了很多 XX over YY 的网络模型。在 A 区域将 IP 报文通过 YY 协议封装，到 B 区域再解包，像是从局域网内收到 IP 报文一样，发送给目的主机，就像是 IP 报文穿越了一条隧道。
+&#43;-------------------------------------------------------&#43;
+|                       A 地区                          |
+| &#43;------------&#43;  &#43;------------&#43;       &#43;--------------&#43; |
+| | 172.16.1.1 |  | 172.16.1.2 |  .... | 172.16.39.60 | |
+| &#43;------&#43;-----&#43;  &#43;------&#43;-----&#43;       &#43;-------&#43;------&#43; |
+|        |               |                     |        |
+|        &#43;---------------&#43;-----&#43;---------------&#43;        |
+|                              |                        |
+|                         &#43;----&#43;----&#43;                   |
+|                         |   NAT   |                   |
+|                         &#43;----^----&#43;                   |
+                               |
+                               |
+    &#43;--------------------------v------------------&#43;
+    |    INTERNET                     INTERNET    |
+    &#43;--------------------------^------------------&#43;
+                               |
+|                              |                        |
+|                         &#43;----v----&#43;                   |
+|                         |   NAT   |                   |
+|                         &#43;----&#43;----&#43;                   |
+|                              |                        |
+|        &#43;---------------&#43;-----&#43;---------------&#43;        |
+|        |               |                     |        |
+| &#43;------------&#43;  &#43;------------&#43;       &#43;--------------&#43; |
+| | 172.20.1.1 |  | 172.20.1.2 |  .... | 172.20.39.60 | |
+| &#43;------&#43;-----&#43;  &#43;------&#43;-----&#43;       &#43;-------&#43;------&#43; |
+|                       B 地区                          |
+&#43;-------------------------------------------------------&#43;
+" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-92258941-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">tcp Tunnel</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2020-08-06 00:00:00 UTC">
+                06 Aug 2020
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>所谓专用网络(Private Network)，本质上不过是物理上局域网概念的延伸，将分属两地的局域网络联通，构建一个更大的逻辑局域网，并保证通信的私密性和独占性。最质朴的物理解决方案——在两个局域网络之间拉一个网线；不过距离越远，成本越高，还得考虑信号衰减等问题。相对而言租用运营商的线路就比较实际。但终究物理上的解决方案相较于使用互联网还是过于高昂，如何通过互联网构建一个逻辑上的专用网络？虚拟专用网络(Virtual Private Network, VPN) 提供了答案。</p>
+<p>要构建 VPN ，最基本的要求是两地局域网络互通。即如下图中的设备 <code>172.16.1.1</code> 要像在同一个局域网内，对内网 IP (分属不同的局域网)为 <code>172.20.1.2</code> 的设备发起并建立连接。但从基本的网络协议栈来看，IP 报文根本无法到达 B 区域的局域网。得益于分层的协议栈，TCP/IP 的五个层次，上下层次间通过接口和服务来通信，每个层次仅仅承载数据(payload)而不关心数据的格式和内容。理论上任何层次的数据都可以由其它任何层次或者它当前的层次所承载，也就出现了很多 XX over YY 的网络模型。在 A 区域将 IP 报文通过 YY 协议封装，到 B 区域再解包，像是从局域网内收到 IP 报文一样，发送给目的主机，就像是 IP 报文穿越了一条隧道。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">+-------------------------------------------------------+
+|                       A 地区                          |
+| +------------+  +------------+       +--------------+ |
+| | 172.16.1.1 |  | 172.16.1.2 |  .... | 172.16.39.60 | |
+| +------+-----+  +------+-----+       +-------+------+ |
+|        |               |                     |        |
+|        +---------------+-----+---------------+        |
+|                              |                        |
+|                         +----+----+                   |
+|                         |   NAT   |                   |
+|                         +----^----+                   |
+                               |
+                               |
+    +--------------------------v------------------+
+    |    INTERNET                     INTERNET    |
+    +--------------------------^------------------+
+                               |
+|                              |                        |
+|                         +----v----+                   |
+|                         |   NAT   |                   |
+|                         +----+----+                   |
+|                              |                        |
+|        +---------------+-----+---------------+        |
+|        |               |                     |        |
+| +------------+  +------------+       +--------------+ |
+| | 172.20.1.1 |  | 172.20.1.2 |  .... | 172.20.39.60 | |
+| +------+-----+  +------+-----+       +-------+------+ |
+|                       B 地区                          |
++-------------------------------------------------------+
+</code></pre></div><h2 id="xx-over-yy">XX over YY</h2>
+<p>网络协议栈分明的层次，为 <code>XX over YY</code> 建立了基础，可划分 3 个大类。</p>
+<ul>
+<li>最常规的形式，例如 <code>TCP over IP</code>, <code>IP over Ethernet</code>, <code>IP over PPP</code> ，上层协议数据由下层协议承载，也就是普通的 TCP/IP 网络模型。</li>
+<li>第二种是同层协议数据的承载，例如 <code>PPPoE</code>，由链路层协议 Ethernet 承载 PPP (Point to Point Protocol, 点对点协议) 数据。</li>
+<li>第三种，是上层协议承载下层协议数据，<code>IP over TCP</code> 等就属于这一类。</li>
+</ul>
+<p>由于网络协议栈在发送数据时，逐层封装数据并交由下层协议进一步处理，第三类 <code>XX over YY</code> 没有直接得到 Linux 内核的支持。如何获得下层数据，并交给上层协议重新封装并发送呢？</p>
+<p><code>pcap</code> 可以深入网络协议栈，监听并抓取目标网络包，但这个操作将全局性地影响网络 IO 效率；用 <code>netfilter</code> 对网络包进行过滤和转发，应该也是一种解决之道；近年来逐渐壮大的 <code>ebpf</code> 应该也可以被用来抓取网络包。不过，典型的方案还是通过 <code>tun/tap</code> 等虚拟网卡设备来获取下层数据并重新封装发送。</p>
+<p>虚拟网卡在逻辑上与物理网卡完全等同，核心的不同点在于，物理网卡真的会把数据顺着网线、无线网络等发送/接收。而虚拟网卡的发送/接收操作只是把数据存放到内存或从内存中读取数据。</p>
+<h2 id="简易实现-tcp-隧道">简易实现 TCP 隧道</h2>
+<p>虚拟网卡天然地提供了抓取数据的方案。从 TUN 设备中读取到的将是网络层的报文，从 TAP 设备读到的是链路层的数据帧。将 TUN 设备得到的 IP 报文，通过已经建立的 TCP 连接发送到远端，就达成了联通两地局域网的目标。而这个 TCP 连接，也被认为是一个 TCP 隧道，为需要传送的 IP 报文隐藏途径的复杂网络，提供端到端的递送。</p>
+<p>虽然仅仅一个隧道，没办法被称作 VPN 。局域网络虽然打通，但私密性需要加解密组件保证，独占性需要依靠认证模块来实现。不过，仅从概念验证来说，理解 TCP 隧道也足以一窥 VPN 技术。</p>
+<p><img src="https://img.ffutop.com/ACAC2B6A-9637-4E59-8B6A-D04244E74CBA.png" alt=""></p>
+<h3 id="server-侧配置">server 侧配置</h3>
+<ol>
+<li>编译 VPN 模块 <code>gcc -o vpn vpn.c</code> (代码见参考资料 2)</li>
+<li>利用 Netcat 作为网络模块，打开监听端口</li>
+</ol>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkfifo /tmp/fifo; cat /tmp/fifo | ./vpn | nc -l <span style="color:#40a070">33960</span> &gt; /tmp/fifo
+</code></pre></div><ol start="3">
+<li>配置设备 IP 与 iptables</li>
+</ol>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip addr add 10.1.1.1/24 dev tun0; ip link <span style="color:#007020">set</span> dev tun0 up;
+iptables -t nat -A POSTROUTING -s 10.1.1.0/24 -o eth0 -j MASQUERADE
+</code></pre></div><h3 id="client-侧配置">client 侧配置</h3>
+<ol>
+<li>编译 VPN 模块 <code>gcc -o vpn vpn.c</code></li>
+<li>利用 Netcat 作为网络模块，打开监听端口</li>
+</ol>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkfifo /tmp/fifo; cat /tmp/fifo | ./vpn | nc -l <span style="color:#40a070">33960</span> &gt; /tmp/fifo
+</code></pre></div><ol start="3">
+<li>配置设备 IP 与 iptables</li>
+</ol>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip addr add 10.1.1.2/24 dev tun0; ip link <span style="color:#007020">set</span> dev tun0 up
+<span style="color:#60a0b0;font-style:italic"># 配置需要经过 TCP tunnel 的网段</span>
+ip route add xxx.xxx.xxx.xxx/xx dev tun proto kernel scope link src 10.1.1.2
+</code></pre></div><h2 id="参考资料">参考资料</h2>
+<p>[1]. <a href="https://www.ibm.com/developerworks/cn/linux/l-tuntap/index.html">虚拟网卡 TUN/TAP 驱动程序设计原理</a>
+[2]. 简易 VPN 程序 (clinet/server 均相同)</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/select.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;stdio.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;stdlib.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;string.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/types.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/stat.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/time.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/ioctl.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;net/if.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;linux/if_tun.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;fcntl.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;errno.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;unistd.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020"></span>
+<span style="color:#007020">#define TRUE 1
+</span><span style="color:#007020">#define BUF_SIZE 4096
+</span><span style="color:#007020">#define TUN_PATH &#34;/dev/net/tun&#34;
+</span><span style="color:#007020"></span>
+<span style="color:#902000">char</span> buf[BUF_SIZE];
+
+<span style="color:#902000">int</span> <span style="color:#06287e">openTun</span>() {
+    <span style="color:#902000">int</span> fd <span style="color:#666">=</span> open(TUN_PATH, O_RDWR);
+    <span style="color:#007020;font-weight:bold">if</span> (fd <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>) {
+        fprintf(stderr, <span style="color:#4070a0">&#34;open device [tun] failed. cause: %s(%d)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, strerror(errno), errno);
+        exit(EXIT_FAILURE);
+    }
+    <span style="color:#007020;font-weight:bold">return</span> fd;
+}
+
+<span style="color:#902000">int</span> <span style="color:#06287e">rw</span>(<span style="color:#902000">int</span> rfd, <span style="color:#902000">int</span> wfd) {
+    <span style="color:#902000">int</span> rcount, wcount, wtcount;
+    <span style="color:#007020;font-weight:bold">do</span> {
+        <span style="color:#60a0b0;font-style:italic">// read from rfd
+</span><span style="color:#60a0b0;font-style:italic"></span>        rcount <span style="color:#666">=</span> read(rfd, <span style="color:#666">&amp;</span>buf, BUF_SIZE);
+        <span style="color:#007020;font-weight:bold">if</span> (rcount <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>) {
+            fprintf(stderr, <span style="color:#4070a0">&#34;read from %d failed. cause: %s(%d)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, rfd, strerror(errno), errno);
+            exit(EXIT_FAILURE);
+        }
+
+        wcount <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+        <span style="color:#60a0b0;font-style:italic">// write to wfd
+</span><span style="color:#60a0b0;font-style:italic"></span>        <span style="color:#007020;font-weight:bold">while</span> (wcount <span style="color:#666">!=</span> rcount) {
+            wtcount <span style="color:#666">=</span> write(wfd, <span style="color:#666">&amp;</span>buf<span style="color:#666">+</span>wcount, rcount<span style="color:#666">-</span>wcount);
+            <span style="color:#007020;font-weight:bold">if</span> (wtcount <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>) {
+                fprintf(stderr, <span style="color:#4070a0">&#34;write to %d failed. cause: %s(%d)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, wfd, strerror(errno), errno);
+                exit(EXIT_FAILURE);
+            }
+            wcount <span style="color:#666">+=</span> wtcount;
+        }
+    } <span style="color:#007020;font-weight:bold">while</span> (rcount <span style="color:#666">==</span> BUF_SIZE);
+}
+
+<span style="color:#902000">int</span> <span style="color:#06287e">main</span>(<span style="color:#902000">int</span> args, <span style="color:#902000">char</span> <span style="color:#666">**</span>argv) {
+    <span style="color:#902000">int</span> fd <span style="color:#666">=</span> openTun();
+
+    fd_set rfds;
+    FD_ZERO(<span style="color:#666">&amp;</span>rfds);
+
+    <span style="color:#007020;font-weight:bold">struct</span> timeval tv;
+
+    <span style="color:#007020;font-weight:bold">struct</span> ifreq ifr;
+    memset(<span style="color:#666">&amp;</span>ifr, <span style="color:#40a070">0</span>, <span style="color:#007020;font-weight:bold">sizeof</span>(ifr));
+    ifr.ifr_flags <span style="color:#666">|=</span> IFF_NO_PI;
+    ifr.ifr_flags <span style="color:#666">|=</span> IFF_TUN;
+    snprintf(ifr.ifr_name, IFNAMSIZ, <span style="color:#4070a0">&#34;%s&#34;</span>, <span style="color:#4070a0">&#34;tun0&#34;</span>);
+    ioctl(fd, TUNSETIFF, (<span style="color:#902000">void</span> <span style="color:#666">*</span>)<span style="color:#666">&amp;</span>ifr);
+
+    <span style="color:#007020;font-weight:bold">while</span> (TRUE) {
+
+        <span style="color:#60a0b0;font-style:italic">/* Wait up to one seconds. */</span>
+        tv.tv_sec <span style="color:#666">=</span> <span style="color:#40a070">100</span>;
+        tv.tv_usec <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+
+        <span style="color:#60a0b0;font-style:italic">// Watch tun to see when it has input.
+</span><span style="color:#60a0b0;font-style:italic"></span>        FD_SET(fd, <span style="color:#666">&amp;</span>rfds);
+        <span style="color:#60a0b0;font-style:italic">// Watch stdin (fd 0) to see when it has input.
+</span><span style="color:#60a0b0;font-style:italic"></span>        FD_SET(<span style="color:#40a070">0</span>, <span style="color:#666">&amp;</span>rfds);
+
+        <span style="color:#902000">int</span> retval <span style="color:#666">=</span> select(<span style="color:#40a070">1024</span>, <span style="color:#666">&amp;</span>rfds, <span style="color:#007020">NULL</span>, <span style="color:#007020">NULL</span>, <span style="color:#666">&amp;</span>tv);
+        <span style="color:#007020;font-weight:bold">if</span> (retval <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>) {
+            fprintf(stderr, <span style="color:#4070a0">&#34;select() failed. cause: %s(%d)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, strerror(errno), errno);
+        } <span style="color:#007020;font-weight:bold">else</span> <span style="color:#007020;font-weight:bold">if</span> (retval <span style="color:#666">&gt;</span> <span style="color:#40a070">0</span>) {
+            <span style="color:#60a0b0;font-style:italic">// check which FD_ISSET(x, &amp;rfds) is true, read data and write to
+</span><span style="color:#60a0b0;font-style:italic"></span>            <span style="color:#007020;font-weight:bold">if</span> (FD_ISSET(<span style="color:#40a070">0</span>, <span style="color:#666">&amp;</span>rfds)) {
+                <span style="color:#60a0b0;font-style:italic">// read from stdin and write to tun
+</span><span style="color:#60a0b0;font-style:italic"></span>                <span style="color:#60a0b0;font-style:italic">// fprintf(stderr, &#34;stdin has bytes\n&#34;);
+</span><span style="color:#60a0b0;font-style:italic"></span>                rw(<span style="color:#40a070">0</span>, fd);
+            }
+            <span style="color:#007020;font-weight:bold">if</span> (FD_ISSET(fd, <span style="color:#666">&amp;</span>rfds)) {
+                <span style="color:#60a0b0;font-style:italic">// read from tun and write to stdout
+</span><span style="color:#60a0b0;font-style:italic"></span>                <span style="color:#60a0b0;font-style:italic">// fprintf(stderr, &#34;tun0 has bytes\n&#34;);
+</span><span style="color:#60a0b0;font-style:italic"></span>                rw(fd, <span style="color:#40a070">1</span>);
+            }
+        } <span style="color:#007020;font-weight:bold">else</span> {
+            <span style="color:#60a0b0;font-style:italic">// no data available, just timeout
+</span><span style="color:#60a0b0;font-style:italic"></span>            fprintf(stderr, <span style="color:#4070a0">&#34;timeout...</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>);
+        }
+    }
+}
+</code></pre></div>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%8a%80%e6%9c%af/">
+                技术
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2019-08-06-netfilter/">Netfilter 导览 - based on iptables</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+ 
+  </body>
+</html>
