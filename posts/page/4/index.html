@@ -34,8 +34,8 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2020",
-      "datePublished": "2020-08-06T00:00:00Z",
-      "dateModified" : "2020-08-06T00:00:00Z",
+      "datePublished": "2020-10-19T00:00:00Z",
+      "dateModified" : "2020-10-19T00:00:00Z",
       "url" : "https://www.ffutop.com/posts/",
       "keywords" : [  ]
   }
@@ -95,6 +95,60 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term"></h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-03-25-mem-dump/">如何获取运行时进程堆栈</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-03-25 00:00:00 UTC">
+          25 Mar 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>前些天看了关于在密码学应用中使用<code>java.lang.String</code>与<code>byte[]</code>的相关讨论，不推荐使用<code>java.lang.String</code>的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。</p>
+<h2 id="procpidmaps">/proc/${pid}/maps</h2>
+<p>首先当然是确定进程堆栈在物理内存的位置啦。很遗憾，没有找到相关的方案。毕竟进程记录的都是虚拟线性地址，而通过内核分段、分页机制最终映射到物理内存。不过，从<code>/proc</code>虚拟文件系统中，提供了进程虚拟地址映射。</p>
+<pre><code>address                   perm offset   dev   inode                      pathname
+556566cb5000-556566cb6000 r-xp 00000000 fc:01 2496598                    /root/ffTrace/run
+556566eb5000-556566eb6000 r--p 00000000 fc:01 2496598                    /root/ffTrace/run
+556566eb6000-556566eb7000 rw-p 00001000 fc:01 2496598                    /root/ffTrace/run
+55656814f000-556568170000 rw-p 00000000 00:00 0                          [heap]
+7f2a95f91000-7f2a96178000 r-xp 00000000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a96178000-7f2a96378000 ---p 001e7000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a96378000-7f2a9637c000 r--p 001e7000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a9637c000-7f2a9637e000 rw-p 001eb000 fc:01 1835434                    /lib/x86_64-linux-gnu/libc-2.27.so
+7f2a9637e000-7f2a96382000 rw-p 00000000 00:00 0
+7f2a96382000-7f2a963a9000 r-xp 00000000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965a0000-7f2a965a2000 rw-p 00000000 00:00 0
+7f2a965a9000-7f2a965aa000 r--p 00027000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965aa000-7f2a965ab000 rw-p 00028000 fc:01 1835410                    /lib/x86_64-linux-gnu/ld-2.27.so
+7f2a965ab000-7f2a965ac000 rw-p 00000000 00:00 0
+7ffe2cf5e000-7ffe2cf7f000 rw-p 00000000 00:00 0                          [stack]
+7ffe2cfed000-7ffe2cff0000 r--p 00000000 00:00 0                          [vvar]
+7ffe2cff0000-7ffe2cff2000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+</code></pre>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-03-25-mem-dump/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -450,42 +504,6 @@ System<span style="color:#666">.</span><span style="color:#4070a0">out</span><sp
 }
 </code></pre></div>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-10-14-understand-kernel-5/">理解 Linux Kernel (5) - 文件系统(宏观描述)</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2018-10-14 00:00:00 UTC">
-          14 Oct 2018
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <p>用惯了类 Unix 系统，应该说文件系统是日常最常接触的一个操作系统模块之一了。</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ls
-Applications Network      Users        bin          data         etc          net          sbin         usr
-Library      System       Volumes      cores        dev          home         private      tmp          var
-</code></pre></div><p>但是，究竟什么是文件系统? 为什么需要文件系统? 难道文件不是简单地存储到存储设备一块连续区域的吗?</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-10-14-understand-kernel-5/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>

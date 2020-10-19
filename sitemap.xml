@@ -4,27 +4,69 @@
   
   <url>
     <loc>https://www.ffutop.com/categories/</loc>
-    <lastmod>2020-08-06T00:00:00+00:00</lastmod>
+    <lastmod>2020-10-19T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://www.ffutop.com/tags/iptables/</loc>
-    <lastmod>2020-08-06T00:00:00+00:00</lastmod>
+    <loc>https://www.ffutop.com/tags/hijack/</loc>
+    <lastmod>2020-10-19T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.ffutop.com/tags/http/</loc>
+    <lastmod>2020-10-19T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.ffutop.com/tags/java/</loc>
+    <lastmod>2020-10-19T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://www.ffutop.com/posts/</loc>
-    <lastmod>2020-08-06T00:00:00+00:00</lastmod>
+    <lastmod>2020-10-19T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://www.ffutop.com/tags/</loc>
+    <lastmod>2020-10-19T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.ffutop.com/</loc>
+    <lastmod>2020-10-19T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.ffutop.com/posts/2020-10-19-hijack-http-req/</loc>
+    <lastmod>2020-10-19T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/</loc>
+    <lastmod>2020-10-19T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.ffutop.com/tags/iptables/</loc>
     <lastmod>2020-08-06T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -38,21 +80,7 @@
   </url>
   
   <url>
-    <loc>https://www.ffutop.com/</loc>
-    <lastmod>2020-08-06T00:00:00+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://www.ffutop.com/tags/vpn/</loc>
-    <lastmod>2020-08-06T00:00:00+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/</loc>
     <lastmod>2020-08-06T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -122,13 +150,6 @@
   </url>
   
   <url>
-    <loc>https://www.ffutop.com/tags/java/</loc>
-    <lastmod>2020-06-17T00:00:00+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://www.ffutop.com/tags/telnet/</loc>
     <lastmod>2020-06-17T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -152,13 +173,6 @@
   <url>
     <loc>https://www.ffutop.com/categories/%E8%A7%81%E8%A7%A3/</loc>
     <lastmod>2020-05-23T00:00:00+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.ffutop.com/tags/http/</loc>
-    <lastmod>2020-04-11T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

@@ -34,8 +34,8 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2020",
-      "datePublished": "2020-08-06T00:00:00Z",
-      "dateModified" : "2020-08-06T00:00:00Z",
+      "datePublished": "2020-10-19T00:00:00Z",
+      "dateModified" : "2020-10-19T00:00:00Z",
       "url" : "https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/",
       "keywords" : [  ]
   }
@@ -95,6 +95,44 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term">技术</h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-06-02-ftrace/">跟踪内核函数的工具—— Ftrace</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-06-02 00:00:00 UTC">
+          02 Jun 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>前两天仿照 <code>strings</code> 工具写了个打印进程运行时堆栈可打印字符的工具 <a href="https://github.com/DorMOUSE-None/ff-proc-utils/blob/master/ffstrings.c">ffstrings</a> 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&lt;</p>
+<p>在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— <code>ftrace</code> 。</p>
+<blockquote>
+<p>Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在用户空间（内核空间）之外的延迟和性能问题。</p>
+<p>虽然 Ftrace 是一款函数跟踪器，但也支持基于其它目的的跟踪，例如：跟踪上下文切换、跟踪高优先级任务的执行时间等等。另外还可以通过插件的方式自定义更多的跟踪。</p>
+</blockquote>
+<p>当然，目前仅仅是做简单的介绍。毕竟最初的目的是为了确认 <code>ffstrings</code> 出现 <code>EPERM</code> 的原因。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-06-02-ftrace/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -440,40 +478,6 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
 <p>整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。</p>
 <p>那么，有没有解决方案呢？当然有。通过用户程序硬编码式的轮询显然是陷入性能瓶颈的根源。因此内核主动提供了轮询式的系统调用（<code>select</code>, <code>poll</code>, <code>epoll</code>）。通过将轮询逻辑下沉到内核态，系统调用就只会有一次，而且超时时间的设置也显得统一。本篇就要就 <code>select</code> 和 <code>epoll</code> 两类系统调用的实现进行探究。</p>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-03-05-understand-kernel-9/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-02-27-java-fatal-api/">【Java】API 参数误定义的后果</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2019-02-27 00:00:00 UTC">
-          27 Feb 2019
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <p>工程项目中，定义 API 总是一个慎之又慎的操作。不能少，不满足调用方的需求就惨了；也不能多，不然就乱套了，自己维护困难，调用方也开始了自我发挥。虽然足够慎重，但绝大多数都逃不过最终不得不“改” API 的情况。今天要讨论的是在同一个类内同方法名不同参数（入参/出参）的情况。</p>
-<p>想要做到同方法名不同入参，很简单，就是“重载（Overload）”，日常都在使用。不再赘述！</p>
-<p>想要做到同方法名不同出参，答案就不再那么肯定了。当然，如果问把<code>void add(int)</code> API 改写成 <code>int add(int)</code>，可能得到的大多数回答都是可以。</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-02-27-java-fatal-api/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>
