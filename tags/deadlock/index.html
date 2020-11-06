@@ -10,8 +10,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="author" content="ffutop" />
-  <meta property="og:url" content="https://www.ffutop.com/tags/mysql/" />
-  <link rel="canonical" href="https://www.ffutop.com/tags/mysql/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <meta property="og:url" content="https://www.ffutop.com/tags/deadlock/" />
+  <link rel="canonical" href="https://www.ffutop.com/tags/deadlock/" /><link rel="apple-touch-icon" href="favicon.ico" />
   <link rel="icon" href="favicon.ico" />
   <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
 
@@ -24,8 +24,8 @@
            "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "tags",
-      "name" : "MySQL",
-      "headline" : "MySQL",
+      "name" : "DeadLock",
+      "headline" : "DeadLock",
       "description" : "",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
@@ -36,12 +36,12 @@
       "copyrightYear" : "2020",
       "datePublished": "2020-11-06T00:00:00Z",
       "dateModified" : "2020-11-06T00:00:00Z",
-      "url" : "https://www.ffutop.com/tags/mysql/",
+      "url" : "https://www.ffutop.com/tags/deadlock/",
       "keywords" : [  ]
   }
 </script>
-<title>MySQL - Utop&#39;s Blog</title>
-  <meta property="og:title" content="MySQL - Utop&#39;s Blog" />
+<title>DeadLock - Utop&#39;s Blog</title>
+  <meta property="og:title" content="DeadLock - Utop&#39;s Blog" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="" />
   <meta name="description" content="" />
@@ -93,7 +93,7 @@ if (!doNotTrack) {
 <div class="header-line"></div>
 
 
-        <h1 class="taxonomy-term">MySQL</h1>
+        <h1 class="taxonomy-term">DeadLock</h1>
         <div id="posts-list">
           
 
@@ -257,52 +257,6 @@ Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 
 *** WE ROLL BACK TRANSACTION (2)
 </code></pre></div>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-11-06-deadlock-insert-update/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-04-26-time-accuracy/">MySQL TIMESTAMP 时间精度问题</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2019-04-26 00:00:00 UTC">
-          26 Apr 2019
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <p>最近一段单元测试代码总是不定时地爆炸。test pass 与 failed 的比例大约 10:1 。伪代码如下:</p>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#60a0b0;font-style:italic">/**
-</span><span style="color:#60a0b0;font-style:italic">  * 表结构
-</span><span style="color:#60a0b0;font-style:italic">  * CREATE TABLE `time_0` (
-</span><span style="color:#60a0b0;font-style:italic">  *     `timeout` timestamp NOT NULL
-</span><span style="color:#60a0b0;font-style:italic">  * )
-</span><span style="color:#60a0b0;font-style:italic">  */</span>
-
-<span style="color:#60a0b0;font-style:italic">// part 1
-</span><span style="color:#60a0b0;font-style:italic"></span>jdbcTemplate<span style="color:#666">.</span><span style="color:#4070a0">execute</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;UPDATE `time_0` SET `timeout`=now() WHERE `id` = xxx;&#34;</span><span style="color:#666">);</span>
-
-<span style="color:#60a0b0;font-style:italic">// part 2
-</span><span style="color:#60a0b0;font-style:italic"></span>Date timeout <span style="color:#666">=</span> jdbcTemplate<span style="color:#666">.</span><span style="color:#4070a0">queryForObject</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;SELECT `timeout` FROM `time_0` WHERE `id` = xxx;&#34;</span><span style="color:#666">,</span> Date<span style="color:#666">.</span><span style="color:#4070a0">class</span><span style="color:#666">);</span>
-Assert<span style="color:#666">.</span><span style="color:#4070a0">assertTrue</span><span style="color:#666">(</span>timeout<span style="color:#666">.</span><span style="color:#4070a0">getTime</span><span style="color:#666">()</span> <span style="color:#666">&lt;</span> System<span style="color:#666">.</span><span style="color:#4070a0">currentTimeMillis</span><span style="color:#666">());</span>
-</code></pre></div><p>在绝大多数模拟中，先执行 <code>part 1</code>，紧跟着执行 <code>part 2</code> 都能通过测试。但偶尔还是挂掉了。</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-26-time-accuracy/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>

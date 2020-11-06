@@ -6,10 +6,155 @@
     <description>Recent content on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cmn-Hans-CN</language>
-    <lastBuildDate>Mon, 19 Oct 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 06 Nov 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>MySQL DeadLocks with INSERT</title>
+      <link>https://www.ffutop.com/posts/2020-11-06-deadlock-insert-update/</link>
+      <pubDate>Fri, 06 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/posts/2020-11-06-deadlock-insert-update/</guid>
+      <description>&lt;p&gt;首次碰到 INSERT + UPDATE statement 造成的死锁问题，触及了知识盲区，费时做了分析。&lt;/p&gt;
+&lt;h2 id=&#34;死锁场景描述&#34;&gt;死锁场景描述&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;下述所有事务隔离级别为 Read Committed&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1. 简化后的数据库表&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;TABLE&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;user_address&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt; (
+    &lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;id&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;bigint&lt;/span&gt;(&lt;span style=&#34;color:#40a070&#34;&gt;11&lt;/span&gt;) &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;NOT&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;NULL&lt;/span&gt; AUTO_INCREMENT &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;COMMENT&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;主键&amp;#39;&lt;/span&gt;,
+    &lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;user_id&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;varchar&lt;/span&gt;(&lt;span style=&#34;color:#40a070&#34;&gt;40&lt;/span&gt;) &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;DEFAULT&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;COMMENT&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;用户主键&amp;#39;&lt;/span&gt;,
+    &lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;comm_address&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;varchar&lt;/span&gt;(&lt;span style=&#34;color:#40a070&#34;&gt;1&lt;/span&gt;) &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;DEFAULT&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;NULL&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;COMMENT&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;常用地址标识&amp;#39;&lt;/span&gt;,
+    &lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;address&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;varchar&lt;/span&gt;(&lt;span style=&#34;color:#40a070&#34;&gt;200&lt;/span&gt;) &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;DEFAULT&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;NULL&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;COMMENT&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;地址&amp;#39;&lt;/span&gt;,
+    &lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;longitude&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;bigint&lt;/span&gt;(&lt;span style=&#34;color:#40a070&#34;&gt;20&lt;/span&gt;) &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;DEFAULT&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;NULL&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;COMMENT&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;经度&amp;#39;&lt;/span&gt;,
+    &lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;latitude&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;bigint&lt;/span&gt;(&lt;span style=&#34;color:#40a070&#34;&gt;20&lt;/span&gt;) &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;DEFAULT&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;NULL&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;COMMENT&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;纬度&amp;#39;&lt;/span&gt;,
+    &lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;create_time&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;timestamp&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;NOT&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;NULL&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;DEFAULT&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;CURRENT_TIMESTAMP&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;COMMENT&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;建立时间&amp;#39;&lt;/span&gt;,
+    &lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;update_time&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;timestamp&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;NOT&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;NULL&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;DEFAULT&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;CURRENT_TIMESTAMP&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;COMMENT&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;更新时间&amp;#39;&lt;/span&gt;,
+    &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;PRIMARY&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;KEY&lt;/span&gt; (&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;id&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;),
+    &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;KEY&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;idx_user_id&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt; (&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;user_id&lt;span style=&#34;color:#666&#34;&gt;`&lt;/span&gt;)
+) ENGINE&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;InnoDB AUTO_INCREMENT&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;DEFAULT&lt;/span&gt; CHARSET&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;utf8 &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;COLLATE&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;utf8_bin &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;COMMENT&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;用户常用地址&amp;#39;&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;2. 死锁事务时序&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;时序&lt;/th&gt;
+&lt;th&gt;事务 1&lt;/th&gt;
+&lt;th&gt;事务 2&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;START TRANSACTION&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;START TRANSACTION&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;3. INNODB Monitor Output&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-plain&#34; data-lang=&#34;plain&#34;&gt;------------------------
+
+LATEST DETECTED DEADLOCK
+
+------------------------
+
+2020-11-03 08:25:25 0x7f2801e1d700
+
+*** (1) TRANSACTION:
+
+TRANSACTION 13335216894, ACTIVE 0 sec fetching rows
+
+mysql tables in use 1, locked 1
+
+LOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1
+
+MySQL thread id 680655, OS thread handle 139810239182592, query id 120901872537 10.1.X.YYY mask_user updating
+
+UPDATE `user_address` SET
+
+		`comm_address` = &amp;#39;0&amp;#39;
+
+		WHERE `user_id` = &amp;#39;c760c70e42924b869beee418d3b30165&amp;#39;
+
+*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+
+RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216894 lock_mode X locks rec but not gap waiting
+
+Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+
+ 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+
+ 1: len 4; hex 803c4394; asc  &amp;lt;C ;;
+
+
+
+*** (2) TRANSACTION:
+
+TRANSACTION 13335216895, ACTIVE 0 sec starting index read, thread declared inside InnoDB 5000
+
+mysql tables in use 1, locked 1
+
+3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
+
+MySQL thread id 672593, OS thread handle 139809806997248, query id 120901872539 10.1.X.YYY mask_user updating
+
+UPDATE `user_address` SET
+
+		`comm_address` = &amp;#39;0&amp;#39;
+
+		WHERE `user_id` = &amp;#39;c760c70e42924b869beee418d3b30165&amp;#39;
+
+*** (2) HOLDS THE LOCK(S):
+
+RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap
+
+Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+
+ 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+
+ 1: len 4; hex 803c4394; asc  &amp;lt;C ;;
+
+
+
+*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+
+RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap waiting
+
+Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+
+ 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+
+ 1: len 4; hex 803c4393; asc  &amp;lt;C ;;
+
+
+
+*** WE ROLL BACK TRANSACTION (2)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
     
     <item>
       <title>劫持 Java 应用 HTTP 请求</title>
@@ -159,26 +304,6 @@ java.lang.IllegalArgumentException: Invalid character found in the request targe
       
       <guid>https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/</guid>
       <description>&lt;p&gt;我们生产环境上所有的应用都是通过域名来访问 MySQL、Redis 等基础服务。按说域名相较于 IP，凭空多了个 DNS 解析动作，是一个劣化的方案。但好处在于，一旦需要切换基础服务，将带来巨大的利好。可是，任何忽视DNS Record TTL的切换方案，都将伴随着巨大的风险。甚至，成为否定该利好的佐证。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>分布式共识·Raft Algorithm</title>
-      <link>https://www.ffutop.com/posts/2020-02-17-raft/</link>
-      <pubDate>Mon, 17 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/posts/2020-02-17-raft/</guid>
-      <description>&lt;h2 id=&#34;分布式系统与共识&#34;&gt;分布式系统与共识&lt;/h2&gt;
-&lt;p&gt;分布式系统是一组透过网络相互连接通信与传递信息的计算机，协同来完成一件任务的系统。任务可能是大规模计算，可能是冗余存储。按此分类，又有分布式计算系统和分布式存储系统。&lt;/p&gt;
-&lt;p&gt;典型的分布式计算系统/框架有 MapReduce、Spark；分布式存储系统有 GFS 等。虽然有此划分，但分布式计算几乎必然地涉及到存储的需求。存储为计算提供支持，计算促进存储的发展。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://img.ffutop.com/3885C079-B4ED-4B0E-AD86-60AB8D4D4792.png&#34; alt=&#34;分布式系统分类&#34;&gt;&lt;/p&gt;
-&lt;p&gt;计算是无状态的，存储是有状态的。在分布式的存储下，为了让计算机各自维护的状态协商达成一致，就必然地需要共识算法的支持。Wait a minute. 计算机间的协商需要共识算法？&lt;/p&gt;
-&lt;p&gt;计算机间的协作可以划分为中心化与去中心化两大类。中心化的方案自然是有一个权威的 Master 来协调所有的计算机的任务，但前提是这个 Master 必须可靠，即依赖一个单点就必须要对它的可用性进行担保；去中心化的方案，计算机间都是平等的，如何就一个问题达成共识，就是面对的核心问题。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;h3 id=&#34;共识与一致性&#34;&gt;共识与一致性&lt;/h3&gt;
-&lt;p&gt;共识(Consensus)：机器之间就一个值/命令等达成共同的认识，一般是面向输入，处理并维护这个值（状态）&lt;/p&gt;
-&lt;p&gt;一致性(Consistency)：一致性表述为机器对外提供服务时的表现。向机器 A 或机器 B 读取同一数据，两者的返回值是相同的。当然，也有不同的弱化版本，允许一些特定条件下的不一致&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;在 2014 年之前，Paxos [1] 几乎是解决共识问题的唯一选择。但难懂是一个致命的问题，并且难以工程化也是重大的缺陷。Raft 的出现无疑是一道曙光，熟读，实践，豁然开朗。&lt;/p&gt;</description>
     </item>
     
   </channel>

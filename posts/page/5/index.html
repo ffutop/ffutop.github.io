@@ -34,8 +34,8 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2020",
-      "datePublished": "2020-10-19T00:00:00Z",
-      "dateModified" : "2020-10-19T00:00:00Z",
+      "datePublished": "2020-11-06T00:00:00Z",
+      "dateModified" : "2020-11-06T00:00:00Z",
       "url" : "https://www.ffutop.com/posts/",
       "keywords" : [  ]
   }
@@ -95,6 +95,87 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term"></h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/">理解 Linux Kernel (6) - read &amp; write</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2018-11-11 00:00:00 UTC">
+          11 Nov 2018
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p><a href="https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/">前一篇</a>已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。</p>
+<p>首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#007020">#include</span> <span style="color:#007020">&lt;stdio.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;stdlib.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;string.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;unistd.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;fcntl.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;errno.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/types.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020">#include</span> <span style="color:#007020">&lt;sys/stat.h&gt;</span><span style="color:#007020">
+</span><span style="color:#007020"></span>
+<span style="color:#902000">int</span> <span style="color:#06287e">panic</span>()
+{
+    fprintf(stderr, <span style="color:#4070a0">&#34;%s (errno=%d)</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, strerror(errno), errno);
+    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>;
+}
+
+<span style="color:#902000">int</span> <span style="color:#06287e">main</span>(<span style="color:#902000">int</span> argc, <span style="color:#902000">char</span> <span style="color:#666">*</span>argv[])
+{
+    <span style="color:#60a0b0;font-style:italic">/* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */</span>
+    <span style="color:#902000">int</span> fd <span style="color:#666">=</span> open(<span style="color:#4070a0">&#34;/root/frw.txt&#34;</span>, O_RDWR <span style="color:#666">|</span> O_CREAT);
+    <span style="color:#007020;font-weight:bold">if</span> (fd <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    <span style="color:#60a0b0;font-style:italic">/* 向文件写入 Hello World! 共计 12 个字符 */</span>
+    ssize_t wsize <span style="color:#666">=</span> write(fd, <span style="color:#4070a0">&#34;Hello World!&#34;</span>, <span style="color:#40a070">12</span>);
+    <span style="color:#007020;font-weight:bold">if</span> (wsize <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    <span style="color:#60a0b0;font-style:italic">/* 重定位文件读写指针 */</span>
+    off_t off <span style="color:#666">=</span> lseek(fd, <span style="color:#40a070">0</span>, SEEK_SET);
+    <span style="color:#007020;font-weight:bold">if</span> (off <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    <span style="color:#902000">char</span><span style="color:#666">*</span> buf <span style="color:#666">=</span> (<span style="color:#902000">char</span> <span style="color:#666">*</span>) malloc(wsize);
+    <span style="color:#60a0b0;font-style:italic">/* 读取文件内容 */</span>
+    ssize_t rsize <span style="color:#666">=</span> read(fd, buf, wsize);
+    <span style="color:#007020;font-weight:bold">if</span> (rsize <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    printf(<span style="color:#4070a0">&#34;%s</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, buf);
+    free(buf);
+    <span style="color:#60a0b0;font-style:italic">/* 关闭文件 */</span>
+    <span style="color:#902000">int</span> stat <span style="color:#666">=</span> close(fd);
+    <span style="color:#007020;font-weight:bold">if</span> (stat <span style="color:#666">==</span> <span style="color:#666">-</span><span style="color:#40a070">1</span>)
+        <span style="color:#007020;font-weight:bold">return</span> panic();
+
+    <span style="color:#007020;font-weight:bold">return</span> <span style="color:#40a070">0</span>;
+}
+</code></pre></div>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -413,60 +494,6 @@ Library      System       Volumes      cores        dev          home         pr
 <p>在<a href="https://www.ffutop.com/2018-08-19-understand-Kernel-0/">概述</a>，我已经介绍过《理解 Linux Kernel》系列文章的写作原因。我不能担保我所进行的所有试验性操作都是对的，但至少操作我的环境下成功地运行了，并帮助我触及我始终敬畏的<strong>硬件&amp;OS</strong></p>
 <p>《Linux 内核完全注释》第三章——内核编程语言和环境，描述了用 as86 汇编语言构建 boot 引导程序，在 Bochs 仿真器成功模拟开机运行，最终输出 <em>Loading System&hellip;</em>。这就是本篇所要尝试的核心实验。之所以在已经有资料的基础上再写一遍，是书中缺失了仿真器模拟的环节。</p>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-19-understand-kernel-1/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-08-15-java-instrumentation/">Java Instrumentation</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2018-08-15 00:00:00 UTC">
-          15 Aug 2018
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <h2 id="start">Start</h2>
-<p>从现有的前置知识来说，我们能够认识到两个事实:</p>
-<ol>
-<li>Java Class 通过 ClassLoader 进行加载。
-通过<code>全限定名</code>进行区分。当需要加载新的类时，ClassLoader 通过双亲委派机制判断是否已经加载过这个类。
-换句话说: Class 一经加载，就不会尝试重复加载 (至少按绝大多数人的认知来说，确实是的)</li>
-<li>有没有可能让被加载的 Class 与物理存储上的 .class 内容不同。
-当然也是完全可以做到的。不管怎么说，CGlib 和 Java Proxy 也是一个耳熟能详的概念吧
-(虽然可能不了解细节。在此，欢迎学习前置技能 <a href="https://dormouse-none.github.io/2018-07-10-CGlib-Enhancer/">CGlib Enhancer 主流程源码解析</a> 和 <a href="https://dormouse-none.github.io/2018-07-20-Java-Proxy/">Java Proxy 源码解析</a>。不过不影响本文后续内容)</li>
-</ol>
-<p>另一个方面，也许绝大多数人都听说过所谓的<code>热部署</code>。但是究竟怎么才能做到 <code>热部署</code>(话题开得有点大哈。Y_Y 本文不讲这个)</p>
-<p>操作字节码一定是一个逃不开的话题，毕竟 Class 就是所谓的被加载到内存的字节码嘛。</p>
-<p>如何操作字节码? ASM, CGlib, Java Proxy, Javassist ? 不过这些都要等到需要被操作的类被加载了才行啊，似乎有点晚&hellip;</p>
-<p>Java 提供了一个可行的机制，用来在 ClassLoader 加载字节码之前完成对操作字节码的目的</p>
-<h2 id="instrumentation">Instrumentation</h2>
-<p><code>java.lang.instrument.Instrumentation</code> 类为提供直接操作 Java 字节码的又一个途径(虽然 Java Doc 的说明是用来检测 Java 代码的)</p>
-<p>相信我这个说明是没有问题的。毕竟完成对代码检测的途径是直接修改字节码。</p>
-<p>下列有两种方法可以达到目的</p>
-<ol>
-<li>当 JVM 以指示一个代理类的方式启动时，将传递给代理类的 premain 方法一个 Instrumentation 实例。</li>
-<li>当 JVM 提供某种机制在 JVM 启动之后某一时刻启动代理时，将传递给代理代码的 agentmain 方法一个 Instrumentation 实例。</li>
-</ol>
-<p>话不多说，下面将全部以实例来展现对这种 JVM 检测机制(虽然例子已经脱离了<em>检测</em>的目的)的使用</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-15-java-instrumentation/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>

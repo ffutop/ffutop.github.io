@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2020-11-06-deadlock-insert-update/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2020-11-06-deadlock-insert-update/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https://www.ffutop.com/"
+      },
+      "articleSection" : "posts",
+      "name" : "MySQL DeadLocks with INSERT",
+      "headline" : "MySQL DeadLocks with INSERT",
+      "description" : "\u003cp\u003e首次碰到 INSERT + UPDATE statement 造成的死锁问题，触及了知识盲区，费时做了分析。\u003c/p\u003e\n\u003ch2 id=\"死锁场景描述\"\u003e死锁场景描述\u003c/h2\u003e\n\u003cp\u003e\u003cem\u003e下述所有事务隔离级别为 Read Committed\u003c/em\u003e\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003e1. 简化后的数据库表\u003c/strong\u003e\u003c/p\u003e\n\u003cdiv class=\"highlight\"\u003e\u003cpre style=\"background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\"\u003e\u003ccode class=\"language-sql\" data-lang=\"sql\"\u003e\u003cspan style=\"color:#007020;font-weight:bold\"\u003eCREATE\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eTABLE\u003c/span\u003e \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003euser_address\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e (\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003eid\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003ebigint\u003c/span\u003e(\u003cspan style=\"color:#40a070\"\u003e11\u003c/span\u003e) \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNOT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e AUTO_INCREMENT \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;主键\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003euser_id\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003evarchar\u003c/span\u003e(\u003cspan style=\"color:#40a070\"\u003e40\u003c/span\u003e) \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;\u0026#39;\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;用户主键\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003ecomm_address\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003evarchar\u003c/span\u003e(\u003cspan style=\"color:#40a070\"\u003e1\u003c/span\u003e) \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;常用地址标识\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003eaddress\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003evarchar\u003c/span\u003e(\u003cspan style=\"color:#40a070\"\u003e200\u003c/span\u003e) \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;地址\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003elongitude\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003ebigint\u003c/span\u003e(\u003cspan style=\"color:#40a070\"\u003e20\u003c/span\u003e) \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;经度\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003elatitude\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003ebigint\u003c/span\u003e(\u003cspan style=\"color:#40a070\"\u003e20\u003c/span\u003e) \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;纬度\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003ecreate_time\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003etimestamp\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNOT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCURRENT_TIMESTAMP\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;建立时间\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003eupdate_time\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003etimestamp\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNOT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCURRENT_TIMESTAMP\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;更新时间\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#007020;font-weight:bold\"\u003ePRIMARY\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eKEY\u003c/span\u003e (\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003eid\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e),\n    \u003cspan style=\"color:#007020;font-weight:bold\"\u003eKEY\u003c/span\u003e \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003eidx_user_id\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e (\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003euser_id\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e)\n) ENGINE\u003cspan style=\"color:#666\"\u003e=\u003c/span\u003eInnoDB AUTO_INCREMENT\u003cspan style=\"color:#666\"\u003e=\u003c/span\u003e\u003cspan style=\"color:#40a070\"\u003e1\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e CHARSET\u003cspan style=\"color:#666\"\u003e=\u003c/span\u003eutf8 \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOLLATE\u003c/span\u003e\u003cspan style=\"color:#666\"\u003e=\u003c/span\u003eutf8_bin \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e\u003cspan style=\"color:#666\"\u003e=\u003c/span\u003e\u003cspan style=\"color:#4070a0\"\u003e\u0026#39;用户常用地址\u0026#39;\u003c/span\u003e;\n\u003c/code\u003e\u003c/pre\u003e\u003c/div\u003e\u003cp\u003e\u003cstrong\u003e2. 死锁事务时序\u003c/strong\u003e\u003c/p\u003e\n\u003ctable\u003e\n\u003cthead\u003e\n\u003ctr\u003e\n\u003cth\u003e时序\u003c/th\u003e\n\u003cth\u003e事务 1\u003c/th\u003e\n\u003cth\u003e事务 2\u003c/th\u003e\n\u003c/tr\u003e\n\u003c/thead\u003e\n\u003ctbody\u003e\n\u003ctr\u003e\n\u003ctd\u003e1\u003c/td\u003e\n\u003ctd\u003e\u003ccode\u003eSTART TRANSACTION\u003c/code\u003e\u003c/td\u003e\n\u003ctd\u003e\u003c/td\u003e\n\u003c/tr\u003e\n\u003ctr\u003e\n\u003ctd\u003e2\u003c/td\u003e\n\u003ctd\u003e\u003c/td\u003e\n\u003ctd\u003e\u003ccode\u003eSTART TRANSACTION\u003c/code\u003e\u003c/td\u003e\n\u003c/tr\u003e\n\u003ctr\u003e\n\u003ctd\u003e3\u003c/td\u003e\n\u003ctd\u003e\u003ccode\u003eINSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( 'c86d0f931d164fc1b53162355cf39fb4', '浙江省 杭州市 余杭区 五常街道 XXX', 121000000, 31000000, NOW(), NOW());\u003c/code\u003e\u003c/td\u003e\n\u003ctd\u003e\u003c/td\u003e\n\u003c/tr\u003e\n\u003ctr\u003e\n\u003ctd\u003e4\u003c/td\u003e\n\u003ctd\u003e\u003c/td\u003e\n\u003ctd\u003e\u003ccode\u003eINSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( 'c86d0f931d164fc1b53162355cf39fb4', '浙江省 杭州市 余杭区 五常街道 XXX', 121000000, 31000000, NOW(), NOW());\u003c/code\u003e\u003c/td\u003e\n\u003c/tr\u003e\n\u003ctr\u003e\n\u003ctd\u003e5\u003c/td\u003e\n\u003ctd\u003e\u003ccode\u003eUPDATE user_address SET comm_address = '0' WHERE user_id = 'c86d0f931d164fc1b53162355cf39fb4';\u003c/code\u003e\u003c/td\u003e\n\u003ctd\u003e\u003c/td\u003e\n\u003c/tr\u003e\n\u003ctr\u003e\n\u003ctd\u003e6\u003c/td\u003e\n\u003ctd\u003e\u003c/td\u003e\n\u003ctd\u003e\u003ccode\u003eUPDATE user_address SET comm_address = '0' WHERE user_id = 'c86d0f931d164fc1b53162355cf39fb4';\u003c/code\u003e\u003c/td\u003e\n\u003c/tr\u003e\n\u003c/tbody\u003e\n\u003c/table\u003e\n\u003cp\u003e\u003cstrong\u003e3. INNODB Monitor Output\u003c/strong\u003e\u003c/p\u003e\n\u003cdiv class=\"highlight\"\u003e\u003cpre style=\"background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\"\u003e\u003ccode class=\"language-plain\" data-lang=\"plain\"\u003e------------------------\n\nLATEST DETECTED DEADLOCK\n\n------------------------\n\n2020-11-03 08:25:25 0x7f2801e1d700\n\n*** (1) TRANSACTION:\n\nTRANSACTION 13335216894, ACTIVE 0 sec fetching rows\n\nmysql tables in use 1, locked 1\n\nLOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1\n\nMySQL thread id 680655, OS thread handle 139810239182592, query id 120901872537 10.1.X.YYY mask_user updating\n\nUPDATE `user_address` SET\n\n\t\t`comm_address` = \u0026#39;0\u0026#39;\n\n\t\tWHERE `user_id` = \u0026#39;c760c70e42924b869beee418d3b30165\u0026#39;\n\n*** (1) WAITING FOR THIS LOCK TO BE GRANTED:\n\nRECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216894 lock_mode X locks rec but not gap waiting\n\nRecord lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0\n\n 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;\n\n 1: len 4; hex 803c4394; asc  \u0026lt;C ;;\n\n\n\n*** (2) TRANSACTION:\n\nTRANSACTION 13335216895, ACTIVE 0 sec starting index read, thread declared inside InnoDB 5000\n\nmysql tables in use 1, locked 1\n\n3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1\n\nMySQL thread id 672593, OS thread handle 139809806997248, query id 120901872539 10.1.X.YYY mask_user updating\n\nUPDATE `user_address` SET\n\n\t\t`comm_address` = \u0026#39;0\u0026#39;\n\n\t\tWHERE `user_id` = \u0026#39;c760c70e42924b869beee418d3b30165\u0026#39;\n\n*** (2) HOLDS THE LOCK(S):\n\nRECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap\n\nRecord lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0\n\n 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;\n\n 1: len 4; hex 803c4394; asc  \u0026lt;C ;;\n\n\n\n*** (2) WAITING FOR THIS LOCK TO BE GRANTED:\n\nRECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap waiting\n\nRecord lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 0\n\n 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;\n\n 1: len 4; hex 803c4393; asc  \u0026lt;C ;;\n\n\n\n*** WE ROLL BACK TRANSACTION (2)\n\u003c/code\u003e\u003c/pre\u003e\u003c/div\u003e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2020",
+      "datePublished": "2020-11-06T00:00:00Z",
+      "dateModified" : "2020-11-06T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2020-11-06-deadlock-insert-update/",
+      "keywords" : [ "MySQL","DeadLock", ]
+  }
+</script>
+<title>MySQL DeadLocks with INSERT - Utop&#39;s Blog</title>
+  <meta property="og:title" content="MySQL DeadLocks with INSERT - Utop&#39;s Blog" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="首次碰到 INSERT &#43; UPDATE statement 造成的死锁问题，触及了知识盲区，费时做了分析。
+死锁场景描述
+下述所有事务隔离级别为 Read Committed
+1. 简化后的数据库表
+CREATE TABLE `user_address` (
+    `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT &#39;主键&#39;,
+    `user_id` varchar(40) DEFAULT &#39;&#39; COMMENT &#39;用户主键&#39;,
+    `comm_address` varchar(1) DEFAULT NULL COMMENT &#39;常用地址标识&#39;,
+    `address` varchar(200) DEFAULT NULL COMMENT &#39;地址&#39;,
+    `longitude` bigint(20) DEFAULT NULL COMMENT &#39;经度&#39;,
+    `latitude` bigint(20) DEFAULT NULL COMMENT &#39;纬度&#39;,
+    `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;建立时间&#39;,
+    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;更新时间&#39;,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT=&#39;用户常用地址&#39;;
+2. 死锁事务时序
+
+
+
+时序
+事务 1
+事务 2
+
+
+
+
+1
+START TRANSACTION
+
+
+
+2
+
+START TRANSACTION
+
+
+3
+INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());
+
+
+
+4
+
+INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());
+
+
+5
+UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;
+
+
+
+6
+
+UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;
+
+
+
+3. INNODB Monitor Output
+------------------------
+
+LATEST DETECTED DEADLOCK
+
+------------------------
+
+2020-11-03 08:25:25 0x7f2801e1d700
+
+*** (1) TRANSACTION:
+
+TRANSACTION 13335216894, ACTIVE 0 sec fetching rows
+
+mysql tables in use 1, locked 1
+
+LOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1
+
+MySQL thread id 680655, OS thread handle 139810239182592, query id 120901872537 10.1.X.YYY mask_user updating
+
+UPDATE `user_address` SET
+
+		`comm_address` = &#39;0&#39;
+
+		WHERE `user_id` = &#39;c760c70e42924b869beee418d3b30165&#39;
+
+*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+
+RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216894 lock_mode X locks rec but not gap waiting
+
+Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+
+ 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+
+ 1: len 4; hex 803c4394; asc  &lt;C ;;
+
+
+
+*** (2) TRANSACTION:
+
+TRANSACTION 13335216895, ACTIVE 0 sec starting index read, thread declared inside InnoDB 5000
+
+mysql tables in use 1, locked 1
+
+3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
+
+MySQL thread id 672593, OS thread handle 139809806997248, query id 120901872539 10.1.X.YYY mask_user updating
+
+UPDATE `user_address` SET
+
+		`comm_address` = &#39;0&#39;
+
+		WHERE `user_id` = &#39;c760c70e42924b869beee418d3b30165&#39;
+
+*** (2) HOLDS THE LOCK(S):
+
+RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap
+
+Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+
+ 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+
+ 1: len 4; hex 803c4394; asc  &lt;C ;;
+
+
+
+*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+
+RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap waiting
+
+Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+
+ 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+
+ 1: len 4; hex 803c4393; asc  &lt;C ;;
+
+
+
+*** WE ROLL BACK TRANSACTION (2)
+" />
+  <meta name="description" content="首次碰到 INSERT &#43; UPDATE statement 造成的死锁问题，触及了知识盲区，费时做了分析。
+死锁场景描述
+下述所有事务隔离级别为 Read Committed
+1. 简化后的数据库表
+CREATE TABLE `user_address` (
+    `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT &#39;主键&#39;,
+    `user_id` varchar(40) DEFAULT &#39;&#39; COMMENT &#39;用户主键&#39;,
+    `comm_address` varchar(1) DEFAULT NULL COMMENT &#39;常用地址标识&#39;,
+    `address` varchar(200) DEFAULT NULL COMMENT &#39;地址&#39;,
+    `longitude` bigint(20) DEFAULT NULL COMMENT &#39;经度&#39;,
+    `latitude` bigint(20) DEFAULT NULL COMMENT &#39;纬度&#39;,
+    `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;建立时间&#39;,
+    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;更新时间&#39;,
+    PRIMARY KEY (`id`),
+    KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT=&#39;用户常用地址&#39;;
+2. 死锁事务时序
+
+
+
+时序
+事务 1
+事务 2
+
+
+
+
+1
+START TRANSACTION
+
+
+
+2
+
+START TRANSACTION
+
+
+3
+INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());
+
+
+
+4
+
+INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());
+
+
+5
+UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;
+
+
+
+6
+
+UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;
+
+
+
+3. INNODB Monitor Output
+------------------------
+
+LATEST DETECTED DEADLOCK
+
+------------------------
+
+2020-11-03 08:25:25 0x7f2801e1d700
+
+*** (1) TRANSACTION:
+
+TRANSACTION 13335216894, ACTIVE 0 sec fetching rows
+
+mysql tables in use 1, locked 1
+
+LOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1
+
+MySQL thread id 680655, OS thread handle 139810239182592, query id 120901872537 10.1.X.YYY mask_user updating
+
+UPDATE `user_address` SET
+
+		`comm_address` = &#39;0&#39;
+
+		WHERE `user_id` = &#39;c760c70e42924b869beee418d3b30165&#39;
+
+*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+
+RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216894 lock_mode X locks rec but not gap waiting
+
+Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+
+ 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+
+ 1: len 4; hex 803c4394; asc  &lt;C ;;
+
+
+
+*** (2) TRANSACTION:
+
+TRANSACTION 13335216895, ACTIVE 0 sec starting index read, thread declared inside InnoDB 5000
+
+mysql tables in use 1, locked 1
+
+3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
+
+MySQL thread id 672593, OS thread handle 139809806997248, query id 120901872539 10.1.X.YYY mask_user updating
+
+UPDATE `user_address` SET
+
+		`comm_address` = &#39;0&#39;
+
+		WHERE `user_id` = &#39;c760c70e42924b869beee418d3b30165&#39;
+
+*** (2) HOLDS THE LOCK(S):
+
+RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap
+
+Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+
+ 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+
+ 1: len 4; hex 803c4394; asc  &lt;C ;;
+
+
+
+*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+
+RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap waiting
+
+Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+
+ 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+
+ 1: len 4; hex 803c4393; asc  &lt;C ;;
+
+
+
+*** WE ROLL BACK TRANSACTION (2)
+" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/github-markdown.css" />
+  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-92258941-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">MySQL DeadLocks with INSERT</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2020-11-06 00:00:00 UTC">
+                06 Nov 2020
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>首次碰到 INSERT + UPDATE statement 造成的死锁问题，触及了知识盲区，费时做了分析。</p>
+<h2 id="死锁场景描述">死锁场景描述</h2>
+<p><em>下述所有事务隔离级别为 Read Committed</em></p>
+<p><strong>1. 简化后的数据库表</strong></p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#007020;font-weight:bold">CREATE</span> <span style="color:#007020;font-weight:bold">TABLE</span> <span style="color:#666">`</span>user_address<span style="color:#666">`</span> (
+    <span style="color:#666">`</span>id<span style="color:#666">`</span> <span style="color:#007020">bigint</span>(<span style="color:#40a070">11</span>) <span style="color:#007020;font-weight:bold">NOT</span> <span style="color:#007020;font-weight:bold">NULL</span> AUTO_INCREMENT <span style="color:#007020;font-weight:bold">COMMENT</span> <span style="color:#4070a0">&#39;主键&#39;</span>,
+    <span style="color:#666">`</span>user_id<span style="color:#666">`</span> <span style="color:#007020">varchar</span>(<span style="color:#40a070">40</span>) <span style="color:#007020;font-weight:bold">DEFAULT</span> <span style="color:#4070a0">&#39;&#39;</span> <span style="color:#007020;font-weight:bold">COMMENT</span> <span style="color:#4070a0">&#39;用户主键&#39;</span>,
+    <span style="color:#666">`</span>comm_address<span style="color:#666">`</span> <span style="color:#007020">varchar</span>(<span style="color:#40a070">1</span>) <span style="color:#007020;font-weight:bold">DEFAULT</span> <span style="color:#007020;font-weight:bold">NULL</span> <span style="color:#007020;font-weight:bold">COMMENT</span> <span style="color:#4070a0">&#39;常用地址标识&#39;</span>,
+    <span style="color:#666">`</span>address<span style="color:#666">`</span> <span style="color:#007020">varchar</span>(<span style="color:#40a070">200</span>) <span style="color:#007020;font-weight:bold">DEFAULT</span> <span style="color:#007020;font-weight:bold">NULL</span> <span style="color:#007020;font-weight:bold">COMMENT</span> <span style="color:#4070a0">&#39;地址&#39;</span>,
+    <span style="color:#666">`</span>longitude<span style="color:#666">`</span> <span style="color:#007020">bigint</span>(<span style="color:#40a070">20</span>) <span style="color:#007020;font-weight:bold">DEFAULT</span> <span style="color:#007020;font-weight:bold">NULL</span> <span style="color:#007020;font-weight:bold">COMMENT</span> <span style="color:#4070a0">&#39;经度&#39;</span>,
+    <span style="color:#666">`</span>latitude<span style="color:#666">`</span> <span style="color:#007020">bigint</span>(<span style="color:#40a070">20</span>) <span style="color:#007020;font-weight:bold">DEFAULT</span> <span style="color:#007020;font-weight:bold">NULL</span> <span style="color:#007020;font-weight:bold">COMMENT</span> <span style="color:#4070a0">&#39;纬度&#39;</span>,
+    <span style="color:#666">`</span>create_time<span style="color:#666">`</span> <span style="color:#007020;font-weight:bold">timestamp</span> <span style="color:#007020;font-weight:bold">NOT</span> <span style="color:#007020;font-weight:bold">NULL</span> <span style="color:#007020;font-weight:bold">DEFAULT</span> <span style="color:#007020;font-weight:bold">CURRENT_TIMESTAMP</span> <span style="color:#007020;font-weight:bold">COMMENT</span> <span style="color:#4070a0">&#39;建立时间&#39;</span>,
+    <span style="color:#666">`</span>update_time<span style="color:#666">`</span> <span style="color:#007020;font-weight:bold">timestamp</span> <span style="color:#007020;font-weight:bold">NOT</span> <span style="color:#007020;font-weight:bold">NULL</span> <span style="color:#007020;font-weight:bold">DEFAULT</span> <span style="color:#007020;font-weight:bold">CURRENT_TIMESTAMP</span> <span style="color:#007020;font-weight:bold">COMMENT</span> <span style="color:#4070a0">&#39;更新时间&#39;</span>,
+    <span style="color:#007020;font-weight:bold">PRIMARY</span> <span style="color:#007020;font-weight:bold">KEY</span> (<span style="color:#666">`</span>id<span style="color:#666">`</span>),
+    <span style="color:#007020;font-weight:bold">KEY</span> <span style="color:#666">`</span>idx_user_id<span style="color:#666">`</span> (<span style="color:#666">`</span>user_id<span style="color:#666">`</span>)
+) ENGINE<span style="color:#666">=</span>InnoDB AUTO_INCREMENT<span style="color:#666">=</span><span style="color:#40a070">1</span> <span style="color:#007020;font-weight:bold">DEFAULT</span> CHARSET<span style="color:#666">=</span>utf8 <span style="color:#007020;font-weight:bold">COLLATE</span><span style="color:#666">=</span>utf8_bin <span style="color:#007020;font-weight:bold">COMMENT</span><span style="color:#666">=</span><span style="color:#4070a0">&#39;用户常用地址&#39;</span>;
+</code></pre></div><p><strong>2. 死锁事务时序</strong></p>
+<table>
+<thead>
+<tr>
+<th>时序</th>
+<th>事务 1</th>
+<th>事务 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>START TRANSACTION</code></td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td><code>START TRANSACTION</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( 'c86d0f931d164fc1b53162355cf39fb4', '浙江省 杭州市 余杭区 五常街道 XXX', 121000000, 31000000, NOW(), NOW());</code></td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td></td>
+<td><code>INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( 'c86d0f931d164fc1b53162355cf39fb4', '浙江省 杭州市 余杭区 五常街道 XXX', 121000000, 31000000, NOW(), NOW());</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>UPDATE user_address SET comm_address = '0' WHERE user_id = 'c86d0f931d164fc1b53162355cf39fb4';</code></td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td></td>
+<td><code>UPDATE user_address SET comm_address = '0' WHERE user_id = 'c86d0f931d164fc1b53162355cf39fb4';</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>3. INNODB Monitor Output</strong></p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">------------------------
+
+LATEST DETECTED DEADLOCK
+
+------------------------
+
+2020-11-03 08:25:25 0x7f2801e1d700
+
+*** (1) TRANSACTION:
+
+TRANSACTION 13335216894, ACTIVE 0 sec fetching rows
+
+mysql tables in use 1, locked 1
+
+LOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1
+
+MySQL thread id 680655, OS thread handle 139810239182592, query id 120901872537 10.1.X.YYY mask_user updating
+
+UPDATE `user_address` SET
+
+		`comm_address` = &#39;0&#39;
+
+		WHERE `user_id` = &#39;c760c70e42924b869beee418d3b30165&#39;
+
+*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+
+RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216894 lock_mode X locks rec but not gap waiting
+
+Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+
+ 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+
+ 1: len 4; hex 803c4394; asc  &lt;C ;;
+
+
+
+*** (2) TRANSACTION:
+
+TRANSACTION 13335216895, ACTIVE 0 sec starting index read, thread declared inside InnoDB 5000
+
+mysql tables in use 1, locked 1
+
+3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
+
+MySQL thread id 672593, OS thread handle 139809806997248, query id 120901872539 10.1.X.YYY mask_user updating
+
+UPDATE `user_address` SET
+
+		`comm_address` = &#39;0&#39;
+
+		WHERE `user_id` = &#39;c760c70e42924b869beee418d3b30165&#39;
+
+*** (2) HOLDS THE LOCK(S):
+
+RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap
+
+Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+
+ 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+
+ 1: len 4; hex 803c4394; asc  &lt;C ;;
+
+
+
+*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+
+RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap waiting
+
+Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+
+ 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+
+ 1: len 4; hex 803c4393; asc  &lt;C ;;
+
+
+
+*** WE ROLL BACK TRANSACTION (2)
+</code></pre></div><h2 id="分析">分析</h2>
+<p>前置知识：</p>
+<ol>
+<li>INSERT 会对插入行设置 X 锁 （针对不同的隔离级别，会有所不同）</li>
+</ol>
+<blockquote>
+<p>INSERT sets an exclusive lock on the inserted row. This lock is an index-record lock, not a next-key lock (that is, there is no gap lock) and does not prevent other sessions from inserting into the gap before the inserted row.</p>
+</blockquote>
+<ol start="2">
+<li>记录锁锁的是索引记录。DML 使用主键(聚簇)索引时，InnoDB会锁住主键索引；使用非主键(非聚簇/辅助)索引时，InnoDB会先锁住非主键索引，再锁定主键索引。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>事务 1</th>
+<th>事务 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>START TRANSACTION</code></td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td><code>START TRANSACTION</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( 'c86d0f931d164fc1b53162355cf39fb4', '浙江省 杭州市 余杭区 五常街道 XXX', 121000000, 31000000, NOW(), NOW());</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>新记录 A 针对聚簇索引被加了 记录锁 (X lock)</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td></td>
+<td><code>INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( 'c86d0f931d164fc1b53162355cf39fb4', '浙江省 杭州市 余杭区 五常街道 XXX', 121000000, 31000000, NOW(), NOW());</code></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>新记录 B 针对聚簇索引被加了 记录锁 (X lock)</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>UPDATE user_address SET comm_address = '0' WHERE user_id = 'c86d0f931d164fc1b53162355cf39fb4';</code></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>执行计划命中 <code>idx_user_id</code> ，<code>UPDATE</code> 操作需要获取非聚簇索引 <code>idx_user_id</code> 的记录锁，但由于记录对应的主键索引已被获取，进入锁等待队列</td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td></td>
+<td><code>UPDATE user_address SET comm_address = '0' WHERE user_id = 'c86d0f931d164fc1b53162355cf39fb4';</code></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>执行计划命中 <code>idx_user_id</code> ，<code>UPDATE</code> 操作需要获取非聚簇索引 <code>idx_user_id</code> 的记录锁，但由于记录对应的主键索引已被获取，进入锁等待队列，且排在事务 1 后面</td>
+</tr>
+</tbody>
+</table>
+<p>操作 3、4、5、6 造成了：事务 1 的继续执行必须等待事务 2 释放操作 4 加的锁；事务 2 的继续执行必须等待事务 1 操作 5 先获得锁，并释放。死锁条件达成，MySQL 基于检测结果在两个事务间选择了影响较小的事务 2 强制执行了 Rollback 操作。</p>
+<h2 id="参考资料">参考资料</h2>
+<p>[1]. <a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locking.html">14.7.1 InnoDB Locking</a>
+[2]. <a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-locks-set.html">14.7.3 Locks Set by Different SQL Statements in InnoDB</a></p>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%a1%88%e4%be%8b%e5%88%86%e6%9e%90/">
+                案例分析
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2019-04-26-time-accuracy/">MySQL TIMESTAMP 时间精度问题</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+ 
+  </body>
+</html>

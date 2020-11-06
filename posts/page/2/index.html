@@ -34,8 +34,8 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2020",
-      "datePublished": "2020-10-19T00:00:00Z",
-      "dateModified" : "2020-10-19T00:00:00Z",
+      "datePublished": "2020-11-06T00:00:00Z",
+      "dateModified" : "2020-11-06T00:00:00Z",
       "url" : "https://www.ffutop.com/posts/",
       "keywords" : [  ]
   }
@@ -95,6 +95,49 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term"></h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2020-02-17-raft/">分布式共识·Raft Algorithm</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2020-02-17 00:00:00 UTC">
+          17 Feb 2020
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <h2 id="分布式系统与共识">分布式系统与共识</h2>
+<p>分布式系统是一组透过网络相互连接通信与传递信息的计算机，协同来完成一件任务的系统。任务可能是大规模计算，可能是冗余存储。按此分类，又有分布式计算系统和分布式存储系统。</p>
+<p>典型的分布式计算系统/框架有 MapReduce、Spark；分布式存储系统有 GFS 等。虽然有此划分，但分布式计算几乎必然地涉及到存储的需求。存储为计算提供支持，计算促进存储的发展。</p>
+<p><img src="https://img.ffutop.com/3885C079-B4ED-4B0E-AD86-60AB8D4D4792.png" alt="分布式系统分类"></p>
+<p>计算是无状态的，存储是有状态的。在分布式的存储下，为了让计算机各自维护的状态协商达成一致，就必然地需要共识算法的支持。Wait a minute. 计算机间的协商需要共识算法？</p>
+<p>计算机间的协作可以划分为中心化与去中心化两大类。中心化的方案自然是有一个权威的 Master 来协调所有的计算机的任务，但前提是这个 Master 必须可靠，即依赖一个单点就必须要对它的可用性进行担保；去中心化的方案，计算机间都是平等的，如何就一个问题达成共识，就是面对的核心问题。</p>
+<blockquote>
+<h3 id="共识与一致性">共识与一致性</h3>
+<p>共识(Consensus)：机器之间就一个值/命令等达成共同的认识，一般是面向输入，处理并维护这个值（状态）</p>
+<p>一致性(Consistency)：一致性表述为机器对外提供服务时的表现。向机器 A 或机器 B 读取同一数据，两者的返回值是相同的。当然，也有不同的弱化版本，允许一些特定条件下的不一致</p>
+</blockquote>
+<p>在 2014 年之前，Paxos [1] 几乎是解决共识问题的唯一选择。但难懂是一个致命的问题，并且难以工程化也是重大的缺陷。Raft 的出现无疑是一道曙光，熟读，实践，豁然开朗。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-02-17-raft/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -398,38 +441,6 @@ ffutop $ uptime
 <div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">Warning  Failed 4m  kubelet, 172.16.1.1 Failed to pull image <span style="color:#4070a0">&#34;xxx.xxx.com/&lt;image-name&gt;:&lt;version&gt;&#34;</span>: rpc error: <span style="color:#bb60d5">code</span> <span style="color:#666">=</span> Unknown <span style="color:#bb60d5">desc</span> <span style="color:#666">=</span> failed to register layer: link /data/docker/storage/overlay/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a/root/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type /data/docker/storage/overlay/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da/tmproot525452492/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type: too many links
 </code></pre></div><p>最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 <code>172.16.1.1</code>。而 Kubernetes 事件中提示的是 <code>too many links</code>，对问题原因的怀疑开始转向文件系统。</p>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-20-too-many-links/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-08-06-netfilter/">Netfilter 导览 - based on iptables</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2019-08-06 00:00:00 UTC">
-          06 Aug 2019
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <p><code>Netfilter</code>，内核中用于管理网络数据包的重要网络模块；<code>iptables</code>，运行在用户空间，用于控制 <code>Netfilter</code> 模块的一种软件。需要注意的，<code>iptables</code> 只能控制 IPv4 数据包，对于 IPv6 数据包，需要使用 <code>ip6tables</code> 。</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-06-netfilter/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>
