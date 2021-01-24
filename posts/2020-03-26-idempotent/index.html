@@ -40,8 +40,8 @@
       "keywords" : [ "idempotent","raft","redis", ]
   }
 </script>
-<title>Idempotent Pattern - Utop&#39;s Blog</title>
-  <meta property="og:title" content="Idempotent Pattern - Utop&#39;s Blog" />
+<title>Idempotent Pattern</title>
+  <meta property="og:title" content="Idempotent Pattern" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="“同样是 KV-Server ，为什么基于 Raft Algorithm 的 KV-Server 需要对客户端操作实现幂等，而 Redis 却不需要？” 此前在实现基于 Raft 的容错 Key/Value Service 时，为了能够实现幂等的 Put(key, value)、Append(key, arg) 操作，可谓是费尽心思。但同为提供键值服务的 Redis ，怎么从来没见被要求幂等呢？
 基于这个问题，本篇将整理并总结个人的结论。" />
@@ -50,28 +50,18 @@
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -224,6 +214,7 @@ if (!doNotTrack) {
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

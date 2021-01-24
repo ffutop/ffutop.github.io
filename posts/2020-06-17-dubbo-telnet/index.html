@@ -40,8 +40,8 @@
       "keywords" : [ "Dubbo","Telnet","Java", ]
   }
 </script>
-<title>Dubbo Telnet 调试 - Utop&#39;s Blog</title>
-  <meta property="og:title" content="Dubbo Telnet 调试 - Utop&#39;s Blog" />
+<title>Dubbo Telnet 调试</title>
+  <meta property="og:title" content="Dubbo Telnet 调试" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="始于 Dubbo 2.0.6 的 Telnet Command 是一个令人兴奋的特性，极大地降低了服务化测试的成本，但是，寥寥数行的可怜文档无形地为使用增加了成本。此前虽然一直在使用 Telnet Command，但基本上是浅尝辄止，字符集的问题、重载方法的错误筛选等，都让我不得不对这个特性敬而远之，无法作为高频的生产力工具。最近，频繁出现的调试需求让我不得不尝试接受并熟悉 Dubbo Telnet Command。
 本文只针对 invoke 命令，基于 Dubbo 版本 2.6.7
@@ -54,28 +54,18 @@ Dubbo Telnet Command invoke 命令的一般格式为 invoke &lt;全限定名&gt;
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -402,6 +392,7 @@ cmd <span style="color:#666">=</span> None
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

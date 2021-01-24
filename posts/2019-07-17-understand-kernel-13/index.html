@@ -40,8 +40,8 @@
       "keywords" : [ "Linux","Kernel","vm","mmap", ]
   }
 </script>
-<title>理解 Linux Kernel (13) - 虚拟内存 - Utop&#39;s Blog</title>
-  <meta property="og:title" content="理解 Linux Kernel (13) - 虚拟内存 - Utop&#39;s Blog" />
+<title>理解 Linux Kernel (13) - 虚拟内存</title>
+  <meta property="og:title" content="理解 Linux Kernel (13) - 虚拟内存" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="几乎每个进程都有独立的虚拟地址空间，这是一个逻辑上的概念，用于建立进程对进程存储资源的认知。对于 32 位机，虚拟地址空间的大小通常是 4GB；对于 64 位机，最大可以达到 $2^{64}$ Bytes 。
 本篇便是为了看看虚拟地址空间究竟如何被内核管理，又是怎样和物理内存、文件等资源关联。" />
@@ -50,28 +50,18 @@
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -733,6 +723,7 @@ SYSCALL_DEFINE6(mmap_pgoff, <span style="color:#902000">unsigned</span> <span st
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

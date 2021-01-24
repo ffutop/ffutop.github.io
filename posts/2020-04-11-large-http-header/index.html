@@ -40,8 +40,8 @@
       "keywords" : [ "NGINX","Tomcat","Java","HTTP", ]
   }
 </script>
-<title>HTTP Large Header Fields Problem - Utop&#39;s Blog</title>
-  <meta property="og:title" content="HTTP Large Header Fields Problem - Utop&#39;s Blog" />
+<title>HTTP Large Header Fields Problem</title>
+  <meta property="og:title" content="HTTP Large Header Fields Problem" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="首次遇到请求头过大的问题，做个记录。特别是在本次处理陷入了误区，做了太多无谓的猜测
 请求头过大导致响应错误码 400 (Bad Request)、414 (URI Too Long)、431 (Request Header Fields Too Large) 的情况不多，不过原因和解决方案都是比较清晰的。客户端请求的请求头过大导致超出了服务器支持的缓冲区。如果客户端可控，控制请求头的大小；否则，适当调大服务器配置的缓冲区大小。
@@ -66,28 +66,18 @@ Tomcat maxHttpHeaderSize 使用了默认配置 (default 8192)
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -296,6 +286,7 @@ Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

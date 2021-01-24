@@ -40,8 +40,8 @@
       "keywords" : [ "Linux","Kernel","IO Model", ]
   }
 </script>
-<title>理解 Linux Kernel (9) - IO Multiplexing - Utop&#39;s Blog</title>
-  <meta property="og:title" content="理解 Linux Kernel (9) - IO Multiplexing - Utop&#39;s Blog" />
+<title>理解 Linux Kernel (9) - IO Multiplexing</title>
+  <meta property="og:title" content="理解 Linux Kernel (9) - IO Multiplexing" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="前一篇已经对 Linux 内核网络相关的内容进行了基础性的介绍。数据从到达网卡，到最终被用户进程获取，最少经过了三个进程/硬中断的配合：网络中断负责将网络接收到的数据读取到内存并添加到 softnet_data 队列，并设置软中断通知内核进程 ksoftirqd；内核进程 ksoftirqd 被调度并处于运行状态，处理位于 softnet_data 中的 struct sock 对象，将其逐级从网络接口层逐级提升到网络层、传输层&hellip;最终添加到接收队列 sk_receive_queue 中；用户进程通过 read、recv、recvfrom 等命令检查并获取 sk_receive_queue 中的数据。
 整个流程从概述上可以很轻松地配合进行网络数据交互，但如果要监控多个网络套接字呢？处理流程将变得复杂。我们无法预知哪个套接字能优先接收到数据。因此，最直接的办法就是轮询，在用户程序硬编码，通过设置超时时间的方式尝试获取数据。当然，这个效率就相当低下了。每次试探都需要触发系统调用（要知道这代价可是相当大的），另外超时时间的设置也是一个硬性的阻塞式消耗。
@@ -52,28 +52,18 @@
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -818,6 +808,7 @@ init_poll_funcptr(<span style="color:#666">&amp;</span>epq.pt, ep_ptable_queue_p
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

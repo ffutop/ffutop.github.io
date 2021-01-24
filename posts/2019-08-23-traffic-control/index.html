@@ -40,8 +40,8 @@
       "keywords" : [ "Linux","Kernel","TC", ]
   }
 </script>
-<title>Linux Traffic Control - Utop&#39;s Blog</title>
-  <meta property="og:title" content="Linux Traffic Control - Utop&#39;s Blog" />
+<title>Linux Traffic Control</title>
+  <meta property="og:title" content="Linux Traffic Control" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。
 流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(sk_buff 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 enqueue, dequeue 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。" />
@@ -50,28 +50,18 @@
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -491,6 +481,7 @@ qdisc_create(<span style="color:#007020;font-weight:bold">struct</span> net_devi
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

@@ -40,8 +40,8 @@
       "keywords" : [ "Linux","Kernel","IPC", ]
   }
 </script>
-<title>理解 Linux Kernel (11) - 进程间通信 - Utop&#39;s Blog</title>
-  <meta property="og:title" content="理解 Linux Kernel (11) - 进程间通信 - Utop&#39;s Blog" />
+<title>理解 Linux Kernel (11) - 进程间通信</title>
+  <meta property="og:title" content="理解 Linux Kernel (11) - 进程间通信" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="进程间通信(IPC, inter-process communication)是多个执行上下文实现数据交互的重要功能，也是 Linux Kernel 一个重要的模块。本篇主要着眼于 Linux 基于 System V 引入的 3 种 IPC 机制——信号量、消息队列、共享内存。除此之外，Linux 还有更多的方式能够实现进程间通信，但本文不做介绍。
 本篇基于 Linux 4.9.87 版本源码" />
@@ -50,28 +50,18 @@
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -718,6 +708,7 @@ asmlinkage <span style="color:#902000">long</span> <span style="color:#06287e">s
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

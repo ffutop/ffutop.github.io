@@ -40,8 +40,8 @@
       "keywords" : [ "Trie","Double Array", ]
   }
 </script>
-<title>双数组前缀树 - Utop&#39;s Blog</title>
-  <meta property="og:title" content="双数组前缀树 - Utop&#39;s Blog" />
+<title>双数组前缀树</title>
+  <meta property="og:title" content="双数组前缀树" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="一、前缀树
 前缀树，又称字典树。常见的场景为大规模词库下做词匹配、词前缀匹配、词频统计等。目前唯一碰到的业务场景只有自建 UGC 风控的违禁词检测。
@@ -58,28 +58,18 @@
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -135,7 +125,7 @@ if (!doNotTrack) {
 <!-- raw HTML omitted --><!-- raw HTML omitted -->图 1. Trie Tree<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
 <p>前缀树的核心思想是空间换时间，利用字符串的公共前缀来降低查询时间的开销，相较于哈希等能够显著降低失配字符串的匹配耗时。</p>
 <h2 id="二前缀树的缺陷">二、前缀树的缺陷</h2>
-<p>虽然空间换时间是使用前缀树的共识，但空间也是有代价的。构建英文词典的前缀树，需要维护一个 26 叉树。即在每个词都没有公共前缀的前提下，平均长度为 <code>Length</code> 的 <code>N</code> 个词，使用的空间将至少达到 $$26 * N * Length$$ 个 int (节点指针的大小)</p>
+<p>虽然空间换时间是使用前缀树的共识，但空间也是有代价的。构建英文词典的前缀树，需要维护一个 26 叉树。即在每个词都没有公共前缀的前提下，平均长度为 <code>Length</code> 的 <code>N</code> 个词，使用的空间将至少达到 $26 * N * Length$ 个 int (节点指针的大小)</p>
 <p>英语用 26 个符号编码就能构建所有的词，但用于中日韩表意文字 (CJK Unified Ideographs)，26 个符号编码远远不够。<code>GB-2312</code> 收录有 6763 个汉字，<code>GB-18030</code> 更是收录了 70244 个汉字。如果需要基于一本中文词典构建前缀树，由于符号数量的扩展，常量 <code>26</code> 将突增为几百、几千甚至几万。这就无谓地浪费了空间。</p>
 <p>在英文世界应用良好的经典前缀树结构出现了水土不服。为了解决这个问题，就出现了压缩状态空间的双数组前缀树 (Double-Array Trie)</p>
 <h2 id="三双数组前缀树">三、双数组前缀树</h2>
@@ -215,17 +205,17 @@ if (!doNotTrack) {
 <p>词 <code>abc</code> 的验证流程如下(请暂且忽略 check 数组，稍后解释)</p>
 <ol>
 <li>起始状态为 <code>start</code> ，即用数组下标记做 0</li>
-<li>输入字符 <code>a</code> ，$stateY = base[0] + index(&lsquo;a&rsquo;) = 1 + 0 = 1$，现在状态数组下标 1，即 <code>a1</code></li>
-<li>输入字符 <code>b</code> ，$stateY = base[1] + index(&lsquo;b&rsquo;) = 2 + 1 = 3$，现在状态数组下标 3，即 <code>b2</code></li>
-<li>输入字符 <code>c</code> ，$stateY = base[3] + index(&lsquo;c&rsquo;) = 5 + 2 = 7$，现在状态数组下标 7，即 <code>c3</code></li>
+<li>输入字符 <code>a</code> ，$stateY = base[0] + index(a) = 1 + 0 = 1$，现在状态数组下标 1，即 <code>a1</code></li>
+<li>输入字符 <code>b</code> ，$stateY = base[1] + index(b) = 2 + 1 = 3$，现在状态数组下标 3，即 <code>b2</code></li>
+<li>输入字符 <code>c</code> ，$stateY = base[3] + index(c) = 5 + 2 = 7$，现在状态数组下标 7，即 <code>c3</code></li>
 </ol>
 <p>从状态转移来看，整个流程与经典前缀树一致，<code>start</code> -&gt; <code>a1</code> -&gt; <code>b2</code> -&gt; <code>c3</code> 。仅仅一个 base 数组就构建了一个状态转移函数。但是，有个致命的问题？</p>
 <p>再举个例子，词 <code>abb</code> 不属于词典</p>
 <ol>
 <li>起始状态为 <code>start</code> ，即用数组下标记做 0</li>
-<li>输入字符 <code>a</code> ，$stateY = base[0] + index(&lsquo;a&rsquo;) = 1 + 0 = 1$，现在状态数组下标 1，即 <code>a1</code></li>
-<li>输入字符 <code>b</code> ，$stateY = base[1] + index(&lsquo;b&rsquo;) = 2 + 1 = 3$，现在状态数组下标 3，即 <code>b2</code></li>
-<li>输入字符 <code>b</code> ，$stateY = base[3] + index(&lsquo;b&rsquo;) = 5 + 1 = 6$，现在状态数组下标 6，即 <code>a2</code></li>
+<li>输入字符 <code>a</code> ，$stateY = base[0] + index(a) = 1 + 0 = 1$，现在状态数组下标 1，即 <code>a1</code></li>
+<li>输入字符 <code>b</code> ，$stateY = base[1] + index(b) = 2 + 1 = 3$，现在状态数组下标 3，即 <code>b2</code></li>
+<li>输入字符 <code>b</code> ，$stateY = base[3] + index(b) = 5 + 1 = 6$，现在状态数组下标 6，即 <code>a2</code></li>
 </ol>
 <p>状态 <code>b2</code> -&gt; <code>a2</code> 不可转移，但状态转移函数没有发现这个问题。base 数组构建了状态转移函数，check 数组恰恰是用来确认状态转移是否成立的。试想，前缀树中每个状态的前置状态都是确定且唯一的。check 数组就存储当前状态的前置状态。第三个公式：</p>
 <ul>
@@ -244,24 +234,24 @@ if (!doNotTrack) {
 <!-- raw HTML omitted --><!-- raw HTML omitted -->STEP 2<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
 <p>初始状态 <code>start</code> 可以分别基于输入字符 <code>a</code>, <code>b</code>, <code>d</code>，转移到状态 <code>a1</code>, <code>b1</code>, <code>d1</code> 。故有下列几个公式</p>
 <ul>
-<li>$a1 = base[start] + index(&lsquo;a&rsquo;) = base[start] + 0$</li>
-<li>$b1 = base[start] + index(&lsquo;b&rsquo;) = base[start] + 1$</li>
-<li>$d1 = base[start] + index(&lsquo;d&rsquo;) = base[start] + 3$</li>
+<li>$a1 = base[start] + index(a) = base[start] + 0$</li>
+<li>$b1 = base[start] + index(b) = base[start] + 1$</li>
+<li>$d1 = base[start] + index(d) = base[start] + 3$</li>
 </ul>
 <p>$base[start] = 1$ 时，$base[1]$, $base[2]$, $base[4]$ 都为 0 （表示未被使用）</p>
-<p>将 $base[1]$, $base[2]$, $base[4]$ 改写为 1 （表示已被使用），同时记 $check[1]$, $check[2], $check[4]$ 为前置状态 $start=0$</p>
+<p>将 $base[1]$, $base[2]$, $base[4]$ 改写为 1 （表示已被使用），同时记 $check[1]$, $check[2]$, $check[4]$ 为前置状态 $start=0$</p>
 <p><img src="https://img.ffutop.com/A00B2C80-C273-4B56-9868-819B66A5E0C2.png" alt="">
 <!-- raw HTML omitted --><!-- raw HTML omitted -->STEP 3<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
 <p>状态 <code>a1</code> 可以基于输入字符 <code>b</code> 转移到状态 <code>b2</code>，有</p>
 <ul>
-<li>$b2 = base[a1] + index[&lsquo;b&rsquo;] = base[a1] + 1$</li>
+<li>$b2 = base[a1] + index(b) = base[a1] + 1$</li>
 </ul>
 <p>由于下标为 2 的数组元素已经被占用，选择 $base[a1] = 2$ 则 $b2 = 3$，分别将 $base[3]$, $check[3]$ 改写。</p>
 <p><img src="https://img.ffutop.com/7B2BE188-9B90-4C90-BF59-126A985CCDD4.png" alt="">
 <!-- raw HTML omitted --><!-- raw HTML omitted -->STEP 4<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
 <p>状态 <code>b1</code> 可以基于输入字符 <code>c</code> 转移到状态 <code>c2</code>，有</p>
 <ul>
-<li>$c2 = base[b1] + index[&lsquo;c&rsquo;] = base[b1] + 2$</li>
+<li>$c2 = base[b1] + index(c) = base[b1] + 2$</li>
 </ul>
 <p>由于下标为 3, 4 的数组元素都被占用，选择 $base[b1] = 3$ 则 $c2 = 5$，分别将 $base[5]$, $check[5]$ 改写。</p>
 <p><img src="https://img.ffutop.com/4A327286-B512-468B-9993-3E8F395533FE.png" alt="">
@@ -343,6 +333,18 @@ if (!doNotTrack) {
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
+  
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+      processEscapes: true
+    }
+  });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
   
   
 </div>

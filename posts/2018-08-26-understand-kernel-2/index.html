@@ -40,8 +40,8 @@
       "keywords" : [ "Linux","Kernel","Multi-Task", ]
   }
 </script>
-<title>理解 Linux Kernel (2) - 多任务切换 - Utop&#39;s Blog</title>
-  <meta property="og:title" content="理解 Linux Kernel (2) - 多任务切换 - Utop&#39;s Blog" />
+<title>理解 Linux Kernel (2) - 多任务切换</title>
+  <meta property="og:title" content="理解 Linux Kernel (2) - 多任务切换" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="概述
 《只是为了好玩》书中，林纳斯描述过他最早的试验性程序就是执行两个不同的任务（一个不断输出A，另一个输出B），同时不断地让 CPU 在两个任务间做切换。结合《Linux 内核完全注释》提供的一个多任务切换示例程序，本篇将就多任务切换程序的执行流程进行详述，并提供当下汇编工具下的适配。
@@ -52,28 +52,18 @@
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -564,6 +554,7 @@ usr_stk1:
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

@@ -40,8 +40,8 @@
       "keywords" : [ "Kernel","Linux","time interrupt", ]
   }
 </script>
-<title>理解 Linux Kernel (4) - 任务调度 - Utop&#39;s Blog</title>
-  <meta property="og:title" content="理解 Linux Kernel (4) - 任务调度 - Utop&#39;s Blog" />
+<title>理解 Linux Kernel (4) - 任务调度</title>
+  <meta property="og:title" content="理解 Linux Kernel (4) - 任务调度" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="前面几节已经描述过，对于单核 CPU 来说。CPU 就处于不断地执行指令的过程(或者通过 hlt 指令直接停止工作)。
 针对于每一个程序来说，这个程序执行流程是通过 CPU 中几组寄存器(通用寄存器、段寄存器、控制寄存器等) 和存储在内存中的代码和数据协作完成的。
@@ -52,28 +52,18 @@
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -638,6 +628,7 @@ _timer_interrupt:
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

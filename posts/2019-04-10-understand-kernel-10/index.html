@@ -40,36 +40,26 @@
       "keywords" : [ "Linux","Kernel","COE", ]
   }
 </script>
-<title>理解 Linux Kernel(10) - Context of Execution - Utop&#39;s Blog</title>
-  <meta property="og:title" content="理解 Linux Kernel(10) - Context of Execution - Utop&#39;s Blog" />
+<title>理解 Linux Kernel(10) - Context of Execution</title>
+  <meta property="og:title" content="理解 Linux Kernel(10) - Context of Execution" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="在进行第四篇(任务调度)行文描述时，就一直闹不清内核所谓的task的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：我们错误地将理论和实践不加区分地混淆了。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，task 也就是 Context of Execution 概念在实现上的表征。" />
   <meta name="description" content="在进行第四篇(任务调度)行文描述时，就一直闹不清内核所谓的task的概念。之前一直将其与进程(process)的概念等同视之。但这又导致了线程的概念无处安置（毕竟在计算机科学的概念中，线程作为进程的子集存在，负责程序执行）。不过，现在这个疑惑总算得到了合理的解释：我们错误地将理论和实践不加区分地混淆了。内核开发社区与学术界的合作在整个内核开发历史上并没有想象中的频繁，正相反，学术界对内核代码的贡献不到1%[1]。如果想要将进程/线程的思想代入内核，并逐一印证，那么过程将非常痛苦并最终一无所获。所谓进程/线程，在内核中只有一个概念——执行的上下文(Context of Execution)，任何想要对进程/线程概念进行区分的行为都将是作茧自缚[2]。同时，task 也就是 Context of Execution 概念在实现上的表征。" />
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -544,6 +534,7 @@ asmlinkage <span style="color:#902000">long</span> <span style="color:#06287e">s
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

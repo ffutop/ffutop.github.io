@@ -40,36 +40,26 @@
       "keywords" : [ "Go","Goroutine", ]
   }
 </script>
-<title>Goroutine 与调度 - Utop&#39;s Blog</title>
-  <meta property="og:title" content="Goroutine 与调度 - Utop&#39;s Blog" />
+<title>Goroutine 与调度</title>
+  <meta property="og:title" content="Goroutine 与调度" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="虽然我们在日常沟通中把 Goroutine 和线程、协程之类的执行流概念混杂着沟通，但 Go 语言一直坚持 &ldquo;Goroutine&rdquo;。 宣称这一名词的产生是由于线程、协程、进程等无法准确表达其概念。本篇将就这一声明进行探究，Goroutine 与线程、协程究竟有何不同。" />
   <meta name="description" content="虽然我们在日常沟通中把 Goroutine 和线程、协程之类的执行流概念混杂着沟通，但 Go 语言一直坚持 &ldquo;Goroutine&rdquo;。 宣称这一名词的产生是由于线程、协程、进程等无法准确表达其概念。本篇将就这一声明进行探究，Goroutine 与线程、协程究竟有何不同。" />
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -447,6 +437,7 @@ top:
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

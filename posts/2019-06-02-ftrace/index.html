@@ -40,8 +40,8 @@
       "keywords" : [ "Linux","Kernel","ftrace", ]
   }
 </script>
-<title>跟踪内核函数的工具—— Ftrace - Utop&#39;s Blog</title>
-  <meta property="og:title" content="跟踪内核函数的工具—— Ftrace - Utop&#39;s Blog" />
+<title>跟踪内核函数的工具—— Ftrace</title>
+  <meta property="og:title" content="跟踪内核函数的工具—— Ftrace" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="前两天仿照 strings 工具写了个打印进程运行时堆栈可打印字符的工具 ffstrings 。结果没几天就被告知在 CentOS 上跑不通(uid: root, errno: EPERM):&lt;
 在反复调试无果之后，希望得到一种可以跟踪内核执行流的工具。功夫不负有心人，在内核文档中找到了—— ftrace 。
@@ -60,28 +60,18 @@ Ftrace 是位于内核内部的跟踪器，可以用来调试和分析发生在�
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -335,6 +325,7 @@ trace_off();
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

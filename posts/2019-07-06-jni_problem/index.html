@@ -40,8 +40,8 @@
       "keywords" : [ "JNI","memory leak", ]
   }
 </script>
-<title>JNI 引发的堆外内存泄露 - Utop&#39;s Blog</title>
-  <meta property="og:title" content="JNI 引发的堆外内存泄露 - Utop&#39;s Blog" />
+<title>JNI 引发的堆外内存泄露</title>
+  <meta property="og:title" content="JNI 引发的堆外内存泄露" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="本以为写写异构代码也不算一件难事。毕竟做 Java 开发，日常也写些 C 代码，无论如何也不至于到棘手到地步。哪曾想，JNI 开发不难，但问题颇多。
 为了排查一个 JNI 的堆外内存泄露问题，简直是绞尽脑汁而不得其门。最后查找的问题原因也特别简单，但凡认真学习了 JNI 开发都能够避免。
@@ -76,28 +76,18 @@ JNIEXPORT void JNICALL Java_Main_sayHi (JNIEnv *env, jobject jobj, jstring jstr)
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -391,6 +381,7 @@ AAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBBCCCCCDDDDDEEEEEGGGGGHHHHHAAAAABBBBB
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

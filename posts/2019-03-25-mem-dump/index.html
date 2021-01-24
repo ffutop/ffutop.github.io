@@ -40,8 +40,8 @@
       "keywords" : [ "Kernel","Linux","dump", ]
   }
 </script>
-<title>如何获取运行时进程堆栈 - Utop&#39;s Blog</title>
-  <meta property="og:title" content="如何获取运行时进程堆栈 - Utop&#39;s Blog" />
+<title>如何获取运行时进程堆栈</title>
+  <meta property="og:title" content="如何获取运行时进程堆栈" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="前些天看了关于在密码学应用中使用java.lang.String与byte[]的相关讨论，不推荐使用java.lang.String的重点就是其将在JVM中驻留，从而可能被窃取。但是，如何从内存中获取这些内容？JVM当然提供了一些机制，但是个人更喜欢从内核的角度来看看这个问题。
 /proc/${pid}/maps
@@ -92,28 +92,18 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -360,6 +350,7 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>

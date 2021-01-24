@@ -40,8 +40,8 @@
       "keywords" : [ "VPN","tun\/tap","iptables", ]
   }
 </script>
-<title>tcp Tunnel - Utop&#39;s Blog</title>
-  <meta property="og:title" content="tcp Tunnel - Utop&#39;s Blog" />
+<title>tcp Tunnel</title>
+  <meta property="og:title" content="tcp Tunnel" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="所谓专用网络(Private Network)，本质上不过是物理上局域网概念的延伸，将分属两地的局域网络联通，构建一个更大的逻辑局域网，并保证通信的私密性和独占性。最质朴的物理解决方案——在两个局域网络之间拉一个网线；不过距离越远，成本越高，还得考虑信号衰减等问题。相对而言租用运营商的线路就比较实际。但终究物理上的解决方案相较于使用互联网还是过于高昂，如何通过互联网构建一个逻辑上的专用网络？虚拟专用网络(Virtual Private Network, VPN) 提供了答案。
 要构建 VPN ，最基本的要求是两地局域网络互通。即如下图中的设备 172.16.1.1 要像在同一个局域网内，对内网 IP (分属不同的局域网)为 172.20.1.2 的设备发起并建立连接。但从基本的网络协议栈来看，IP 报文根本无法到达 B 区域的局域网。得益于分层的协议栈，TCP/IP 的五个层次，上下层次间通过接口和服务来通信，每个层次仅仅承载数据(payload)而不关心数据的格式和内容。理论上任何层次的数据都可以由其它任何层次或者它当前的层次所承载，也就出现了很多 XX over YY 的网络模型。在 A 区域将 IP 报文通过 YY 协议封装，到 B 区域再解包，像是从局域网内收到 IP 报文一样，发送给目的主机，就像是 IP 报文穿越了一条隧道。
@@ -110,28 +110,18 @@
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/github-markdown.css" />
-  <link rel="stylesheet" href="/css/highlight/tomorrow.min.css" />
   <link rel="stylesheet" href="/css/index.css">
+
+  
+
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
   <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
   
   
+
   
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-92258941-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
   
 </head>
 
@@ -428,6 +418,7 @@ ip route add xxx.xxx.xxx.xxx/xx dev tun proto kernel scope link src 10.1.1.2
   <div class="site-footer-item">
     <a href="/about/" target="_blank">About</a>
   </div>
+   
   
   
 </div>
