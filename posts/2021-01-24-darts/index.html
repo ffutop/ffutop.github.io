@@ -138,62 +138,15 @@
 <li>终止状态集 $F = b2, c2, a2, c3, a3$</li>
 <li>状态转移表描述为：</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>a</th>
-<th>b</th>
-<th>c</th>
-<th>d</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>start</td>
-<td>a1</td>
-<td>b1</td>
-<td></td>
-<td>d1</td>
-</tr>
-<tr>
-<td>a1</td>
-<td></td>
-<td>b2(end)</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>b1</td>
-<td></td>
-<td></td>
-<td>c2(end)</td>
-<td></td>
-</tr>
-<tr>
-<td>d1</td>
-<td>a2(end)</td>
-<td></td>
-<td></td>
-<td>d2</td>
-</tr>
-<tr>
-<td>b2</td>
-<td></td>
-<td></td>
-<td>c3(end)</td>
-<td></td>
-</tr>
-<tr>
-<td>d2</td>
-<td>a3(end)</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p>从状态机的角度看，状态集不大，仅包含 10 种状态，其中 4 种 (a2, a3, c2, c3) 可以统一归结为终态。即为了这一个包含 7 种状态的状态机，构建了 50 多节点的多叉树来完整状态转移函数。双数组前缀树利用双数组，以实现缩小构建状态转移函数的节点数量。</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">|       | a       | b       | c       | d    |
+| ----- | ------- | ------- | ------- | ---- |
+| start | a1      | b1      |         | d1   |
+| a1    |         | b2(end) |         |      |
+| b1    |         |         | c2(end) |      |
+| d1    | a2(end) |         |         | d2   |
+| b2    |         |         | c3(end) |      |
+| d2    | a3(end) |         |         |      |
+</code></pre></div><p>从状态机的角度看，状态集不大，仅包含 10 种状态，其中 4 种 (a2, a3, c2, c3) 可以统一归结为终态。即为了这一个包含 7 种状态的状态机，构建了 50 多节点的多叉树来完整状态转移函数。双数组前缀树利用双数组，以实现缩小构建状态转移函数的节点数量。</p>
 <p><img src="https://img.ffutop.com/76902EBE-0507-4F16-A7D4-ED7CB4F092AF.png" alt="Double-Array Trie">
 <!-- raw HTML omitted --><!-- raw HTML omitted -->图2. Double-Array Trie<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
 <h2 id="四使用双数组前缀树">四、使用双数组前缀树</h2>
