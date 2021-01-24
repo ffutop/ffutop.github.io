@@ -33,9 +33,9 @@
       "publisher": "ffutop",
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
-      "copyrightYear" : "2020",
-      "datePublished": "2020-11-06T00:00:00Z",
-      "dateModified" : "2020-11-06T00:00:00Z",
+      "copyrightYear" : "2021",
+      "datePublished": "2021-01-24T00:00:00Z",
+      "dateModified" : "2021-01-24T00:00:00Z",
       "url" : "https://www.ffutop.com/posts/",
       "keywords" : [  ]
   }
@@ -95,6 +95,43 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term"></h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2021-01-24-darts/">双数组前缀树</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2021-01-24 00:00:00 UTC">
+          24 Jan 2021
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <h2 id="一前缀树">一、前缀树</h2>
+<p>前缀树，又称字典树。常见的场景为大规模词库下做词匹配、词前缀匹配、词频统计等。目前唯一碰到的业务场景只有自建 UGC 风控的违禁词检测。</p>
+<p>经典前缀树基于多叉树结构实现，组成字符串的字符全集数量决定了多叉树的阶。如下图为字符串集合 ab, abc, bc, d, da, dda 形成的前缀树。</p>
+<p><img src="https://img.ffutop.com/5C605336-E961-463E-9919-9360FC8AFA27.png" alt="Trie Tree">
+<!-- raw HTML omitted --><!-- raw HTML omitted -->图 1. Trie Tree<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>前缀树的核心思想是空间换时间，利用字符串的公共前缀来降低查询时间的开销，相较于哈希等能够显著降低失配字符串的匹配耗时。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2021-01-24-darts/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -582,38 +619,6 @@ java.lang.IllegalArgumentException: Invalid character found in the request targe
       <p><!-- raw HTML omitted -->“同样是 KV-Server ，为什么基于 Raft Algorithm 的 KV-Server 需要对客户端操作实现幂等，而 Redis 却不需要？” 此前在实现基于 Raft 的容错 Key/Value Service 时，为了能够实现幂等的 <code>Put(key, value)</code>、<code>Append(key, arg)</code> 操作，可谓是费尽心思。但同为提供键值服务的 Redis ，怎么从来没见被要求幂等呢？</p>
 <p>基于这个问题，本篇将整理并总结个人的结论。</p>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-03-26-idempotent/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/">基于DNS的数据库切换·事故</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2020-02-28 00:00:00 UTC">
-          28 Feb 2020
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <p>我们生产环境上所有的应用都是通过域名来访问 MySQL、Redis 等基础服务。按说域名相较于 IP，凭空多了个 DNS 解析动作，是一个劣化的方案。但好处在于，一旦需要切换基础服务，将带来巨大的利好。可是，任何忽视DNS Record TTL的切换方案，都将伴随着巨大的风险。甚至，成为否定该利好的佐证。</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>

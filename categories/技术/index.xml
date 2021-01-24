@@ -6,10 +6,24 @@
     <description>Recent content in 技术 on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cmn-Hans-CN</language>
-    <lastBuildDate>Mon, 19 Oct 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 24 Jan 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>双数组前缀树</title>
+      <link>https://www.ffutop.com/posts/2021-01-24-darts/</link>
+      <pubDate>Sun, 24 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/posts/2021-01-24-darts/</guid>
+      <description>&lt;h2 id=&#34;一前缀树&#34;&gt;一、前缀树&lt;/h2&gt;
+&lt;p&gt;前缀树，又称字典树。常见的场景为大规模词库下做词匹配、词前缀匹配、词频统计等。目前唯一碰到的业务场景只有自建 UGC 风控的违禁词检测。&lt;/p&gt;
+&lt;p&gt;经典前缀树基于多叉树结构实现，组成字符串的字符全集数量决定了多叉树的阶。如下图为字符串集合 ab, abc, bc, d, da, dda 形成的前缀树。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://img.ffutop.com/5C605336-E961-463E-9919-9360FC8AFA27.png&#34; alt=&#34;Trie Tree&#34;&gt;
+&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;图 1. Trie Tree&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;p&gt;前缀树的核心思想是空间换时间，利用字符串的公共前缀来降低查询时间的开销，相较于哈希等能够显著降低失配字符串的匹配耗时。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>劫持 Java 应用 HTTP 请求</title>
@@ -160,15 +174,6 @@ java.lang.IllegalArgumentException: Invalid character found in the request targe
       
       <guid>https://www.ffutop.com/posts/2019-12-24-how-calico-works/</guid>
       <description>&lt;p&gt;在 Kubernetes 集群中，Calico 区别于 Flannel 的最显著特征，就是其宣称可以不借助隧道技术，是建立在纯三层协议上的解决方案。也就是说，Calico 通过建立一些路由信息，就构建了单节点/多节点网络命名空间隔离下的通信网络。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>HTTPS 安全通讯如何上演？</title>
-      <link>https://www.ffutop.com/posts/2019-12-14-https/</link>
-      <pubDate>Sat, 14 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/posts/2019-12-14-https/</guid>
-      <description>&lt;p&gt;最初的 HTTP 以明文传输方式运行在 Internet 上。随着越来越多安全敏感型应用的出现，HTTP over TCP 无法提供足够的安全性保障。SSL 及其继任者 TLS 在这样的背景下产生，提供面向信道的安全性。本文着力于展现 HTTP over TLS (即 HTTPS)的工作方式，以及与此密切相关的数字证书、对称/非对称加密等，但不涉及密码学相关实现及 SSL/TLS 的安全性证明。&lt;/p&gt;</description>
     </item>
     
   </channel>

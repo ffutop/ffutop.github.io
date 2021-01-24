@@ -33,9 +33,9 @@
       "publisher": "ffutop",
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
-      "copyrightYear" : "2020",
-      "datePublished": "2020-11-06T00:00:00Z",
-      "dateModified" : "2020-11-06T00:00:00Z",
+      "copyrightYear" : "2021",
+      "datePublished": "2021-01-24T00:00:00Z",
+      "dateModified" : "2021-01-24T00:00:00Z",
       "url" : "https://www.ffutop.com/posts/",
       "keywords" : [  ]
   }
@@ -95,6 +95,40 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term"></h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-08-19-understand-kernel-1/">理解 Linux Kernel (1) - BIOS</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2018-08-19 00:00:00 UTC">
+          19 Aug 2018
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <h2 id="前言">前言</h2>
+<p>在<a href="https://www.ffutop.com/2018-08-19-understand-Kernel-0/">概述</a>，我已经介绍过《理解 Linux Kernel》系列文章的写作原因。我不能担保我所进行的所有试验性操作都是对的，但至少操作我的环境下成功地运行了，并帮助我触及我始终敬畏的<strong>硬件&amp;OS</strong></p>
+<p>《Linux 内核完全注释》第三章——内核编程语言和环境，描述了用 as86 汇编语言构建 boot 引导程序，在 Bochs 仿真器成功模拟开机运行，最终输出 <em>Loading System&hellip;</em>。这就是本篇所要尝试的核心实验。之所以在已经有资料的基础上再写一遍，是书中缺失了仿真器模拟的环节。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-08-19-understand-kernel-1/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -490,62 +524,6 @@ if (!doNotTrack) {
       <h2 id="jvm-运行时数据区">JVM 运行时数据区</h2>
 <p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg" alt=""></p>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-21-java-memory-model/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-06-11-asm-classreader/">ASM - ClassReader 与 Java ClassFile 文件格式</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2018-06-11 00:00:00 UTC">
-          11 Jun 2018
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <h2 id="java-classfile-文件格式">Java ClassFile 文件格式</h2>
-<p>读了将近一周的时间，勉强算是把 ClassFile 的文件格式给简单的梳理了个脉络。
-<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html">The class File Format(Java SE 8)</a></p>
-<blockquote>
-<p>u1, u2, u4 分别表示无符号的一字节、二字节、四字节数据(以大端存储)</p>
-</blockquote>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">ClassFile {
-    u4             magic;                                   <span style="color:#60a0b0;font-style:italic">// 魔数(magic) 固定为 0xCAFEBABE
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             minor_version;                           <span style="color:#60a0b0;font-style:italic">// 次版本号
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             major_version;                           <span style="color:#60a0b0;font-style:italic">// 主版本号
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             constant_pool_count;                     <span style="color:#60a0b0;font-style:italic">// 常量池 constant_pool 的数量 + 1, 最大为 (2&lt;&lt;16 - 1) = 65535
-</span><span style="color:#60a0b0;font-style:italic"></span>    cp_info        constant_pool[constant_pool_count<span style="color:#666">-</span><span style="color:#40a070">1</span>];    <span style="color:#60a0b0;font-style:italic">// 常量池 取值下标为 [1, constant_pool_count)
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             access_flags;                            <span style="color:#60a0b0;font-style:italic">// 对类 or 接口的访问权限和属性的标志的掩码
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             this_class;                              <span style="color:#60a0b0;font-style:italic">// 值为 constant_pool 的有效下标(且 constant_pool[this_class] 的类型为 CONSTANT_Class_info)
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             super_class;                             <span style="color:#60a0b0;font-style:italic">// 值为 0 或者 constant_pool 的有效下标(同上), 如果是 interface, 则该值一定为有效下标
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             interfaces_count;                        <span style="color:#60a0b0;font-style:italic">// 直接父接口的数量
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             interfaces[interfaces_count];            <span style="color:#60a0b0;font-style:italic">// 值必须是 constant_pool 的有效下标, 且 interfaces[i](0≤i&lt;interfaces_count), 指向的类型为 CONSTANT_Class_info)
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             fields_count;                            <span style="color:#60a0b0;font-style:italic">// 字段数量, 统计所有字段, 包括 class variables(静态变量) 和 instance variables(实例变量)
-</span><span style="color:#60a0b0;font-style:italic"></span>    field_info     fields[fields_count];                    <span style="color:#60a0b0;font-style:italic">// 字段的详细声明, 不包含继承来的字段
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             methods_count;                           <span style="color:#60a0b0;font-style:italic">// 方法数量
-</span><span style="color:#60a0b0;font-style:italic"></span>    method_info    methods[methods_count];                  <span style="color:#60a0b0;font-style:italic">// 方法的详细声明, 不包括继承来的方法
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             attributes_count;                        <span style="color:#60a0b0;font-style:italic">// 属性数量
-</span><span style="color:#60a0b0;font-style:italic"></span>    attribute_info attributes[attributes_count];            <span style="color:#60a0b0;font-style:italic">// 属性的详细声明
-</span><span style="color:#60a0b0;font-style:italic"></span>}
-</code></pre></div>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-11-asm-classreader/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>

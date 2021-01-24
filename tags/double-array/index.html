@@ -10,8 +10,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="author" content="ffutop" />
-  <meta property="og:url" content="https://www.ffutop.com/tags/" />
-  <link rel="canonical" href="https://www.ffutop.com/tags/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <meta property="og:url" content="https://www.ffutop.com/tags/double-array/" />
+  <link rel="canonical" href="https://www.ffutop.com/tags/double-array/" /><link rel="apple-touch-icon" href="favicon.ico" />
   <link rel="icon" href="favicon.ico" />
   <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
 
@@ -24,8 +24,8 @@
            "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "tags",
-      "name" : "Tags",
-      "headline" : "Tags",
+      "name" : "Double Array",
+      "headline" : "Double Array",
       "description" : "",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
@@ -36,12 +36,12 @@
       "copyrightYear" : "2021",
       "datePublished": "2021-01-24T00:00:00Z",
       "dateModified" : "2021-01-24T00:00:00Z",
-      "url" : "https://www.ffutop.com/tags/",
+      "url" : "https://www.ffutop.com/tags/double-array/",
       "keywords" : [  ]
   }
 </script>
-<title>Tags - Utop&#39;s Blog</title>
-  <meta property="og:title" content="Tags - Utop&#39;s Blog" />
+<title>Double Array - Utop&#39;s Blog</title>
+  <meta property="og:title" content="Double Array - Utop&#39;s Blog" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="" />
   <meta name="description" content="" />
@@ -93,20 +93,53 @@ if (!doNotTrack) {
 <div class="header-line"></div>
 
 
-        <h1 class="taxonomy-term"></h1>
+        <h1 class="taxonomy-term">Double Array</h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2021-01-24-darts/">双数组前缀树</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2021-01-24 00:00:00 UTC">
+          24 Jan 2021
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <h2 id="一前缀树">一、前缀树</h2>
+<p>前缀树，又称字典树。常见的场景为大规模词库下做词匹配、词前缀匹配、词频统计等。目前唯一碰到的业务场景只有自建 UGC 风控的违禁词检测。</p>
+<p>经典前缀树基于多叉树结构实现，组成字符串的字符全集数量决定了多叉树的阶。如下图为字符串集合 ab, abc, bc, d, da, dda 形成的前缀树。</p>
+<p><img src="https://img.ffutop.com/5C605336-E961-463E-9919-9360FC8AFA27.png" alt="Trie Tree">
+<!-- raw HTML omitted --><!-- raw HTML omitted -->图 1. Trie Tree<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>前缀树的核心思想是空间换时间，利用字符串的公共前缀来降低查询时间的开销，相较于哈希等能够显著降低失配字符串的匹配耗时。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2021-01-24-darts/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
         </div>
         <div class="pagination">
   <div class="row between-xs">
     <div class="col-xs-6 col-md-2 pagination-prev">
       
-      <a href="/tags/page/7/">上一页</a>
-      
     </div>
     <div class="col-xs-6 col-md-2 pagination-next">
-      
-      <a href="/tags/page/9/">下一页</a>
       
     </div>
 </div>

@@ -33,9 +33,9 @@
       "publisher": "ffutop",
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
-      "copyrightYear" : "2020",
-      "datePublished": "2020-10-19T00:00:00Z",
-      "dateModified" : "2020-10-19T00:00:00Z",
+      "copyrightYear" : "2021",
+      "datePublished": "2021-01-24T00:00:00Z",
+      "dateModified" : "2021-01-24T00:00:00Z",
       "url" : "https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/",
       "keywords" : [  ]
   }
@@ -95,6 +95,43 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term">技术</h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2021-01-24-darts/">双数组前缀树</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2021-01-24 00:00:00 UTC">
+          24 Jan 2021
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <h2 id="一前缀树">一、前缀树</h2>
+<p>前缀树，又称字典树。常见的场景为大规模词库下做词匹配、词前缀匹配、词频统计等。目前唯一碰到的业务场景只有自建 UGC 风控的违禁词检测。</p>
+<p>经典前缀树基于多叉树结构实现，组成字符串的字符全集数量决定了多叉树的阶。如下图为字符串集合 ab, abc, bc, d, da, dda 形成的前缀树。</p>
+<p><img src="https://img.ffutop.com/5C605336-E961-463E-9919-9360FC8AFA27.png" alt="Trie Tree">
+<!-- raw HTML omitted --><!-- raw HTML omitted -->图 1. Trie Tree<!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>前缀树的核心思想是空间换时间，利用字符串的公共前缀来降低查询时间的开销，相较于哈希等能够显著降低失配字符串的匹配耗时。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2021-01-24-darts/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -447,38 +484,6 @@ java.lang.IllegalArgumentException: Invalid character found in the request targe
   <div class="post-content markdown-body">
       <p>在 Kubernetes 集群中，Calico 区别于 Flannel 的最显著特征，就是其宣称可以不借助隧道技术，是建立在纯三层协议上的解决方案。也就是说，Calico 通过建立一些路由信息，就构建了单节点/多节点网络命名空间隔离下的通信网络。</p>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-12-24-how-calico-works/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-12-14-https/">HTTPS 安全通讯如何上演？</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2019-12-14 00:00:00 UTC">
-          14 Dec 2019
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <p>最初的 HTTP 以明文传输方式运行在 Internet 上。随着越来越多安全敏感型应用的出现，HTTP over TCP 无法提供足够的安全性保障。SSL 及其继任者 TLS 在这样的背景下产生，提供面向信道的安全性。本文着力于展现 HTTP over TLS (即 HTTPS)的工作方式，以及与此密切相关的数字证书、对称/非对称加密等，但不涉及密码学相关实现及 SSL/TLS 的安全性证明。</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-12-14-https/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>

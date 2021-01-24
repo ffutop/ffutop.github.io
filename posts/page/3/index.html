@@ -33,9 +33,9 @@
       "publisher": "ffutop",
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
-      "copyrightYear" : "2020",
-      "datePublished": "2020-11-06T00:00:00Z",
-      "dateModified" : "2020-11-06T00:00:00Z",
+      "copyrightYear" : "2021",
+      "datePublished": "2021-01-24T00:00:00Z",
+      "dateModified" : "2021-01-24T00:00:00Z",
       "url" : "https://www.ffutop.com/posts/",
       "keywords" : [  ]
   }
@@ -95,6 +95,40 @@ if (!doNotTrack) {
 
         <h1 class="taxonomy-term"></h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-08-20-too-many-links/">Too many links problem</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-08-19 00:00:00 UTC">
+          19 Aug 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>今天使用 Kubernetes 发布 Deployment 时 Pod 拉取镜像频繁失败。查看日志发现报错信息如下：</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">Warning  Failed 4m  kubelet, 172.16.1.1 Failed to pull image <span style="color:#4070a0">&#34;xxx.xxx.com/&lt;image-name&gt;:&lt;version&gt;&#34;</span>: rpc error: <span style="color:#bb60d5">code</span> <span style="color:#666">=</span> Unknown <span style="color:#bb60d5">desc</span> <span style="color:#666">=</span> failed to register layer: link /data/docker/storage/overlay/48420e2e1cacbf1e5a0766f892556b6b5aed9b86bbc118fb4ab5b1f236bcb55a/root/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type /data/docker/storage/overlay/7545256b7c82ea95260e05f3eb0ac6b4138e9f206febd09f82863f1ef17575da/tmproot525452492/var/lib/yum/yumdb/o/e23ec6b5d5de041869ec5f3e436685acce4a7354-openssh-server-7.4p1-13.el7_4-x86_64/checksum_type: too many links
+</code></pre></div><p>最初还以为是网络的问题，但出现得实在是太过于频繁。仔细观察发现每次 Pod 拉取镜像失败，只会发生在特定的一台 K8s Node 上 <code>172.16.1.1</code>。而 Kubernetes 事件中提示的是 <code>too many links</code>，对问题原因的怀疑开始转向文件系统。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-20-too-many-links/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -435,42 +469,6 @@ JNIEXPORT <span style="color:#902000">void</span> JNICALL <span style="color:#06
 Assert<span style="color:#666">.</span><span style="color:#4070a0">assertTrue</span><span style="color:#666">(</span>timeout<span style="color:#666">.</span><span style="color:#4070a0">getTime</span><span style="color:#666">()</span> <span style="color:#666">&lt;</span> System<span style="color:#666">.</span><span style="color:#4070a0">currentTimeMillis</span><span style="color:#666">());</span>
 </code></pre></div><p>在绝大多数模拟中，先执行 <code>part 1</code>，紧跟着执行 <code>part 2</code> 都能通过测试。但偶尔还是挂掉了。</p>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-26-time-accuracy/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-04-25-lex-and-yacc/">Lex &amp; Yacc 学习笔记</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2019-04-25 00:00:00 UTC">
-          25 Apr 2019
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <p>高级语言相较于机器语言、汇编语言，更加符合人的思考习惯。换句话说，更偏向于自然语言的风格而更偏离指令化的描述。用高级语言编写的一行代码，最终可能需要处理器执行若干条指令。如何让机器意识到高级语言代码对应的机器指令是哪些呢？当然就需要一个优秀的翻译。</p>
-<p>无论是编译型语言还是解释型语言，总逃脱不了这样一个流程：高级语言 ➜ 目标平台的指令。所谓编译型/解释型的区别，在于其转换流程是在线的(online)还是离线的(offline)。在线的方式无法意识到后续的代码，但胜在即时反应；离线的方式可以统揽全局，进行更多的优化，但代码文本必须完整。</p>
-<p>高级语言 ➜ 目标平台的指令，这样的流程如何实现。一般来说，划分为四个阶段：词法分析、语法分析、语义分析、目标代码生成。</p>
-<p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1g2b583io0ej30wq094aa5.jpg" alt=""></p>
-<p>本篇的主要目的，是展示“语言翻译”的几个阶段工作，以及通过 Lex &amp; Yacc 工具演示一门自定义语言的“翻译”。</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-04-25-lex-and-yacc/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>

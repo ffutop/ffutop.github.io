@@ -6,10 +6,24 @@
     <description>Recent content in Posts on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cmn-Hans-CN</language>
-    <lastBuildDate>Fri, 06 Nov 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 24 Jan 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>双数组前缀树</title>
+      <link>https://www.ffutop.com/posts/2021-01-24-darts/</link>
+      <pubDate>Sun, 24 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/posts/2021-01-24-darts/</guid>
+      <description>&lt;h2 id=&#34;一前缀树&#34;&gt;一、前缀树&lt;/h2&gt;
+&lt;p&gt;前缀树，又称字典树。常见的场景为大规模词库下做词匹配、词前缀匹配、词频统计等。目前唯一碰到的业务场景只有自建 UGC 风控的违禁词检测。&lt;/p&gt;
+&lt;p&gt;经典前缀树基于多叉树结构实现，组成字符串的字符全集数量决定了多叉树的阶。如下图为字符串集合 ab, abc, bc, d, da, dda 形成的前缀树。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://img.ffutop.com/5C605336-E961-463E-9919-9360FC8AFA27.png&#34; alt=&#34;Trie Tree&#34;&gt;
+&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;图 1. Trie Tree&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;p&gt;前缀树的核心思想是空间换时间，利用字符串的公共前缀来降低查询时间的开销，相较于哈希等能够显著降低失配字符串的匹配耗时。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>MySQL DeadLocks with INSERT</title>
@@ -295,15 +309,6 @@ java.lang.IllegalArgumentException: Invalid character found in the request targe
       <guid>https://www.ffutop.com/posts/2020-03-26-idempotent/</guid>
       <description>&lt;p&gt;&lt;!-- raw HTML omitted --&gt;“同样是 KV-Server ，为什么基于 Raft Algorithm 的 KV-Server 需要对客户端操作实现幂等，而 Redis 却不需要？” 此前在实现基于 Raft 的容错 Key/Value Service 时，为了能够实现幂等的 &lt;code&gt;Put(key, value)&lt;/code&gt;、&lt;code&gt;Append(key, arg)&lt;/code&gt; 操作，可谓是费尽心思。但同为提供键值服务的 Redis ，怎么从来没见被要求幂等呢？&lt;/p&gt;
 &lt;p&gt;基于这个问题，本篇将整理并总结个人的结论。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>基于DNS的数据库切换·事故</title>
-      <link>https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/</link>
-      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/posts/2020-02-28-db-transfer-based-on-dns/</guid>
-      <description>&lt;p&gt;我们生产环境上所有的应用都是通过域名来访问 MySQL、Redis 等基础服务。按说域名相较于 IP，凭空多了个 DNS 解析动作，是一个劣化的方案。但好处在于，一旦需要切换基础服务，将带来巨大的利好。可是，任何忽视DNS Record TTL的切换方案，都将伴随着巨大的风险。甚至，成为否定该利好的佐证。&lt;/p&gt;</description>
     </item>
     
   </channel>
