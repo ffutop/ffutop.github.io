@@ -34,8 +34,8 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2021",
-      "datePublished": "2021-01-24T00:00:00Z",
-      "dateModified" : "2021-01-24T00:00:00Z",
+      "datePublished": "2021-03-15T00:00:00Z",
+      "dateModified" : "2021-03-15T00:00:00Z",
       "url" : "https://www.ffutop.com/posts/",
       "keywords" : [  ]
   }
@@ -85,6 +85,39 @@
 
         <h1 class="taxonomy-term"></h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2020-03-26-idempotent/">Idempotent Pattern</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2020-03-26 00:00:00 UTC">
+          26 Mar 2020
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p><!-- raw HTML omitted -->“同样是 KV-Server ，为什么基于 Raft Algorithm 的 KV-Server 需要对客户端操作实现幂等，而 Redis 却不需要？” 此前在实现基于 Raft 的容错 Key/Value Service 时，为了能够实现幂等的 <code>Put(key, value)</code>、<code>Append(key, arg)</code> 操作，可谓是费尽心思。但同为提供键值服务的 Redis ，怎么从来没见被要求幂等呢？</p>
+<p>基于这个问题，本篇将整理并总结个人的结论。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2020-03-26-idempotent/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -396,39 +429,6 @@ ffutop $ uptime
 09:58:56 up <span style="color:#40a070">165</span> days, 20:14,  <span style="color:#40a070">2</span> users,  load average: 0.63, 0.24, 0.09
 </code></pre></div><p>是什么原因导致平均负载与预期值不符呢？</p>
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-09-16-load-average/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-08-23-traffic-control/">Linux Traffic Control</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2019-08-23 00:00:00 UTC">
-          23 Aug 2019
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <p>最近在处理 Kubernetes 工作的时候，被问及这样一个命题：Pod 能对 CPU 和内存施加限制，那同样属于资源范畴的网络带宽是否能限制呢？使用 Kubernetes 的一个核心优势在于每个 Pod 都等同于一个轻量级的“操作系统”。建立在 Linux 命名空间(namespace)和控制组(cgroups)基础上的容器技术将每个 Pod 的资源进行了隔离和限制。但是，限流只针对 CPU 和内存，对网络、磁盘 IO 的解决方案仅仅局限在隔离，难道技术上实现不了吗？自然不是，Kubernetes 有意识地将网络模块拆解，只定义插件规范，而将实现的可能性交由下游开发自由决策。当然，本篇并不在意 Kubernetes 网络限流的解决方案，只是以此作为引子。</p>
-<p>流量控制(Traffic Control, TC) 是 Linux 内核提供的流量限速、整形、策略控制机制。近乎完美地支持网络限流的命题，除了，这是比 Netfilter 更难理解的模块。Netfilter 作用在内核网络协议栈上，通过在各个枢纽设立关卡对网络包(<code>sk_buff</code> 数据结构, skb)进行检查，并实施 ACCEPT、DROP、MASQUERADE 等策略。相比之下，TC 是绑定在网络设备上实施的。提供 <code>enqueue</code>, <code>dequeue</code> 两个核心函数，也是作为关卡对到达网络设备的网络包实施策略。要说核心的不同之处，Netfilter 是流式地处理网络包，先到的网络包一定先出（也可能是被丢弃）；TC 的处理方式就依照策略，类比块设备的随机读/随机写了。</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-08-23-traffic-control/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    
+    <head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="ffutop" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2021-03-15-datetime-vs-calendar/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2021-03-15-datetime-vs-calendar/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
+
+  <script type="application/ld+json">
+  {
+      "@context" : "http://schema.org",
+      "@type" : "BlogPosting",
+      "mainEntityOfPage": {
+           "@type": "WebPage",
+           "@id": "https://www.ffutop.com/"
+      },
+      "articleSection" : "posts",
+      "name" : "时间(Timestamp)、日历(Calendar)与夏令时",
+      "headline" : "时间(Timestamp)、日历(Calendar)与夏令时",
+      "description" : "\u003cp\u003e一个特殊的日期(\u003ccode\u003e1988-04-10\u003c/code\u003e, 字段类型 \u003ccode\u003edate\u003c/code\u003e)，从数据库尝试读取却始终抛出异常 \u003ccode\u003eHOUR_OF_DAY: 0-\u0026gt;1\u003c/code\u003e 。最初百思不得其解，其后发现这个日期恰好是夏令时的起始日，而后又纠结于 1988 年夏令时“从 04 月 10 日早晨 2 时起，将时针往前拨一小时，即二时变三时”。\u003c/p\u003e",
+      "inLanguage" : "zh-cmn-Hans-CN",
+      "author" : "ffutop",
+      "creator" : "ffutop",
+      "publisher": "ffutop",
+      "accountablePerson" : "ffutop",
+      "copyrightHolder" : "ffutop",
+      "copyrightYear" : "2021",
+      "datePublished": "2021-03-15T00:00:00Z",
+      "dateModified" : "2021-03-15T00:00:00Z",
+      "url" : "https://www.ffutop.com/posts/2021-03-15-datetime-vs-calendar/",
+      "keywords" : [ "Java","Timestamp","Calendar", ]
+  }
+</script>
+<title>时间(Timestamp)、日历(Calendar)与夏令时</title>
+  <meta property="og:title" content="时间(Timestamp)、日历(Calendar)与夏令时" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="一个特殊的日期(1988-04-10, 字段类型 date)，从数据库尝试读取却始终抛出异常 HOUR_OF_DAY: 0-&gt;1 。最初百思不得其解，其后发现这个日期恰好是夏令时的起始日，而后又纠结于 1988 年夏令时“从 04 月 10 日早晨 2 时起，将时针往前拨一小时，即二时变三时”。" />
+  <meta name="description" content="一个特殊的日期(1988-04-10, 字段类型 date)，从数据库尝试读取却始终抛出异常 HOUR_OF_DAY: 0-&gt;1 。最初百思不得其解，其后发现这个日期恰好是夏令时的起始日，而后又纠结于 1988 年夏令时“从 04 月 10 日早晨 2 时起，将时针往前拨一小时，即二时变三时”。" />
+  <meta property="og:locale" content="zh-cmn-Hans-CN" />
+
+  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
+  <link rel="stylesheet" href="/css/index.css">
+
+  
+
+  <link href="/index.xml" rel="alternate" type="application/rss+xml"
+    title="Utop&#39;s Blog">
+  
+  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  
+  
+
+  
+  
+</head>
+
+     
+  </head>
+  <body>
+    
+  <article class="post Chinese" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          
+<header>
+  <div class="signatures site-title">
+    <a href="/">FFUTOP</a>
+  </div>
+</header>
+<div class="row end-xs">
+  
+  
+</div>
+<div class="header-line"></div>
+
+        </div>
+        <header class="post-header">
+          <h1 class="post-title">时间(Timestamp)、日历(Calendar)与夏令时</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2021-03-15 00:00:00 UTC">
+                15 Mar 2021
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
+
+        <div class="post-content markdown-body">
+          
+          <p>一个特殊的日期(<code>1988-04-10</code>, 字段类型 <code>date</code>)，从数据库尝试读取却始终抛出异常 <code>HOUR_OF_DAY: 0-&gt;1</code> 。最初百思不得其解，其后发现这个日期恰好是夏令时的起始日，而后又纠结于 1988 年夏令时“从 04 月 10 日早晨 2 时起，将时针往前拨一小时，即二时变三时”。</p>
+<h2 id="重现">重现</h2>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.sql.Timestamp</span><span style="color:#666">;</span>
+<span style="color:#007020;font-weight:bold">import</span> <span style="color:#0e84b5;font-weight:bold">java.util.*</span><span style="color:#666">;</span>
+
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * HINT: 适用于 java -version &lt; 8u201 or 7u211 
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @date 2021-03-15
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Main</span> <span style="color:#666">{</span>
+
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">main</span><span style="color:#666">(</span>String<span style="color:#666">[]</span> args<span style="color:#666">)</span> <span style="color:#666">{</span>
+        Calendar cal <span style="color:#666">=</span> Calendar<span style="color:#666">.</span><span style="color:#4070a0">getInstance</span><span style="color:#666">(</span>TimeZone<span style="color:#666">.</span><span style="color:#4070a0">getTimeZone</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;Asia/Shanghai&#34;</span><span style="color:#666">),</span> Locale<span style="color:#666">.</span><span style="color:#4070a0">US</span><span style="color:#666">);</span>
+        cal<span style="color:#666">.</span><span style="color:#4070a0">setLenient</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">false</span><span style="color:#666">);</span>
+        cal<span style="color:#666">.</span><span style="color:#4070a0">set</span><span style="color:#666">(</span>1988<span style="color:#666">,</span> Calendar<span style="color:#666">.</span><span style="color:#4070a0">APRIL</span><span style="color:#666">,</span> 10<span style="color:#666">,</span> 0<span style="color:#666">,</span> 0<span style="color:#666">,</span> 0<span style="color:#666">);</span>
+        Timestamp ts <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> Timestamp<span style="color:#666">(</span>cal<span style="color:#666">.</span><span style="color:#4070a0">getTimeInMillis</span><span style="color:#666">());</span>
+        System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>ts<span style="color:#666">);</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+
+<span style="color:#60a0b0;font-style:italic">/**
+</span><span style="color:#60a0b0;font-style:italic"> * HINT: 适用于 java -version &gt;= 8u201 or 7u211 
+</span><span style="color:#60a0b0;font-style:italic"> * @author fangfeng
+</span><span style="color:#60a0b0;font-style:italic"> * @date 2021-03-15
+</span><span style="color:#60a0b0;font-style:italic"> */</span>
+<span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">Main</span> <span style="color:#666">{</span>
+
+    <span style="color:#007020;font-weight:bold">public</span> <span style="color:#007020;font-weight:bold">static</span> <span style="color:#902000">void</span> <span style="color:#06287e">main</span><span style="color:#666">(</span>String<span style="color:#666">[]</span> args<span style="color:#666">)</span> <span style="color:#666">{</span>
+        Calendar cal <span style="color:#666">=</span> Calendar<span style="color:#666">.</span><span style="color:#4070a0">getInstance</span><span style="color:#666">(</span>TimeZone<span style="color:#666">.</span><span style="color:#4070a0">getTimeZone</span><span style="color:#666">(</span><span style="color:#4070a0">&#34;Asia/Shanghai&#34;</span><span style="color:#666">),</span> Locale<span style="color:#666">.</span><span style="color:#4070a0">US</span><span style="color:#666">);</span>
+        cal<span style="color:#666">.</span><span style="color:#4070a0">setLenient</span><span style="color:#666">(</span><span style="color:#007020;font-weight:bold">false</span><span style="color:#666">);</span>
+        cal<span style="color:#666">.</span><span style="color:#4070a0">set</span><span style="color:#666">(</span>1988<span style="color:#666">,</span> Calendar<span style="color:#666">.</span><span style="color:#4070a0">APRIL</span><span style="color:#666">,</span> 17<span style="color:#666">,</span> 2<span style="color:#666">,</span> 0<span style="color:#666">,</span> 0<span style="color:#666">);</span>
+        Timestamp ts <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> Timestamp<span style="color:#666">(</span>cal<span style="color:#666">.</span><span style="color:#4070a0">getTimeInMillis</span><span style="color:#666">());</span>
+        System<span style="color:#666">.</span><span style="color:#4070a0">out</span><span style="color:#666">.</span><span style="color:#4070a0">println</span><span style="color:#666">(</span>ts<span style="color:#666">);</span>
+    <span style="color:#666">}</span>
+<span style="color:#666">}</span>
+</code></pre></div><div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#666">[</span>ffutop@ffutop /<span style="color:#666">]</span>$ java -cp . Main
+Exception in thread <span style="color:#4070a0">&#34;main&#34;</span> java.lang.IllegalArgumentException: HOUR_OF_DAY: <span style="color:#40a070">0</span> -&gt; <span style="color:#40a070">1</span>
+	at java.util.GregorianCalendar.computeTime<span style="color:#666">(</span>GregorianCalendar.java:2829<span style="color:#666">)</span>
+	at java.util.Calendar.updateTime<span style="color:#666">(</span>Calendar.java:3393<span style="color:#666">)</span>
+	at java.util.Calendar.getTimeInMillis<span style="color:#666">(</span>Calendar.java:1782<span style="color:#666">)</span>
+	at Main.main<span style="color:#666">(</span>Main.java:15<span style="color:#666">)</span>
+
+<span style="color:#666">[</span>ffutop@ffutop /<span style="color:#666">]</span>$ java -version
+java version <span style="color:#4070a0">&#34;1.8.0_161&#34;</span>
+Java<span style="color:#666">(</span>TM<span style="color:#666">)</span> SE Runtime Environment <span style="color:#666">(</span>build 1.8.0_161-b12<span style="color:#666">)</span>
+Java HotSpot<span style="color:#666">(</span>TM<span style="color:#666">)</span> 64-Bit Server VM <span style="color:#666">(</span>build 25.161-b12, mixed mode<span style="color:#666">)</span>
+</code></pre></div><h2 id="原因分析">原因分析</h2>
+<p><code>Calendar</code> 基于配置的时区(<code>cal.getTimeZone()</code>) 对日历时间加以描述。通过一系列 <code>set(...)</code> 完成描述之后，利用 <code>Calendar.getTimeInMillis()</code> 方法获取所描述时间的时间戳（时间戳是相对于格林威治时间1970年1月1日0时0分0秒相差的毫秒数）。</p>
+<p>其中 <code>getTimeInMillis()</code> 触发了 <code>computeTime()</code> ，分五个步骤（其中第 1、5 步只有配置了 calendar.setLenient(false) 才会执行）</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#007020;font-weight:bold">protected</span> <span style="color:#902000">void</span> <span style="color:#06287e">computeTime</span><span style="color:#666">()</span> <span style="color:#666">{</span>
+    <span style="color:#60a0b0;font-style:italic">// 1. 快照配置的各项日历字段
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(!</span>isLenient<span style="color:#666">())</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>originalFields <span style="color:#666">==</span> <span style="color:#007020;font-weight:bold">null</span><span style="color:#666">)</span> <span style="color:#666">{</span>
+            originalFields <span style="color:#666">=</span> <span style="color:#007020;font-weight:bold">new</span> <span style="color:#902000">int</span><span style="color:#666">[</span>FIELD_COUNT<span style="color:#666">];</span>
+        <span style="color:#666">}</span>
+        <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#902000">int</span> field <span style="color:#666">=</span> 0<span style="color:#666">;</span> field <span style="color:#666">&lt;</span> FIELD_COUNT<span style="color:#666">;</span> field<span style="color:#666">++)</span> <span style="color:#666">{</span>
+            <span style="color:#902000">int</span> value <span style="color:#666">=</span> internalGet<span style="color:#666">(</span>field<span style="color:#666">);</span>
+            originalFields<span style="color:#666">[</span>field<span style="color:#666">]</span> <span style="color:#666">=</span> value<span style="color:#666">;</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
+
+    <span style="color:#60a0b0;font-style:italic">// 2. 计算基于当前时区1970年1月1日0时0分0秒的毫秒数
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#60a0b0;font-style:italic">// millis represents local wall-clock time in milliseconds.
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#902000">long</span> millis <span style="color:#666">=</span> <span style="color:#666">(</span>fixedDate <span style="color:#666">-</span> EPOCH_OFFSET<span style="color:#666">)</span> <span style="color:#666">*</span> ONE_DAY <span style="color:#666">+</span> timeOfDay<span style="color:#666">;</span>
+
+    <span style="color:#60a0b0;font-style:italic">// 3. 将毫秒数基于 Calendar 配置的时区和夏令时，调整成基于 GMT 1970-01-01 00:00:00 的时间戳
+</span><span style="color:#60a0b0;font-style:italic"></span>    zoneOffsets<span style="color:#666">[</span>0<span style="color:#666">]</span> <span style="color:#666">=</span> internalGet<span style="color:#666">(</span>ZONE_OFFSET<span style="color:#666">);</span>
+    zoneOffsets<span style="color:#666">[</span>1<span style="color:#666">]</span> <span style="color:#666">=</span> internalGet<span style="color:#666">(</span>DST_OFFSET<span style="color:#666">);</span>
+    <span style="color:#60a0b0;font-style:italic">// Adjust the time zone offset values to get the UTC time.
+</span><span style="color:#60a0b0;font-style:italic"></span>    millis <span style="color:#666">-=</span> zoneOffsets<span style="color:#666">[</span>0<span style="color:#666">]</span> <span style="color:#666">+</span> zoneOffsets<span style="color:#666">[</span>1<span style="color:#666">];</span>
+    time <span style="color:#666">=</span> millis<span style="color:#666">;</span>
+
+    <span style="color:#60a0b0;font-style:italic">// 4. 逆向将时间戳转换成当前时区及夏令时下的日期描述
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#902000">int</span> mask <span style="color:#666">=</span> computeFields<span style="color:#666">(</span>fieldMask <span style="color:#666">|</span> getSetStateFields<span style="color:#666">(),</span> tzMask<span style="color:#666">);</span>
+
+    <span style="color:#60a0b0;font-style:italic">// 5. 确认每个用户主动配置的日历描述字段是否与计算的不同
+</span><span style="color:#60a0b0;font-style:italic"></span>    <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(!</span>isLenient<span style="color:#666">())</span> <span style="color:#666">{</span>
+        <span style="color:#007020;font-weight:bold">for</span> <span style="color:#666">(</span><span style="color:#902000">int</span> field <span style="color:#666">=</span> 0<span style="color:#666">;</span> field <span style="color:#666">&lt;</span> FIELD_COUNT<span style="color:#666">;</span> field<span style="color:#666">++)</span> <span style="color:#666">{</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(!</span>isExternallySet<span style="color:#666">(</span>field<span style="color:#666">))</span> <span style="color:#666">{</span>
+                <span style="color:#007020;font-weight:bold">continue</span><span style="color:#666">;</span>
+            <span style="color:#666">}</span>
+            <span style="color:#007020;font-weight:bold">if</span> <span style="color:#666">(</span>originalFields<span style="color:#666">[</span>field<span style="color:#666">]</span> <span style="color:#666">!=</span> internalGet<span style="color:#666">(</span>field<span style="color:#666">))</span> <span style="color:#666">{</span>
+                String s <span style="color:#666">=</span> originalFields<span style="color:#666">[</span>field<span style="color:#666">]</span> <span style="color:#666">+</span> <span style="color:#4070a0">&#34; -&gt; &#34;</span> <span style="color:#666">+</span> internalGet<span style="color:#666">(</span>field<span style="color:#666">);</span>
+                <span style="color:#60a0b0;font-style:italic">// Restore the original field values
+</span><span style="color:#60a0b0;font-style:italic"></span>                System<span style="color:#666">.</span><span style="color:#4070a0">arraycopy</span><span style="color:#666">(</span>originalFields<span style="color:#666">,</span> 0<span style="color:#666">,</span> fields<span style="color:#666">,</span> 0<span style="color:#666">,</span> fields<span style="color:#666">.</span><span style="color:#4070a0">length</span><span style="color:#666">);</span>
+                <span style="color:#007020;font-weight:bold">throw</span> <span style="color:#007020;font-weight:bold">new</span> IllegalArgumentException<span style="color:#666">(</span>getFieldName<span style="color:#666">(</span>field<span style="color:#666">)</span> <span style="color:#666">+</span> <span style="color:#4070a0">&#34;: &#34;</span> <span style="color:#666">+</span> s<span style="color:#666">);</span>
+            <span style="color:#666">}</span>
+        <span style="color:#666">}</span>
+    <span style="color:#666">}</span>
+    setFieldsNormalized<span style="color:#666">(</span>mask<span style="color:#666">);</span>
+<span style="color:#666">}</span>
+</code></pre></div><p>遇到的错误，恰恰是发生在第 5 步，夏令时导致日历跳过了对中国标准时间1988年4月10日0时0分0秒的描述，自1988年4月9日23时59分59秒后的下一秒被直接描述成了1988年4月10日1时0分0秒。因此，在时区被配置为 <code>Asia/Shanghai</code> 时，由于是夏令时的起始时间，日历描述的时间(0时)不存在，在 Calendar 的处理过程中，被标准化成了1时。严格模式下的 Calendar 认为这是非法描述，抛出了异常。</p>
+<h2 id="解决方案">解决方案</h2>
+<ol>
+<li>将时区配置调整成 $GMT+8$，中国标准时间在特定的几年有夏令时的问题，但东八区没有，就不会触发这个问题。</li>
+<li>在复现问题时也发现，高版本 JDK 对夏令时的起始时间描述不同。针对这个现象，可以升级 JDK ，数据库的 <code>date</code> 读取到应用中会被填充上时间0时0分0秒，而新版本的夏令时切换时间是2时，自动规避了这个问题。</li>
+</ol>
+<h2 id="extra-jdk-不同版本的夏令时问题">Extra: JDK 不同版本的夏令时问题</h2>
+<p>夏令时的起止，是政令对日历描述的人为干预。每年均可能发生变化，JDK 如何感知这个规律并在系统上加以体现呢？无它，穷举所有变化，并配置在 JDK 中。详见：<a href="https://www.oracle.com/java/technologies/tzdata-versions.html">Timezone Data Versions in the JRE Software</a></p>
+<p>不同版本下 Asia/Shanghai 时区夏令时起始时间的不同，正是源于这种穷举配置，早期维护者认为中国标准时间的夏令时切换发生在0时，而后来又经证明发生在2时，新版本 JDK 及时修正了这个问题罢了。</p>
+<p><img src="https://img.ffutop.com/76CA5CD1-41A7-469E-AAB0-BC1D69668C55.png" alt="JRE Timezone Data Change Log"></p>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%a1%88%e4%be%8b%e5%88%86%e6%9e%90/">
+                案例分析
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            
+          </div>
+        </div>
+
+        
+        
+
+<div class="releated-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2020-10-19-hijack-http-req/">劫持 Java 应用 HTTP 请求</a></li>
+    
+    <li><a href="/posts/2020-06-17-dubbo-telnet/">Dubbo Telnet 调试</a></li>
+    
+    <li><a href="/posts/2020-04-11-large-http-header/">HTTP Large Header Fields Problem</a></li>
+    
+  </ul>
+</div>
+
+        
+        
+        <div style="height: 50px;"></div>
+        
+        <div class="post-comments">
+          <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+        </div>
+        
+        
+
+        <div class="site-footer">
+  
+  <div class="site-footer-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="site-footer-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+   
+  
+  
+</div>
+
+      </div>
+    </div>
+  </article>
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>
+  hljs.initHighlightingOnLoad();
+  
+  
+  
+    
+    
+  
+</script>
+
+  
+
+ 
+  </body>
+</html>

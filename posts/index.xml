@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cmn-Hans-CN</language>
-    <lastBuildDate>Sun, 24 Jan 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 15 Mar 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>时间(Timestamp)、日历(Calendar)与夏令时</title>
+      <link>https://www.ffutop.com/posts/2021-03-15-datetime-vs-calendar/</link>
+      <pubDate>Mon, 15 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/posts/2021-03-15-datetime-vs-calendar/</guid>
+      <description>&lt;p&gt;一个特殊的日期(&lt;code&gt;1988-04-10&lt;/code&gt;, 字段类型 &lt;code&gt;date&lt;/code&gt;)，从数据库尝试读取却始终抛出异常 &lt;code&gt;HOUR_OF_DAY: 0-&amp;gt;1&lt;/code&gt; 。最初百思不得其解，其后发现这个日期恰好是夏令时的起始日，而后又纠结于 1988 年夏令时“从 04 月 10 日早晨 2 时起，将时针往前拨一小时，即二时变三时”。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>双数组前缀树</title>
@@ -299,16 +308,6 @@ java.lang.IllegalArgumentException: Invalid character found in the request targe
 &lt;li&gt;NGINX &lt;code&gt;large_client_header_buffers&lt;/code&gt; 使用了默认配置 &lt;code&gt;4 8k&lt;/code&gt;。&lt;/li&gt;
 &lt;li&gt;Tomcat maxHttpHeaderSize 使用了默认配置 (default 8192)&lt;/li&gt;
 &lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>Idempotent Pattern</title>
-      <link>https://www.ffutop.com/posts/2020-03-26-idempotent/</link>
-      <pubDate>Thu, 26 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/posts/2020-03-26-idempotent/</guid>
-      <description>&lt;p&gt;&lt;!-- raw HTML omitted --&gt;“同样是 KV-Server ，为什么基于 Raft Algorithm 的 KV-Server 需要对客户端操作实现幂等，而 Redis 却不需要？” 此前在实现基于 Raft 的容错 Key/Value Service 时，为了能够实现幂等的 &lt;code&gt;Put(key, value)&lt;/code&gt;、&lt;code&gt;Append(key, arg)&lt;/code&gt; 操作，可谓是费尽心思。但同为提供键值服务的 Redis ，怎么从来没见被要求幂等呢？&lt;/p&gt;
-&lt;p&gt;基于这个问题，本篇将整理并总结个人的结论。&lt;/p&gt;</description>
     </item>
     
   </channel>
