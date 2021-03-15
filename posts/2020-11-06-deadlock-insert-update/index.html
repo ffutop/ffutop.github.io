@@ -26,7 +26,7 @@
       "articleSection" : "posts",
       "name" : "MySQL DeadLocks with INSERT",
       "headline" : "MySQL DeadLocks with INSERT",
-      "description" : "\u003cp\u003e首次碰到 INSERT + UPDATE statement 造成的死锁问题，触及了知识盲区，费时做了分析。\u003c/p\u003e\n\u003ch2 id=\"死锁场景描述\"\u003e死锁场景描述\u003c/h2\u003e\n\u003cp\u003e\u003cem\u003e下述所有事务隔离级别为 Read Committed\u003c/em\u003e\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003e1. 简化后的数据库表\u003c/strong\u003e\u003c/p\u003e\n\u003cdiv class=\"highlight\"\u003e\u003cpre style=\"background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\"\u003e\u003ccode class=\"language-sql\" data-lang=\"sql\"\u003e\u003cspan style=\"color:#007020;font-weight:bold\"\u003eCREATE\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eTABLE\u003c/span\u003e \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003euser_address\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e (\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003eid\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003ebigint\u003c/span\u003e(\u003cspan style=\"color:#40a070\"\u003e11\u003c/span\u003e) \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNOT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e AUTO_INCREMENT \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;主键\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003euser_id\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003evarchar\u003c/span\u003e(\u003cspan style=\"color:#40a070\"\u003e40\u003c/span\u003e) \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;\u0026#39;\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;用户主键\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003ecomm_address\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003evarchar\u003c/span\u003e(\u003cspan style=\"color:#40a070\"\u003e1\u003c/span\u003e) \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;常用地址标识\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003eaddress\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003evarchar\u003c/span\u003e(\u003cspan style=\"color:#40a070\"\u003e200\u003c/span\u003e) \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;地址\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003elongitude\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003ebigint\u003c/span\u003e(\u003cspan style=\"color:#40a070\"\u003e20\u003c/span\u003e) \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;经度\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003elatitude\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020\"\u003ebigint\u003c/span\u003e(\u003cspan style=\"color:#40a070\"\u003e20\u003c/span\u003e) \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;纬度\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003ecreate_time\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003etimestamp\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNOT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCURRENT_TIMESTAMP\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;建立时间\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003eupdate_time\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003etimestamp\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNOT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eNULL\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCURRENT_TIMESTAMP\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e \u003cspan style=\"color:#4070a0\"\u003e\u0026#39;更新时间\u0026#39;\u003c/span\u003e,\n    \u003cspan style=\"color:#007020;font-weight:bold\"\u003ePRIMARY\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eKEY\u003c/span\u003e (\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003eid\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e),\n    \u003cspan style=\"color:#007020;font-weight:bold\"\u003eKEY\u003c/span\u003e \u003cspan style=\"color:#666\"\u003e`\u003c/span\u003eidx_user_id\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e (\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003euser_id\u003cspan style=\"color:#666\"\u003e`\u003c/span\u003e)\n) ENGINE\u003cspan style=\"color:#666\"\u003e=\u003c/span\u003eInnoDB AUTO_INCREMENT\u003cspan style=\"color:#666\"\u003e=\u003c/span\u003e\u003cspan style=\"color:#40a070\"\u003e1\u003c/span\u003e \u003cspan style=\"color:#007020;font-weight:bold\"\u003eDEFAULT\u003c/span\u003e CHARSET\u003cspan style=\"color:#666\"\u003e=\u003c/span\u003eutf8 \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOLLATE\u003c/span\u003e\u003cspan style=\"color:#666\"\u003e=\u003c/span\u003eutf8_bin \u003cspan style=\"color:#007020;font-weight:bold\"\u003eCOMMENT\u003c/span\u003e\u003cspan style=\"color:#666\"\u003e=\u003c/span\u003e\u003cspan style=\"color:#4070a0\"\u003e\u0026#39;用户常用地址\u0026#39;\u003c/span\u003e;\n\u003c/code\u003e\u003c/pre\u003e\u003c/div\u003e\u003cp\u003e\u003cstrong\u003e2. 死锁事务时序\u003c/strong\u003e\u003c/p\u003e\n\u003ctable\u003e\n\u003cthead\u003e\n\u003ctr\u003e\n\u003cth\u003e时序\u003c/th\u003e\n\u003cth\u003e事务 1\u003c/th\u003e\n\u003cth\u003e事务 2\u003c/th\u003e\n\u003c/tr\u003e\n\u003c/thead\u003e\n\u003ctbody\u003e\n\u003ctr\u003e\n\u003ctd\u003e1\u003c/td\u003e\n\u003ctd\u003e\u003ccode\u003eSTART TRANSACTION\u003c/code\u003e\u003c/td\u003e\n\u003ctd\u003e\u003c/td\u003e\n\u003c/tr\u003e\n\u003ctr\u003e\n\u003ctd\u003e2\u003c/td\u003e\n\u003ctd\u003e\u003c/td\u003e\n\u003ctd\u003e\u003ccode\u003eSTART TRANSACTION\u003c/code\u003e\u003c/td\u003e\n\u003c/tr\u003e\n\u003ctr\u003e\n\u003ctd\u003e3\u003c/td\u003e\n\u003ctd\u003e\u003ccode\u003eINSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( 'c86d0f931d164fc1b53162355cf39fb4', '浙江省 杭州市 余杭区 五常街道 XXX', 121000000, 31000000, NOW(), NOW());\u003c/code\u003e\u003c/td\u003e\n\u003ctd\u003e\u003c/td\u003e\n\u003c/tr\u003e\n\u003ctr\u003e\n\u003ctd\u003e4\u003c/td\u003e\n\u003ctd\u003e\u003c/td\u003e\n\u003ctd\u003e\u003ccode\u003eINSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( 'c86d0f931d164fc1b53162355cf39fb4', '浙江省 杭州市 余杭区 五常街道 XXX', 121000000, 31000000, NOW(), NOW());\u003c/code\u003e\u003c/td\u003e\n\u003c/tr\u003e\n\u003ctr\u003e\n\u003ctd\u003e5\u003c/td\u003e\n\u003ctd\u003e\u003ccode\u003eUPDATE user_address SET comm_address = '0' WHERE user_id = 'c86d0f931d164fc1b53162355cf39fb4';\u003c/code\u003e\u003c/td\u003e\n\u003ctd\u003e\u003c/td\u003e\n\u003c/tr\u003e\n\u003ctr\u003e\n\u003ctd\u003e6\u003c/td\u003e\n\u003ctd\u003e\u003c/td\u003e\n\u003ctd\u003e\u003ccode\u003eUPDATE user_address SET comm_address = '0' WHERE user_id = 'c86d0f931d164fc1b53162355cf39fb4';\u003c/code\u003e\u003c/td\u003e\n\u003c/tr\u003e\n\u003c/tbody\u003e\n\u003c/table\u003e\n\u003cp\u003e\u003cstrong\u003e3. INNODB Monitor Output\u003c/strong\u003e\u003c/p\u003e\n\u003cdiv class=\"highlight\"\u003e\u003cpre style=\"background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4\"\u003e\u003ccode class=\"language-plain\" data-lang=\"plain\"\u003e------------------------\n\nLATEST DETECTED DEADLOCK\n\n------------------------\n\n2020-11-03 08:25:25 0x7f2801e1d700\n\n*** (1) TRANSACTION:\n\nTRANSACTION 13335216894, ACTIVE 0 sec fetching rows\n\nmysql tables in use 1, locked 1\n\nLOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1\n\nMySQL thread id 680655, OS thread handle 139810239182592, query id 120901872537 10.1.X.YYY mask_user updating\n\nUPDATE `user_address` SET\n\n\t\t`comm_address` = \u0026#39;0\u0026#39;\n\n\t\tWHERE `user_id` = \u0026#39;c760c70e42924b869beee418d3b30165\u0026#39;\n\n*** (1) WAITING FOR THIS LOCK TO BE GRANTED:\n\nRECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216894 lock_mode X locks rec but not gap waiting\n\nRecord lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0\n\n 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;\n\n 1: len 4; hex 803c4394; asc  \u0026lt;C ;;\n\n\n\n*** (2) TRANSACTION:\n\nTRANSACTION 13335216895, ACTIVE 0 sec starting index read, thread declared inside InnoDB 5000\n\nmysql tables in use 1, locked 1\n\n3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1\n\nMySQL thread id 672593, OS thread handle 139809806997248, query id 120901872539 10.1.X.YYY mask_user updating\n\nUPDATE `user_address` SET\n\n\t\t`comm_address` = \u0026#39;0\u0026#39;\n\n\t\tWHERE `user_id` = \u0026#39;c760c70e42924b869beee418d3b30165\u0026#39;\n\n*** (2) HOLDS THE LOCK(S):\n\nRECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap\n\nRecord lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0\n\n 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;\n\n 1: len 4; hex 803c4394; asc  \u0026lt;C ;;\n\n\n\n*** (2) WAITING FOR THIS LOCK TO BE GRANTED:\n\nRECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap waiting\n\nRecord lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 0\n\n 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;\n\n 1: len 4; hex 803c4393; asc  \u0026lt;C ;;\n\n\n\n*** WE ROLL BACK TRANSACTION (2)\n\u003c/code\u003e\u003c/pre\u003e\u003c/div\u003e",
+      "description" : "首次碰到 INSERT \x2b UPDATE statement 造成的死锁问题，触及了知识盲区，费时做了分析。\n死锁场景描述 下述所有事务隔离级别为 Read Committed\n1. 简化后的数据库表\nCREATE TABLE `user_address` ( `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT \x26#39;主键\x26#39;, `user_id` varchar(40) DEFAULT \x26#39;\x26#39; COMMENT \x26#39;用户主键\x26#39;, `comm_address` varchar(1) DEFAULT NULL COMMENT \x26#39;常用地址标识\x26#39;, `address` varchar(200) DEFAULT NULL COMMENT \x26#39;地址\x26#39;, `longitude` bigint(20) DEFAULT NULL COMMENT \x26#39;经度\x26#39;, `latitude` bigint(20) DEFAULT NULL COMMENT \x26#39;纬度\x26#39;, `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT \x26#39;建立时间\x26#39;, `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT \x26#39;更新时间\x26#39;, PRIMARY KEY (`id`), KEY `idx_user_id` (`user_id`) ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT=\x26#39;用户常用地址\x26#39;; 2. 死锁事务时序\n   时序 事务 1 事务 2     1 START TRANSACTION    2  START TRANSACTION   3 INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( \x27c86d0f931d164fc1b53162355cf39fb4\x27, \x27浙江省 杭州市 余杭区 五常街道 XXX\x27, 121000000, 31000000, NOW(), NOW());    4  INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( \x27c86d0f931d164fc1b53162355cf39fb4\x27, \x27浙江省 杭州市 余杭区 五常街道 XXX\x27, 121000000, 31000000, NOW(), NOW());   5 UPDATE user_address SET comm_address = \x270\x27 WHERE user_id = \x27c86d0f931d164fc1b53162355cf39fb4\x27;    6  UPDATE user_address SET comm_address = \x270\x27 WHERE user_id = \x27c86d0f931d164fc1b53162355cf39fb4\x27;    3. INNODB Monitor Output\n------------------------ LATEST DETECTED DEADLOCK ------------------------ 2020-11-03 08:25:25 0x7f2801e1d700 *** (1) TRANSACTION: TRANSACTION 13335216894, ACTIVE 0 sec fetching rows mysql tables in use 1, locked 1 LOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1 MySQL thread id 680655, OS thread handle 139810239182592, query id 120901872537 10.1.X.YYY mask_user updating UPDATE `user_address` SET `comm_address` = \x26#39;0\x26#39; WHERE `user_id` = \x26#39;c760c70e42924b869beee418d3b30165\x26#39; *** (1) WAITING FOR THIS LOCK TO BE GRANTED: RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216894 lock_mode X locks rec but not gap waiting Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;; 1: len 4; hex 803c4394; asc \x26lt;C ;; *** (2) TRANSACTION: TRANSACTION 13335216895, ACTIVE 0 sec starting index read, thread declared inside InnoDB 5000 mysql tables in use 1, locked 1 3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1 MySQL thread id 672593, OS thread handle 139809806997248, query id 120901872539 10.1.X.YYY mask_user updating UPDATE `user_address` SET `comm_address` = \x26#39;0\x26#39; WHERE `user_id` = \x26#39;c760c70e42924b869beee418d3b30165\x26#39; *** (2) HOLDS THE LOCK(S): RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;; 1: len 4; hex 803c4394; asc \x26lt;C ;; *** (2) WAITING FOR THIS LOCK TO BE GRANTED: RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap waiting Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 0 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;; 1: len 4; hex 803c4393; asc \x26lt;C ;; *** WE ROLL BACK TRANSACTION (2) ",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -44,290 +44,33 @@
   <meta property="og:title" content="MySQL DeadLocks with INSERT" />
   <meta property="og:type" content="article" />
   <meta property="og:description" content="首次碰到 INSERT &#43; UPDATE statement 造成的死锁问题，触及了知识盲区，费时做了分析。
-死锁场景描述
-下述所有事务隔离级别为 Read Committed
+死锁场景描述 下述所有事务隔离级别为 Read Committed
 1. 简化后的数据库表
-CREATE TABLE `user_address` (
-    `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT &#39;主键&#39;,
-    `user_id` varchar(40) DEFAULT &#39;&#39; COMMENT &#39;用户主键&#39;,
-    `comm_address` varchar(1) DEFAULT NULL COMMENT &#39;常用地址标识&#39;,
-    `address` varchar(200) DEFAULT NULL COMMENT &#39;地址&#39;,
-    `longitude` bigint(20) DEFAULT NULL COMMENT &#39;经度&#39;,
-    `latitude` bigint(20) DEFAULT NULL COMMENT &#39;纬度&#39;,
-    `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;建立时间&#39;,
-    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;更新时间&#39;,
-    PRIMARY KEY (`id`),
-    KEY `idx_user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT=&#39;用户常用地址&#39;;
-2. 死锁事务时序
-
-
-
-时序
-事务 1
-事务 2
-
-
-
-
-1
-START TRANSACTION
-
-
-
-2
-
-START TRANSACTION
-
-
-3
-INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());
-
-
-
-4
-
-INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());
-
-
-5
-UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;
-
-
-
-6
-
-UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;
-
-
-
-3. INNODB Monitor Output
-------------------------
-
-LATEST DETECTED DEADLOCK
-
-------------------------
-
-2020-11-03 08:25:25 0x7f2801e1d700
-
-*** (1) TRANSACTION:
-
-TRANSACTION 13335216894, ACTIVE 0 sec fetching rows
-
-mysql tables in use 1, locked 1
-
-LOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1
-
-MySQL thread id 680655, OS thread handle 139810239182592, query id 120901872537 10.1.X.YYY mask_user updating
-
-UPDATE `user_address` SET
-
-		`comm_address` = &#39;0&#39;
-
-		WHERE `user_id` = &#39;c760c70e42924b869beee418d3b30165&#39;
-
-*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
-
-RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216894 lock_mode X locks rec but not gap waiting
-
-Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
-
- 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
-
- 1: len 4; hex 803c4394; asc  &lt;C ;;
-
-
-
-*** (2) TRANSACTION:
-
-TRANSACTION 13335216895, ACTIVE 0 sec starting index read, thread declared inside InnoDB 5000
-
-mysql tables in use 1, locked 1
-
-3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
-
-MySQL thread id 672593, OS thread handle 139809806997248, query id 120901872539 10.1.X.YYY mask_user updating
-
-UPDATE `user_address` SET
-
-		`comm_address` = &#39;0&#39;
-
-		WHERE `user_id` = &#39;c760c70e42924b869beee418d3b30165&#39;
-
-*** (2) HOLDS THE LOCK(S):
-
-RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap
-
-Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
-
- 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
-
- 1: len 4; hex 803c4394; asc  &lt;C ;;
-
-
-
-*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
-
-RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap waiting
-
-Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
-
- 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
-
- 1: len 4; hex 803c4393; asc  &lt;C ;;
-
-
-
-*** WE ROLL BACK TRANSACTION (2)
-" />
+CREATE TABLE `user_address` ( `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT &amp;#39;主键&amp;#39;, `user_id` varchar(40) DEFAULT &amp;#39;&amp;#39; COMMENT &amp;#39;用户主键&amp;#39;, `comm_address` varchar(1) DEFAULT NULL COMMENT &amp;#39;常用地址标识&amp;#39;, `address` varchar(200) DEFAULT NULL COMMENT &amp;#39;地址&amp;#39;, `longitude` bigint(20) DEFAULT NULL COMMENT &amp;#39;经度&amp;#39;, `latitude` bigint(20) DEFAULT NULL COMMENT &amp;#39;纬度&amp;#39;, `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &amp;#39;建立时间&amp;#39;, `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &amp;#39;更新时间&amp;#39;, PRIMARY KEY (`id`), KEY `idx_user_id` (`user_id`) ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT=&amp;#39;用户常用地址&amp;#39;; 2. 死锁事务时序
+   时序 事务 1 事务 2     1 START TRANSACTION    2  START TRANSACTION   3 INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());    4  INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());   5 UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;    6  UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;    3. INNODB Monitor Output
+------------------------ LATEST DETECTED DEADLOCK ------------------------ 2020-11-03 08:25:25 0x7f2801e1d700 *** (1) TRANSACTION: TRANSACTION 13335216894, ACTIVE 0 sec fetching rows mysql tables in use 1, locked 1 LOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1 MySQL thread id 680655, OS thread handle 139810239182592, query id 120901872537 10.1.X.YYY mask_user updating UPDATE `user_address` SET `comm_address` = &amp;#39;0&amp;#39; WHERE `user_id` = &amp;#39;c760c70e42924b869beee418d3b30165&amp;#39; *** (1) WAITING FOR THIS LOCK TO BE GRANTED: RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216894 lock_mode X locks rec but not gap waiting Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;; 1: len 4; hex 803c4394; asc &amp;lt;C ;; *** (2) TRANSACTION: TRANSACTION 13335216895, ACTIVE 0 sec starting index read, thread declared inside InnoDB 5000 mysql tables in use 1, locked 1 3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1 MySQL thread id 672593, OS thread handle 139809806997248, query id 120901872539 10.1.X.YYY mask_user updating UPDATE `user_address` SET `comm_address` = &amp;#39;0&amp;#39; WHERE `user_id` = &amp;#39;c760c70e42924b869beee418d3b30165&amp;#39; *** (2) HOLDS THE LOCK(S): RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;; 1: len 4; hex 803c4394; asc &amp;lt;C ;; *** (2) WAITING FOR THIS LOCK TO BE GRANTED: RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap waiting Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 0 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;; 1: len 4; hex 803c4393; asc &amp;lt;C ;; *** WE ROLL BACK TRANSACTION (2) " />
   <meta name="description" content="首次碰到 INSERT &#43; UPDATE statement 造成的死锁问题，触及了知识盲区，费时做了分析。
-死锁场景描述
-下述所有事务隔离级别为 Read Committed
+死锁场景描述 下述所有事务隔离级别为 Read Committed
 1. 简化后的数据库表
-CREATE TABLE `user_address` (
-    `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT &#39;主键&#39;,
-    `user_id` varchar(40) DEFAULT &#39;&#39; COMMENT &#39;用户主键&#39;,
-    `comm_address` varchar(1) DEFAULT NULL COMMENT &#39;常用地址标识&#39;,
-    `address` varchar(200) DEFAULT NULL COMMENT &#39;地址&#39;,
-    `longitude` bigint(20) DEFAULT NULL COMMENT &#39;经度&#39;,
-    `latitude` bigint(20) DEFAULT NULL COMMENT &#39;纬度&#39;,
-    `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;建立时间&#39;,
-    `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &#39;更新时间&#39;,
-    PRIMARY KEY (`id`),
-    KEY `idx_user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT=&#39;用户常用地址&#39;;
-2. 死锁事务时序
-
-
-
-时序
-事务 1
-事务 2
-
-
-
-
-1
-START TRANSACTION
-
-
-
-2
-
-START TRANSACTION
-
-
-3
-INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());
-
-
-
-4
-
-INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());
-
-
-5
-UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;
-
-
-
-6
-
-UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;
-
-
-
-3. INNODB Monitor Output
-------------------------
-
-LATEST DETECTED DEADLOCK
-
-------------------------
-
-2020-11-03 08:25:25 0x7f2801e1d700
-
-*** (1) TRANSACTION:
-
-TRANSACTION 13335216894, ACTIVE 0 sec fetching rows
-
-mysql tables in use 1, locked 1
-
-LOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1
-
-MySQL thread id 680655, OS thread handle 139810239182592, query id 120901872537 10.1.X.YYY mask_user updating
-
-UPDATE `user_address` SET
-
-		`comm_address` = &#39;0&#39;
-
-		WHERE `user_id` = &#39;c760c70e42924b869beee418d3b30165&#39;
-
-*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
-
-RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216894 lock_mode X locks rec but not gap waiting
-
-Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
-
- 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
-
- 1: len 4; hex 803c4394; asc  &lt;C ;;
-
-
-
-*** (2) TRANSACTION:
-
-TRANSACTION 13335216895, ACTIVE 0 sec starting index read, thread declared inside InnoDB 5000
-
-mysql tables in use 1, locked 1
-
-3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
-
-MySQL thread id 672593, OS thread handle 139809806997248, query id 120901872539 10.1.X.YYY mask_user updating
-
-UPDATE `user_address` SET
-
-		`comm_address` = &#39;0&#39;
-
-		WHERE `user_id` = &#39;c760c70e42924b869beee418d3b30165&#39;
-
-*** (2) HOLDS THE LOCK(S):
-
-RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap
-
-Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
-
- 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
-
- 1: len 4; hex 803c4394; asc  &lt;C ;;
-
-
-
-*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
-
-RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap waiting
-
-Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
-
- 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
-
- 1: len 4; hex 803c4393; asc  &lt;C ;;
-
-
-
-*** WE ROLL BACK TRANSACTION (2)
-" />
+CREATE TABLE `user_address` ( `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT &amp;#39;主键&amp;#39;, `user_id` varchar(40) DEFAULT &amp;#39;&amp;#39; COMMENT &amp;#39;用户主键&amp;#39;, `comm_address` varchar(1) DEFAULT NULL COMMENT &amp;#39;常用地址标识&amp;#39;, `address` varchar(200) DEFAULT NULL COMMENT &amp;#39;地址&amp;#39;, `longitude` bigint(20) DEFAULT NULL COMMENT &amp;#39;经度&amp;#39;, `latitude` bigint(20) DEFAULT NULL COMMENT &amp;#39;纬度&amp;#39;, `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &amp;#39;建立时间&amp;#39;, `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT &amp;#39;更新时间&amp;#39;, PRIMARY KEY (`id`), KEY `idx_user_id` (`user_id`) ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT=&amp;#39;用户常用地址&amp;#39;; 2. 死锁事务时序
+   时序 事务 1 事务 2     1 START TRANSACTION    2  START TRANSACTION   3 INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());    4  INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( &#39;c86d0f931d164fc1b53162355cf39fb4&#39;, &#39;浙江省 杭州市 余杭区 五常街道 XXX&#39;, 121000000, 31000000, NOW(), NOW());   5 UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;    6  UPDATE user_address SET comm_address = &#39;0&#39; WHERE user_id = &#39;c86d0f931d164fc1b53162355cf39fb4&#39;;    3. INNODB Monitor Output
+------------------------ LATEST DETECTED DEADLOCK ------------------------ 2020-11-03 08:25:25 0x7f2801e1d700 *** (1) TRANSACTION: TRANSACTION 13335216894, ACTIVE 0 sec fetching rows mysql tables in use 1, locked 1 LOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1 MySQL thread id 680655, OS thread handle 139810239182592, query id 120901872537 10.1.X.YYY mask_user updating UPDATE `user_address` SET `comm_address` = &amp;#39;0&amp;#39; WHERE `user_id` = &amp;#39;c760c70e42924b869beee418d3b30165&amp;#39; *** (1) WAITING FOR THIS LOCK TO BE GRANTED: RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216894 lock_mode X locks rec but not gap waiting Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;; 1: len 4; hex 803c4394; asc &amp;lt;C ;; *** (2) TRANSACTION: TRANSACTION 13335216895, ACTIVE 0 sec starting index read, thread declared inside InnoDB 5000 mysql tables in use 1, locked 1 3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1 MySQL thread id 672593, OS thread handle 139809806997248, query id 120901872539 10.1.X.YYY mask_user updating UPDATE `user_address` SET `comm_address` = &amp;#39;0&amp;#39; WHERE `user_id` = &amp;#39;c760c70e42924b869beee418d3b30165&amp;#39; *** (2) HOLDS THE LOCK(S): RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;; 1: len 4; hex 803c4394; asc &amp;lt;C ;; *** (2) WAITING FOR THIS LOCK TO BE GRANTED: RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap waiting Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 0 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;; 1: len 4; hex 803c4393; asc &amp;lt;C ;; *** WE ROLL BACK TRANSACTION (2) " />
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
-  <link rel="stylesheet" href="/css/flexboxgrid-6.3.1.min.css" />
-  <link rel="stylesheet" href="/css/index.css">
+  
+    <style>body{font-family:bree serif,sans-serif;-webkit-font-smoothing:antialiased;margin:0 20px}article{max-width:800px;margin-left:auto;margin-right:auto}a{color:#000;text-decoration:none}a:hover{font-weight:600;text-decoration:underline}.post-ads{margin:50px 0}.markdown-body{font-size:18px;max-width:100%}.markdown-body a{text-decoration:underline;text-decoration-color:#000}.markdown-body pre{padding:16px;overflow:auto;border-radius:10px}.markdown-body code{padding:.2em .4em;font-size:85%;background-color:#f6f8fa;border-radius:6px}.markdown-body pre>code{padding:0;font-size:100%;background-color:inherit;border:0}.Chinese .markdown-body{line-height:200%}.site-date-catalog{font-size:2rem}.header-title{font-size:2rem;font-weight:700;margin-top:32px;font-family:permanent marker,Impact,Charcoal,sans-serif}.header-title a{text-decoration:none}.header-subtitle{color:#666}.header-items{margin:10px 0}.header-item{margin:0 5px}.header-line{width:100%;border-width:2px;border-color:#482936;border-style:solid none none none}.lang-switch{font-weight:600}#posts-list{min-height:600px}.posts-line{font-size:1.2rem;margin:12px 0}.posts-categories{font-size:.8rem;margin:auto;text-align:center}.posts-category{padding:3px 0;border:#000 2px solid;border-radius:5px}.site-footer{margin-top:50px}.site-footer-item{margin-right:12px}.post-content img{max-width:100%;display:block;margin-left:auto;margin-right:auto;margin-top:12px}.post-header{margin-bottom:50px}.post-title{font-size:2rem;font-weight:600}.post-category{display:inline;font-weight:600;padding:2px 5px;border:#000 2px solid;border-radius:5px}.post-date{font-weight:800;font-style:italic}.post-author{float:right;font-weight:600}.page-content{min-height:60%}.post-content{margin-bottom:50px}.post-content p{hyphens:auto;line-height:1.8;text-justify:ideographic;margin-bottom:1em}.related-content{border-width:3px;border-style:solid;border-color:#000;padding:0 10px;margin-bottom:50px;margin-top:100px}.related-content li{margin:5px 0}.summary-read-more{color:#000}.summary-read-more:hover{color:#000}.pagination-prev{text-align:left;font-weight:700}.pagination-next{text-align:right;font-weight:700}.taxonomy-term{font-size:3rem}.gallery-img{text-align:center}.gallery-img span{text-align:center}.gallery-img-desc{font-size:.8em;font-weight:800}#disqus_thread{position:relative}#disqus_thread:after{content:"";display:block;height:55px;width:100%;position:absolute;bottom:0;background:#fff}@media screen and (max-width:600px){.header-title,.header-subtitle,.header-items{text-align:center}.posts-line{font-size:16px}.markdown-body{font-size:16px}.post-title{font-size:2rem}.post-content p{letter-spacing:.05em}}@media screen and (max-width:48em){.posts-category{display:none}}</style>
+  
+  
+    <style>.container,.container-fluid{margin-right:auto;margin-left:auto}.container-fluid{padding-right:2rem;padding-left:2rem}.row{box-sizing:border-box;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:0;-ms-flex:0 1 auto;flex:0 1 auto;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-.5rem;margin-left:-.5rem}.row.reverse{-webkit-box-orient:horizontal;-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse}.col.reverse{-webkit-box-orient:vertical;-webkit-box-direction:reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse}.col-xs,.col-xs-1,.col-xs-10,.col-xs-11,.col-xs-12,.col-xs-2,.col-xs-3,.col-xs-4,.col-xs-5,.col-xs-6,.col-xs-7,.col-xs-8,.col-xs-9,.col-xs-offset-0,.col-xs-offset-1,.col-xs-offset-10,.col-xs-offset-11,.col-xs-offset-12,.col-xs-offset-2,.col-xs-offset-3,.col-xs-offset-4,.col-xs-offset-5,.col-xs-offset-6,.col-xs-offset-7,.col-xs-offset-8,.col-xs-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:0 0 auto;padding-right:.5rem;padding-left:.5rem}.col-xs{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-xs-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-xs-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-xs-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-xs-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-xs-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-xs-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-xs-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-xs-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-xs-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-xs-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-xs-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-xs-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-xs-offset-0{margin-left:0}.col-xs-offset-1{margin-left:8.33333333%}.col-xs-offset-2{margin-left:16.66666667%}.col-xs-offset-3{margin-left:25%}.col-xs-offset-4{margin-left:33.33333333%}.col-xs-offset-5{margin-left:41.66666667%}.col-xs-offset-6{margin-left:50%}.col-xs-offset-7{margin-left:58.33333333%}.col-xs-offset-8{margin-left:66.66666667%}.col-xs-offset-9{margin-left:75%}.col-xs-offset-10{margin-left:83.33333333%}.col-xs-offset-11{margin-left:91.66666667%}.start-xs{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-xs{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-xs{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-xs{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-xs{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-xs{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-xs{-ms-flex-pack:distribute;justify-content:space-around}.between-xs{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-xs{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-xs{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}@media only screen and (min-width:48em){.container{width:49rem}.col-sm,.col-sm-1,.col-sm-10,.col-sm-11,.col-sm-12,.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9,.col-sm-offset-0,.col-sm-offset-1,.col-sm-offset-10,.col-sm-offset-11,.col-sm-offset-12,.col-sm-offset-2,.col-sm-offset-3,.col-sm-offset-4,.col-sm-offset-5,.col-sm-offset-6,.col-sm-offset-7,.col-sm-offset-8,.col-sm-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:0 0 auto;padding-right:.5rem;padding-left:.5rem}.col-sm{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-sm-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-sm-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-sm-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-sm-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-sm-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-sm-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-sm-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-sm-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-sm-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-sm-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-sm-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-sm-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-sm-offset-0{margin-left:0}.col-sm-offset-1{margin-left:8.33333333%}.col-sm-offset-2{margin-left:16.66666667%}.col-sm-offset-3{margin-left:25%}.col-sm-offset-4{margin-left:33.33333333%}.col-sm-offset-5{margin-left:41.66666667%}.col-sm-offset-6{margin-left:50%}.col-sm-offset-7{margin-left:58.33333333%}.col-sm-offset-8{margin-left:66.66666667%}.col-sm-offset-9{margin-left:75%}.col-sm-offset-10{margin-left:83.33333333%}.col-sm-offset-11{margin-left:91.66666667%}.start-sm{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-sm{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-sm{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-sm{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-sm{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-sm{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-sm{-ms-flex-pack:distribute;justify-content:space-around}.between-sm{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-sm{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-sm{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:64em){.container{width:65rem}.col-md,.col-md-1,.col-md-10,.col-md-11,.col-md-12,.col-md-2,.col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-offset-0,.col-md-offset-1,.col-md-offset-10,.col-md-offset-11,.col-md-offset-12,.col-md-offset-2,.col-md-offset-3,.col-md-offset-4,.col-md-offset-5,.col-md-offset-6,.col-md-offset-7,.col-md-offset-8,.col-md-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:0 0 auto;padding-right:.5rem;padding-left:.5rem}.col-md{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-md-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-md-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-md-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-md-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-md-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-md-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-md-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-md-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-md-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-md-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-md-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-md-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-md-offset-0{margin-left:0}.col-md-offset-1{margin-left:8.33333333%}.col-md-offset-2{margin-left:16.66666667%}.col-md-offset-3{margin-left:25%}.col-md-offset-4{margin-left:33.33333333%}.col-md-offset-5{margin-left:41.66666667%}.col-md-offset-6{margin-left:50%}.col-md-offset-7{margin-left:58.33333333%}.col-md-offset-8{margin-left:66.66666667%}.col-md-offset-9{margin-left:75%}.col-md-offset-10{margin-left:83.33333333%}.col-md-offset-11{margin-left:91.66666667%}.start-md{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-md{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-md{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-md{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-md{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-md{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-md{-ms-flex-pack:distribute;justify-content:space-around}.between-md{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-md{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-md{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:75em){.container{width:76rem}.col-lg,.col-lg-1,.col-lg-10,.col-lg-11,.col-lg-12,.col-lg-2,.col-lg-3,.col-lg-4,.col-lg-5,.col-lg-6,.col-lg-7,.col-lg-8,.col-lg-9,.col-lg-offset-0,.col-lg-offset-1,.col-lg-offset-10,.col-lg-offset-11,.col-lg-offset-12,.col-lg-offset-2,.col-lg-offset-3,.col-lg-offset-4,.col-lg-offset-5,.col-lg-offset-6,.col-lg-offset-7,.col-lg-offset-8,.col-lg-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:0 0 auto;padding-right:.5rem;padding-left:.5rem}.col-lg{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-lg-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-lg-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-lg-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-lg-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-lg-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-lg-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-lg-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-lg-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-lg-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-lg-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-lg-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-lg-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-lg-offset-0{margin-left:0}.col-lg-offset-1{margin-left:8.33333333%}.col-lg-offset-2{margin-left:16.66666667%}.col-lg-offset-3{margin-left:25%}.col-lg-offset-4{margin-left:33.33333333%}.col-lg-offset-5{margin-left:41.66666667%}.col-lg-offset-6{margin-left:50%}.col-lg-offset-7{margin-left:58.33333333%}.col-lg-offset-8{margin-left:66.66666667%}.col-lg-offset-9{margin-left:75%}.col-lg-offset-10{margin-left:83.33333333%}.col-lg-offset-11{margin-left:91.66666667%}.start-lg{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-lg{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-lg{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-lg{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-lg{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-lg{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-lg{-ms-flex-pack:distribute;justify-content:space-around}.between-lg{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-lg{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-lg{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}</style>
+  
 
   
 
   <link href="/index.xml" rel="alternate" type="application/rss+xml"
     title="Utop&#39;s Blog">
   
-  <link href="https://fonts.googleapis.com/css?family=Arvo|Permanent+Marker|Bree+Serif" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css?family=Bree+Serif|Bungee+Shade" rel="stylesheet">
   
   
 
@@ -345,13 +88,34 @@ Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 
         <div class="site-header">
           
 <header>
-  <div class="signatures site-title">
-    <a href="/">FFUTOP</a>
+  <div class="header-title">
+    <a href="/"
+      >FFUTOP</a
+    >
   </div>
+  <div class="header-subtitle"></div>
 </header>
+<div class="row end-md center-xs header-items">
+  
+  <div class="header-item">
+    <a href="/posts/" target="_blank">Posts</a>
+  </div>
+  
+  <div class="header-item">
+    <a href="/index.xml" target="_blank">RSS</a>
+  </div>
+  
+  <div class="header-item">
+    <a href="https://github.com/ffutop" target="_blank">Github</a>
+  </div>
+  
+  <div class="header-item">
+    <a href="/about/" target="_blank">About</a>
+  </div>
+  
+</div>
 <div class="row end-xs">
-  
-  
+   
 </div>
 <div class="header-line"></div>
 
@@ -605,16 +369,16 @@ Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 
             
           </div>
         </div>
-        <div class="row">
-          <div class="col-xs-12">
-            
+        
+          <div class="row">
+            <div class="col-xs-12">
+              
+            </div>
           </div>
-        </div>
 
-        
-        
+          
 
-<div class="releated-content">
+<div class="related-content">
   <h3>Related Posts</h3>
   <ul>
     
@@ -623,12 +387,14 @@ Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 
   </ul>
 </div>
 
-        
-        
-        <div style="height: 50px;"></div>
-        
-        <div class="post-comments">
-          <div id="disqus_thread"></div>
+
+
+          
+          
+          <div style="height: 50px;"></div>
+          
+          <div class="post-comments">
+            <div id="disqus_thread"></div>
 <script>
   window.addEventListener("load", () => {
     (function() {
@@ -648,29 +414,11 @@ Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 
   ></noscript
 >
 
-        </div>
-        
+          </div>
+          
         
 
         <div class="site-footer">
-  
-  <div class="site-footer-item">
-    <a href="/posts/" target="_blank">Posts</a>
-  </div>
-  
-  <div class="site-footer-item">
-    <a href="/index.xml" target="_blank">RSS</a>
-  </div>
-  
-  <div class="site-footer-item">
-    <a href="https://github.com/ffutop" target="_blank">Github</a>
-  </div>
-  
-  <div class="site-footer-item">
-    <a href="/about/" target="_blank">About</a>
-  </div>
-   
-  
   
 </div>
 
@@ -678,12 +426,9 @@ Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 
     </div>
   </article>
 
-  <script src="/js/highlight.pack.js"></script>
-
+  
 
 <script>
-  hljs.initHighlightingOnLoad();
-  
   
   
     
