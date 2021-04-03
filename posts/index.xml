@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Utop&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cmn-Hans-CN</language>
-    <lastBuildDate>Mon, 15 Mar 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 03 Apr 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://www.ffutop.com/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>NGINX 的 DNS 缓存</title>
+      <link>https://www.ffutop.com/posts/2021-04-03-nginx-dns-cache/</link>
+      <pubDate>Sat, 03 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.ffutop.com/posts/2021-04-03-nginx-dns-cache/</guid>
+      <description>NGINX 作为常用的反向代理软件，普遍适用于对外统一暴露各种内部服务等常见。在使用过程中，常使用内网 IP 直接声明需要反向代理的服务。 恰恰因为常规的使用</description>
+    </item>
     
     <item>
       <title>时间(Timestamp)、日历(Calendar)与夏令时</title>
@@ -290,24 +299,6 @@ java.lang.IllegalArgumentException: Invalid character found in the request targe
 &lt;code&gt;&amp;lt;scheme&amp;gt;://&amp;lt;authority&amp;gt;&amp;lt;path&amp;gt;?&amp;lt;query&amp;gt;&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;此前对 URI、URL 的定义一知半解，网上充斥着大量文档试图描述 URI、URL、URN 的区别。其中一种经典的观点是：URI 是 URN、URL 的超集。其中 URN 被用来描述资源的名称(身份ID)，而 URL 被用来描述查找该资源的方法。这个表述确实没有问题，但对于理解 URx 无法提供切实的帮助。最近阅读了 &lt;a href=&#34;https://tools.ietf.org/html/rfc3305&#34;&gt;RFC 3305&lt;/a&gt;、&lt;a href=&#34;https://tools.ietf.org/html/rfc3986&#34;&gt;RFC 3986&lt;/a&gt;、&lt;a href=&#34;https://tools.ietf.org/html/rfc7595&#34;&gt;RFC 7595&lt;/a&gt; 等资料，本文将聊聊个人对 URI 的见解，以及借此回顾此前参与的公司权限系统的设计。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>HTTP Large Header Fields Problem</title>
-      <link>https://www.ffutop.com/posts/2020-04-11-large-http-header/</link>
-      <pubDate>Sat, 11 Apr 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.ffutop.com/posts/2020-04-11-large-http-header/</guid>
-      <description>&lt;p&gt;&lt;em&gt;首次遇到请求头过大的问题，做个记录。特别是在本次处理陷入了误区，做了太多无谓的猜测&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;请求头过大导致响应错误码 400 (Bad Request)、414 (URI Too Long)、431 (Request Header Fields Too Large) 的情况不多，不过原因和解决方案都是比较清晰的。客户端请求的请求头过大导致超出了服务器支持的缓冲区。如果客户端可控，控制请求头的大小；否则，适当调大服务器配置的缓冲区大小。&lt;/p&gt;
-&lt;p&gt;最近生产上碰到了这个问题，颇费了一番功夫。接手问题时得到了几个错误的信息，干扰到了处理的全过程。甚至为此去重读了 NGINX Directive &lt;code&gt;client_header_buffer_size&lt;/code&gt; 和 &lt;code&gt;large_client_header_buffers&lt;/code&gt; 在 1.8.1 版本的实现。&lt;/p&gt;
-&lt;p&gt;最原始的问题是：NGINX 接收到了大请求头(4.5k)的请求，最终响应了错误码 400 Bad Request 。&lt;/p&gt;
-&lt;p&gt;真实的背景因素包括：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;请求链路 NGINX -&amp;gt; k8s nginx ingress -&amp;gt; k8s pods (Tomcat)&lt;/li&gt;
-&lt;li&gt;NGINX &lt;code&gt;large_client_header_buffers&lt;/code&gt; 使用了默认配置 &lt;code&gt;4 8k&lt;/code&gt;。&lt;/li&gt;
-&lt;li&gt;Tomcat maxHttpHeaderSize 使用了默认配置 (default 8192)&lt;/li&gt;
-&lt;/ul&gt;</description>
     </item>
     
   </channel>

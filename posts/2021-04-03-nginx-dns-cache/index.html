@@ -10,8 +10,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="author" content="ffutop" />
-  <meta property="og:url" content="https://www.ffutop.com/posts/" />
-  <link rel="canonical" href="https://www.ffutop.com/posts/" /><link rel="apple-touch-icon" href="favicon.ico" />
+  <meta property="og:url" content="https://www.ffutop.com/posts/2021-04-03-nginx-dns-cache/" />
+  <link rel="canonical" href="https://www.ffutop.com/posts/2021-04-03-nginx-dns-cache/" /><link rel="apple-touch-icon" href="favicon.ico" />
   <link rel="icon" href="favicon.ico" />
   <link rel="shortcut" href="favicon.ico" /><link rel="alternate" type="application/atom+xml" href="https://www.ffutop.com/index.xml" title="Utop&#39;s Blog">
 
@@ -24,9 +24,9 @@
            "@id": "https://www.ffutop.com/"
       },
       "articleSection" : "posts",
-      "name" : "Posts",
-      "headline" : "Posts",
-      "description" : "",
+      "name" : "NGINX 的 DNS 缓存",
+      "headline" : "NGINX 的 DNS 缓存",
+      "description" : "NGINX 作为常用的反向代理软件，普遍适用于对外统一暴露各种内部服务等常见。在使用过程中，常使用内网 IP 直接声明需要反向代理的服务。 恰恰因为常规的使用",
       "inLanguage" : "zh-cmn-Hans-CN",
       "author" : "ffutop",
       "creator" : "ffutop",
@@ -36,15 +36,15 @@
       "copyrightYear" : "2021",
       "datePublished": "2021-04-03T00:00:00Z",
       "dateModified" : "2021-04-03T00:00:00Z",
-      "url" : "https://www.ffutop.com/posts/",
-      "keywords" : [  ]
+      "url" : "https://www.ffutop.com/posts/2021-04-03-nginx-dns-cache/",
+      "keywords" : [ "Nginx","DNS","Cache","TTL", ]
   }
 </script>
-<title>Posts</title>
-  <meta property="og:title" content="Posts" />
+<title>NGINX 的 DNS 缓存</title>
+  <meta property="og:title" content="NGINX 的 DNS 缓存" />
   <meta property="og:type" content="article" />
-  <meta property="og:description" content="" />
-  <meta name="description" content="" />
+  <meta property="og:description" content="NGINX 作为常用的反向代理软件，普遍适用于对外统一暴露各种内部服务等常见。在使用过程中，常使用内网 IP 直接声明需要反向代理的服务。 恰恰因为常规的使用" />
+  <meta name="description" content="NGINX 作为常用的反向代理软件，普遍适用于对外统一暴露各种内部服务等常见。在使用过程中，常使用内网 IP 直接声明需要反向代理的服务。 恰恰因为常规的使用" />
   <meta property="og:locale" content="zh-cmn-Hans-CN" />
 
   
@@ -72,10 +72,11 @@
   </head>
   <body>
     
-  <article class="posts">
+  <article class="post Chinese" id="article">
     <div class="row">
       <div class="col-xs-12">
-        
+        <div class="site-header">
+          
 <header>
   <div class="header-title">
     <a href="/"
@@ -108,251 +109,139 @@
 </div>
 <div class="header-line"></div>
 
-
-        <h1 class="taxonomy-term"></h1>
-        <div id="posts-list">
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-06-25-asm-core/">ASM 核心包基本内容漫谈</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2018-06-25 00:00:00 UTC">
-          25 Jun 2018
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
         </div>
-        
-      </div>
-    </div>
-  </header>
+        <header class="post-header">
+          <h1 class="post-title">NGINX 的 DNS 缓存</h1>
+          
+          <div class="row post-desc">
+            <div class="col-xs-6">
+              
+              <time class="post-date" datetime="2021-04-03 00:00:00 UTC">
+                03 Apr 2021
+              </time>
+              
+            </div>
+            <div class="col-xs-6">
+              
+              <div class="post-author">
+                <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+              </div>
+              
+            </div>
+          </div>
+          
+        </header>
 
-  <div class="post-content markdown-body">
-      <blockquote>
-<p>本文描述的 ASM 指的是 OW2 ASM</p>
-</blockquote>
-<h2 id="asm-core-的结构">ASM-Core 的结构</h2>
-<p><em>首先是一些概述性的内容。</em></p>
-<p>由于 ASM 操作的 JAVA 字节码有严格的格式规定，且即使随着 JVM 标准的升级也极少出现重大调整。
-因此适用面狭窄的访问者模式在该项目中被大量地使用，并且已经到了丧心病狂的程度:)</p>
-<p>从核心包声明的类来看，主要包括:</p>
+        <div class="post-content markdown-body">
+          
+          <p>NGINX 作为常用的反向代理软件，普遍适用于对外统一暴露各种内部服务等常见。在使用过程中，常使用内网 IP 直接声明需要反向代理的服务。</p>
+<p>恰恰因为常规的使用方式都是配置上游(Upstream)服务的 IP，偶然间遇到使用域名配置上游服务，竟然陷入了知识盲区。</p>
+<h2 id="异常">异常</h2>
+<p>为了对 HTTP 响应头做一些额外的处理，我们用 NGINX 代理了自建的图片 CDN 服务。精简后的配置如下</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">server {
+
+    listen 443 ssl;
+    server_name proxy.ffutop.com;
+
+    ssl_certificate     ffutop.com.rsa.crt;
+    ssl_certificate_key ffutop.com.rsa.key;
+
+    location /proxyimg/ {
+        proxy_set_header Host img.ffutop.com;
+        proxy_pass https://img.ffutop.com;
+        include extra_ops.conf;
+    }
+}
+</code></pre></div><p>平稳运行一段时间之后，突然所有指向 <code>proxy.ffutop.com/proxyimg/XXX/YYY</code> 的请求全部响应为 <code>502 Bad Request</code> 。</p>
+<p>为了排查这个问题，收集到了如下信息：</p>
 <ol>
-<li>
-<p>ClassReader - 作为结构化对象，将接收(accept)访问者的访问</p>
-</li>
-<li>
-<p>几种访问者抽象类以及相应的实现类</p>
-</li>
+<li>越过 NGINX 代理，直接请求图片 CDN，服务正常响应。</li>
+<li>确认命中了前述配置，NGINX 配置未发生修改。</li>
+<li>NGINX 日志记录了相关请求的 Upstream 全都指向了 <em>A</em> IP （此问题发生前后都相同）</li>
+<li>检测 NGINX 宿主机的域名解析结果(<code>dig img.ffutop.com</code>)，IP 为 <em>B</em></li>
 </ol>
-<ul>
-<li>AnnotationVisitor -&gt; AnnotationWriter</li>
-<li>ClassVisitor -&gt; ClassWriter</li>
-<li>FieldVisitor -&gt; FieldWriter</li>
-<li>MethodVisitor -&gt; MethodWriter</li>
-<li>ModuleVisitor -&gt; ModuleWriter</li>
-</ul>
-<ol start="3">
-<li>
-<p>Opcodes &amp; Constants - ClassFile 中描述的大量常量符号与值</p>
-</li>
-<li>
-<p>其它一些辅助的类</p>
-</li>
-</ol>
-<ul>
-<li>Attribute - 用于处理非标准化的属性(ClassFile 允许<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">JVMS</a> 中未定义的 Attribute)</li>
-<li>ByteArray - 动态可自适应的 byte[] (字节数组)</li>
-<li>Context - ClassReader 在被解析(被访问)过程中用于表示“累积状态”的一个类/对象</li>
-<li>Symbol - 用于表示 ClassFile 中描述的 Constant 的基类</li>
-<li>SymbolTable - 用于存储常量池对象</li>
-<li>其它内容省略</li>
-</ul>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-25-asm-core/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-06-21-java-memory-model/">java-memory-model</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2018-06-21 00:00:00 UTC">
-          21 Jun 2018
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <h2 id="jvm-运行时数据区">JVM 运行时数据区</h2>
-<p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1ft5osi6it1j31kw0ql78e.jpg" alt=""></p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-21-java-memory-model/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-06-11-asm-classreader/">ASM - ClassReader 与 Java ClassFile 文件格式</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2018-06-11 00:00:00 UTC">
-          11 Jun 2018
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <h2 id="java-classfile-文件格式">Java ClassFile 文件格式</h2>
-<p>读了将近一周的时间，勉强算是把 ClassFile 的文件格式给简单的梳理了个脉络。
-<a href="https://docs.oracle.com/javase/specs/jvms/se8/html/index.html">The class File Format(Java SE 8)</a></p>
+<h2 id="排查">排查</h2>
+<p>基于收集到的信息，确认是域名解析发生问题，但 NGINX 的域名解析直接依赖宿主机 <code>/etc/resolv.conf</code> 配置声明的 DNS 服务器，机器上确认了域名解析的记录没有问题。结合语言及软件普遍存在对 DNS TTL 的非标准化处理，故判断 NGINX 也存在这样的问题。</p>
 <blockquote>
-<p>u1, u2, u4 分别表示无符号的一字节、二字节、四字节数据(以大端存储)</p>
+<p>NGINX caches the DNS records until the next restart or configuration reload, ignoring the records’ TTL values.[1]</p>
 </blockquote>
-<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">ClassFile {
-    u4             magic;                                   <span style="color:#60a0b0;font-style:italic">// 魔数(magic) 固定为 0xCAFEBABE
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             minor_version;                           <span style="color:#60a0b0;font-style:italic">// 次版本号
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             major_version;                           <span style="color:#60a0b0;font-style:italic">// 主版本号
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             constant_pool_count;                     <span style="color:#60a0b0;font-style:italic">// 常量池 constant_pool 的数量 + 1, 最大为 (2&lt;&lt;16 - 1) = 65535
-</span><span style="color:#60a0b0;font-style:italic"></span>    cp_info        constant_pool[constant_pool_count<span style="color:#666">-</span><span style="color:#40a070">1</span>];    <span style="color:#60a0b0;font-style:italic">// 常量池 取值下标为 [1, constant_pool_count)
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             access_flags;                            <span style="color:#60a0b0;font-style:italic">// 对类 or 接口的访问权限和属性的标志的掩码
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             this_class;                              <span style="color:#60a0b0;font-style:italic">// 值为 constant_pool 的有效下标(且 constant_pool[this_class] 的类型为 CONSTANT_Class_info)
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             super_class;                             <span style="color:#60a0b0;font-style:italic">// 值为 0 或者 constant_pool 的有效下标(同上), 如果是 interface, 则该值一定为有效下标
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             interfaces_count;                        <span style="color:#60a0b0;font-style:italic">// 直接父接口的数量
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             interfaces[interfaces_count];            <span style="color:#60a0b0;font-style:italic">// 值必须是 constant_pool 的有效下标, 且 interfaces[i](0≤i&lt;interfaces_count), 指向的类型为 CONSTANT_Class_info)
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             fields_count;                            <span style="color:#60a0b0;font-style:italic">// 字段数量, 统计所有字段, 包括 class variables(静态变量) 和 instance variables(实例变量)
-</span><span style="color:#60a0b0;font-style:italic"></span>    field_info     fields[fields_count];                    <span style="color:#60a0b0;font-style:italic">// 字段的详细声明, 不包含继承来的字段
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             methods_count;                           <span style="color:#60a0b0;font-style:italic">// 方法数量
-</span><span style="color:#60a0b0;font-style:italic"></span>    method_info    methods[methods_count];                  <span style="color:#60a0b0;font-style:italic">// 方法的详细声明, 不包括继承来的方法
-</span><span style="color:#60a0b0;font-style:italic"></span>    u2             attributes_count;                        <span style="color:#60a0b0;font-style:italic">// 属性数量
-</span><span style="color:#60a0b0;font-style:italic"></span>    attribute_info attributes[attributes_count];            <span style="color:#60a0b0;font-style:italic">// 属性的详细声明
-</span><span style="color:#60a0b0;font-style:italic"></span>}
-</code></pre></div>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-06-11-asm-classreader/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
+<p>翻阅资料确认了这个问题，NGINX 将无视 TTL 并缓存 DNS 记录，直到下一次重启或配置重载。至于域名解析，NGINX 启动时就对 <code>img.ffutop.com</code> 进行了解析。</p>
+<h2 id="解决">解决</h2>
+<p>临时地，为了快速恢复，直接将 NGINX 服务做了配置重载。</p>
+<p>但 NGINX 对 DNS TTL 的非标实现，对 IP 频繁发生变更的服务是无法接受的。</p>
+<p>如何解决这个问题？NGINX 确实提供了标准实现，通过提供 <code>resolver</code> 指令声明 DNS 服务器地址，NGINX 将在 DNS 记录 TTL 到期后，重新解析域名。归根到底是自己的配置问题啊 T_T</p>
+<div class="highlight"><pre style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">resolver 223.5.5.5;
 
-                  
-          
-          
+server {
+    location / {
+        set $backend_servers img.ffutop.com;
+        proxy_pass http://$backend_servers;
+    }
+}
+</code></pre></div><h2 id="参考资料">参考资料</h2>
+<p>[1]. <a href="https://www.nginx.com/blog/dns-service-discovery-nginx-plus/">Using DNS for Service Discovery with NGINX and NGINX Plus</a></p>
 
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-03-01-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/">区块链技术概述</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2018-03-01 00:00:00 UTC">
-          01 Mar 2018
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+
+        <div class="row middle-xs">
+          <div class="col-xs-12">
+            
+            <div class="post-category">
+              <a href="/categories/%e6%a1%88%e4%be%8b%e5%88%86%e6%9e%90/">
+                案例分析
+              </a>
+            </div>
+            
+          </div>
         </div>
         
-      </div>
-    </div>
-  </header>
+          <div class="row">
+            <div class="col-xs-12">
+              
+            </div>
+          </div>
 
-  <div class="post-content markdown-body">
-      <p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fs8oc4ri7qj30mq055aap.jpg" alt="区块链简单结构"></p>
-<!-- raw HTML omitted -->
-<p><img src="https://ws1.sinaimg.cn/large/006tNc79gy1foxcpmmpfhj31kw107n2e.jpg" alt="Merkle tree"></p>
-<!-- raw HTML omitted -->
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-03-01-%E5%8C%BA%E5%9D%97%E9%93%BE%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
           
 
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2018-01-15-spring-jdbc-code-reading/">Spring JDBC 源码学习</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2018-01-15 00:00:00 UTC">
-          15 Jan 2018
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      <h2 id="概览">概览</h2>
-<p>在学习 Spring-JDBC 之前，我们有必要从 Java 原生提供的 JDBC 开始，对 JDBC 操作的一整套完整的流程有一个清晰的概念。</p>
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2018-01-15-spring-jdbc-code-reading/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-        </div>
-        <div class="pagination">
-  <div class="row between-xs">
-    <div class="col-xs-6 col-md-2 pagination-prev">
-      
-      <a href="/posts/page/6/">上一页</a>
-      
-    </div>
-    <div class="col-xs-6 col-md-2 pagination-next">
-      
-    </div>
-</div>
+<div class="related-content">
+  <h3>Related Posts</h3>
+  <ul>
+    
+    <li><a href="/posts/2020-02-28-db-transfer-based-on-dns/">基于DNS的数据库切换·事故</a></li>
+    
+  </ul>
 </div>
 
+
+
+          
+          
+          <div style="height: 50px;"></div>
+          
+          <div class="post-comments">
+            <div id="disqus_thread"></div>
+<script>
+  window.addEventListener("load", () => {
+    (function() {
+      
+      var d = document,
+        s = d.createElement("script");
+      s.src = "https://ffutop.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  });
+</script>
+<noscript
+  >Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript"
+    >comments powered by Disqus.</a
+  ></noscript
+>
+
+          </div>
+          
+        
 
         <div class="site-footer">
   
@@ -371,6 +260,8 @@
     
   
 </script>
+
+  
 
  
   </body>
