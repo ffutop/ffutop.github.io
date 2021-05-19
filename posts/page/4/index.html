@@ -34,8 +34,8 @@
       "accountablePerson" : "ffutop",
       "copyrightHolder" : "ffutop",
       "copyrightYear" : "2021",
-      "datePublished": "2021-04-03T00:00:00Z",
-      "dateModified" : "2021-04-03T00:00:00Z",
+      "datePublished": "2021-05-19T00:00:00Z",
+      "dateModified" : "2021-05-19T00:00:00Z",
       "url" : "https://www.ffutop.com/posts/",
       "keywords" : [  ]
   }
@@ -111,6 +111,49 @@
 
         <h1 class="taxonomy-term"></h1>
         <div id="posts-list">
+          
+
+          <section>
+  <header class="post-header">
+    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-05-20-close_wait_problem/">pipe 导致的 CLOSE_WAIT</a></h1>
+    <div class="row post-desc">
+      <div class="col-xs-6">
+        
+        <time class="post-date" datetime="2019-05-20 00:00:00 UTC">
+          20 May 2019
+        </time>
+        
+      </div>
+      <div class="col-xs-6">
+        
+        <div class="post-author">
+          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content markdown-body">
+      <p>历时一周总算把导致服务大量 <code>CLOSE_WAIT</code> 的原因给找到了。打印任务调用栈果然的必备手段啊！</p>
+<h2 id="问题描述">问题描述</h2>
+<p>Python 服务 A，用于接收心跳包确认其他服务是否存活。其他服务每 5 分钟向 A 发送一次心跳包；总计 &lt; 100 个其他服务。</p>
+<ul>
+<li>05-11 19:30 ，首次出现 Python 服务大量 <code>CLOSE_WAIT</code>，至 13 日发现，总计 10k 左右 <code>CLOSE_WAIT</code> 的 TCP 连接。05-13 15:30 通过运维平台重新部署&hellip;</li>
+<li>05-14 16:30 ，再次出现。19:30 手动重启。</li>
+<li>其间给 Python 服务 A 添加了打印调用栈的模块 <a href="https://pypi.org/project/pdbx/">pdbx</a>，通过运维平台重新部署</li>
+<li>05-17 19:00 ，再次出现。等待打印调用栈，不小心杀掉了服务&hellip;</li>
+<li>05-19 14:30 ，重现。</li>
+<li>05-20 08:30 ，查找原因，解决问题。</li>
+</ul>
+<p>由于不是本人负责的服务，于 16 日凭兴趣开始有限介入，协助排查。现将排查流程一一记述，给自己和大家未来排查问题提供一个借鉴。</p>
+      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-05-20-close_wait_problem/'><nobr class="summary-read-more">Read more →</nobr></a>
+      <div class="post-line"></div>
+  </div>
+</section>
+
+                  
+          
           
 
           <section>
@@ -446,38 +489,6 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
   <div class="post-content markdown-body">
       {% pdf https://drive.google.com/file/d/1MuBNtZPMWCt9kGlpqiAtG3i3Al2MaknY/preview %}
       <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-02-02-unicode/'><nobr class="summary-read-more">Read more →</nobr></a>
-      <div class="post-line"></div>
-  </div>
-</section>
-
-                  
-          
-          
-
-          <section>
-  <header class="post-header">
-    <h1 class="post-title"><a href="https://www.ffutop.com/posts/2019-01-15-understand-kernel-8/">理解 Linux Kernel (8) - 网络</a></h1>
-    <div class="row post-desc">
-      <div class="col-xs-6">
-        
-        <time class="post-date" datetime="2019-01-15 00:00:00 UTC">
-          15 Jan 2019
-        </time>
-        
-      </div>
-      <div class="col-xs-6">
-        
-        <div class="post-author">
-          <a target="_blank" href="https://www.ffutop.com/">@ffutop</a>
-        </div>
-        
-      </div>
-    </div>
-  </header>
-
-  <div class="post-content markdown-body">
-      PDF
-      <a class="summary-read-more" href='https://www.ffutop.com/posts/2019-01-15-understand-kernel-8/'><nobr class="summary-read-more">Read more →</nobr></a>
       <div class="post-line"></div>
   </div>
 </section>
