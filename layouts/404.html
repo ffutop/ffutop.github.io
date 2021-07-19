@@ -1,0 +1,27 @@
+{{ define "main" }}
+  <style>
+    .msg-404 {
+      font-size: 200px;
+      text-align: center;
+    }
+  </style>
+  <article class="post {{ .Site.Language.LanguageName }}" id="article">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="site-header">
+          {{ partial "header.html" . }}
+        </div>
+        <div class="msg-404">
+        404 
+        </div>
+        {{ partial "footer.html" . }}
+      </div>
+    </div>
+  </article>
+
+  {{ partial "scripts.html" . }}
+  {{ if .Site.Params.extraBody }}
+  {{ .Site.Params.extraBody | safeHTML }}
+  {{ end }}
+
+{{ end }}

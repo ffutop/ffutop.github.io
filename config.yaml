@@ -1,0 +1,57 @@
+baseURL: "https://www.ffutop.com/"
+languageCode: zh-cmn-Hans-CN
+title: "Utop's Blog"
+theme: "yinyang"
+DefaultContentLanguage: zh-cn
+hasCJKLanguage: true
+rssLimit: 10
+googleAnalytics: UA-92258941-1
+paginate: 10
+
+author:
+    name: ffutop
+    homepage: "https://www.ffutop.com/"
+
+languages:
+    zh-cn:
+        contentDir: "content"
+        languageName: "Chinese"
+        weight: 1
+
+permalinks:
+
+params:
+    mainSections: 
+      - "posts"
+    headTitle: "FFUTOP"
+    disqus: "ffutop"
+    extraHead: '<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>'
+    socials:
+      - name: "Posts"
+        link: "/posts/"
+      - name: "RSS"
+        link: "/index.xml"
+      - name: "Github"
+        link: "https://github.com/ffutop"
+      - name: "About"
+        link: "/about/"
+    postHeaderContent: ""
+    postFooterContent: 
+    favicon: favicon.ico
+
+markup:
+  highlight:
+    codeFences: true
+    guessSyntax: false
+    hl_Lines: ""
+    lineNoStart: 1
+    lineNos: false
+    lineNumbersInTable: true
+    noClasses: true
+    style: friendly
+    tabWidth: 4
+
+sitemap:
+  changefreq: monthly
+  filename: sitemap.xml
+  priority: 0.5

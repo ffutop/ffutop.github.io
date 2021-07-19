@@ -1,0 +1,4 @@
+---
+title: view
+layout: summary
+---
