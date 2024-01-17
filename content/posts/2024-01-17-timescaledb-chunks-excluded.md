@@ -6,9 +6,7 @@ categories:
   - 案例分析
 tags:
   - PostgreSQL
-  - Postgres
   - TimescaleDB
-  - Timescale
   - constraint-exclusion
   - optimize
 ---
