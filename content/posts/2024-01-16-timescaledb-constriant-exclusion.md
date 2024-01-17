@@ -1,5 +1,5 @@
 ---
-title: [译](Timescale)实施约束排除以提高查询性能
+title: "[译](Timescale)实施约束排除以提高查询性能"
 author: ffutop
 date: 2024-01-16
 categories:
