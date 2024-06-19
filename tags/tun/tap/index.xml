@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>tun/tap on Utop's Blog</title><link>https://www.ffutop.com/tags/tun/tap/</link><description>Recent content in tun/tap on Utop's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cmn-Hans-CN</language><atom:link href="https://www.ffutop.com/tags/tun/tap/index.xml" rel="self" type="application/rss+xml"/><item><title>tcp Tunnel</title><link>https://www.ffutop.com/posts/2020-08-06-tun/</link><pubDate>Thu, 06 Aug 2020 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2020-08-06-tun/</guid><description>&lt;p>所谓专用网络(Private Network)，本质上不过是物理上局域网概念的延伸，将分属两地的局域网络联通，构建一个更大的逻辑局域网，并保证通信的私密性和独占性。最质朴的物理解决方案——在两个局域网络之间拉一个网线；不过距离越远，成本越高，还得考虑信号衰减等问题。相对而言租用运营商的线路就比较实际。但终究物理上的解决方案相较于使用互联网还是过于高昂，如何通过互联网构建一个逻辑上的专用网络？虚拟专用网络(Virtual Private Network, VPN) 提供了答案。&lt;/p>
+&lt;p>要构建 VPN ，最基本的要求是两地局域网络互通。即如下图中的设备 &lt;code>172.16.1.1&lt;/code> 要像在同一个局域网内，对内网 IP (分属不同的局域网)为 &lt;code>172.20.1.2&lt;/code> 的设备发起并建立连接。但从基本的网络协议栈来看，IP 报文根本无法到达 B 区域的局域网。得益于分层的协议栈，TCP/IP 的五个层次，上下层次间通过接口和服务来通信，每个层次仅仅承载数据(payload)而不关心数据的格式和内容。理论上任何层次的数据都可以由其它任何层次或者它当前的层次所承载，也就出现了很多 XX over YY 的网络模型。在 A 区域将 IP 报文通过 YY 协议封装，到 B 区域再解包，像是从局域网内收到 IP 报文一样，发送给目的主机，就像是 IP 报文穿越了一条隧道。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-plain" data-lang="plain">&lt;span style="display:flex;">&lt;span>+-------------------------------------------------------+
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| A 地区 |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +------------+ +------------+ +--------------+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | 172.16.1.1 | | 172.16.1.2 | .... | 172.16.39.60 | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +------+-----+ +------+-----+ +-------+------+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | | | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +---------------+-----+---------------+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +----+----+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | NAT | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +----^----+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> +--------------------------v------------------+
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> | INTERNET INTERNET |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> +--------------------------^------------------+
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +----v----+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | NAT | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +----+----+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +---------------+-----+---------------+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | | | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +------------+ +------------+ +--------------+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | 172.20.1.1 | | 172.20.1.2 | .... | 172.20.39.60 | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +------+-----+ +------+-----+ +-------+------+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| B 地区 |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>+-------------------------------------------------------+
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
