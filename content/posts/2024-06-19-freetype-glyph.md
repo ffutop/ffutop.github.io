@@ -1,5 +1,5 @@
 ---
-title: "[译]FreeType 字形约定"
+title: "[译] FreeType 字形约定"
 author: ffutop
 date: 2024-06-19
 categories:
