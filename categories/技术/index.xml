@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>技术 on Utop's Blog</title><link>https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/</link><description>Recent content in 技术 on Utop's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cmn-Hans-CN</language><lastBuildDate>Tue, 06 Aug 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://www.ffutop.com/categories/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml"/><item><title>容器内进程的 faketime 热更新</title><link>https://www.ffutop.com/posts/2024-08-06-faketime/</link><pubDate>Tue, 06 Aug 2024 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2024-08-06-faketime/</guid><description>我们的演示系统，使用 libfaketime 实现了历史时刻的简单复现。鉴于通过反复重启进行来实现 Java 服务的 faketime 重置过于缓慢。故阅读文档并整理了对 faketime 热更新的操作手册。 libfaketime</description></item><item><title>KubeEdge - 边缘管理与监控</title><link>https://www.ffutop.com/posts/2022-08-12-kubeedge/</link><pubDate>Fri, 12 Aug 2022 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2022-08-12-kubeedge/</guid><description>背景 公司业务需要引入边缘计算终端，并做边缘管理与监控，故调研并最终选定 KubeEdge 技术选型 常规条件下，云边不在同一网段，边缘侧到云侧单向可达。 云侧作为</description></item><item><title>Telegraf 执行流</title><link>https://www.ffutop.com/posts/2022-07-19-telegraf/</link><pubDate>Thu, 21 Jul 2022 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2022-07-19-telegraf/</guid><description>Telegraf 是一款开源的数据采集工具，通过插件化设计提供灵活组合的指标收集、处理、聚合和写出能力。它的核心设计包含四种基础插件，输入(input)、处</description></item><item><title>gRPC 在跨云架构中的 mTLS 配置</title><link>https://www.ffutop.com/posts/2021-10-31-grpc-mtls/</link><pubDate>Sun, 31 Oct 2021 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2021-10-31-grpc-mtls/</guid><description>传统的网络安全是基于边界的安全。通过将网络划分成外网和内网，在边界上部署防火墙，从而建立了一个基本假设——内网比外网安全。位于网络边界的前置</description></item><item><title>双数组前缀树</title><link>https://www.ffutop.com/posts/2021-01-24-darts/</link><pubDate>Sun, 24 Jan 2021 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2021-01-24-darts/</guid><description>&lt;h2 id="一前缀树">一、前缀树&lt;/h2>
+&lt;p>前缀树，又称字典树。常见的场景为大规模词库下做词匹配、词前缀匹配、词频统计等。目前唯一碰到的业务场景只有自建 UGC 风控的违禁词检测。&lt;/p>
+&lt;p>经典前缀树基于多叉树结构实现，组成字符串的字符全集数量决定了多叉树的阶。如下图为字符串集合 ab, abc, bc, d, da, dda 形成的前缀树。&lt;/p>
+&lt;p>&lt;img src="https://img.ffutop.com/5C605336-E961-463E-9919-9360FC8AFA27.png" alt="Trie Tree">
+&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->图 1. Trie Tree&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>前缀树的核心思想是空间换时间，利用字符串的公共前缀来降低查询时间的开销，相较于哈希等能够显著降低失配字符串的匹配耗时。&lt;/p></description></item><item><title>劫持 Java 应用 HTTP 请求</title><link>https://www.ffutop.com/posts/2020-10-19-hijack-http-req/</link><pubDate>Mon, 19 Oct 2020 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2020-10-19-hijack-http-req/</guid><description>&lt;h2 id="背景">背景&lt;/h2>
+&lt;p>全链路追踪中，针对部分特殊的流量，希望将它引导到特定服务上（这个特定服务不在正常请求的链路上）——问题可以被抽象为解决进程间通信过程中目标进程的选择。&lt;/p>
+&lt;p>进程间通信方式很多，本篇只关注 Java 进程间套接字通信下 HTTP 形式的请求劫持，引导特定流量到特定进程。&lt;/p></description></item><item><title>tcp Tunnel</title><link>https://www.ffutop.com/posts/2020-08-06-tun/</link><pubDate>Thu, 06 Aug 2020 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2020-08-06-tun/</guid><description>&lt;p>所谓专用网络(Private Network)，本质上不过是物理上局域网概念的延伸，将分属两地的局域网络联通，构建一个更大的逻辑局域网，并保证通信的私密性和独占性。最质朴的物理解决方案——在两个局域网络之间拉一个网线；不过距离越远，成本越高，还得考虑信号衰减等问题。相对而言租用运营商的线路就比较实际。但终究物理上的解决方案相较于使用互联网还是过于高昂，如何通过互联网构建一个逻辑上的专用网络？虚拟专用网络(Virtual Private Network, VPN) 提供了答案。&lt;/p>
+&lt;p>要构建 VPN ，最基本的要求是两地局域网络互通。即如下图中的设备 &lt;code>172.16.1.1&lt;/code> 要像在同一个局域网内，对内网 IP (分属不同的局域网)为 &lt;code>172.20.1.2&lt;/code> 的设备发起并建立连接。但从基本的网络协议栈来看，IP 报文根本无法到达 B 区域的局域网。得益于分层的协议栈，TCP/IP 的五个层次，上下层次间通过接口和服务来通信，每个层次仅仅承载数据(payload)而不关心数据的格式和内容。理论上任何层次的数据都可以由其它任何层次或者它当前的层次所承载，也就出现了很多 XX over YY 的网络模型。在 A 区域将 IP 报文通过 YY 协议封装，到 B 区域再解包，像是从局域网内收到 IP 报文一样，发送给目的主机，就像是 IP 报文穿越了一条隧道。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-plain" data-lang="plain">&lt;span style="display:flex;">&lt;span>+-------------------------------------------------------+
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| A 地区 |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +------------+ +------------+ +--------------+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | 172.16.1.1 | | 172.16.1.2 | .... | 172.16.39.60 | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +------+-----+ +------+-----+ +-------+------+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | | | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +---------------+-----+---------------+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +----+----+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | NAT | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +----^----+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> +--------------------------v------------------+
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> | INTERNET INTERNET |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> +--------------------------^------------------+
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +----v----+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | NAT | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +----+----+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +---------------+-----+---------------+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | | | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +------------+ +------------+ +--------------+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| | 172.20.1.1 | | 172.20.1.2 | .... | 172.20.39.60 | |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| +------+-----+ +------+-----+ +-------+------+ |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| B 地区 |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>+-------------------------------------------------------+
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>URI不规范编码解决方案</title><link>https://www.ffutop.com/posts/2020-07-25-non-standard-uri/</link><pubDate>Sat, 25 Jul 2020 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2020-07-25-non-standard-uri/</guid><description>&lt;p>&lt;a href="https://tools.ietf.org/rfc/rfc7230.txt">RFC 7230&lt;/a> 与 &lt;a href="https://tools.ietf.org/rfc/rfc3986.txt">RFC 3986&lt;/a> 定义了 HTTP/1.1 标准并对 URI 的编解码问题作出了规范。但是，文本形式的规范和最终落地的标准之间总是存在着差距。标准中共 82 个字符无需编码。&lt;/p>
+&lt;pre tabindex="0">&lt;code>ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:/?#@!$&amp;amp;&amp;#39;()*+,;_-.~
+&lt;/code>&lt;/pre>&lt;p>对于需要编码的字符，百分号编码方案要求 ASCII 字符表示成两个 16 进制值并添加前缀 &lt;code>%&lt;/code>；对于非 ASCII 字符, 需要转换为 UTF-8 字节序, 然后每个字节按照上述方式表示成两个 16 进制值并添加前缀 &lt;code>%&lt;/code>。比如 &lt;code>|&lt;/code> 将被表示为 &lt;code>%7C&lt;/code> 或 &lt;code>%7c&lt;/code>（大小写无关）；&lt;code>啊&lt;/code> 将被表示为 &lt;code>%E5%95%8A&lt;/code>。&lt;/p>
+&lt;p>最近因为 Tomcat 版本升级，遭遇了非标到标准实现的过渡，新版本 Tomcat 严格执行 RFC 规范直接将非标准的 URI 请求强制拒绝。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-plain" data-lang="plain">&lt;span style="display:flex;">&lt;span>2020-07-15 16:02:12,931 INFO 1 --- [http-nio-8080-exec-7] o.a.c.h.Http11Processor : Error parsing HTTP request header
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Note: further occurrences of HTTP request parsing errors will be logged at DEBUG level.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>java.lang.IllegalArgumentException: Invalid character found in the request target. The valid characters are defined in RFC 7230 and RFC 3986
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> at org.apache.coyote.http11.Http11InputBuffer.parseRequestLine(Http11InputBuffer.java:468) ~[tomcat-embed-core-9.0.22.jar!/:9.0.22]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:294) [tomcat-embed-core-9.0.22.jar!/:9.0.22]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66) [tomcat-embed-core-9.0.22.jar!/:9.0.22]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:853) [tomcat-embed-core-9.0.22.jar!/:9.0.22]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1587) [tomcat-embed-core-9.0.22.jar!/:9.0.22]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49) [tomcat-embed-core-9.0.22.jar!/:9.0.22]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_161]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_161]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) [tomcat-embed-core-9.0.22.jar!/:9.0.22]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> at java.lang.Thread.run(Thread.java:748) [?:1.8.0_161]
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>纠缠不清的 OAuth vs OpenId</title><link>https://www.ffutop.com/posts/2020-07-17-oauth-and-openid/</link><pubDate>Fri, 17 Jul 2020 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2020-07-17-oauth-and-openid/</guid><description>认证: 完成对用户身份的确认，验证当前自称为某种身份的用户，确实是所声称的用户 授权: 一般指对特定身份的用户授予访问数字化资源的权限 OAuth 2.0 是一个关</description></item><item><title>HTTP Large Header Fields Problem</title><link>https://www.ffutop.com/posts/2020-04-11-large-http-header/</link><pubDate>Sat, 11 Apr 2020 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2020-04-11-large-http-header/</guid><description>&lt;p>&lt;em>首次遇到请求头过大的问题，做个记录。特别是在本次处理陷入了误区，做了太多无谓的猜测&lt;/em>&lt;/p>
+&lt;p>请求头过大导致响应错误码 400 (Bad Request)、414 (URI Too Long)、431 (Request Header Fields Too Large) 的情况不多，不过原因和解决方案都是比较清晰的。客户端请求的请求头过大导致超出了服务器支持的缓冲区。如果客户端可控，控制请求头的大小；否则，适当调大服务器配置的缓冲区大小。&lt;/p>
+&lt;p>最近生产上碰到了这个问题，颇费了一番功夫。接手问题时得到了几个错误的信息，干扰到了处理的全过程。甚至为此去重读了 NGINX Directive &lt;code>client_header_buffer_size&lt;/code> 和 &lt;code>large_client_header_buffers&lt;/code> 在 1.8.1 版本的实现。&lt;/p>
+&lt;p>最原始的问题是：NGINX 接收到了大请求头(4.5k)的请求，最终响应了错误码 400 Bad Request 。&lt;/p>
+&lt;p>真实的背景因素包括：&lt;/p>
+&lt;ul>
+&lt;li>请求链路 NGINX -&amp;gt; k8s nginx ingress -&amp;gt; k8s pods (Tomcat)&lt;/li>
+&lt;li>NGINX &lt;code>large_client_header_buffers&lt;/code> 使用了默认配置 &lt;code>4 8k&lt;/code>。&lt;/li>
+&lt;li>Tomcat maxHttpHeaderSize 使用了默认配置 (default 8192)&lt;/li>
+&lt;/ul></description></item></channel></rss>

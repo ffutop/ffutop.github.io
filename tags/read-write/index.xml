@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>read &amp; write on Utop's Blog</title><link>https://www.ffutop.com/tags/read-write/</link><description>Recent content in read &amp; write on Utop's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cmn-Hans-CN</language><lastBuildDate>Sun, 11 Nov 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://www.ffutop.com/tags/read-write/index.xml" rel="self" type="application/rss+xml"/><item><title>理解 Linux Kernel (6) - read &amp; write</title><link>https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/</link><pubDate>Sun, 11 Nov 2018 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2018-11-11-understand-kernel-6/</guid><description>&lt;p>&lt;a href="https://dormouse-none.github.io/2018-10-14-understand-Kernel-5/">前一篇&lt;/a>已经描述对文件系统进行了宏观性的描述，这一篇，将以特定的文件读写操作为示例，串联对整个文件系统的基本操作。&lt;/p>
+&lt;p>首先先来看看平台相关的文件读写操作的 C 代码是怎样一个调用方式&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c" data-lang="c">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">#include&lt;/span> &lt;span style="color:#007020">&amp;lt;stdio.h&amp;gt;&lt;/span>&lt;span style="color:#007020">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">#include&lt;/span> &lt;span style="color:#007020">&amp;lt;stdlib.h&amp;gt;&lt;/span>&lt;span style="color:#007020">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">#include&lt;/span> &lt;span style="color:#007020">&amp;lt;string.h&amp;gt;&lt;/span>&lt;span style="color:#007020">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">#include&lt;/span> &lt;span style="color:#007020">&amp;lt;unistd.h&amp;gt;&lt;/span>&lt;span style="color:#007020">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">#include&lt;/span> &lt;span style="color:#007020">&amp;lt;fcntl.h&amp;gt;&lt;/span>&lt;span style="color:#007020">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">#include&lt;/span> &lt;span style="color:#007020">&amp;lt;errno.h&amp;gt;&lt;/span>&lt;span style="color:#007020">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">#include&lt;/span> &lt;span style="color:#007020">&amp;lt;sys/types.h&amp;gt;&lt;/span>&lt;span style="color:#007020">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">#include&lt;/span> &lt;span style="color:#007020">&amp;lt;sys/stat.h&amp;gt;&lt;/span>&lt;span style="color:#007020">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#902000">int&lt;/span> &lt;span style="color:#06287e">panic&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#06287e">fprintf&lt;/span>(stderr, &lt;span style="color:#4070a0">&amp;#34;%s (errno=%d)&lt;/span>&lt;span style="color:#4070a0;font-weight:bold">\n&lt;/span>&lt;span style="color:#4070a0">&amp;#34;&lt;/span>, &lt;span style="color:#06287e">strerror&lt;/span>(errno), errno);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#666">-&lt;/span>&lt;span style="color:#40a070">1&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#902000">int&lt;/span> &lt;span style="color:#06287e">main&lt;/span>(&lt;span style="color:#902000">int&lt;/span> argc, &lt;span style="color:#902000">char&lt;/span> &lt;span style="color:#666">*&lt;/span>argv[])
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#60a0b0;font-style:italic">/* 打开文件 frw.txt (以可读写 | 若不存在则新建的形式) */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#902000">int&lt;/span> fd &lt;span style="color:#666">=&lt;/span> &lt;span style="color:#06287e">open&lt;/span>(&lt;span style="color:#4070a0">&amp;#34;/root/frw.txt&amp;#34;&lt;/span>, O_RDWR &lt;span style="color:#666">|&lt;/span> O_CREAT);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">if&lt;/span> (fd &lt;span style="color:#666">==&lt;/span> &lt;span style="color:#666">-&lt;/span>&lt;span style="color:#40a070">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#06287e">panic&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#60a0b0;font-style:italic">/* 向文件写入 Hello World! 共计 12 个字符 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#902000">ssize_t&lt;/span> wsize &lt;span style="color:#666">=&lt;/span> &lt;span style="color:#06287e">write&lt;/span>(fd, &lt;span style="color:#4070a0">&amp;#34;Hello World!&amp;#34;&lt;/span>, &lt;span style="color:#40a070">12&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">if&lt;/span> (wsize &lt;span style="color:#666">==&lt;/span> &lt;span style="color:#666">-&lt;/span>&lt;span style="color:#40a070">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#06287e">panic&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#60a0b0;font-style:italic">/* 重定位文件读写指针 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#902000">off_t&lt;/span> off &lt;span style="color:#666">=&lt;/span> &lt;span style="color:#06287e">lseek&lt;/span>(fd, &lt;span style="color:#40a070">0&lt;/span>, SEEK_SET);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">if&lt;/span> (off &lt;span style="color:#666">==&lt;/span> &lt;span style="color:#666">-&lt;/span>&lt;span style="color:#40a070">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#06287e">panic&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#902000">char&lt;/span>&lt;span style="color:#666">*&lt;/span> buf &lt;span style="color:#666">=&lt;/span> (&lt;span style="color:#902000">char&lt;/span> &lt;span style="color:#666">*&lt;/span>) &lt;span style="color:#06287e">malloc&lt;/span>(wsize);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#60a0b0;font-style:italic">/* 读取文件内容 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#902000">ssize_t&lt;/span> rsize &lt;span style="color:#666">=&lt;/span> &lt;span style="color:#06287e">read&lt;/span>(fd, buf, wsize);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">if&lt;/span> (rsize &lt;span style="color:#666">==&lt;/span> &lt;span style="color:#666">-&lt;/span>&lt;span style="color:#40a070">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#06287e">panic&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#06287e">printf&lt;/span>(&lt;span style="color:#4070a0">&amp;#34;%s&lt;/span>&lt;span style="color:#4070a0;font-weight:bold">\n&lt;/span>&lt;span style="color:#4070a0">&amp;#34;&lt;/span>, buf);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#06287e">free&lt;/span>(buf);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#60a0b0;font-style:italic">/* 关闭文件 */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#902000">int&lt;/span> stat &lt;span style="color:#666">=&lt;/span> &lt;span style="color:#06287e">close&lt;/span>(fd);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">if&lt;/span> (stat &lt;span style="color:#666">==&lt;/span> &lt;span style="color:#666">-&lt;/span>&lt;span style="color:#40a070">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#06287e">panic&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#40a070">0&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
