@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>DeadLock on Utop's Blog</title><link>https://www.ffutop.com/tags/deadlock/</link><description>Recent content in DeadLock on Utop's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cmn-Hans-CN</language><lastBuildDate>Fri, 06 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://www.ffutop.com/tags/deadlock/index.xml" rel="self" type="application/rss+xml"/><item><title>MySQL DeadLocks with INSERT</title><link>https://www.ffutop.com/posts/2020-11-06-deadlock-insert-update/</link><pubDate>Fri, 06 Nov 2020 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2020-11-06-deadlock-insert-update/</guid><description>&lt;p>首次碰到 INSERT + UPDATE statement 造成的死锁问题，触及了知识盲区，费时做了分析。&lt;/p>
+&lt;h2 id="死锁场景描述">死锁场景描述&lt;/h2>
+&lt;p>&lt;em>下述所有事务隔离级别为 Read Committed&lt;/em>&lt;/p>
+&lt;p>&lt;strong>1. 简化后的数据库表&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sql" data-lang="sql">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020;font-weight:bold">CREATE&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">TABLE&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">`&lt;/span>user_address&lt;span style="color:#666">`&lt;/span>&lt;span style="color:#bbb"> &lt;/span>(&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">`&lt;/span>id&lt;span style="color:#666">`&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020">bigint&lt;/span>(&lt;span style="color:#40a070">11&lt;/span>)&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">NOT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">NULL&lt;/span>&lt;span style="color:#bbb"> &lt;/span>AUTO_INCREMENT&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">COMMENT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#4070a0">&amp;#39;主键&amp;#39;&lt;/span>,&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">`&lt;/span>user_id&lt;span style="color:#666">`&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020">varchar&lt;/span>(&lt;span style="color:#40a070">40&lt;/span>)&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">DEFAULT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#4070a0">&amp;#39;&amp;#39;&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">COMMENT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#4070a0">&amp;#39;用户主键&amp;#39;&lt;/span>,&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">`&lt;/span>comm_address&lt;span style="color:#666">`&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020">varchar&lt;/span>(&lt;span style="color:#40a070">1&lt;/span>)&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">DEFAULT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">NULL&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">COMMENT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#4070a0">&amp;#39;常用地址标识&amp;#39;&lt;/span>,&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">`&lt;/span>address&lt;span style="color:#666">`&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020">varchar&lt;/span>(&lt;span style="color:#40a070">200&lt;/span>)&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">DEFAULT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">NULL&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">COMMENT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#4070a0">&amp;#39;地址&amp;#39;&lt;/span>,&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">`&lt;/span>longitude&lt;span style="color:#666">`&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020">bigint&lt;/span>(&lt;span style="color:#40a070">20&lt;/span>)&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">DEFAULT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">NULL&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">COMMENT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#4070a0">&amp;#39;经度&amp;#39;&lt;/span>,&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">`&lt;/span>latitude&lt;span style="color:#666">`&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020">bigint&lt;/span>(&lt;span style="color:#40a070">20&lt;/span>)&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">DEFAULT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">NULL&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">COMMENT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#4070a0">&amp;#39;纬度&amp;#39;&lt;/span>,&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">`&lt;/span>create_time&lt;span style="color:#666">`&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">timestamp&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">NOT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">NULL&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">DEFAULT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">CURRENT_TIMESTAMP&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">COMMENT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#4070a0">&amp;#39;建立时间&amp;#39;&lt;/span>,&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">`&lt;/span>update_time&lt;span style="color:#666">`&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">timestamp&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">NOT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">NULL&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">DEFAULT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">CURRENT_TIMESTAMP&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">COMMENT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#4070a0">&amp;#39;更新时间&amp;#39;&lt;/span>,&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">PRIMARY&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">KEY&lt;/span>&lt;span style="color:#bbb"> &lt;/span>(&lt;span style="color:#666">`&lt;/span>id&lt;span style="color:#666">`&lt;/span>),&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">KEY&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#666">`&lt;/span>idx_user_id&lt;span style="color:#666">`&lt;/span>&lt;span style="color:#bbb"> &lt;/span>(&lt;span style="color:#666">`&lt;/span>user_id&lt;span style="color:#666">`&lt;/span>)&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#bbb">&lt;/span>)&lt;span style="color:#bbb"> &lt;/span>ENGINE&lt;span style="color:#666">=&lt;/span>InnoDB&lt;span style="color:#bbb"> &lt;/span>AUTO_INCREMENT&lt;span style="color:#666">=&lt;/span>&lt;span style="color:#40a070">1&lt;/span>&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">DEFAULT&lt;/span>&lt;span style="color:#bbb"> &lt;/span>CHARSET&lt;span style="color:#666">=&lt;/span>utf8&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">COLLATE&lt;/span>&lt;span style="color:#666">=&lt;/span>utf8_bin&lt;span style="color:#bbb"> &lt;/span>&lt;span style="color:#007020;font-weight:bold">COMMENT&lt;/span>&lt;span style="color:#666">=&lt;/span>&lt;span style="color:#4070a0">&amp;#39;用户常用地址&amp;#39;&lt;/span>;&lt;span style="color:#bbb">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>2. 死锁事务时序&lt;/strong>&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>时序&lt;/th>
+&lt;th>事务 1&lt;/th>
+&lt;th>事务 2&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>1&lt;/td>
+&lt;td>&lt;code>START TRANSACTION&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>2&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;code>START TRANSACTION&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>3&lt;/td>
+&lt;td>&lt;code>INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( 'c86d0f931d164fc1b53162355cf39fb4', '浙江省 杭州市 余杭区 五常街道 XXX', 121000000, 31000000, NOW(), NOW());&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>4&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;code>INSERT INTO user_address(user_id, address, longitude, latitude, create_time, update_time) VALUES ( 'c86d0f931d164fc1b53162355cf39fb4', '浙江省 杭州市 余杭区 五常街道 XXX', 121000000, 31000000, NOW(), NOW());&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>5&lt;/td>
+&lt;td>&lt;code>UPDATE user_address SET comm_address = '0' WHERE user_id = 'c86d0f931d164fc1b53162355cf39fb4';&lt;/code>&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>6&lt;/td>
+&lt;td>&lt;/td>
+&lt;td>&lt;code>UPDATE user_address SET comm_address = '0' WHERE user_id = 'c86d0f931d164fc1b53162355cf39fb4';&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;strong>3. INNODB Monitor Output&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-plain" data-lang="plain">&lt;span style="display:flex;">&lt;span>------------------------
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>LATEST DETECTED DEADLOCK
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>------------------------
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>2020-11-03 08:25:25 0x7f2801e1d700
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>*** (1) TRANSACTION:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>TRANSACTION 13335216894, ACTIVE 0 sec fetching rows
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mysql tables in use 1, locked 1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>LOCK WAIT 4 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>MySQL thread id 680655, OS thread handle 139810239182592, query id 120901872537 10.1.X.YYY mask_user updating
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>UPDATE `user_address` SET
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> `comm_address` = &amp;#39;0&amp;#39;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> WHERE `user_id` = &amp;#39;c760c70e42924b869beee418d3b30165&amp;#39;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216894 lock_mode X locks rec but not gap waiting
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 1: len 4; hex 803c4394; asc &amp;lt;C ;;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>*** (2) TRANSACTION:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>TRANSACTION 13335216895, ACTIVE 0 sec starting index read, thread declared inside InnoDB 5000
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mysql tables in use 1, locked 1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>3 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>MySQL thread id 672593, OS thread handle 139809806997248, query id 120901872539 10.1.X.YYY mask_user updating
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>UPDATE `user_address` SET
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> `comm_address` = &amp;#39;0&amp;#39;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> WHERE `user_id` = &amp;#39;c760c70e42924b869beee418d3b30165&amp;#39;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>*** (2) HOLDS THE LOCK(S):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Record lock, heap no 262 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 1: len 4; hex 803c4394; asc &amp;lt;C ;;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>RECORD LOCKS space id 2383 page no 125759 n bits 328 index idx_user_id of table `default`.`user_address` trx id 13335216895 lock_mode X locks rec but not gap waiting
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Record lock, heap no 261 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0: len 20; hex 6337363063373065343239323462383639626565; asc c760c70e42924b869bee;;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 1: len 4; hex 803c4393; asc &amp;lt;C ;;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>*** WE ROLL BACK TRANSACTION (2)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
