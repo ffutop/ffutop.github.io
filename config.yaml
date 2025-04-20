@@ -43,7 +43,7 @@ params:
       - name: "Github"
         link: "https://github.com/ffutop"
       - name: "About"
-        link: "/about/"
+        link: "https://ffkit.ffutop.com/author"
     postHeaderContent: ""
     postFooterContent: '
   <script type="module">
