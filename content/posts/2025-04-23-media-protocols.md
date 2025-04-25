@@ -1,5 +1,5 @@
 ---
-title: 媒体流控制协议解析：RTSP 与 GB/T 28181
+title: 媒体流协议解析：RTSP 与 GB/T 28181
 author: ffutop
 date: 2025-04-23
 categories:
