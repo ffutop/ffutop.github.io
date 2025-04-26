@@ -63,6 +63,9 @@ markup:
     noClasses: true
     style: friendly
     tabWidth: 4
+  goldmark:
+    renderer:
+      unsafe: true
 
 sitemap:
   changefreq: monthly
