@@ -1,5 +1,5 @@
 ---
-title: "Modbus 串行总线多主站并发访问的请求响应匹配与串行化代理"
+title: "Modbus 多主站并发访问控制"
 author: ffutop
 date: 2025-04-24
 categories:
@@ -97,8 +97,8 @@ subgraph "DTU (Gateway)"
     dtu["网关逻辑"]
     net["网口"]
 
-    serial o-- "④ Slave Response\n(RTU/ASCII)" ---o dtu
-    dtu o-- "③ DTU Forwards Response\n(TCP + MBAP)" ---o net
+    serial o-- "④ Slave Response<br/>(RTU/ASCII)" ---o dtu
+    dtu o-- "③ DTU Forwards Response<br/>(TCP + MBAP)" ---o net
 end
 
 换热站PLC o--o serial
@@ -106,29 +106,31 @@ end
 循环泵 o--o serial
 补水泵 o--o serial
 
-net o-- "① Sends Request\n(TCP + MBAP Trans ID)" ---o MasterA
-net o-- "② Sends Request\n(TCP + MBAP Trans ID)" ---o Modbus主站B
+net o-- "① Sends Request<br/>(TCP + MBAP Trans ID)" ---o MasterA
+net o-- "② Sends Request<br/>(TCP + MBAP Trans ID)" ---o Modbus主站B
 
-MasterA -- "⑤ Process Matched Response\n or Handle Timeout" --> AppLogic["应用逻辑"]
+MasterA -- "⑤ Process Matched Response<br/> or Handle Timeout" --> AppLogic["应用逻辑"]
 
 ```
 
 ```mermaid
+flowchart LR
+
 subgraph "逻辑主站 A (Proxy - 可控)"
     subgraph "发出的请求 (Outgoing)"
         direction TB
-        req5000["Request\nID: 5000"]
-        req5001["Request\nID: 5001"]
-        req5002["Request\nID: 5002"]
-        req5003["Request\nID: 5003"]
+        req5000["Request<br/>ID: 5000"]
+        req5001["Request<br/>ID: 5001"]
+        req5002["Request<br/>ID: 5002"]
+        req5003["Request<br/>ID: 5003"]
     end
     subgraph "接收的响应 (Incoming)"
         direction TB
-        resp5000["Response\nID: 5000"]
-        resp5000dup["Response\nID: 5000 (Duplicate)"]
-        resp5001["Response\nID: 5001"]
-        resp8999["Response\nID: 8999 (Unmatched)"]
-        resp5003["Response\nID: 5003"]
+        resp5000["Response<br/>ID: 5000"]
+        resp5000dup["Response<br/>ID: 5000 (Duplicate)"]
+        resp5001["Response<br/>ID: 5001"]
+        resp8999["Response<br/>ID: 8999 (Unmatched)"]
+        resp5003["Response<br/>ID: 5003"]
     end
 
     req5000 -- "匹配 (Match)" --> resp5000
