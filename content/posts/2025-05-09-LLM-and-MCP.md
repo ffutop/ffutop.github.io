@@ -1,7 +1,7 @@
 ---
 title: MCP 能力探索
 author: ffutop
-date: 2025-04-29
+date: 2025-05-09
 categories:
   - 技术
 tags:
