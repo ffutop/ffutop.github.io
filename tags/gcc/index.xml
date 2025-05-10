@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GCC on Utop's Blog</title><link>https://www.ffutop.com/tags/gcc/</link><description>Recent content in GCC on Utop's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cmn-Hans-CN</language><lastBuildDate>Sat, 08 Sep 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://www.ffutop.com/tags/gcc/index.xml" rel="self" type="application/rss+xml"/><item><title>Preprocessor Output</title><link>https://www.ffutop.com/posts/2018-09-08-preprocessor-output/</link><pubDate>Sat, 08 Sep 2018 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2018-09-08-preprocessor-output/</guid><description>&lt;p>最近重新开始回顾 C 语言以及其编译后的文件格式 ELF。
+暂时告别一步到位的命令 &lt;code>gcc main.c&lt;/code>，如果从 &lt;code>.c&lt;/code> 文件的编译来说，主要分为预编译(preprocess)、编译(Compilation)、汇编(Assembly)、链接(Linking) 四个步骤。
+但是，仅仅从第一个流程 &lt;strong>预编译&lt;/strong> 而言，就已经遇到了一些麻烦。&lt;/p>
+&lt;p>&lt;small>program.i&lt;/small>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c" data-lang="c">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020"># 1 &amp;#34;program.c&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020"># 1 &amp;#34;&amp;lt;built-in&amp;gt;&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020"># 1 &amp;#34;&amp;lt;command-line&amp;gt;&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020"># 1 &amp;#34;/usr/include&lt;/span>&lt;span style="color:#007020">/stdc-predef.h&amp;#34; 1 3 4&lt;/span>&lt;span style="color:#007020">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020"># 1 &amp;#34;&amp;lt;command-line&amp;gt;&amp;#34; 2
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020"># 1 &amp;#34;program.c&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020"># 1 &amp;#34;header.h&amp;#34; 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">&lt;/span>&lt;span style="color:#902000">char&lt;/span> &lt;span style="color:#666">*&lt;/span>&lt;span style="color:#06287e">test&lt;/span>(&lt;span style="color:#902000">void&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020"># 2 &amp;#34;program.c&amp;#34; 2
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#007020">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#902000">int&lt;/span> &lt;span style="color:#06287e">main&lt;/span>(&lt;span style="color:#902000">void&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>预编译后的问题出现了诸如 &lt;code># 1 &amp;quot;program.c&amp;quot;&lt;/code> 的 &lt;em>注释?&lt;/em>&lt;/p>
+&lt;p>这里简单记录预处理输出文件的基本格式，方便今后回顾。&lt;/p></description></item></channel></rss>
