@@ -189,7 +189,6 @@ Jan 11 00:32:53 localhost patroni[4171439]: 2025-01-11 00:32:53,079 INFO: establ
 Jan 11 00:32:53 localhost patroni[4171439]: 2025-01-11 00:32:53,118 INFO: establishing a new patroni heartbeat connection to postgres
 Jan 11 00:32:53 localhost patroni[4171439]: 2025-01-11 00:32:53,151 INFO: establishing a new patroni heartbeat connection to postgres
 Jan 11 00:32:54 localhost patroni[4171439]: 2025-01-11 00:32:54,112 INFO: postmaster pid=971804
-Patroni 3
 ```
 
 #### 2.3.3 HAProxy 日志分析
