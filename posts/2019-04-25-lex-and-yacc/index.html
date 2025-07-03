@@ -1,0 +1,248 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=generator content="Hugo 0.110.0"><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="ffutop"><meta property="og:url" content="https://www.ffutop.com/posts/2019-04-25-lex-and-yacc/"><link rel=canonical href=https://www.ffutop.com/posts/2019-04-25-lex-and-yacc/><link rel=apple-touch-icon href=favicon.ico><link rel=icon href=favicon.ico><link rel=shortcut href=favicon.ico><link rel=alternate type=application/atom+xml href=https://www.ffutop.com/index.xml title="Utop's Blog"><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/www.ffutop.com\/"},"articleSection":"posts","name":"Lex \u0026 Yacc 学习笔记","headline":"Lex \u0026 Yacc 学习笔记","description":"高级语言相较于机器语言、汇编语言，更加符合人的思考习惯。换句话说，更偏向于自然语言的风格而更偏离指令化的描述。用高级语言编写的一行代码，最终可能需要处理器执行若干条指令。如何让机器意识到高级语言代码对应的机器指令是哪些呢？当然就需要一个优秀的翻译。\n无论是编译型语言还是解释型语言，总逃脱不了这样一个流程：高级语言 ➜ 目标平台的指令。所谓编译型\/解释型的区别，在于其转换流程是在线的(online)还是离线的(offline)。在线的方式无法意识到后续的代码，但胜在即时反应；离线的方式可以统揽全局，进行更多的优化，但代码文本必须完整。\n高级语言 ➜ 目标平台的指令，这样的流程如何实现。一般来说，划分为四个阶段：词法分析、语法分析、语义分析、目标代码生成。\n本篇的主要目的，是展示“语言翻译”的几个阶段工作，以及通过 Lex \u0026amp; Yacc 工具演示一门自定义语言的“翻译”。\n","inLanguage":"en-US","author":"ffutop","creator":"ffutop","publisher":"ffutop","accountablePerson":"ffutop","copyrightHolder":"ffutop","copyrightYear":"2019","datePublished":"2019-04-25 00:00:00 \u002b0000 UTC","dateModified":"2019-04-25 00:00:00 \u002b0000 UTC","url":"https:\/\/www.ffutop.com\/posts\/2019-04-25-lex-and-yacc\/","keywords":["Lex","Yacc"]}</script><title>Lex & Yacc 学习笔记</title><meta property="og:title" content="Lex & Yacc 学习笔记"><meta property="og:type" content="article"><meta property="og:description" content="高级语言相较于机器语言、汇编语言，更加符合人的思考习惯。换句话说，更偏向于自然语言的风格而更偏离指令化的描述。用高级语言编写的一行代码，最终可能需要处理器执行若干条指令。如何让机器意识到高级语言代码对应的机器指令是哪些呢？当然就需要一个优秀的翻译。
+无论是编译型语言还是解释型语言，总逃脱不了这样一个流程：高级语言 ➜ 目标平台的指令。所谓编译型/解释型的区别，在于其转换流程是在线的(online)还是离线的(offline)。在线的方式无法意识到后续的代码，但胜在即时反应；离线的方式可以统揽全局，进行更多的优化，但代码文本必须完整。
+高级语言 ➜ 目标平台的指令，这样的流程如何实现。一般来说，划分为四个阶段：词法分析、语法分析、语义分析、目标代码生成。
+本篇的主要目的，是展示“语言翻译”的几个阶段工作，以及通过 Lex &amp;amp; Yacc 工具演示一门自定义语言的“翻译”。
+"><meta name=description content="高级语言相较于机器语言、汇编语言，更加符合人的思考习惯。换句话说，更偏向于自然语言的风格而更偏离指令化的描述。用高级语言编写的一行代码，最终可能需要处理器执行若干条指令。如何让机器意识到高级语言代码对应的机器指令是哪些呢？当然就需要一个优秀的翻译。
+无论是编译型语言还是解释型语言，总逃脱不了这样一个流程：高级语言 ➜ 目标平台的指令。所谓编译型/解释型的区别，在于其转换流程是在线的(online)还是离线的(offline)。在线的方式无法意识到后续的代码，但胜在即时反应；离线的方式可以统揽全局，进行更多的优化，但代码文本必须完整。
+高级语言 ➜ 目标平台的指令，这样的流程如何实现。一般来说，划分为四个阶段：词法分析、语法分析、语义分析、目标代码生成。
+本篇的主要目的，是展示“语言翻译”的几个阶段工作，以及通过 Lex &amp;amp; Yacc 工具演示一门自定义语言的“翻译”。
+"><meta property="og:locale" content="zh-cmn-Hans-CN"><meta property="og:image" content="favicon.ico"><style>body{font-family:noto sans sc,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji;font-weight:500;-webkit-font-smoothing:antialiased;margin:0 20px}article{max-width:800px;margin-left:auto;margin-right:auto}a{color:#333;text-decoration:none}a:hover{font-weight:600;text-decoration:underline}.post-ads{margin:50px 0}.markdown-body{font-family:noto sans sc,system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol,noto color emoji;font-size:1rem;font-weight:500;line-height:1.7;max-width:100%;color:#333}.markdown-body a{text-decoration:underline;text-decoration-color:#333}.markdown-body blockquote{margin:0;padding:0 1em;color:#57606a;border-left:.25em solid #d0d7de}.markdown-body pre{padding:16px;overflow:auto;border-radius:10px;margin-bottom:1.2em}.markdown-body code{padding:.2em .4em;margin:0 2px;font-size:.88rem;background-color:#f0f0f0;border-radius:4px;font-family:source code pro,Menlo,Monaco,Consolas,courier new,monospace;font-weight:600}.markdown-body pre>code{padding:0;margin:0;font-size:.88rem;background-color:transparent;border:0;line-height:1.65}.Chinese .markdown-body{line-height:150%}.site-date-catalog{font-size:1.8rem}.header-title{font-size:2rem;font-weight:700;margin-top:32px;font-family:bungee shade,sans-serif}.header-title a{text-decoration:none}.header-subtitle{color:#666}.header-items{margin:10px 0}.header-item{margin:0 5px}.header-line{width:100%;border-width:2px;border-color:#482936;border-style:solid none none none}.lang-switch{font-weight:600}#posts-list{min-height:600px}.posts-line{font-size:1rem;margin:8px 0}.posts-categories{font-size:.8rem;margin:auto;text-align:center}.posts-category{padding:3px 0;border:#000 2px solid;border-radius:5px}.site-footer{margin-top:50px}.site-footer-item{margin-right:12px}.post-header{margin-bottom:50px}.post-title{font-size:2rem;font-weight:600;margin-bottom:.5em}.post-tags{display:inline;font-weight:600;padding:2px 5px;margin-right:6px;border:#000 2px solid;border-radius:5px}.post-date{font-weight:800;font-style:italic}.post-author{float:right;font-weight:600}.page-content{min-height:60%}.post-content{margin-bottom:50px;margin-left:auto;margin-right:auto;padding-left:15px;padding-right:15px}.post-content p{hyphens:auto;font-size:1rem;line-height:1.7;margin-top:0;margin-bottom:1.2em}.post-content img{max-width:100%;display:block;margin-right:auto;margin-top:6px}.post-content .post-gallery{display:flex;flex-wrap:wrap;gap:6px}.post-content .post-gallery img{margin-right:auto;margin-top:auto;width:calc(50% - 3px)}.post-content h1{font-size:1.8rem;font-weight:500;margin-top:1.5em;margin-bottom:.8em;line-height:1.3;padding-bottom:.3em;border-bottom:1px solid #eaecef}.post-content h2{font-size:1.5rem;font-weight:500;margin-top:1.8em;margin-bottom:.8em;line-height:1.3;padding-bottom:.3em;border-bottom:1px solid #eaecef}.post-content h3{font-size:1.25rem;font-weight:500;margin-top:1.6em;margin-bottom:.6em;line-height:1.4}.post-content h4{font-size:1.1rem;font-weight:500;margin-top:1.4em;margin-bottom:.5em;line-height:1.4}.post-content table{width:100%;border-collapse:collapse;margin:1.5em 0;font-size:.95em;box-shadow:0 1px 3px rgba(0,0,0,.1)}.post-content th,.post-content td{border:1px solid #ddd;padding:10px 12px;text-align:left}.post-content th{background-color:#f2f2f2;font-weight:700}.post-content tr:nth-child(even){background-color:#f9f9f9}.post-content tr:hover{background-color:#f1f1f1}.related-content{border-width:3px;border-style:solid;border-color:#000;padding:0 10px;margin-bottom:50px;margin-top:100px}.related-content li{margin:5px 0}.taxonomy-term{font-size:3rem}.gallery-img{text-align:center}.gallery-img span{text-align:center}.gallery-img-desc{font-size:.8em;font-weight:800}#disqus_thread{position:relative}#disqus_thread:after{content:"";display:block;height:55px;width:100%;position:absolute;bottom:0;background:#fff}@media screen and (max-width:600px){.header-title,.header-subtitle,.header-items{}.posts-line{font-size:16px}.markdown-body{font-size:.95rem;line-height:1.65}.post-title{font-size:1.7rem}.post-content p{letter-spacing:normal;line-height:1.65}.post-content .post-gallery img{width:100%}.post-content h1{font-size:1.7rem}.post-content h2{font-size:1.4rem}.post-content h3{font-size:1.2rem}.post-content h4{font-size:1.05rem}}@media screen and (max-width:48em){.posts-category{display:none}}</style><style>.container,.container-fluid{margin-right:auto;margin-left:auto}.container-fluid{padding-right:2rem;padding-left:2rem}.row{box-sizing:border-box;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:0;-ms-flex:0 1 auto;flex:initial;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-.5rem;margin-left:-.5rem}.row.reverse{-webkit-box-orient:horizontal;-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse}.col.reverse{-webkit-box-orient:vertical;-webkit-box-direction:reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse}.col-xs,.col-xs-1,.col-xs-10,.col-xs-11,.col-xs-12,.col-xs-2,.col-xs-3,.col-xs-4,.col-xs-5,.col-xs-6,.col-xs-7,.col-xs-8,.col-xs-9,.col-xs-offset-0,.col-xs-offset-1,.col-xs-offset-10,.col-xs-offset-11,.col-xs-offset-12,.col-xs-offset-2,.col-xs-offset-3,.col-xs-offset-4,.col-xs-offset-5,.col-xs-offset-6,.col-xs-offset-7,.col-xs-offset-8,.col-xs-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-xs{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-xs-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-xs-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-xs-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-xs-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-xs-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-xs-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-xs-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-xs-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-xs-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-xs-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-xs-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-xs-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-xs-offset-0{margin-left:0}.col-xs-offset-1{margin-left:8.33333333%}.col-xs-offset-2{margin-left:16.66666667%}.col-xs-offset-3{margin-left:25%}.col-xs-offset-4{margin-left:33.33333333%}.col-xs-offset-5{margin-left:41.66666667%}.col-xs-offset-6{margin-left:50%}.col-xs-offset-7{margin-left:58.33333333%}.col-xs-offset-8{margin-left:66.66666667%}.col-xs-offset-9{margin-left:75%}.col-xs-offset-10{margin-left:83.33333333%}.col-xs-offset-11{margin-left:91.66666667%}.start-xs{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-xs{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-xs{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-xs{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-xs{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-xs{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-xs{-ms-flex-pack:distribute;justify-content:space-around}.between-xs{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-xs{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-xs{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}@media only screen and (min-width:48em){.container{width:49rem}.col-sm,.col-sm-1,.col-sm-10,.col-sm-11,.col-sm-12,.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9,.col-sm-offset-0,.col-sm-offset-1,.col-sm-offset-10,.col-sm-offset-11,.col-sm-offset-12,.col-sm-offset-2,.col-sm-offset-3,.col-sm-offset-4,.col-sm-offset-5,.col-sm-offset-6,.col-sm-offset-7,.col-sm-offset-8,.col-sm-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-sm{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-sm-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-sm-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-sm-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-sm-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-sm-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-sm-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-sm-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-sm-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-sm-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-sm-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-sm-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-sm-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-sm-offset-0{margin-left:0}.col-sm-offset-1{margin-left:8.33333333%}.col-sm-offset-2{margin-left:16.66666667%}.col-sm-offset-3{margin-left:25%}.col-sm-offset-4{margin-left:33.33333333%}.col-sm-offset-5{margin-left:41.66666667%}.col-sm-offset-6{margin-left:50%}.col-sm-offset-7{margin-left:58.33333333%}.col-sm-offset-8{margin-left:66.66666667%}.col-sm-offset-9{margin-left:75%}.col-sm-offset-10{margin-left:83.33333333%}.col-sm-offset-11{margin-left:91.66666667%}.start-sm{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-sm{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-sm{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-sm{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-sm{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-sm{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-sm{-ms-flex-pack:distribute;justify-content:space-around}.between-sm{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-sm{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-sm{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:64em){.container{width:65rem}.col-md,.col-md-1,.col-md-10,.col-md-11,.col-md-12,.col-md-2,.col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-offset-0,.col-md-offset-1,.col-md-offset-10,.col-md-offset-11,.col-md-offset-12,.col-md-offset-2,.col-md-offset-3,.col-md-offset-4,.col-md-offset-5,.col-md-offset-6,.col-md-offset-7,.col-md-offset-8,.col-md-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-md{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-md-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-md-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-md-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-md-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-md-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-md-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-md-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-md-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-md-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-md-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-md-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-md-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-md-offset-0{margin-left:0}.col-md-offset-1{margin-left:8.33333333%}.col-md-offset-2{margin-left:16.66666667%}.col-md-offset-3{margin-left:25%}.col-md-offset-4{margin-left:33.33333333%}.col-md-offset-5{margin-left:41.66666667%}.col-md-offset-6{margin-left:50%}.col-md-offset-7{margin-left:58.33333333%}.col-md-offset-8{margin-left:66.66666667%}.col-md-offset-9{margin-left:75%}.col-md-offset-10{margin-left:83.33333333%}.col-md-offset-11{margin-left:91.66666667%}.start-md{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-md{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-md{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-md{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-md{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-md{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-md{-ms-flex-pack:distribute;justify-content:space-around}.between-md{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-md{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-md{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:75em){.container{width:76rem}.col-lg,.col-lg-1,.col-lg-10,.col-lg-11,.col-lg-12,.col-lg-2,.col-lg-3,.col-lg-4,.col-lg-5,.col-lg-6,.col-lg-7,.col-lg-8,.col-lg-9,.col-lg-offset-0,.col-lg-offset-1,.col-lg-offset-10,.col-lg-offset-11,.col-lg-offset-12,.col-lg-offset-2,.col-lg-offset-3,.col-lg-offset-4,.col-lg-offset-5,.col-lg-offset-6,.col-lg-offset-7,.col-lg-offset-8,.col-lg-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-lg{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-lg-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-lg-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-lg-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-lg-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-lg-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-lg-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-lg-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-lg-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-lg-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-lg-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-lg-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-lg-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-lg-offset-0{margin-left:0}.col-lg-offset-1{margin-left:8.33333333%}.col-lg-offset-2{margin-left:16.66666667%}.col-lg-offset-3{margin-left:25%}.col-lg-offset-4{margin-left:33.33333333%}.col-lg-offset-5{margin-left:41.66666667%}.col-lg-offset-6{margin-left:50%}.col-lg-offset-7{margin-left:58.33333333%}.col-lg-offset-8{margin-left:66.66666667%}.col-lg-offset-9{margin-left:75%}.col-lg-offset-10{margin-left:83.33333333%}.col-lg-offset-11{margin-left:91.66666667%}.start-lg{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-lg{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-lg{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-lg{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-lg{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-lg{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-lg{-ms-flex-pack:distribute;justify-content:space-around}.between-lg{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-lg{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-lg{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}</style><link href=/index.xml rel=alternate type=application/rss+xml title="Utop's Blog"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap" rel=stylesheet><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@500;600;700&family=Source+Code+Pro:wght@600&display=swap" rel=stylesheet><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script> <script async src="https://www.googletagmanager.com/gtag/js?id=G-3RHY4L44ZL"></script> <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-3RHY4L44ZL")</script></head><body><article class="post Chinese" id=article><div class=row><div class=col-xs-12><div class=site-header><header><div class=header-title><a href=/>FFUTOP</a></div><div class=header-subtitle></div></header><div class="row end-md header-items"><div class=header-item><a href=/posts/ target=_blank>Posts</a></div><div class=header-item><a href=/index.xml target=_blank>RSS</a></div><div class=header-item><a href=https://github.com/ffutop target=_blank>Github</a></div><div class=header-item><a href=https://ffkit.ffutop.com/author target=_blank>About</a></div></div><div class=row></div><div class=header-line></div></div><header class=post-header><h1 class=post-title>Lex & Yacc 学习笔记</h1><div class="row post-desc"><div class=col-xs-6><time class=post-date datetime="2019-04-25 00:00:00 UTC">25 Apr 2019</time></div><div class=col-xs-6><div class=post-author><a target=_blank href=https://www.ffutop.com/>@ffutop</a></div></div></div></header><div class="post-content markdown-body"><p>高级语言相较于机器语言、汇编语言，更加符合人的思考习惯。换句话说，更偏向于自然语言的风格而更偏离指令化的描述。用高级语言编写的一行代码，最终可能需要处理器执行若干条指令。如何让机器意识到高级语言代码对应的机器指令是哪些呢？当然就需要一个优秀的翻译。</p><p>无论是编译型语言还是解释型语言，总逃脱不了这样一个流程：高级语言 ➜ 目标平台的指令。所谓编译型/解释型的区别，在于其转换流程是在线的(online)还是离线的(offline)。在线的方式无法意识到后续的代码，但胜在即时反应；离线的方式可以统揽全局，进行更多的优化，但代码文本必须完整。</p><p>高级语言 ➜ 目标平台的指令，这样的流程如何实现。一般来说，划分为四个阶段：词法分析、语法分析、语义分析、目标代码生成。</p><p><img src=https://ws2.sinaimg.cn/large/006tNc79ly1g2b583io0ej30wq094aa5.jpg alt></p><p>本篇的主要目的，是展示“语言翻译”的几个阶段工作，以及通过 Lex & Yacc 工具演示一门自定义语言的“翻译”。</p><h2 id=词法分析---lex>词法分析 &lt;- Lex</h2><p>词法分析的核心就是识别源代码，并将它按照特定的规则划分成一系列的标记(Token)。</p><p>比如 <code>int value = 12 + 23 * 323</code> 以 C 语言的划分方式可以分成 <code>int</code>, <code>value</code>, <code>=</code>, <code>12</code>, <code>+</code>, <code>23</code>, <code>*</code>, <code>323</code> 这些标记。</p><p>如何将源代码划分为标记呢？再不济不过是逐一扫描每种标记罢了。但是，规则是变化的，其它实现字符匹配的代码都是一致的。有没有一套框架，用户提供规则表就能实现词法分析呢？当然有，Lex 以及 Flex 就是这方面的好手。</p><p><img src=https://ws3.sinaimg.cn/large/006tNc79ly1g2boqbqx3oj31pi0q0q44.jpg alt></p><p><strong>Lex 语法规范</strong></p><p>整个 <code>&lt;name>.lex</code> 规则文件分为三部分，由 <code>%%</code> 进行分隔</p><pre tabindex=0><code>definitions
+%%
+rules
+%%
+user code
+</code></pre><p><code>definitions</code>，定义区的所有声明可以类比 C 语言中的宏，只不过无需 <code>#define</code>。</p><p>例如</p><pre tabindex=0><code>DIGIT [0-9]+
+NZDIGIT [1-9]{DIGIT}
+%%
+{NZDIGIT}   {   printf(&#34;nzdigit = %s\n&#34;, yytext);   }
+{DIGIT}     {   printf(&#34;digit = %s\n&#34;, yytext); }
+%%
+</code></pre><p>等效于</p><pre tabindex=0><code>%%
+[1-9][0-9]+ {   printf(&#34;nzdigit = %s\n&#34;, yytext);   }
+[0-9]+      {   printf(&#34;digit = %s\n&#34;, yytext); }
+%%
+</code></pre><p><code>rule</code>，规则区就是定义标记识别规则的核心块。lex 将按最长匹配原则确定最终匹配上的标记(Token)，如果都没匹配上，则按原样输出。如果多个匹配上，则按最先声明的规则为准。</p><p><code>user code</code> 用户代码区的所有代码将原样拷贝到生成的 <code>&lt;name>.c</code> 文件中。</p><h2 id=语法分析---yacc>语法分析 &lt;- Yacc</h2><p>仅仅是词法分析还做不了太多的事情。之后的工作都将交给语法分析器来完成。Yacc、Bison 就是两个优秀的语法分析器。当然，它们也有着一些局限（由于只是学习使用，未对其中原理展开深入了解）。Yacc / Bison 只能解决能被 BNF(Backus-Naur Form, 巴科斯范式) 描述的语法规则，而且只支持符合 LALR(1) 规则的。</p><p>不过，这也已经足够了。在 <a href=https://www.rfc-editor.org/>RFC</a> 上看到大量的规范性文档都通过 BNF 描述其语法规则，通过 Yacc/Bison 其实也能解决对这些规则的解析。</p><p><strong>Bison 语法规范</strong></p><pre tabindex=0><code>%{
+C declarations
+%}
+
+Bison declarations
+
+%%
+Grammar rules
+%%
+Additional C code
+</code></pre><ul><li><p>C 声明区将定义后面需要用到的类型和变量。当然，在这个区域使用 C 语言宏也是被允许的。比如 <code>#define</code>, <code>#include</code> 等</p></li><li><p>Bison 声明区被用来定义<code>终止符号(terminal symbols)</code>和<code>非终止符号(nonterminal symbols)</code>，当然也可以用来定义符号操作优先级和<code>语义值</code>的数据类型。</p></li><li><p>语法规则区将<code>非终止符号</code>是如何被组成的（在这个区域声明 BNF）</p></li><li><p>C 代码区与 lex 的规范一致，该区所有代码将被原样拷贝到生成的解析器源文件中。</p></li></ul><h2 id=示例>示例</h2><p>简单计算器语言的实现（改编自 <a href=https://dinosaur.compilertools.net/bison/bison_5.html#SEC29>mfcalc</a>）：</p><ol><li>支持简单四则运算</li><li>支持乘方、平方根</li><li>支持三角函数</li><li>支持变量声明</li></ol><div class=highlight><pre tabindex=0 style=background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span>$ ./calc
+</span></span><span style=display:flex><span>3*10+2*<span style=color:#666>(</span>3-1<span style=color:#666>)</span>
+</span></span><span style=display:flex><span>	<span style=color:#40a070>34</span>
+</span></span><span style=display:flex><span><span style=color:#bb60d5>alpha</span><span style=color:#666>=</span><span style=color:#bb60d5>beta</span><span style=color:#666>=</span>5*3+4
+</span></span><span style=display:flex><span>	<span style=color:#40a070>19</span>
+</span></span><span style=display:flex><span>sin<span style=color:#666>(</span>PI/2<span style=color:#666>)</span>
+</span></span><span style=display:flex><span>	<span style=color:#40a070>1</span>
+</span></span><span style=display:flex><span>cos<span style=color:#666>(</span>PI<span style=color:#666>)</span>
+</span></span><span style=display:flex><span>	-1
+</span></span><span style=display:flex><span>ln<span style=color:#666>(</span>alpha<span style=color:#666>)</span>
+</span></span><span style=display:flex><span>	2.944438979
+</span></span><span style=display:flex><span><span style=color:#bb60d5>beta</span><span style=color:#666>=</span>ln<span style=color:#666>(</span>alpha<span style=color:#666>)</span>
+</span></span><span style=display:flex><span>	2.944438979
+</span></span><span style=display:flex><span>sqrt<span style=color:#666>(</span>25<span style=color:#666>)</span>
+</span></span><span style=display:flex><span>	<span style=color:#40a070>5</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-plain data-lang=plain><span style=display:flex><span>%{
+</span></span><span style=display:flex><span>#include &lt;math.h&gt;
+</span></span><span style=display:flex><span>#include &lt;stdio.h&gt;
+</span></span><span style=display:flex><span>#include &lt;ctype.h&gt;
+</span></span><span style=display:flex><span>#include &#34;calc.h&#34;
+</span></span><span style=display:flex><span>%}
+</span></span><span style=display:flex><span>%union {
+</span></span><span style=display:flex><span>double val;
+</span></span><span style=display:flex><span>symrec *tptr;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>%token &lt;val&gt; NUM
+</span></span><span style=display:flex><span>%token &lt;tptr&gt; VAR FNCT
+</span></span><span style=display:flex><span>%type &lt;val&gt; expr
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>%right &#39;=&#39;
+</span></span><span style=display:flex><span>%left &#39;+&#39; &#39;-&#39;
+</span></span><span style=display:flex><span>%left &#39;*&#39; &#39;/&#39;
+</span></span><span style=display:flex><span>%left NEG
+</span></span><span style=display:flex><span>%right &#39;^&#39;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>%%
+</span></span><span style=display:flex><span>input:
+</span></span><span style=display:flex><span>        | input line
+</span></span><span style=display:flex><span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>line: &#39;\n&#39;
+</span></span><span style=display:flex><span>        | expr &#39;\n&#39; {   printf(&#34;\t%.10g\n&#34;, $1);    }
+</span></span><span style=display:flex><span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>expr: NUM   { $$ = $1;  }
+</span></span><span style=display:flex><span>        | VAR   { $$ = $1-&gt;value.var;   }
+</span></span><span style=display:flex><span>        | VAR &#39;=&#39; expr  { $$ = $3;  $1-&gt;value.var = $3; }
+</span></span><span style=display:flex><span>        | FNCT &#39;(&#39; expr &#39;)&#39; { $$ = (*($1-&gt;value.fnctptr))($3);  }
+</span></span><span style=display:flex><span>        | expr &#39;+&#39; expr { $$ = $1 + $3; }
+</span></span><span style=display:flex><span>        | expr &#39;-&#39; expr { $$ = $1 - $3; }
+</span></span><span style=display:flex><span>        | expr &#39;*&#39; expr { $$ = $1 * $3; }
+</span></span><span style=display:flex><span>        | expr &#39;/&#39; expr { $$ = $1 / $3; }
+</span></span><span style=display:flex><span>        | expr &#39;^&#39; expr { $$ = pow($1, $3); }
+</span></span><span style=display:flex><span>        | &#39;-&#39; expr %prec NEG    { $$ = -$2; }
+</span></span><span style=display:flex><span>        | &#39;(&#39; expr &#39;)&#39;  { $$ = $2;  }
+</span></span><span style=display:flex><span>%%
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>int main(int argc, char **argv)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    init_table();
+</span></span><span style=display:flex><span>    yyparse();
+</span></span><span style=display:flex><span>    return 0;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>int yyerror (char *s)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    printf(&#34;%s\n&#34;, s);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>struct init_fnct
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    char *fname;
+</span></span><span style=display:flex><span>    double (*fnct)();
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>struct init_fnct arith_fncts[] = {
+</span></span><span style=display:flex><span>    &#34;sin&#34;, sin,
+</span></span><span style=display:flex><span>    &#34;cos&#34;, cos,
+</span></span><span style=display:flex><span>    &#34;atan&#34;, atan,
+</span></span><span style=display:flex><span>    &#34;ln&#34;, log,
+</span></span><span style=display:flex><span>    &#34;exp&#34;, exp,
+</span></span><span style=display:flex><span>    &#34;sqrt&#34;, sqrt,
+</span></span><span style=display:flex><span>    &#34;floor&#34;, floor,
+</span></span><span style=display:flex><span>    &#34;ceil&#34;, ceil,
+</span></span><span style=display:flex><span>    &#34;abs&#34;, fabs,
+</span></span><span style=display:flex><span>    0, 0
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>struct init_var {
+</span></span><span style=display:flex><span>    char *vname;
+</span></span><span style=display:flex><span>    double value;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>struct init_var constant_var[] = {
+</span></span><span style=display:flex><span>    &#34;PI&#34;, M_PI,
+</span></span><span style=display:flex><span>    &#34;E&#34;, M_E,
+</span></span><span style=display:flex><span>    0, 0
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>symrec *sym_table = (symrec *) 0;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>int init_table()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    int i;
+</span></span><span style=display:flex><span>    symrec *ptr;
+</span></span><span style=display:flex><span>    for (int i=0;constant_var[i].vname != 0;i++)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        ptr = putsym(constant_var[i].vname, VAR);
+</span></span><span style=display:flex><span>        ptr-&gt;value.var = constant_var[i].value; 
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    for (int i=0;arith_fncts[i].fname != 0;i++)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        ptr = putsym(arith_fncts[i].fname, FNCT);
+</span></span><span style=display:flex><span>        ptr-&gt;value.fnctptr = arith_fncts[i].fnct;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>symrec * putsym(char *sym_name, int sym_type)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    symrec *ptr;
+</span></span><span style=display:flex><span>    ptr = (symrec *) malloc(sizeof(symrec));
+</span></span><span style=display:flex><span>    ptr-&gt;name = (char *) malloc(strlen(sym_name) + 1);
+</span></span><span style=display:flex><span>    strcpy(ptr-&gt;name, sym_name);
+</span></span><span style=display:flex><span>    ptr-&gt;type = sym_type;
+</span></span><span style=display:flex><span>    ptr-&gt;value.var = 0;
+</span></span><span style=display:flex><span>    ptr-&gt;next = (struct symrec *) sym_table;
+</span></span><span style=display:flex><span>    sym_table = ptr;
+</span></span><span style=display:flex><span>    return ptr;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>symrec * getsym(char *sym_name)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    symrec *ptr;
+</span></span><span style=display:flex><span>    for (ptr = sym_table; ptr != (symrec *) 0;ptr = (symrec *) ptr-&gt;next)
+</span></span><span style=display:flex><span>        if (strcmp(ptr-&gt;name, sym_name) == 0)
+</span></span><span style=display:flex><span>            return ptr;
+</span></span><span style=display:flex><span>    return 0;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>int yylex()
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    int c;
+</span></span><span style=display:flex><span>    while ((c = getchar()) == &#39; &#39; || c == &#39;\t&#39;);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    if (c == EOF)
+</span></span><span style=display:flex><span>        return 0;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    if (c == &#39;.&#39; || isdigit(c))
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        ungetc(c, stdin);
+</span></span><span style=display:flex><span>        scanf(&#34;%lf&#34;, &amp;yylval.val);
+</span></span><span style=display:flex><span>        return NUM;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    if (isalpha(c))
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        symrec *s;
+</span></span><span style=display:flex><span>        static char *symbuf = 0;
+</span></span><span style=display:flex><span>        static int length = 0;
+</span></span><span style=display:flex><span>        int i;
+</span></span><span style=display:flex><span>        if (length == 0)
+</span></span><span style=display:flex><span>            length = 40, symbuf = (char *) malloc(length + 1);
+</span></span><span style=display:flex><span>        i = 0;
+</span></span><span style=display:flex><span>        do {
+</span></span><span style=display:flex><span>            if (i == length)
+</span></span><span style=display:flex><span>            {
+</span></span><span style=display:flex><span>                length *= 2;
+</span></span><span style=display:flex><span>                symbuf = realloc(symbuf, length + 1);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            symbuf[i++] = c;
+</span></span><span style=display:flex><span>            c = getchar();
+</span></span><span style=display:flex><span>        } while (c != EOF &amp;&amp; isalnum(c));
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        ungetc(c, stdin);
+</span></span><span style=display:flex><span>        symbuf[i] = &#39;\0&#39;;
+</span></span><span style=display:flex><span>        s = getsym(symbuf);
+</span></span><span style=display:flex><span>        if (s == 0)
+</span></span><span style=display:flex><span>            s = putsym(symbuf, VAR);
+</span></span><span style=display:flex><span>        yylval.tptr = s;
+</span></span><span style=display:flex><span>        return s-&gt;type;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    return c;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#60a0b0;font-style:italic>/* Data type for links in the chain of symbols.      */</span>
+</span></span><span style=display:flex><span><span style=color:#007020;font-weight:700>struct</span> symrec
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#902000>char</span> <span style=color:#666>*</span>name;  <span style=color:#60a0b0;font-style:italic>/* name of symbol                     */</span>
+</span></span><span style=display:flex><span>    <span style=color:#902000>int</span> type;    <span style=color:#60a0b0;font-style:italic>/* type of symbol: either VAR or FNCT */</span>
+</span></span><span style=display:flex><span>    <span style=color:#007020;font-weight:700>union</span> {
+</span></span><span style=display:flex><span>        <span style=color:#902000>double</span> var;           <span style=color:#60a0b0;font-style:italic>/* value of a VAR          */</span>
+</span></span><span style=display:flex><span>        <span style=color:#902000>double</span> (<span style=color:#666>*</span>fnctptr)();  <span style=color:#60a0b0;font-style:italic>/* value of a FNCT         */</span>
+</span></span><span style=display:flex><span>    } value;
+</span></span><span style=display:flex><span>    <span style=color:#007020;font-weight:700>struct</span> symrec <span style=color:#666>*</span>next;    <span style=color:#60a0b0;font-style:italic>/* link field              */</span>
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#007020;font-weight:700>typedef</span> <span style=color:#007020;font-weight:700>struct</span> symrec symrec;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic>/* The symbol table: a chain of `struct symrec&#39;.     */</span>
+</span></span><span style=display:flex><span><span style=color:#007020;font-weight:700>extern</span> symrec <span style=color:#666>*</span>sym_table;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>symrec <span style=color:#666>*</span><span style=color:#06287e>putsym</span> ();
+</span></span><span style=display:flex><span>symrec <span style=color:#666>*</span><span style=color:#06287e>getsym</span> ();
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-make data-lang=make><span style=display:flex><span><span style=color:#06287e>calc</span><span style=color:#666>:</span> calc.y calc.h
+</span></span><span style=display:flex><span>	bison -o calc.c calc.y 
+</span></span><span style=display:flex><span>	gcc -o calc calc.c -w
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-plain data-lang=plain><span style=display:flex><span>  __                    __                  
+</span></span><span style=display:flex><span> / _| __ _ _ __   __ _ / _| ___ _ __   __ _ 
+</span></span><span style=display:flex><span>| |_ / _` | &#39;_ \ / _` | |_ / _ \ &#39;_ \ / _` |
+</span></span><span style=display:flex><span>|  _| (_| | | | | (_| |  _|  __/ | | | (_| |
+</span></span><span style=display:flex><span>|_|  \__,_|_| |_|\__, |_|  \___|_| |_|\__, |
+</span></span><span style=display:flex><span>                 |___/                |___/ 
+</span></span></code></pre></div></div><div class="row middle-xs"><div class=col-xs-12><div class=post-tags><a href=/tags/lex/>Lex</a></div><div class=post-tags><a href=/tags/yacc/>Yacc</a></div></div></div><div class=row><div class=col-xs-12><script type=module> import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true }); </script></div></div><div style=height:50px></div><div class=post-comments><div id=disqus_thread></div><script>window.addEventListener("load",()=>{(function(){var e=document,t=e.createElement("script");t.src="https://ffutop.disqus.com/embed.js",t.setAttribute("data-timestamp",+new Date),(e.head||e.body).appendChild(t)})()})</script><noscript>Please enable JavaScript to view the
+<a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div><div class=site-footer></div></div></div></article><script>document.addEventListener("DOMContentLoaded",function(){const e=document.getElementById("disqus_thread"),t=new MutationObserver(function(n){n.forEach(function(){const s=e.getElementsByTagName("iframe");if(s.length>1){const n=s[1];for(;e.firstChild;)e.removeChild(e.firstChild);e.appendChild(n),t.disconnect()}})});t.observe(e,{childList:!0,subtree:!0})})</script></body></html>
