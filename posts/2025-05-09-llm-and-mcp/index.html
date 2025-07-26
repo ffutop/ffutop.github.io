@@ -1,0 +1,396 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=generator content="Hugo 0.110.0"><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=author content="ffutop"><meta property="og:url" content="https://www.ffutop.com/posts/2025-05-09-llm-and-mcp/"><link rel=canonical href=https://www.ffutop.com/posts/2025-05-09-llm-and-mcp/><link rel=apple-touch-icon href=favicon.ico><link rel=icon href=favicon.ico><link rel=shortcut href=favicon.ico><link rel=alternate type=application/atom+xml href=https://www.ffutop.com/index.xml title="Utop's Blog"><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/www.ffutop.com\/"},"articleSection":"posts","name":"MCP 能力探索","headline":"MCP 能力探索","description":"重要声明： 本文档内容基于作者在特定时间点的个人理解与认知积累，可能存在主观判断、信息偏差或未能完全覆盖所有相关领域的最新进展。作者的知识结构","inLanguage":"en-US","author":"ffutop","creator":"ffutop","publisher":"ffutop","accountablePerson":"ffutop","copyrightHolder":"ffutop","copyrightYear":"2025","datePublished":"2025-05-09 00:00:00 \u002b0000 UTC","dateModified":"2025-05-09 00:00:00 \u002b0000 UTC","url":"https:\/\/www.ffutop.com\/posts\/2025-05-09-llm-and-mcp\/","keywords":["MCP","LLM","FunctionCalling","RAG"]}</script><title>MCP 能力探索</title><meta property="og:title" content="MCP 能力探索"><meta property="og:type" content="article"><meta property="og:description" content="重要声明： 本文档内容基于作者在特定时间点的个人理解与认知积累，可能存在主观判断、信息偏差或未能完全覆盖所有相关领域的最新进展。作者的知识结构"><meta name=description content="重要声明： 本文档内容基于作者在特定时间点的个人理解与认知积累，可能存在主观判断、信息偏差或未能完全覆盖所有相关领域的最新进展。作者的知识结构"><meta property="og:locale" content="zh-cmn-Hans-CN"><meta property="og:image" content="favicon.ico"><style>body{font-family:-apple-system,BlinkMacSystemFont,segoe ui,noto sans,Helvetica,Arial,sans-serif,apple color emoji,segoe ui emoji;font-weight:400;margin:0 20px}article{max-width:800px;margin-left:auto;margin-right:auto}a{color:#333;text-decoration:none}a:hover{font-weight:600;text-decoration:underline}.post-ads{margin:50px 0}.markdown-body{color-scheme:light;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;margin:0;color:#1f2328;background-color:#fff;font-family:-apple-system,BlinkMacSystemFont,segoe ui,noto sans,Helvetica,Arial,sans-serif,apple color emoji,segoe ui emoji;font-size:16px;line-height:1.5;word-wrap:break-word}.markdown-body .octicon{display:inline-block;fill:currentColor;vertical-align:text-bottom}.markdown-body h1:hover .anchor .octicon-link:before,.markdown-body h2:hover .anchor .octicon-link:before,.markdown-body h3:hover .anchor .octicon-link:before,.markdown-body h4:hover .anchor .octicon-link:before,.markdown-body h5:hover .anchor .octicon-link:before,.markdown-body h6:hover .anchor .octicon-link:before{width:16px;height:16px;content:' ';display:inline-block;background-color:currentColor;-webkit-mask-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' version='1.1' aria-hidden='true'><path fill-rule='evenodd' d='M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z'></path></svg>");mask-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' version='1.1' aria-hidden='true'><path fill-rule='evenodd' d='M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z'></path></svg>")}.markdown-body details,.markdown-body figcaption,.markdown-body figure{display:block}.markdown-body summary{display:list-item}.markdown-body [hidden]{display:none!important}.markdown-body a{background-color:transparent;color:#0969da;text-decoration:none}.markdown-body abbr[title]{border-bottom:none;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}.markdown-body b,.markdown-body strong{font-weight:600}.markdown-body dfn{font-style:italic}.markdown-body h1{margin:.67em 0;font-weight:600;padding-bottom:.3em;font-size:2em;border-bottom:1px solid #d1d9e0b3}.markdown-body mark{background-color:#fff8c5;color:#1f2328}.markdown-body small{font-size:90%}.markdown-body sub,.markdown-body sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}.markdown-body sub{bottom:-.25em}.markdown-body sup{top:-.5em}.markdown-body img{border-style:none;max-width:100%;box-sizing:content-box}.markdown-body code,.markdown-body kbd,.markdown-body pre,.markdown-body samp{font-family:monospace;font-size:1em}.markdown-body figure{margin:1em 2.5rem}.markdown-body hr{box-sizing:content-box;overflow:hidden;background:0 0;border-bottom:1px solid #d1d9e0b3;height:.25em;padding:0;margin:1.5rem 0;background-color:#d1d9e0;border:0}.markdown-body input{font:inherit;margin:0;overflow:visible;font-family:inherit;font-size:inherit;line-height:inherit}.markdown-body [type=button],.markdown-body [type=reset],.markdown-body [type=submit]{-webkit-appearance:button;appearance:button}.markdown-body [type=checkbox],.markdown-body [type=radio]{box-sizing:border-box;padding:0}.markdown-body [type=number]::-webkit-inner-spin-button,.markdown-body [type=number]::-webkit-outer-spin-button{height:auto}.markdown-body [type=search]::-webkit-search-cancel-button,.markdown-body [type=search]::-webkit-search-decoration{-webkit-appearance:none;appearance:none}.markdown-body ::-webkit-input-placeholder{color:inherit;opacity:.54}.markdown-body ::-webkit-file-upload-button{-webkit-appearance:button;appearance:button;font:inherit}.markdown-body a:hover{text-decoration:underline}.markdown-body ::placeholder{color:#59636e;opacity:1}.markdown-body hr::before{display:table;content:""}.markdown-body hr::after{display:table;clear:both;content:""}.markdown-body table{border-spacing:0;border-collapse:collapse;display:block;width:max-content;max-width:100%;overflow:auto;font-variant:tabular-nums}.markdown-body td,.markdown-body th{padding:0}.markdown-body details summary{cursor:pointer}.markdown-body a:focus,.markdown-body [role=button]:focus,.markdown-body input[type=radio]:focus,.markdown-body input[type=checkbox]:focus{outline:2px solid #0969da;outline-offset:-2px;box-shadow:none}.markdown-body a:focus:not(:focus-visible),.markdown-body [role=button]:focus:not(:focus-visible),.markdown-body input[type=radio]:focus:not(:focus-visible),.markdown-body input[type=checkbox]:focus:not(:focus-visible){outline:solid 1px transparent}.markdown-body a:focus-visible,.markdown-body [role=button]:focus-visible,.markdown-body input[type=radio]:focus-visible,.markdown-body input[type=checkbox]:focus-visible{outline:2px solid #0969da;outline-offset:-2px;box-shadow:none}.markdown-body a:not([class]):focus,.markdown-body a:not([class]):focus-visible,.markdown-body input[type=radio]:focus,.markdown-body input[type=radio]:focus-visible,.markdown-body input[type=checkbox]:focus,.markdown-body input[type=checkbox]:focus-visible{outline-offset:0}.markdown-body kbd{display:inline-block;padding:.25rem;font:11px ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;line-height:10px;color:#1f2328;vertical-align:middle;background-color:#f6f8fa;border:solid 1px #d1d9e0b3;border-bottom-color:#d1d9e0b3;border-radius:6px;box-shadow:inset 0 -1px #d1d9e0b3}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{margin-top:1.5rem;margin-bottom:1rem;font-weight:600;line-height:1.25}.markdown-body h2{font-weight:600;padding-bottom:.3em;font-size:1.5em;border-bottom:1px solid #d1d9e0b3}.markdown-body h3{font-weight:600;font-size:1.25em}.markdown-body h4{font-weight:600;font-size:1em}.markdown-body h5{font-weight:600;font-size:.875em}.markdown-body h6{font-weight:600;font-size:.85em;color:#59636e}.markdown-body p{margin-top:0;margin-bottom:10px}.markdown-body blockquote{margin:0;padding:0 1em;color:#59636e;border-left:.25em solid #d1d9e0}.markdown-body ul,.markdown-body ol{margin-top:0;margin-bottom:0;padding-left:2em}.markdown-body ol ol,.markdown-body ul ol{list-style-type:lower-roman}.markdown-body ul ul ol,.markdown-body ul ol ol,.markdown-body ol ul ol,.markdown-body ol ol ol{list-style-type:lower-alpha}.markdown-body dd{margin-left:0}.markdown-body tt,.markdown-body code,.markdown-body samp{font-family:ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;font-size:12px}.markdown-body pre{margin-top:0;margin-bottom:0;font-family:ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;font-size:12px;word-wrap:normal}.markdown-body .octicon{display:inline-block;overflow:visible!important;vertical-align:text-bottom;fill:currentColor}.markdown-body input::-webkit-outer-spin-button,.markdown-body input::-webkit-inner-spin-button{margin:0;appearance:none}.markdown-body .mr-2{margin-right:.5rem!important}.markdown-body::before{display:table;content:""}.markdown-body::after{display:table;clear:both;content:""}.markdown-body>*:first-child{margin-top:0!important}.markdown-body>*:last-child{margin-bottom:0!important}.markdown-body a:not([href]){color:inherit;text-decoration:none}.markdown-body .absent{color:#d1242f}.markdown-body .anchor{float:left;padding-right:.25rem;margin-left:-20px;line-height:1}.markdown-body .anchor:focus{outline:none}.markdown-body p,.markdown-body blockquote,.markdown-body ul,.markdown-body ol,.markdown-body dl,.markdown-body table,.markdown-body pre,.markdown-body details{margin-top:0;margin-bottom:1rem}.markdown-body blockquote>:first-child{margin-top:0}.markdown-body blockquote>:last-child{margin-bottom:0}.markdown-body h1 .octicon-link,.markdown-body h2 .octicon-link,.markdown-body h3 .octicon-link,.markdown-body h4 .octicon-link,.markdown-body h5 .octicon-link,.markdown-body h6 .octicon-link{color:#1f2328;vertical-align:middle;visibility:hidden}.markdown-body h1:hover .anchor,.markdown-body h2:hover .anchor,.markdown-body h3:hover .anchor,.markdown-body h4:hover .anchor,.markdown-body h5:hover .anchor,.markdown-body h6:hover .anchor{text-decoration:none}.markdown-body h1:hover .anchor .octicon-link,.markdown-body h2:hover .anchor .octicon-link,.markdown-body h3:hover .anchor .octicon-link,.markdown-body h4:hover .anchor .octicon-link,.markdown-body h5:hover .anchor .octicon-link,.markdown-body h6:hover .anchor .octicon-link{visibility:visible}.markdown-body h1 tt,.markdown-body h1 code,.markdown-body h2 tt,.markdown-body h2 code,.markdown-body h3 tt,.markdown-body h3 code,.markdown-body h4 tt,.markdown-body h4 code,.markdown-body h5 tt,.markdown-body h5 code,.markdown-body h6 tt,.markdown-body h6 code{padding:0 .2em;font-size:inherit}.markdown-body summary h1,.markdown-body summary h2,.markdown-body summary h3,.markdown-body summary h4,.markdown-body summary h5,.markdown-body summary h6{display:inline-block}.markdown-body summary h1 .anchor,.markdown-body summary h2 .anchor,.markdown-body summary h3 .anchor,.markdown-body summary h4 .anchor,.markdown-body summary h5 .anchor,.markdown-body summary h6 .anchor{margin-left:-40px}.markdown-body summary h1,.markdown-body summary h2{padding-bottom:0;border-bottom:0}.markdown-body ul.no-list,.markdown-body ol.no-list{padding:0;list-style-type:none}.markdown-body ol[type="a s"]{list-style-type:lower-alpha}.markdown-body ol[type="A s"]{list-style-type:upper-alpha}.markdown-body ol[type="i s"]{list-style-type:lower-roman}.markdown-body ol[type="I s"]{list-style-type:upper-roman}.markdown-body ol[type="1"]{list-style-type:decimal}.markdown-body div>ol:not([type]){list-style-type:decimal}.markdown-body ul ul,.markdown-body ul ol,.markdown-body ol ol,.markdown-body ol ul{margin-top:0;margin-bottom:0}.markdown-body li>p{margin-top:1rem}.markdown-body li+li{margin-top:.25em}.markdown-body dl{padding:0}.markdown-body dl dt{padding:0;margin-top:1rem;font-size:1em;font-style:italic;font-weight:600}.markdown-body dl dd{padding:0 1rem;margin-bottom:1rem}.markdown-body table th{font-weight:600}.markdown-body table th,.markdown-body table td{padding:6px 13px;border:1px solid #d1d9e0}.markdown-body table td>:last-child{margin-bottom:0}.markdown-body table tr{background-color:#fff;border-top:1px solid #d1d9e0b3}.markdown-body table tr:nth-child(2n){background-color:#f6f8fa}.markdown-body table img{background-color:transparent}.markdown-body img[align=right]{padding-left:20px}.markdown-body img[align=left]{padding-right:20px}.markdown-body .emoji{max-width:none;vertical-align:text-top;background-color:transparent}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{display:block;float:left;width:auto;padding:7px;margin:13px 0 0;overflow:hidden;border:1px solid #d1d9e0}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{display:block;padding:5px 0 0;clear:both;color:#1f2328}.markdown-body span.align-center{display:block;overflow:hidden;clear:both}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{display:block;overflow:hidden;clear:both}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{padding:.2em .4em;margin:0;font-size:85%;white-space:break-spaces;background-color:#818b981f;border-radius:6px}.markdown-body code br,.markdown-body tt br{display:none}.markdown-body del code{text-decoration:inherit}.markdown-body samp{font-size:85%}.markdown-body pre code{font-size:100%}.markdown-body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}.markdown-body .highlight{margin-bottom:1rem}.markdown-body .highlight pre{margin-bottom:0;word-break:normal}.markdown-body .highlight pre,.markdown-body pre{padding:1rem;overflow:auto;font-size:85%;line-height:1.45;color:#1f2328;background-color:#f6f8fa;border-radius:6px}.markdown-body pre code,.markdown-body pre tt{display:inline;max-width:auto;padding:0;margin:0;overflow:visible;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}.markdown-body .csv-data td,.markdown-body .csv-data th{padding:5px;overflow:hidden;font-size:12px;line-height:1;text-align:left;white-space:nowrap}.markdown-body .csv-data .blob-num{padding:10px .5rem 9px;text-align:right;background:#fff;border:0}.markdown-body .csv-data tr{border-top:0}.markdown-body .csv-data th{font-weight:600;background:#f6f8fa;border-top:0}.markdown-body [data-footnote-ref]::before{content:"["}.markdown-body [data-footnote-ref]::after{content:"]"}.markdown-body .footnotes{font-size:12px;color:#59636e;border-top:1px solid #d1d9e0}.markdown-body .footnotes ol{padding-left:1rem}.markdown-body .footnotes ol ul{display:inline-block;padding-left:1rem;margin-top:1rem}.markdown-body .footnotes li{position:relative}.markdown-body .footnotes li:target::before{position:absolute;top:calc(.5rem*-1);right:calc(.5rem*-1);bottom:calc(.5rem*-1);left:calc(1.5rem*-1);pointer-events:none;content:"";border:2px solid #0969da;border-radius:6px}.markdown-body .footnotes li:target{color:#1f2328}.markdown-body .footnotes .data-footnote-backref g-emoji{font-family:monospace}.markdown-body body:has(:modal){padding-right:var(--dialog-scrollgutter)!important}.markdown-body .pl-c{color:#59636e}.markdown-body .pl-c1,.markdown-body .pl-s .pl-v{color:#0550ae}.markdown-body .pl-e,.markdown-body .pl-en{color:#6639ba}.markdown-body .pl-smi,.markdown-body .pl-s .pl-s1{color:#1f2328}.markdown-body .pl-ent{color:#0550ae}.markdown-body .pl-k{color:#cf222e}.markdown-body .pl-s,.markdown-body .pl-pds,.markdown-body .pl-s .pl-pse .pl-s1,.markdown-body .pl-sr,.markdown-body .pl-sr .pl-cce,.markdown-body .pl-sr .pl-sre,.markdown-body .pl-sr .pl-sra{color:#0a3069}.markdown-body .pl-v,.markdown-body .pl-smw{color:#953800}.markdown-body .pl-bu{color:#82071e}.markdown-body .pl-ii{color:#f6f8fa;background-color:#82071e}.markdown-body .pl-c2{color:#f6f8fa;background-color:#cf222e}.markdown-body .pl-sr .pl-cce{font-weight:700;color:#116329}.markdown-body .pl-ml{color:#3b2300}.markdown-body .pl-mh,.markdown-body .pl-mh .pl-en,.markdown-body .pl-ms{font-weight:700;color:#0550ae}.markdown-body .pl-mi{font-style:italic;color:#1f2328}.markdown-body .pl-mb{font-weight:700;color:#1f2328}.markdown-body .pl-md{color:#82071e;background-color:#ffebe9}.markdown-body .pl-mi1{color:#116329;background-color:#dafbe1}.markdown-body .pl-mc{color:#953800;background-color:#ffd8b5}.markdown-body .pl-mi2{color:#d1d9e0;background-color:#0550ae}.markdown-body .pl-mdr{font-weight:700;color:#8250df}.markdown-body .pl-ba{color:#59636e}.markdown-body .pl-sg{color:#818b98}.markdown-body .pl-corl{text-decoration:underline;color:#0a3069}.markdown-body [role=button]:focus:not(:focus-visible),.markdown-body [role=tabpanel][tabindex="0"]:focus:not(:focus-visible),.markdown-body button:focus:not(:focus-visible),.markdown-body summary:focus:not(:focus-visible),.markdown-body a:focus:not(:focus-visible){outline:none;box-shadow:none}.markdown-body [tabindex="0"]:focus:not(:focus-visible),.markdown-body details-dialog:focus:not(:focus-visible){outline:none}.markdown-body g-emoji{display:inline-block;min-width:1ch;font-family:apple color emoji,segoe ui emoji,segoe ui symbol;font-size:1em;font-style:normal!important;font-weight:400;line-height:1;vertical-align:-.075em}.markdown-body g-emoji img{width:1em;height:1em}.markdown-body .task-list-item{list-style-type:none}.markdown-body .task-list-item label{font-weight:400}.markdown-body .task-list-item.enabled label{cursor:pointer}.markdown-body .task-list-item+.task-list-item{margin-top:.25rem}.markdown-body .task-list-item .handle{display:none}.markdown-body .task-list-item-checkbox{margin:0 .2em .25em -1.4em;vertical-align:middle}.markdown-body ul:dir(rtl) .task-list-item-checkbox{margin:0 -1.6em .25em .2em}.markdown-body ol:dir(rtl) .task-list-item-checkbox{margin:0 -1.6em .25em .2em}.markdown-body .contains-task-list:hover .task-list-item-convert-container,.markdown-body .contains-task-list:focus-within .task-list-item-convert-container{display:block;width:auto;height:24px;overflow:visible;clip:auto}.markdown-body ::-webkit-calendar-picker-indicator{filter:invert(50%)}.markdown-body .markdown-alert{padding:.5rem 1rem;margin-bottom:1rem;color:inherit;border-left:.25em solid #d1d9e0}.markdown-body .markdown-alert>:first-child{margin-top:0}.markdown-body .markdown-alert>:last-child{margin-bottom:0}.markdown-body .markdown-alert .markdown-alert-title{display:flex;font-weight:500;align-items:center;line-height:1}.markdown-body .markdown-alert.markdown-alert-note{border-left-color:#0969da}.markdown-body .markdown-alert.markdown-alert-note .markdown-alert-title{color:#0969da}.markdown-body .markdown-alert.markdown-alert-important{border-left-color:#8250df}.markdown-body .markdown-alert.markdown-alert-important .markdown-alert-title{color:#8250df}.markdown-body .markdown-alert.markdown-alert-warning{border-left-color:#9a6700}.markdown-body .markdown-alert.markdown-alert-warning .markdown-alert-title{color:#9a6700}.markdown-body .markdown-alert.markdown-alert-tip{border-left-color:#1a7f37}.markdown-body .markdown-alert.markdown-alert-tip .markdown-alert-title{color:#1a7f37}.markdown-body .markdown-alert.markdown-alert-caution{border-left-color:#cf222e}.markdown-body .markdown-alert.markdown-alert-caution .markdown-alert-title{color:#d1242f}.markdown-body>*:first-child>.heading-element:first-child{margin-top:0!important}.markdown-body .highlight pre:has(+.zeroclipboard-container){min-height:52px}.Chinese .markdown-body{line-height:150%}.site-date-catalog{font-size:1.8rem}.header-title{font-size:2rem;font-weight:700;margin-top:32px;font-family:bungee shade,sans-serif}.header-title a{text-decoration:none}.header-subtitle{color:#666}.header-items{margin:10px 0}.header-item{margin:0 5px}.header-line{width:100%;border-width:2px;border-color:#482936;border-style:solid none none none}.lang-switch{font-weight:600}#posts-list{min-height:600px}.posts-line{font-size:1rem;margin:8px 0;font-weight:500}.posts-categories{font-size:.8rem;margin:auto;text-align:center}.posts-category{padding:3px 0;border:#000 2px solid;border-radius:5px}.site-footer{margin-top:50px}.site-footer-item{margin-right:12px}.post-header{margin-bottom:50px}.post-title{font-size:2rem;font-weight:600;margin-bottom:.5em}.post-tags{display:inline;font-weight:400;padding:2px 5px;margin-right:6px;border:#000 2px solid;border-radius:5px}.post-date{font-weight:400;font-style:italic}.post-author{float:right;font-weight:400}.page-content{min-height:60%}.post-content{margin-bottom:50px;margin-left:auto;margin-right:auto;padding-left:15px;padding-right:15px}.post-content p{hyphens:auto;font-size:1rem;line-height:1.7;margin-top:0;margin-bottom:1.2em}.post-content img{max-width:100%;display:block;margin-right:auto;margin-top:6px}.post-content .post-gallery{display:flex;flex-wrap:wrap;gap:6px}.post-content .post-gallery img{margin-right:auto;margin-top:auto;width:calc(50% - 3px)}.post-content h1{font-size:1.8rem;font-weight:600;margin-top:1.5em;margin-bottom:.8em;line-height:1.3;padding-bottom:.3em;border-bottom:1px solid #eaecef}.post-content h2{font-size:1.5rem;font-weight:600;margin-top:1.8em;margin-bottom:.8em;line-height:1.3;padding-bottom:.3em;border-bottom:1px solid #eaecef}.post-content h3{font-size:1.25rem;font-weight:600;margin-top:1.6em;margin-bottom:.6em;line-height:1.4}.post-content h4{font-size:1.1rem;font-weight:500;margin-top:1.4em;margin-bottom:.5em;line-height:1.4}.post-content table{width:100%;border-collapse:collapse;margin:1.5em 0;font-size:.95em;box-shadow:0 1px 3px rgba(0,0,0,.1)}.post-content th,.post-content td{border:1px solid #ddd;padding:10px 12px;text-align:left}.post-content th{background-color:#f2f2f2;font-weight:700}.post-content tr:nth-child(even){background-color:#f9f9f9}.post-content tr:hover{background-color:#f1f1f1}.related-content{border-width:3px;border-style:solid;border-color:#000;padding:0 10px;margin-bottom:50px;margin-top:100px}.related-content li{margin:5px 0}.taxonomy-term{font-size:3rem}.gallery-img{text-align:center}.gallery-img span{text-align:center}.gallery-img-desc{font-size:.8em;font-weight:800}#disqus_thread{position:relative}#disqus_thread:after{content:"";display:block;height:55px;width:100%;position:absolute;bottom:0;background:#fff}@media screen and (max-width:600px){.header-title,.header-subtitle,.header-items{}.posts-line{font-size:16px}.markdown-body{font-size:.95rem;line-height:1.65}.post-title{font-size:1.7rem}.post-content p{letter-spacing:normal;line-height:1.65}.post-content .post-gallery img{width:100%}.post-content h1{font-size:1.7rem}.post-content h2{font-size:1.4rem}.post-content h3{font-size:1.2rem}.post-content h4{font-size:1.05rem}}@media screen and (max-width:48em){.posts-category{display:none}}</style><style>.container,.container-fluid{margin-right:auto;margin-left:auto}.container-fluid{padding-right:2rem;padding-left:2rem}.row{box-sizing:border-box;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:0;-ms-flex:0 1 auto;flex:initial;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-right:-.5rem;margin-left:-.5rem}.row.reverse{-webkit-box-orient:horizontal;-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse}.col.reverse{-webkit-box-orient:vertical;-webkit-box-direction:reverse;-ms-flex-direction:column-reverse;flex-direction:column-reverse}.col-xs,.col-xs-1,.col-xs-10,.col-xs-11,.col-xs-12,.col-xs-2,.col-xs-3,.col-xs-4,.col-xs-5,.col-xs-6,.col-xs-7,.col-xs-8,.col-xs-9,.col-xs-offset-0,.col-xs-offset-1,.col-xs-offset-10,.col-xs-offset-11,.col-xs-offset-12,.col-xs-offset-2,.col-xs-offset-3,.col-xs-offset-4,.col-xs-offset-5,.col-xs-offset-6,.col-xs-offset-7,.col-xs-offset-8,.col-xs-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-xs{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-xs-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-xs-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-xs-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-xs-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-xs-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-xs-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-xs-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-xs-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-xs-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-xs-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-xs-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-xs-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-xs-offset-0{margin-left:0}.col-xs-offset-1{margin-left:8.33333333%}.col-xs-offset-2{margin-left:16.66666667%}.col-xs-offset-3{margin-left:25%}.col-xs-offset-4{margin-left:33.33333333%}.col-xs-offset-5{margin-left:41.66666667%}.col-xs-offset-6{margin-left:50%}.col-xs-offset-7{margin-left:58.33333333%}.col-xs-offset-8{margin-left:66.66666667%}.col-xs-offset-9{margin-left:75%}.col-xs-offset-10{margin-left:83.33333333%}.col-xs-offset-11{margin-left:91.66666667%}.start-xs{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-xs{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-xs{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-xs{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-xs{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-xs{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-xs{-ms-flex-pack:distribute;justify-content:space-around}.between-xs{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-xs{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-xs{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}@media only screen and (min-width:48em){.container{width:49rem}.col-sm,.col-sm-1,.col-sm-10,.col-sm-11,.col-sm-12,.col-sm-2,.col-sm-3,.col-sm-4,.col-sm-5,.col-sm-6,.col-sm-7,.col-sm-8,.col-sm-9,.col-sm-offset-0,.col-sm-offset-1,.col-sm-offset-10,.col-sm-offset-11,.col-sm-offset-12,.col-sm-offset-2,.col-sm-offset-3,.col-sm-offset-4,.col-sm-offset-5,.col-sm-offset-6,.col-sm-offset-7,.col-sm-offset-8,.col-sm-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-sm{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-sm-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-sm-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-sm-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-sm-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-sm-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-sm-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-sm-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-sm-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-sm-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-sm-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-sm-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-sm-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-sm-offset-0{margin-left:0}.col-sm-offset-1{margin-left:8.33333333%}.col-sm-offset-2{margin-left:16.66666667%}.col-sm-offset-3{margin-left:25%}.col-sm-offset-4{margin-left:33.33333333%}.col-sm-offset-5{margin-left:41.66666667%}.col-sm-offset-6{margin-left:50%}.col-sm-offset-7{margin-left:58.33333333%}.col-sm-offset-8{margin-left:66.66666667%}.col-sm-offset-9{margin-left:75%}.col-sm-offset-10{margin-left:83.33333333%}.col-sm-offset-11{margin-left:91.66666667%}.start-sm{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-sm{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-sm{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-sm{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-sm{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-sm{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-sm{-ms-flex-pack:distribute;justify-content:space-around}.between-sm{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-sm{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-sm{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:64em){.container{width:65rem}.col-md,.col-md-1,.col-md-10,.col-md-11,.col-md-12,.col-md-2,.col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-offset-0,.col-md-offset-1,.col-md-offset-10,.col-md-offset-11,.col-md-offset-12,.col-md-offset-2,.col-md-offset-3,.col-md-offset-4,.col-md-offset-5,.col-md-offset-6,.col-md-offset-7,.col-md-offset-8,.col-md-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-md{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-md-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-md-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-md-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-md-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-md-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-md-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-md-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-md-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-md-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-md-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-md-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-md-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-md-offset-0{margin-left:0}.col-md-offset-1{margin-left:8.33333333%}.col-md-offset-2{margin-left:16.66666667%}.col-md-offset-3{margin-left:25%}.col-md-offset-4{margin-left:33.33333333%}.col-md-offset-5{margin-left:41.66666667%}.col-md-offset-6{margin-left:50%}.col-md-offset-7{margin-left:58.33333333%}.col-md-offset-8{margin-left:66.66666667%}.col-md-offset-9{margin-left:75%}.col-md-offset-10{margin-left:83.33333333%}.col-md-offset-11{margin-left:91.66666667%}.start-md{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-md{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-md{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-md{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-md{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-md{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-md{-ms-flex-pack:distribute;justify-content:space-around}.between-md{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-md{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-md{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}@media only screen and (min-width:75em){.container{width:76rem}.col-lg,.col-lg-1,.col-lg-10,.col-lg-11,.col-lg-12,.col-lg-2,.col-lg-3,.col-lg-4,.col-lg-5,.col-lg-6,.col-lg-7,.col-lg-8,.col-lg-9,.col-lg-offset-0,.col-lg-offset-1,.col-lg-offset-10,.col-lg-offset-11,.col-lg-offset-12,.col-lg-offset-2,.col-lg-offset-3,.col-lg-offset-4,.col-lg-offset-5,.col-lg-offset-6,.col-lg-offset-7,.col-lg-offset-8,.col-lg-offset-9{box-sizing:border-box;-webkit-box-flex:0;-ms-flex:0 0 auto;flex:none;padding-right:.5rem;padding-left:.5rem}.col-lg{-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%}.col-lg-1{-ms-flex-preferred-size:8.33333333%;flex-basis:8.33333333%;max-width:8.33333333%}.col-lg-2{-ms-flex-preferred-size:16.66666667%;flex-basis:16.66666667%;max-width:16.66666667%}.col-lg-3{-ms-flex-preferred-size:25%;flex-basis:25%;max-width:25%}.col-lg-4{-ms-flex-preferred-size:33.33333333%;flex-basis:33.33333333%;max-width:33.33333333%}.col-lg-5{-ms-flex-preferred-size:41.66666667%;flex-basis:41.66666667%;max-width:41.66666667%}.col-lg-6{-ms-flex-preferred-size:50%;flex-basis:50%;max-width:50%}.col-lg-7{-ms-flex-preferred-size:58.33333333%;flex-basis:58.33333333%;max-width:58.33333333%}.col-lg-8{-ms-flex-preferred-size:66.66666667%;flex-basis:66.66666667%;max-width:66.66666667%}.col-lg-9{-ms-flex-preferred-size:75%;flex-basis:75%;max-width:75%}.col-lg-10{-ms-flex-preferred-size:83.33333333%;flex-basis:83.33333333%;max-width:83.33333333%}.col-lg-11{-ms-flex-preferred-size:91.66666667%;flex-basis:91.66666667%;max-width:91.66666667%}.col-lg-12{-ms-flex-preferred-size:100%;flex-basis:100%;max-width:100%}.col-lg-offset-0{margin-left:0}.col-lg-offset-1{margin-left:8.33333333%}.col-lg-offset-2{margin-left:16.66666667%}.col-lg-offset-3{margin-left:25%}.col-lg-offset-4{margin-left:33.33333333%}.col-lg-offset-5{margin-left:41.66666667%}.col-lg-offset-6{margin-left:50%}.col-lg-offset-7{margin-left:58.33333333%}.col-lg-offset-8{margin-left:66.66666667%}.col-lg-offset-9{margin-left:75%}.col-lg-offset-10{margin-left:83.33333333%}.col-lg-offset-11{margin-left:91.66666667%}.start-lg{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start}.center-lg{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;text-align:center}.end-lg{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end}.top-lg{-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start}.middle-lg{-webkit-box-align:center;-ms-flex-align:center;align-items:center}.bottom-lg{-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end}.around-lg{-ms-flex-pack:distribute;justify-content:space-around}.between-lg{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.first-lg{-webkit-box-ordinal-group:0;-ms-flex-order:-1;order:-1}.last-lg{-webkit-box-ordinal-group:2;-ms-flex-order:1;order:1}}</style><link href=/index.xml rel=alternate type=application/rss+xml title="Utop's Blog"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap" rel=stylesheet><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@500;600;700&family=Source+Code+Pro:wght@600&display=swap" rel=stylesheet><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script> <script async src="https://www.googletagmanager.com/gtag/js?id=G-3RHY4L44ZL"></script> <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-3RHY4L44ZL")</script></head><body><article class="post Chinese" id=article><div class=row><div class=col-xs-12><div class=site-header><header><div class=header-title><a href=/>FFUTOP</a></div><div class=header-subtitle></div></header><div class="row end-md header-items"><div class=header-item><a href=/posts/ target=_blank>Posts</a></div><div class=header-item><a href=/index.xml target=_blank>RSS</a></div><div class=header-item><a href=https://github.com/ffutop target=_blank>Github</a></div><div class=header-item><a href=https://ffkit.ffutop.com/author target=_blank>About</a></div></div><div class=row></div><div class=header-line></div></div><header class=post-header><h1 class=post-title>MCP 能力探索</h1><div class="row post-desc"><div class=col-xs-6><time class=post-date datetime="2025-05-09 00:00:00 UTC">09 May 2025</time></div><div class=col-xs-6><div class=post-author><a target=_blank href=https://www.ffutop.com/>@ffutop</a></div></div></div></header><div class="post-content markdown-body"><blockquote><p><strong>重要声明</strong>：</p><p>本文档内容基于作者在特定时间点的个人理解与认知积累，可能存在主观判断、信息偏差或未能完全覆盖所有相关领域的最新进展。作者的知识结构和经验范围可能对内容的深度、广度及视角产生一定影响。</p><p>本文内容截至 <strong>2025年5月6日</strong>。敬请读者在参考本文信息时，结合其他权威资料进行综合判断，并注意技术的快速发展可能带来的内容时效性问题。</p></blockquote><p>模型上下文协议 (Model Context Protocol, MCP) 的出现，为大语言模型 (LLM) 与具体业务场景的深度融合开辟了新的路径。为了深入探索其在实际业务中的应用潜力，我们对 MCP 进行了一些尝试，并在这篇文章中分享我们的一些探索成果。</p><h2 id=1-大语言模型接入外部知识的方式>1 大语言模型接入外部知识的方式</h2><p>大语言模型的核心能力源于其海量的训练数据，然而这些数据本质上是在特定时间点的静态快照，具有固有的时效性和覆盖局限性。因此，当模型面对其训练数据截止日期之后的新信息、特定组织或个人的私有数据，或是需要实时更新的动态数据流（如最新新闻、股票价格或传感器读数）时，其理解和处理能力会受到显著制约。</p><p>为了克服这一挑战，业界涌现出一系列技术手段，旨在增强 LLM 对外部动态数据和私有知识的获取与利用能力。主要包括：</p><h3 id=11-检索增强生成-retrieval-augmented-generation-rag>1.1 检索增强生成 (Retrieval-Augmented Generation, RAG)</h3><p>RAG 是一种通过将外部数据与模型的输入结合，以增强模型对这些外部信息的理解和处理能力的技术。其核心思想是，通过为模型提供精准、实时的上下文信息，辅助模型生成更准确、更相关的答案，有效缓解模型知识陈旧或缺乏特定领域知识的问题。</p><pre class=mermaid>graph TB
+    UserRequestStart(( ))
+    style UserRequestStart fill:none,stroke:none
+    ResponseEnd(( ))
+    style ResponseEnd fill:none,stroke:none
+        EmbeddingModel_Query[Embedding Model]
+        Retriever["检索器<br>Retriever"]
+        RAGTemplate["RAG 提示词模板<br>RAG Template"]
+        LLM[LLM]
+        VS_Query[("向量数据库<br>Vector Store")] 
+
+        UserRequestStart -- "① 接收查询<br>(Receive Query)" --> Retriever
+
+        EmbeddingModel_Query -- "Embeds Query" --> Retriever
+        VS_Query -- "向量相似性搜索" --> Retriever
+        Retriever -- "② 检索上下文<br>(Retrieve Context)" --> RAGTemplate
+
+        RAGTemplate -- "③ 增强提示<br>(Augment Prompt: Query + Context)" --> LLM
+
+        LLM -- "④ 返回响应<br>(Return Response)" --> ResponseEnd
+
+    classDef darkStyle fill:#ffffff,stroke:#000066,color:#000066,stroke-width:2px,font-weight:bold
+
+    class VectorStore,VS_Query,EmbeddingModel_Query,Retriever,RAGTemplate,LLM darkStyle;
+</pre><center><small>图 1: RAG 工作流程图</small></center><h3 id=12-函数调用-function-calling>1.2 函数调用 (Function Calling)</h3><p>函数调用能力赋予了大语言模型在对话过程中动态执行预定义外部函数的能力。这一机制使得 LLM 不再仅仅是一个信息处理和生成的黑盒，而是能够根据对话上下文和用户意图，主动调用外部工具来获取实时信息（如查询天气、股价）、执行操作（如发送邮件、创建订单）或与专有业务系统交互。这极大地扩展了 LLM 的应用边界，使其能够更灵活地完成复杂任务。</p><pre class=mermaid>
+graph TD
+    A_Start((对话开始))
+
+    N1["用户提示词<br>+ 函数定义"]
+    G_Decide1{"LLM: 决定如何回答？"}
+
+    N2_FinalAnswer1["最终回答"]
+    A_Complete1["应用：完成对话"]
+
+    N3_FuncCall["LLM: 回复函数名字，参数"]
+    A_ParseExecute["应用：解析响应，执行函数"]
+    N4_FuncResult["用户提示词<br>+ 函数返回值"]
+    G_Decide2{"LLM: 决定如何回答？"}
+
+    N5_FinalAnswer2["最终回答"]
+    A_Complete2["应用：完成对话"]
+
+    A_Start --> N1
+    N1 --> G_Decide1
+
+    G_Decide1 -- "Option 1:<br>直接回答" --> N2_FinalAnswer1
+    N2_FinalAnswer1 --> A_Complete1
+
+    G_Decide1 -- "Option 2:<br>调用函数" --> N3_FuncCall
+    N3_FuncCall --> A_ParseExecute
+    A_ParseExecute --> N4_FuncResult
+    N4_FuncResult --> G_Decide2
+
+    G_Decide2 -- "Option 2a:<br>直接回答" --> N5_FinalAnswer2
+    N5_FinalAnswer2 --> A_Complete2
+
+    G_Decide2 -. "Option 2b:<br>调用其它函数" .-> N3_FuncCall 
+    %% Dashed line for the loop/alternative
+
+    %% --- Styling ---
+    classDef darkStyle fill:#ffffff,stroke:#000066,color:#000066,stroke-width:2px,font-weight:bold
+    class A_Start,N1,G_Decide1,N2_FinalAnswer1,A_Complete1,N3_FuncCall,A_ParseExecute,N4_FuncResult,G_Decide2,N5_FinalAnswer2,A_Complete2 darkStyle;
+
+    %% Style for the start node to be less prominent if desired, or keep it darkStyle
+    %% style A_Start fill:#f9f9f9,stroke:#ccc,color:#333
+</pre><center><small>图 2: 函数调用工作流程图</small></center><p>尽管 RAG 和函数调用等技术显著增强了 LLM 的能力，但在面对日益复杂的应用场景，尤其是需要集成多个、异构的数据源和工具时，如何标准化这种交互，确保不同 LLM 应用与各种外部资源之间的高效、安全、可扩展的互操作性，成为了新的挑战。模型上下文协议 (MCP) 正是为应对这一挑战而提出的。</p><h2 id=2-模型上下文协议-model-context-protocol-mcp>2 模型上下文协议 (Model Context Protocol, MCP)</h2><pre class=mermaid>%%{init: { "themeVariables": { "clusterBkg": "#ffffff", "clusterBorder": "#000066" }}}%%
+graph LR
+    subgraph "Your Computer"
+        Host["Host with MCP Client<br>(Claude, IDEs, Tools)"]
+        S1["MCP Server A"]
+        S2["MCP Server B"]
+        S3["MCP Server C"]
+        Host <-->|"MCP Protocol"| S1
+        Host <-->|"MCP Protocol"| S2
+        Host <-->|"MCP Protocol"| S3
+        S1 <--> D1[("Local<br>Data Source A")]
+        S2 <--> D2[("Local<br>Data Source B")]
+    end
+    subgraph "Internet"
+        S3 <-->|"Web APIs"| D3[("Remote<br>Service C")]
+    end
+
+    classDef darkStyle fill:#ffffff,stroke:#000066,color:#000066,stroke-width:2px,font-weight:bold
+
+    class Host,S1,S2,S3,D1,D2,D3 darkStyle;
+</pre><center><small>图 3: MCP 概念图（简化版）</small></center><p>上图为普通用户呈现了一个直观易懂的 MCP 概念。图中，用户电脑 (Your Computer) 上运行着一个 MCP 客户端（MCP Client），通过类似通用 USB 接口的方式连接了多个 MCP 服务器（MCP Servers）。这些服务器各自对接不同的数据源（Data Sources），数据源既可以是本地的，也可以是远程的。</p><p>然而，值得注意的是，尽管图中将所有 MCP Server 都描绘在用户电脑的范围内，这可能造成一种印象，即 MCP Server 必须部署在本地。实际上，MCP Server 完全可以部署在云端或任何可访问的网络位置。</p><p>下图展示了 MCP 更为典型的部署架构，能够更准确地反映其灵活性：</p><pre class=mermaid>%%{init: { "themeVariables": { "clusterBkg": "#ffffff", "clusterBorder": "#000066" }}}%%
+graph LR
+    subgraph "Your Computer"
+        Host["Host with MCP Client<br>(Claude, IDEs, Tools)"]
+        S1["MCP Server A"]
+        S2["MCP Server B"]
+        Host <-->|"MCP Protocol"| S1
+        Host <-->|"MCP Protocol"| S2
+
+        S1 <--> D1[("Local<br>Data Source A")]
+    end
+
+    subgraph "Internet"
+        S2 <-->|"Web APIs"| D2[("Remote<br>Service B")]
+    end
+
+    Host <-->|"MCP Protocol"| S3
+    subgraph "Cloud Server"
+        S3["MCP Server C"]
+
+        S3 <-->|"Web APIs"| D3[("Service C")]
+        S3 <-->|"Web APIs"| D2
+    end
+
+
+    classDef darkStyle fill:#ffffff,stroke:#000066,color:#000066,stroke-width:2px,font-weight:bold
+
+    class Host,S1,S2,S3,D1,D2,D3 darkStyle;
+</pre><center><small>图 4: MCP 部署架构图</small></center><h3 id=21-核心架构>2.1 核心架构</h3><p>MCP 是一种基于客户端/服务器 (Client-Server) 架构的协议，旨在规范 LLM 应用（Host）与其所需外部上下文信息和工具之间的交互。</p><ul><li><strong>Host</strong>: 指运行 LLM 的应用程序，例如集成开发环境 (IDE)、桌面聊天客户端、浏览器插件、或任何需要与外部资源交互的 AI 应用。</li><li><strong>MCP Client</strong>: 嵌入在 Host 应用中的组件（如插件、库、服务或脚本），负责与一个或多个 MCP Server 建立连接并进行通信。</li><li><strong>MCP Server</strong>: 独立的进程或服务，它向 MCP Client 暴露特定的上下文信息 (Resources)、可执行的工具 (Tools) 和预设的提示 (Prompts)。</li></ul><pre class=mermaid>%%{init: { "themeVariables": { "clusterBkg": "#ffffff", "clusterBorder": "#000066" }}}%%
+flowchart LR
+    subgraph "Host"
+        client1[MCP Client]
+        client2[MCP Client]
+    end
+    subgraph "Server Process"
+        server1[MCP Server]
+    end
+    subgraph "Server Process"
+        server2[MCP Server]
+    end
+
+    client1 <-->|Transport Layer| server1
+    client2 <-->|Transport Layer| server2
+    classDef darkStyle fill:#ffffff,stroke:#000066,color:#000066,stroke-width:2px,font-weight:bold
+
+    class client1,client2,server1,server2 darkStyle;
+</pre><center><small>图 5: MCP 核心架构图</small></center><p>MCP 协议定义了两种传输层机制：</p><ul><li><strong>Stdio transport</strong>: 使用标准输入输出进行通信，适用于本地进程。</li><li><strong>HTTP with SSE transport</strong>: 使用 Server-Sent Events 进行服务器到客户端的消息传递，使用 HTTP POST 进行客户端到服务器的消息传递。</li><li><strong>Streamable HTTP</strong>: [2025-03-26] 引入 Streamable HTTP 替代原先的 HTTP + SSE 作为默认传输方式。这一变更在解决原有方案中连接不可恢复、服务端长连接压力大等问题的同时，依然保留了 SSE 带来的流式响应优势。</li></ul><p>所有传输层使用 JSON-RPC 2.0 进行消息交换。</p><h3 id=22-核心概念>2.2 核心概念</h3><p>MCP 的核心功能通过以下几个关键概念实现：</p><h4 id=resources>Resources</h4><p><code>Resources</code> 被定义为可以被用户或 LLM 使用的上下文和数据。它们提供数据而不执行重要的计算，也没有副作用，类似于 REST API 中的 <code>GET</code> 请求。资源可以包括文件、数据库、API 数据、网络搜索结果、项目文档、日志和数据库记录等。资源由应用程序控制，这意味着客户端应用程序决定如何以及何时使用它们。服务器通过 <code>resources/list</code> 端点暴露可用资源列表，其中包括 URI、名称、描述和 MIME 类型。客户端可以使用带有资源 URI 的 <code>resources/read</code> 请求来读取资源内容。MCP 支持通过列表更改和内容订阅来实现资源的实时更新。  </p><div class=highlight><pre tabindex=0 style=background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#60a0b0;font-style:italic>// Static resource
+</span></span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic></span>server.resource(
+</span></span><span style=display:flex><span>  <span style=color:#4070a0>&#34;config&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#4070a0>&#34;config://app&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#007020;font-weight:700>async</span> (uri) =&gt; ({
+</span></span><span style=display:flex><span>    contents<span style=color:#666>:</span> [{
+</span></span><span style=display:flex><span>      uri<span style=color:#666>:</span> uri.href,
+</span></span><span style=display:flex><span>      text<span style=color:#666>:</span> <span style=color:#4070a0>&#34;App configuration here&#34;</span>
+</span></span><span style=display:flex><span>    }]
+</span></span><span style=display:flex><span>  })
+</span></span><span style=display:flex><span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic>// Dynamic resource with parameters
+</span></span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic></span>server.resource(
+</span></span><span style=display:flex><span>  <span style=color:#4070a0>&#34;user-profile&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#007020;font-weight:700>new</span> ResourceTemplate(<span style=color:#4070a0>&#34;users://{userId}/profile&#34;</span>, { list<span style=color:#666>:</span> <span style=color:#007020;font-weight:700>undefined</span> }),
+</span></span><span style=display:flex><span>  <span style=color:#007020;font-weight:700>async</span> (uri, { userId }) =&gt; ({
+</span></span><span style=display:flex><span>    contents<span style=color:#666>:</span> [{
+</span></span><span style=display:flex><span>      uri<span style=color:#666>:</span> uri.href,
+</span></span><span style=display:flex><span>      text<span style=color:#666>:</span> <span style=color:#4070a0>`Profile data for user </span><span style=color:#70a0d0>${</span>userId<span style=color:#70a0d0>}</span><span style=color:#4070a0>`</span>
+</span></span><span style=display:flex><span>    }]
+</span></span><span style=display:flex><span>  })
+</span></span><span style=display:flex><span>);
+</span></span></code></pre></div><h4 id=tools>Tools</h4><p>与 <code>Resources</code> 不同，<code>Tools</code> 允许 LLM 通过 MCP Server 执行具体的操作，这些操作可能会改变系统状态或与外部服务进行交互（例如，修改数据、发送消息、调用 API）。它们类似于 REST API 中的 <code>POST</code>, <code>PUT</code>, <code>DELETE</code> 等方法。MCP Client 可以使用 <code>tools/list</code> 端点发现可用的工具，通过 <code>tools/call</code> 端点触发服务器执行操作并返回结果。</p><div class=highlight><pre tabindex=0 style=background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#60a0b0;font-style:italic>// Simple tool with parameters
+</span></span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic></span>server.tool(
+</span></span><span style=display:flex><span>  <span style=color:#4070a0>&#34;calculate-bmi&#34;</span>,
+</span></span><span style=display:flex><span>  {
+</span></span><span style=display:flex><span>    weightKg<span style=color:#666>:</span> z.number(),
+</span></span><span style=display:flex><span>    heightM<span style=color:#666>:</span> z.number()
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#007020;font-weight:700>async</span> ({ weightKg, heightM }) =&gt; ({
+</span></span><span style=display:flex><span>    content<span style=color:#666>:</span> [{
+</span></span><span style=display:flex><span>      type<span style=color:#666>:</span> <span style=color:#4070a0>&#34;text&#34;</span>,
+</span></span><span style=display:flex><span>      text<span style=color:#666>:</span> <span style=color:#007020>String</span>(weightKg <span style=color:#666>/</span> (heightM <span style=color:#666>*</span> heightM))
+</span></span><span style=display:flex><span>    }]
+</span></span><span style=display:flex><span>  })
+</span></span><span style=display:flex><span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic>// Async tool with external API call
+</span></span></span><span style=display:flex><span><span style=color:#60a0b0;font-style:italic></span>server.tool(
+</span></span><span style=display:flex><span>  <span style=color:#4070a0>&#34;fetch-weather&#34;</span>,
+</span></span><span style=display:flex><span>  { city<span style=color:#666>:</span> z.string() },
+</span></span><span style=display:flex><span>  <span style=color:#007020;font-weight:700>async</span> ({ city }) =&gt; {
+</span></span><span style=display:flex><span>    <span style=color:#007020;font-weight:700>const</span> response <span style=color:#666>=</span> <span style=color:#007020;font-weight:700>await</span> fetch(<span style=color:#4070a0>`https://api.weather.com/</span><span style=color:#70a0d0>${</span>city<span style=color:#70a0d0>}</span><span style=color:#4070a0>`</span>);
+</span></span><span style=display:flex><span>    <span style=color:#007020;font-weight:700>const</span> data <span style=color:#666>=</span> <span style=color:#007020;font-weight:700>await</span> response.text();
+</span></span><span style=display:flex><span>    <span style=color:#007020;font-weight:700>return</span> {
+</span></span><span style=display:flex><span>      content<span style=color:#666>:</span> [{ type<span style=color:#666>:</span> <span style=color:#4070a0>&#34;text&#34;</span>, text<span style=color:#666>:</span> data }]
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>);
+</span></span></code></pre></div><h4 id=prompts>Prompts</h4><p><code>Prompts</code> 在 MCP 中定义了与 LLM 进行特定交互的模板或预设指令。它们封装了向 LLM 发出的请求结构，可以包含对特定 <code>Resources</code> 的查询指令或调用 <code>Tools</code> 的意图描述。这有助于规范和简化 Host 应用与 LLM 之间的通信。MCP Client 可以使用 <code>prompts/get</code> 请求检索提示详细信息，使用 <code>prompts/list</code> 端点查找可用的提示。</p><div class=highlight><pre tabindex=0 style=background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span>server.prompt(
+</span></span><span style=display:flex><span>  <span style=color:#4070a0>&#34;review-code&#34;</span>,
+</span></span><span style=display:flex><span>  { code<span style=color:#666>:</span> z.string() },
+</span></span><span style=display:flex><span>  ({ code }) =&gt; ({
+</span></span><span style=display:flex><span>    messages<span style=color:#666>:</span> [{
+</span></span><span style=display:flex><span>      role<span style=color:#666>:</span> <span style=color:#4070a0>&#34;user&#34;</span>,
+</span></span><span style=display:flex><span>      content<span style=color:#666>:</span> {
+</span></span><span style=display:flex><span>        type<span style=color:#666>:</span> <span style=color:#4070a0>&#34;text&#34;</span>,
+</span></span><span style=display:flex><span>        text<span style=color:#666>:</span> <span style=color:#4070a0>`Please review this code:\n\n</span><span style=color:#70a0d0>${</span>code<span style=color:#70a0d0>}</span><span style=color:#4070a0>`</span>
+</span></span><span style=display:flex><span>      }
+</span></span><span style=display:flex><span>    }]
+</span></span><span style=display:flex><span>  })
+</span></span><span style=display:flex><span>);
+</span></span></code></pre></div><h4 id=sampling>Sampling</h4><p><code>Sampling</code> 机制允许 MCP Server 主动通过 MCP Client 向 LLM 发起请求，以实现更复杂的代理行为或链式思考。例如，Server 在处理一个 Tool 调用时，可能需要 LLM 的进一步决策或信息补全，此时便可通过 Sampling 请求 Client 调用 LLM。</p><blockquote><p><strong>注记</strong>: “Sampling” 这一术语在此上下文中可能易产生歧义。更准确地理解，它代表了一种由服务器发起的、通过客户端代理执行的 LLM 调用流程，而非传统意义上的数据采样。</p></blockquote><pre class=mermaid>---
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#ffffff"
+    actorBorder: "#000066"
+    actorLineColor: "#000066"
+    actorTextColor: "#000066"
+    labelTextColor: "#000066"
+    signalTextColor: "#000066"
+    signalColor: "#000066"
+    activationBorderColor: "#000066"
+---
+sequenceDiagram
+    participant Server as MCP Server
+    participant Client as MCP Client
+    participant User
+    participant LLM
+
+    Server->>Client: 推送采样请求<br>sampling/createMessage 
+    activate Client
+    Client->>User: 显示采样请求
+    activate User
+    User-->>Client: 修改/审核采样请求
+    deactivate User
+    Client->>LLM: 转发采样请求
+    activate LLM
+    LLM-->>Client: 返回生成结果
+    deactivate LLM
+    Client->>User: 显示结果
+    activate User
+    User-->>Client: 修改/审核结果
+    deactivate User
+    Client->>Server: 返回结果
+    deactivate Client
+</pre><h4 id=roots>Roots</h4><p><code>Roots</code> 机制允许 MCP Client 在连接建立时或后续通信中，向 MCP Server 声明其当前关注的上下文范围或主要工作目录/资源。例如，一个 IDE 中的 MCP Client 可以将当前打开的项目目录声明为一个 Root。这有助于 MCP Server 更智能地提供相关的 <code>Resources</code> 和 <code>Tools</code> 提示，或者在进行信息检索时限定搜索范围，从而提高交互的效率和相关性。</p><p>一个典型的示例：</p><div class=highlight><pre tabindex=0 style=background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-plain data-lang=plain><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  &#34;roots&#34;: [
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>      &#34;uri&#34;: &#34;file:///home/user/projects/frontend&#34;,
+</span></span><span style=display:flex><span>      &#34;name&#34;: &#34;前端代码库&#34;
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>      &#34;uri&#34;: &#34;https://api.example.com/v1&#34;,
+</span></span><span style=display:flex><span>      &#34;name&#34;: &#34;API 端点&#34;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  ]
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=23-使用场景>2.3 使用场景</h3><p>MCP 通过其核心概念——<code>Resources</code>、<code>Tools</code>、<code>Prompts</code>、<code>Sampling</code> 及 <code>Roots</code>——为 LLM 应用与外部世界的交互勾勒了清晰的蓝图。这些概念的真正价值，在于它们如何共同作用于多样化的实际应用场景。</p><h4 id=resources为-llm-和用户提供上下文感知>Resources：为 LLM 和用户提供上下文感知</h4><p>在 MCP 框架中，<code>Resources</code> 是指可供用户或 LLM 利用的上下文信息与数据集。</p><ul><li>用户交互与展现：MCP Server 向 Client 暴露的 <code>Resources</code>，首先是面向最终用户的。例如，在集成了 MCP Client 的 IDE 中，用户可以直接浏览和选择由 MCP Server 提供的项目文件、文档片段或数据库表结构等资源，作为后续与 LLM 交互的上下文。许多 IDE 的聊天机器人允许用户通过 <code>#</code> 符号引用工作区文件，这便是 <code>Resources</code> 应用的一个直观体现。</li><li>构建 RAG 应用：Host 应用可以将 <code>Resources</code> 视为构建检索增强生成 (RAG) 系统的标准接口。通过 MCP 获取的结构化资源信息，可以便捷地融入 RAG 流程，为 LLM 提供动态、精准的知识，从而提升回答的相关性和准确性。</li></ul><p>典型应用场景包括：</p><ul><li>AI 聊天助手访问企业知识库，提供精准的客户支持。</li><li>IDE 内的编码助手查阅项目文档、API 规范或代码片段库。</li><li>金融分析应用实时拉取市场数据、财报等资源进行分析。</li><li>桌面应用（如 Claude Desktop）访问本地文件系统，实现与用户本地数据的交互。</li><li>数据分析工具（如 Cursor）直接将数据库表或查询结果作为资源进行引用。</li></ul><p>当然，也可简单地将集成 <code>MCP (Resources)</code> 的应用程序视作另一个能够提供更丰富多模态数据的浏览器。</p><h4 id=tools赋予-llm-执行行动的能力>Tools：赋予 LLM 执行行动的能力</h4><p>与侧重数据提供的 <code>Resources</code> 不同，<code>Tools</code> 赋予了 LLM 通过 MCP Server 执行具体操作的能力。</p><p>LLM 本身具备的函数调用（Function Calling）能力是 <code>Tools</code> 得以实现的基础。MCP 的价值在于，它在现有的函数调用机制之上，提供了一套更为标准化和结构化的框架：</p><ol><li>定义与发现：<code>MCP Server</code> 负责集中定义、管理并向 <code>MCP Client</code> 暴露可用的 <code>Tools</code> 及其元数据（名称、描述、参数模式等）。</li><li>标准化交互：<code>MCP Client</code>（集成在 Host 应用中）从 Server 获取这些规范化的工具接口描述。</li><li>请求构建与执行：Host 应用根据用户的自然语言指令、当前对话上下文以及从 MCP Server 获取的工具定义，智能地组装成符合特定 LLM API 要求的请求（例如，包含 <code>tools</code> 和 <code>tool_choice</code> 参数的 OpenAI API 请求）。LLM 决定调用哪个工具及相关参数后，Host 应用再通过 MCP 的 <code>tools/call</code> 端点请求 Server 执行该工具。</li></ol><p>典型应用场景包括：</p><ul><li>智能客服使用日历 API 自动为用户安排会议或预约。</li><li>IDE 中的 AI 助手与 Git 等版本控制系统交互，执行代码提交、分支切换等操作。</li><li>旅行规划 AI 代理通过航司或酒店 API 查询航班、预订住宿。</li><li>数据分析工具连接数据库执行 SQL 查询、数据导入导出等操作。</li><li>AI 助手调用天气服务 API 获取并播报实时天气状况。</li><li>AI 助手通过社交媒体 API 获取用户最新动态。</li></ul><p>以下是一个 OpenAI API 进行函数调用的示例，其中 <code>tools</code> 字段的结构正是 MCP <code>Tools</code> 定义所关注的核心：</p><div class=highlight><pre tabindex=0 style=background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>curl https://api.openai.com/v1/chat/completions <span style=color:#4070a0;font-weight:700>\
+</span></span></span><span style=display:flex><span><span style=color:#4070a0;font-weight:700></span>-H <span style=color:#4070a0>&#34;Content-Type: application/json&#34;</span> <span style=color:#4070a0;font-weight:700>\
+</span></span></span><span style=display:flex><span><span style=color:#4070a0;font-weight:700></span>-H <span style=color:#4070a0>&#34;Authorization: Bearer </span><span style=color:#bb60d5>$OPENAI_API_KEY</span><span style=color:#4070a0>&#34;</span> <span style=color:#4070a0;font-weight:700>\
+</span></span></span><span style=display:flex><span><span style=color:#4070a0;font-weight:700></span>-d <span style=color:#4070a0>&#39;{
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>    &#34;model&#34;: &#34;gpt-4o&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>    &#34;messages&#34;: [
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>        {
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>            &#34;role&#34;: &#34;user&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>            &#34;content&#34;: &#34;What is the weather like in Paris today?&#34;
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>        }
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>    ],
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>    &#34;tools&#34;: [
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>        {
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>            &#34;type&#34;: &#34;function&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>            &#34;function&#34;: {
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>                &#34;name&#34;: &#34;get_weather&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>                &#34;description&#34;: &#34;Get current temperature for a given location.&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>                &#34;parameters&#34;: {
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>                    &#34;type&#34;: &#34;object&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>                    &#34;properties&#34;: {
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>                        &#34;location&#34;: {
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>                            &#34;type&#34;: &#34;string&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>                            &#34;description&#34;: &#34;City and country e.g. Bogotá, Colombia&#34;
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>                        }
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>                    },
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>                    &#34;required&#34;: [&#34;location&#34;]
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>                }
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>            }
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>        }
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>    ],
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>    &#34;tool_choice&#34;: &#34;auto&#34;
+</span></span></span><span style=display:flex><span><span style=color:#4070a0>}&#39;</span>
+</span></span></code></pre></div><h4 id=prompts优化与-llm-的对话模式>Prompts：优化与 LLM 的对话模式</h4><p>MCP 中的 <code>Prompts</code> 机制通过预定义的模板和指令集，旨在简化和规范 Host 应用与 LLM 之间的交互。这些模板可以：</p><ul><li>封装复杂指令：将多轮对话的逻辑、特定的角色扮演或复杂的思考链条固化下来。</li><li>引导 LLM 输出：通过结构化的提示，更精确地控制 LLM 的输出格式和内容。</li><li>自动整合上下文：<code>Prompts</code> 模板可以设计为自动引入来自特定 <code>Resources</code> 的内容或 <code>Tools</code> 的可用性信息。</li></ul><p>例如，一个用于代码审查的 <code>Prompt</code> 模板可以预设指令，要求 LLM 重点检查特定类型的安全漏洞或性能瓶颈，并自动将当前活动编辑器中的代码（通过 <code>Resources</code> 获取）作为审查对象。Host 应用只需填充少量动态变量（如用户指定的特定审查关注点），即可生成高质量、目标明确的 LLM 请求，避免了每次从头构建复杂提示的低效和不一致。这不仅提升了交互效率，也保证了 LLM 输出的稳定性和相关性。</p><p><strong>总结而言，MCP 的核心价值在于为 LLM 应用与广阔的外部世界（数据与工具）之间建立了一套标准化的“对话协议”和“接口规范”。它并非意图取代 LLM 本身的函数调用等核心能力，而是通过提供清晰的抽象和管理机制，使得 Host 应用能够更加便捷、高效、可靠地发现、集成和管理来自不同提供者的上下文信息与功能工具，从而加速构建更为智能和强大的 AI 应用。</strong></p><h2 id=3-mcp-部署架构探索>3 MCP 部署架构探索</h2><p>在本章节中，我们将探讨几种常见的 MCP 部署架构模式。这些模式展示了 MCP Client 和 MCP Server 如何根据不同的应用场景和需求进行组合与部署，从纯本地环境到复杂的分布式系统。理解这些架构有助于根据实际情况选择最合适的部署方案。</p><h3 id=31-本地部署的-mcp>3.1 本地部署的 MCP</h3><p>本地部署模式是最简单直接的 MCP 应用方式。Host 应用（包含 MCP Client）与一个或多个 MCP Server 均运行在用户的同一台计算机上。这种架构非常适合需要访问本地文件系统、本地安装的应用程序接口或处理用户私有数据的场景。例如，一个本地的代码编辑器插件（Host）可以通过 MCP Client 连接到本地运行的 MCP Server，该 Server 暴露了对本地项目文件进行分析的 <code>Resources</code> 或执行本地构建脚本的 <code>Tools</code>。通信通常通过 <code>stdio</code> 进行，效率高且配置简单。</p><pre class=mermaid>%%{init: { "themeVariables": { "clusterBkg": "#ffffff", "clusterBorder": "#000066" }}}%%
+graph LR
+    subgraph "Your Computer"
+        Host["Host with MCP Client"]
+        S1["MCP Server A"]
+        S2["MCP Server B"]
+        Host <-->|"MCP Protocol(stdio)"| S1
+        Host <-->|"MCP Protocol(stdio)"| S2
+
+        S1 <--> D1[("Local<br>Data Source A")]
+    end
+
+    subgraph "Internet"
+        S2 <-->|"Web APIs"| D2[("Remote<br>Service B")]
+    end
+
+    classDef darkStyle fill:#ffffff,stroke:#000066,color:#000066,stroke-width:2px,font-weight:bold
+
+    class Host,S1,S2,S3,D1,D2,D3 darkStyle;
+</pre><h3 id=32-浏览器端部署的-mcp>3.2 浏览器端部署的 MCP</h3><p>浏览器端部署模式将 MCP 的能力引入到 Web 应用中。Host 应用（通常是运行在浏览器标签页中的 JavaScript 应用，作为 MCP Client）与在浏览器环境内（例如通过 Web Worker 实现）运行的 MCP Server 进行通信。这种模式使得 Web 应用能够利用 MCP 访问浏览器可触及的资源（如 IndexedDB、浏览器插件 API）或由 MCP Server 透过朴素的 HTTP APIs 访问远程资源。这为构建功能丰富的、能够与用户更深度交互的 Web 应用提供了可能。</p><pre class=mermaid>%%{init: { "themeVariables": { "clusterBkg": "#ffffff", "clusterBorder": "#000066" }}}%%
+graph LR
+    subgraph "Your Computer"
+
+      subgraph "Browser"
+        Host["Host with MCP Client"]
+        S1["MCP Server A"]
+        S2["MCP Server B"]
+        Host <-->|"MCP Protocol(stdio)"| S1
+        Host <-->|"MCP Protocol(stdio)"| S2
+      end
+
+      S1 <--> D1[("Local<br>Data Source A")]
+    end
+
+    subgraph "Internet"
+        S2 <-->|"Web APIs"| D2[("Remote<br>Service B")]
+    end
+
+    classDef darkStyle fill:#ffffff,stroke:#000066,color:#000066,stroke-width:2px,font-weight:bold
+
+    class Host,S1,S2,S3,D1,D2,D3 darkStyle;
+</pre><h3 id=33-cs-架构部署的-mcp>3.3 C/S 架构部署的 MCP</h3><p>C/S 架构部署模式是一种经典的分布式部署方式。Host 应用（包含 MCP Client）运行在用户的计算机上（例如桌面应用程序），而 MCP Server 则部署在一个或多个远程服务器上，形成服务器集群。客户端通过网络（通常是 HTTP/SSE 或 Streamable HTTP）与远程服务器进行通信。这种架构适用于需要集中管理 <code>Resources</code>、<code>Tools</code> 和 <code>Prompts</code> 处理大量数据、执行复杂计算或提供多用户共享服务的场景。例如，一个企业内部的知识库可以通过部署在服务器集群上的 MCP Server 暴露，供公司内所有员工的桌面客户端查询。</p><pre class=mermaid>%%{init: { "themeVariables": { "clusterBkg": "#ffffff", "clusterBorder": "#000066" }}}%%
+graph LR
+    subgraph "Your Computer"
+        Host["Host with MCP Client"]
+    end
+
+    subgraph "Server Cluster"
+        S1["MCP Server A"]
+        S2["MCP Server B"]
+        Host <-->|"MCP Protocol<br>(sse / streamable)"| S1
+        Host <-->|"MCP Protocol<br>(sse / streamable)"| S2
+
+        S1 <--> D1[("Local<br>Data Source A")]
+    end
+
+    subgraph "Internet"
+
+        S2 <-->|"Web APIs"| D2[("Remote<br>Service B")]
+    end
+
+    classDef darkStyle fill:#ffffff,stroke:#000066,color:#000066,stroke-width:2px,font-weight:bold
+
+    class Host,S1,S2,S3,D1,D2,D3 darkStyle;
+</pre><h3 id=34-bs-架构部署的-mcp>3.4 B/S 架构部署的 MCP</h3><p>B/S (Browser/Server) 架构是 C/S 架构在 Web 环境下的延伸。Host 应用（包含 MCP Client）运行在用户的浏览器中，而 MCP Server 同样部署在远程服务器集群上。用户通过浏览器访问 Web 应用，Web 应用再通过 MCP 协议与后端的 MCP Server 进行交互。这种模式是现代 Web 应用的主流架构，适用于构建需要访问云端服务、数据库或其他企业级资源的 Web 应用。例如，一个在线项目管理工具（Host）可以通过 MCP Client 连接到云端的 MCP Server，以获取项目数据、调用任务分配工具等。</p><pre class=mermaid>%%{init: { "themeVariables": { "clusterBkg": "#ffffff", "clusterBorder": "#000066" }}}%%
+graph LR
+    subgraph "Your Computer"
+
+      subgraph "Browser"
+        Host["Host with MCP Client"]
+      end
+
+    end
+
+    subgraph "Server Cluster"
+        S1["MCP Server A"]
+        S2["MCP Server B"]
+        Host <-->|"MCP Protocol<br>(sse / streamable)"| S1
+        Host <-->|"MCP Protocol<br>(sse / streamable)"| S2
+
+        S1 <--> D1[("Local<br>Data Source A")]
+    end
+
+    subgraph "Internet"
+
+        S2 <-->|"Web APIs"| D2[("Remote<br>Service B")]
+    end
+
+    classDef darkStyle fill:#ffffff,stroke:#000066,color:#000066,stroke-width:2px,font-weight:bold
+
+    class Host,S1,S2,S3,D1,D2,D3 darkStyle;
+</pre><h3 id=35-服务器端部署的-mcp>3.5 服务器端部署的 MCP</h3><p>在服务器端部署模式中，Host 应用（包含 MCP Client）本身就运行在服务器集群上，而不是最终用户的设备上。最终用户（例如通过浏览器或桌面客户端）与这个服务器端的 Host 应用进行交互。该 Host 应用再通过 MCP 协议连接到其他（可能是本地的或远程的）MCP Server 以获取上下文或执行工具。这种架构适用于构建复杂的后端服务、API 网关或需要将多个 MCP Server 能力聚合后再向上层应用提供的场景。例如，一个 AI 助手后端服务（Host）可以集成多个分别提供天气、新闻、翻译等能力的 MCP Server，统一处理用户请求并返回结果。</p><pre class=mermaid>%%{init: { "themeVariables": { "clusterBkg": "#ffffff", "clusterBorder": "#000066" }}}%%
+graph LR
+    subgraph "Your Computer"
+
+      Browser
+
+      Client
+
+    end
+
+    subgraph "Server Cluster"
+        Host["Host with MCP Client"]
+        S1["MCP Server A"]
+        S2["MCP Server B"]
+        Host <-->|"MCP Protocol<br>(streamable/sse/stdio)"| S1
+        Host <-->|"MCP Protocol<br>(streamable/sse/stdio)"| S2
+
+        S1 <--> D1[("Local<br>Data Source A")]
+        Browser <--> Host
+        Client <--> Host
+    end
+
+    subgraph "Internet"
+
+        S2 <-->|"Web APIs"| D2[("Remote<br>Service B")]
+    end
+
+    classDef darkStyle fill:#ffffff,stroke:#000066,color:#000066,stroke-width:2px,font-weight:bold
+
+    class Browser,Client,Host,S1,S2,S3,D1,D2,D3 darkStyle;
+</pre><h3 id=36-业务场景与架构选型考量>3.6 业务场景与架构选型考量</h3><p>选择合适的 MCP 部署架构对于应用的功能实现、性能、可维护性及用户体验至关重要。本节将结合不同软件交付形态，分析各种架构模式的适用性及关键考量因素。</p><p>从产品交付的视角看，常见的软件形态包括客户端软件（如桌面应用、移动应用）和浏览器端软件（Web 应用）。</p><ul><li>客户端软件：架构 3.1（本地部署）、3.3（C/S 架构）以及 3.5（服务器端 Host）通常适用于此类场景。</li><li>浏览器端软件：架构 3.2（浏览器内嵌部署）、3.4（B/S 架构）以及 3.5（服务器端 Host）则更适合 Web 应用。</li></ul><h4 id=传输协议演进带来的影响><strong>传输协议演进带来的影响：</strong></h4><p>在新的 <strong>Streamable HTTP</strong> 传输方式被引入之前，对于需要远程 MCP Server 的架构（尤其是 3.3 和 3.4），依赖传统的 HTTP + SSE 传输机制带来了若干挑战：</p><ul><li>连接脆弱性：SSE 连接一旦断开，通常难以自动恢复，影响服务连续性。</li><li>服务端资源压力：大量并发的长连接对服务器资源（如内存、连接数）构成较大压力。</li><li>运维复杂性：对 MCP Server 的高可用性、可靠性及弹性伸缩能力提出了更高的运维要求。</li></ul><p>Streamable HTTP 的引入显著改善了上述局面。它具备以下优势：</p><ul><li>基于标准 HTTP 请求（POST/GET），简化了客户端实现。</li><li>服务器可按需将会话升级为 SSE 流，仅在必要时启用流式传输，避免了长连接的持续开销。</li><li>支持去中心化和无状态（stateless）模式，降低了对持续连接的依赖。</li></ul><h4 id=当前架构选型的核心考量因素><strong>当前架构选型的核心考量因素：</strong></h4><p>得益于 Streamable HTTP 的灵活性，MCP Server 的部署位置选择不再主要受限于传输方式。无论是客户端还是浏览器端软件，在选择架构 3.1、3.2、3.3 或 3.4 时，决策因素更多地转向以下层面：</p><ol><li>MCP Server 的更新与管理<ul><li>客户端/浏览器内嵌 Server (3.1, 3.2)：Server 的更新通常需要伴随客户端软件的整体升级，迭代速度可能受限。但优势在于对本地资源的直接访问能力和潜在的离线功能。</li><li>远程 Server (3.3, 3.4)：Server 的更新和维护更为集中和灵活，但需要考虑网络延迟和带宽。</li></ul></li><li>资源与计算的分布：<ul><li>分布式/本地 Server：计算和数据处理更贴近用户，可能带来更低的延迟，但管理分散。</li><li>集中式 Server：便于统一管理、监控和扩展计算资源，但可能成为性能瓶颈或单点故障。</li></ul></li><li>数据敏感性与合规性：本地部署（3.1, 3.2）更有利于处理高度敏感或受特定法规约束的数据。</li></ol><h4 id=对服务器端-host-架构-35-的深入分析><strong>对服务器端 Host 架构 (3.5) 的深入分析：</strong></h4><p>架构 3.5 将 Host 应用（包含 MCP Client）部署于服务器集群，使其作为多个下游 MCP Server 的聚合器和编排者。这种模式非常适合构建复杂的后端服务、API 网关或需要整合多种 AI 能力的平台。</p><p>然而，此架构也引入了新的设计考量：</p><ul><li>Host 应用的职责加重：作为中心节点，Host 应用的稳定性、可扩展性和业务逻辑的复杂性显著增加。</li><li>最终用户体验的平衡：最终用户通过浏览器或桌面客户端与服务器端的 Host 应用交互。若设计不当，前端可能退化为简单的展示和输入终端，导致本地交互的智能性和灵活性降低。</li></ul><p>因此，必须精心设计 Host 应用与最终用户客户端之间的接口和交互协议，以在集中控制的优势与丰富的终端用户体验之间取得平衡。例如，可以考虑采用更智能的前端组件，或允许部分逻辑在客户端执行，以优化响应速度和交互流畅度。</p><p>综上所述，MCP 部署架构的选择是一个涉及多方面权衡的战略决策，需要综合考虑业务需求、技术栈、运维能力、成本预算以及用户体验目标。Streamable HTTP 为这些决策提供了更大的灵活性，使得开发者可以更专注于业务逻辑本身，而非底层传输的限制。</p></div><div class="row middle-xs"><div class=col-xs-12><div class=post-tags><a href=/tags/mcp/>MCP</a></div><div class=post-tags><a href=/tags/llm/>LLM</a></div><div class=post-tags><a href=/tags/functioncalling/>FunctionCalling</a></div><div class=post-tags><a href=/tags/rag/>RAG</a></div></div></div><div class=row><div class=col-xs-12><script type=module> import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true }); </script></div></div><div style=height:50px></div><div class=post-comments><div id=disqus_thread></div><script>window.addEventListener("load",()=>{(function(){var e=document,t=e.createElement("script");t.src="https://ffutop.disqus.com/embed.js",t.setAttribute("data-timestamp",+new Date),(e.head||e.body).appendChild(t)})()})</script><noscript>Please enable JavaScript to view the
+<a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div><div class=site-footer></div></div></div></article><script>document.addEventListener("DOMContentLoaded",function(){const e=document.getElementById("disqus_thread"),t=new MutationObserver(function(n){n.forEach(function(){const s=e.getElementsByTagName("iframe");if(s.length>1){const n=s[1];for(;e.firstChild;)e.removeChild(e.firstChild);e.appendChild(n),t.disconnect()}})});t.observe(e,{childList:!0,subtree:!0})})</script></body></html>
