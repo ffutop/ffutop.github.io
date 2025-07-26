@@ -1,6 +1,6 @@
 ---
 title: 剖析 GraalVM Native Image 技术
-date: 2025-07-11
+date: 2025-07-26
 author: ffutop
 tags:
   - GraalVM
