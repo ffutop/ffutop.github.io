@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tomcat on Utop's Blog</title><link>https://www.ffutop.com/tags/tomcat/</link><description>Recent content in Tomcat on Utop's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cmn-Hans-CN</language><lastBuildDate>Sat, 11 Apr 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://www.ffutop.com/tags/tomcat/index.xml" rel="self" type="application/rss+xml"/><item><title>HTTP Large Header Fields Problem</title><link>https://www.ffutop.com/posts/2020-04-11-large-http-header/</link><pubDate>Sat, 11 Apr 2020 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2020-04-11-large-http-header/</guid><description>&lt;p>&lt;em>首次遇到请求头过大的问题，做个记录。特别是在本次处理陷入了误区，做了太多无谓的猜测&lt;/em>&lt;/p>
+&lt;p>请求头过大导致响应错误码 400 (Bad Request)、414 (URI Too Long)、431 (Request Header Fields Too Large) 的情况不多，不过原因和解决方案都是比较清晰的。客户端请求的请求头过大导致超出了服务器支持的缓冲区。如果客户端可控，控制请求头的大小；否则，适当调大服务器配置的缓冲区大小。&lt;/p>
+&lt;p>最近生产上碰到了这个问题，颇费了一番功夫。接手问题时得到了几个错误的信息，干扰到了处理的全过程。甚至为此去重读了 NGINX Directive &lt;code>client_header_buffer_size&lt;/code> 和 &lt;code>large_client_header_buffers&lt;/code> 在 1.8.1 版本的实现。&lt;/p>
+&lt;p>最原始的问题是：NGINX 接收到了大请求头(4.5k)的请求，最终响应了错误码 400 Bad Request 。&lt;/p>
+&lt;p>真实的背景因素包括：&lt;/p>
+&lt;ul>
+&lt;li>请求链路 NGINX -&amp;gt; k8s nginx ingress -&amp;gt; k8s pods (Tomcat)&lt;/li>
+&lt;li>NGINX &lt;code>large_client_header_buffers&lt;/code> 使用了默认配置 &lt;code>4 8k&lt;/code>。&lt;/li>
+&lt;li>Tomcat maxHttpHeaderSize 使用了默认配置 (default 8192)&lt;/li>
+&lt;/ul></description></item></channel></rss>

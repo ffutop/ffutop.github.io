@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Permission on Utop's Blog</title><link>https://www.ffutop.com/tags/permission/</link><description>Recent content in Permission on Utop's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cmn-Hans-CN</language><lastBuildDate>Sat, 23 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://www.ffutop.com/tags/permission/index.xml" rel="self" type="application/rss+xml"/><item><title>URI 与资源定义</title><link>https://www.ffutop.com/posts/2020-05-23-uri/</link><pubDate>Sat, 23 May 2020 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2020-05-23-uri/</guid><description>&lt;blockquote>
+&lt;p>URI syntax:
+&lt;code>&amp;lt;scheme&amp;gt;:&amp;lt;scheme-specific-part&amp;gt;&lt;/code>&lt;/p>
+&lt;p>generic URI syntax:
+&lt;code>&amp;lt;scheme&amp;gt;://&amp;lt;authority&amp;gt;&amp;lt;path&amp;gt;?&amp;lt;query&amp;gt;&lt;/code>&lt;/p>
+&lt;/blockquote>
+&lt;p>此前对 URI、URL 的定义一知半解，网上充斥着大量文档试图描述 URI、URL、URN 的区别。其中一种经典的观点是：URI 是 URN、URL 的超集。其中 URN 被用来描述资源的名称(身份ID)，而 URL 被用来描述查找该资源的方法。这个表述确实没有问题，但对于理解 URx 无法提供切实的帮助。最近阅读了 &lt;a href="https://tools.ietf.org/html/rfc3305">RFC 3305&lt;/a>、&lt;a href="https://tools.ietf.org/html/rfc3986">RFC 3986&lt;/a>、&lt;a href="https://tools.ietf.org/html/rfc7595">RFC 7595&lt;/a> 等资料，本文将聊聊个人对 URI 的见解，以及借此回顾此前参与的公司权限系统的设计。&lt;/p></description></item><item><title>Java 安全访问与权限控制</title><link>https://www.ffutop.com/posts/2018-07-04-jdk-permission/</link><pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2018-07-04-jdk-permission/</guid><description>&lt;h2 id="绪论">绪论&lt;/h2>
+&lt;p>&lt;em>本文只是对 Java 安全访问与权限控制的基础性探究。&lt;/em>&lt;/p>
+&lt;p>&lt;strong>本节与全文内容无关，如无兴趣阅读，可以跳过&lt;/strong>&lt;/p>
+&lt;p>了解 Java 安全访问相关内容的初衷，是准备在项目中利用 Java 标准库提供的 ServiceLoader 对 SPI 实现类进行&amp;quot;自动发现&amp;quot;和加载。
+这对于将本项目作为二方库来依赖的上层项目将更为方便，只需要&lt;/p>
+&lt;ol>
+&lt;li>在 &lt;code>META-INF.services&lt;/code> 目录下配置被命名为 SPI 接口全限定名的文件及添加相关内容&lt;/li>
+&lt;li>由项目的注册管理器触发下列 Java 代码&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#666">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ServiceLoader&lt;span style="color:#666">&amp;lt;&lt;/span>XxxPolicy&lt;span style="color:#666">&amp;gt;&lt;/span> xxxPolicyServiceLoader &lt;span style="color:#666">=&lt;/span> ServiceLoader&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">load&lt;/span>&lt;span style="color:#666">(&lt;/span>XxxPolicy&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">class&lt;/span>&lt;span style="color:#666">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">for&lt;/span> &lt;span style="color:#666">(&lt;/span>Iterator&lt;span style="color:#666">&amp;lt;&lt;/span>XxxPolicy&lt;span style="color:#666">&amp;gt;&lt;/span> it &lt;span style="color:#666">=&lt;/span> xxxPolicyServiceLoader&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">iterator&lt;/span>&lt;span style="color:#666">();&lt;/span> it&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">hasNext&lt;/span>&lt;span style="color:#666">();&lt;/span> &lt;span style="color:#666">)&lt;/span> &lt;span style="color:#666">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> XxxPolicy xxxPolicy &lt;span style="color:#666">=&lt;/span> it&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">next&lt;/span>&lt;span style="color:#666">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#60a0b0;font-style:italic">// ... more code ...
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span> &lt;span style="color:#666">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#666">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>就可以完成一个新的 SPI 策略的注册工作。&lt;/p>
+&lt;p>但是，在尝试实现，了解了 ServiceLoader 源码，以及 DriverManager 和 mysql-connection-java-&lt;version>.jar 在注册 Driver 相关的代码。
+发现怎么也绕不开 Java 安全访问相关的内容。诸如下列这段来自 DriverManager.loadInitialDrivers() 的代码:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>AccessController&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">doPrivileged&lt;/span>&lt;span style="color:#666">(&lt;/span>&lt;span style="color:#007020;font-weight:bold">new&lt;/span> PrivilegedAction&lt;span style="color:#666">&amp;lt;&lt;/span>Void&lt;span style="color:#666">&amp;gt;()&lt;/span> &lt;span style="color:#666">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">public&lt;/span> Void &lt;span style="color:#06287e">run&lt;/span>&lt;span style="color:#666">()&lt;/span> &lt;span style="color:#666">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ServiceLoader&lt;span style="color:#666">&amp;lt;&lt;/span>Driver&lt;span style="color:#666">&amp;gt;&lt;/span> loadedDrivers &lt;span style="color:#666">=&lt;/span> ServiceLoader&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">load&lt;/span>&lt;span style="color:#666">(&lt;/span>Driver&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">class&lt;/span>&lt;span style="color:#666">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Iterator&lt;span style="color:#666">&amp;lt;&lt;/span>Driver&lt;span style="color:#666">&amp;gt;&lt;/span> driversIterator &lt;span style="color:#666">=&lt;/span> loadedDrivers&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">iterator&lt;/span>&lt;span style="color:#666">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">try&lt;/span>&lt;span style="color:#666">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">while&lt;/span>&lt;span style="color:#666">(&lt;/span>driversIterator&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">hasNext&lt;/span>&lt;span style="color:#666">())&lt;/span> &lt;span style="color:#666">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> driversIterator&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">next&lt;/span>&lt;span style="color:#666">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#666">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#666">}&lt;/span> &lt;span style="color:#007020;font-weight:bold">catch&lt;/span>&lt;span style="color:#666">(&lt;/span>Throwable t&lt;span style="color:#666">)&lt;/span> &lt;span style="color:#666">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#60a0b0;font-style:italic">// Do nothing
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#60a0b0;font-style:italic">&lt;/span> &lt;span style="color:#666">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#007020;font-weight:bold">return&lt;/span> &lt;span style="color:#007020;font-weight:bold">null&lt;/span>&lt;span style="color:#666">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#666">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#666">});&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>诸如 AccessController, Permission, SecurityManager 的代码始终是一个绕不开的主旋律。&lt;/p>
+&lt;p>为了探究这部分控制对项目中 ServiceLoader 的真正作用以及其编码意义，开始了对本文所描述的主体内容的初步了解。&lt;/p></description></item></channel></rss>
