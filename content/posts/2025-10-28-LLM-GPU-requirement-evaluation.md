@@ -1,7 +1,7 @@
 ---
 title: 大语言模型显卡需求的定量评估
 author: ffutop
-date: 2025-10-24
+date: 2025-10-28
 tags:
   - LLM
   - GPU
