@@ -41,7 +41,7 @@ params:
       - name: "RSS"
         link: "/index.xml"
       - name: "Project"
-        link: "/project.html"
+        link: "/project/"
       - name: "Github"
         link: "https://github.com/ffutop"
       - name: "About"
