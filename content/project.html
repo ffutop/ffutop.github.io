@@ -4,290 +4,396 @@ date: 2025-11-22
 url: '/project'
 layout: "standalone"
 ---
-<!DOCTYPE html>  
-<html lang="zh-cmn-Hans-CN">  
-<head>  
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>Projects - ffutop</title>  
-    <meta name="description" content="Projects, tools, and experiments by ffutop.">  
-    <meta name="author" content="ffutop">  
-      
-    <!-- Tailwind CSS -->  
-    <script src="https://cdn.tailwindcss.com"></script>  
-      
-    <!-- Fonts -->  
-    <link rel="preconnect" href="https://fonts.googleapis.com">  
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  
-    <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Noto+Sans+SC:wght@400;500;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">  
-  
-    <script>  
-        tailwind.config = {  
-            theme: {  
-                extend: {  
-                    fontFamily: {  
-                        sans: [  
-                            'Noto Sans SC',  
-                            '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Noto Sans"',   
-                            '"Helvetica"', '"Arial"', 'sans-serif',   
-                            '"Apple Color Emoji"', '"Segoe UI Emoji"'  
-                        ],  
-                        logo: ['"Bungee Shade"', 'sans-serif'],  
-                        mono: ['"Source Code Pro"', 'ui-monospace', 'SFMono-Regular', 'monospace'],  
-                    },  
-                    colors: {  
-                        zinc: {  
-                            50: '#fafafa',  
-                            100: '#f4f4f5',  
-                            200: '#e4e4e7',  
-                            300: '#d4d4d8',  
-                            400: '#a1a1aa',  
-                            500: '#71717a',  
-                            600: '#52525b',  
-                            700: '#3f3f46',  
-                            800: '#27272a',  
-                            900: '#18181b',  
-                            950: '#09090b',  
-                        }  
-                    }  
-                }  
-            }  
-        }  
-    </script>  
-  
-    <style>  
-        body {  
-            color: #1f2328;  
-            -webkit-font-smoothing: antialiased;  
-            font-family: theme('fontFamily.sans');  
-        }  
-  
-        /* 导航链接效果优化：去除字重变化导致的抖动 */  
-        .nav-link {  
-            color: #52525b; /* zinc-600 */  
-            text-decoration: none;  
-            transition: color 0.2s;  
-        }  
-        .nav-link:hover {  
-            color: #09090b; /* zinc-950 */  
-            text-decoration: underline;  
-            text-underline-offset: 4px;  
-        }  
-        .nav-link.active {  
-            color: #09090b; /* zinc-950 */  
-            text-decoration: underline;  
-            text-underline-offset: 4px;  
-            /* 移除 font-weight: 600 以保持布局稳定 */  
-        }  
-  
-        /* 卡片 Hover：纯粹的边框加深 */  
-        .project-card {  
-            border: 1px solid #e4e4e7;  
-            transition: all 0.2s ease-in-out;  
-        }  
-        .project-card:hover {  
-            border-color: #27272a; /* zinc-800 */  
-            background-color: #fafafa; /* zinc-50: 极淡的背景色变化增加层次 */  
-        }  
-    </style>  
-</head>  
-<body class="flex flex-col min-h-screen px-6 py-10 md:px-12 max-w-5xl mx-auto bg-white">  
-  
-    <!-- Header -->  
-    <header class="mb-20">  
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-100 pb-6">  
-            <div class="text-3xl md:text-4xl font-bold">  
-                <a href="/" class="font-logo text-zinc-900 hover:text-zinc-700 no-underline transition-colors">FFUTOP</a>  
-            </div>  
-              
-            <!-- 导航栏：修正间距和对齐 -->  
-            <nav class="flex flex-wrap gap-6 text-[15px] font-medium">  
-                <a href="/" class="nav-link">Blog</a>  
-                <a href="/index.xml" target="_blank" class="nav-link">RSS</a>  
-                <span class="nav-link active">Projects</span>  
-                <a href="https://github.com/ffutop" target="_blank" rel="noopener noreferrer" class="nav-link">Github</a>  
-                <a href="https://ffkit.ffutop.com/author" target="_blank" rel="noopener noreferrer" class="nav-link">About</a>  
-            </nav>  
-        </div>  
-    </header>  
-  
-    <main class="flex-1">  
-        <!-- Intro: 优化排版，增强仪式感 -->  
-        <section class="mb-24">  
-            <div class="pl-6 border-l-4 border-zinc-900 space-y-3 py-1">  
-                <p class="text-xl md:text-2xl font-medium text-zinc-800 tracking-tight leading-snug">  
-                    源于工程痛点的开源方案  
-                </p>  
-                <p class="text-xl md:text-2xl font-medium text-zinc-800 tracking-tight leading-snug">  
-                    始于个人兴趣的实用工具  
-                </p>  
-            </div>  
-        </section>  
-  
-        <!-- Featured: Modbus Gateway -->  
-        <section class="mb-24">  
-            <div class="flex items-center gap-3 mb-8">  
-                <span class="text-xs font-mono uppercase tracking-widest text-zinc-500 font-bold">Connectivity</span>  
-                <div class="h-px bg-zinc-200 flex-1"></div>  
-            </div>  
-  
-            <div class="group relative rounded-lg border border-zinc-200 p-6 md:p-8 hover:border-zinc-800 transition-colors duration-300">  
-                <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-8">  
-                    <div class="flex-1 space-y-5">  
-                        <div class="flex items-center gap-3">  
-                            <h2 class="text-2xl font-bold tracking-tight text-zinc-900">Modbus Gateway</h2>  
-                            <span class="font-mono text-xs font-medium text-zinc-500 border border-zinc-200 px-1.5 py-0.5 rounded bg-zinc-50">v1.0.0</span>  
-                        </div>  
-                        <p class="text-zinc-600 leading-relaxed max-w-2xl text-[16px]">  
-                            高性能、可配置的 Modbus TCP 转 RTU (RS485) 网关。采用串行化请求队列设计，彻底解决了多主站环境下串口通信冲突的问题。  
-                        </p>  
-                          
-                        <!-- 关联博文 -->  
-                        <div class="pt-2 flex items-center gap-2 text-sm text-zinc-500">  
-                            <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>  
-                            <span class="font-mono text-xs uppercase tracking-wide">Related:</span>  
-                            <a href="/posts/2025-04-24-serialize-read-write/" class="text-zinc-600 hover:text-black underline underline-offset-4 decoration-zinc-300 hover:decoration-black transition-all">  
-                                Modbus 多主站并发访问控制  
-                            </a>  
-                        </div>  
-                    </div>  
-                      
-                    <div class="flex flex-row md:flex-col gap-3 shrink-0 mt-2 md:mt-0">  
-                        <a href="/modbus-gateway/" class="inline-flex items-center justify-center gap-2 rounded bg-zinc-900 px-5 py-2.5 text-sm font-bold text-white hover:bg-black transition-transform active:scale-95">  
-                            访问网站  
-                        </a>  
-                        <a href="https://github.com/ffutop/modbus-gateway" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 rounded border border-zinc-300 bg-white px-5 py-2.5 text-sm font-bold text-zinc-900 hover:border-zinc-900 hover:bg-zinc-50 transition-colors">  
-                            查看源码  
-                        </a>  
-                    </div>  
-                </div>  
-            </div>  
-        </section>  
-  
-        <!-- Web Tools -->  
-        <section class="mb-24">  
-            <div class="flex items-center gap-3 mb-8">  
-                <span class="text-xs font-mono uppercase tracking-widest text-zinc-500 font-bold">Web 工具</span>  
-                <div class="h-px bg-zinc-200 flex-1"></div>  
-            </div>  
-  
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">  
-                  
-                <!-- ShotCraft -->  
-                <a href="https://shotcraft.ffutop.com/" target="_blank" rel="noopener noreferrer" class="project-card group rounded-lg p-6 h-full flex flex-col">  
-                    <div class="flex justify-between items-start mb-4">  
-                        <h3 class="text-lg font-bold text-zinc-900 group-hover:underline decoration-zinc-400 underline-offset-4">ShotCraft</h3>  
-                        <svg class="text-zinc-300 group-hover:text-zinc-900 transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>  
-                    </div>  
-                    <p class="text-sm text-zinc-600 mb-6 leading-relaxed">截图美化工具。在浏览器中直接为截图添加精美的设备外壳和背景。</p>  
-                    <!-- mt-auto 确保标签始终沉底对齐 -->  
-                    <div class="mt-auto flex gap-2">  
-                        <span class="text-[10px] font-mono uppercase tracking-wide text-zinc-500 bg-zinc-100 px-2 py-1 rounded">Design</span>  
-                    </div>  
-                </a>  
-  
-                <!-- Paperize -->  
-                <a href="https://ffkit.ffutop.com/en/paperize/starter" target="_blank" rel="noopener noreferrer" class="project-card group rounded-lg p-6 h-full flex flex-col">  
-                    <div class="flex justify-between items-start mb-4">  
-                        <h3 class="text-lg font-bold text-zinc-900 group-hover:underline decoration-zinc-400 underline-offset-4">Paperize</h3>  
-                        <svg class="text-zinc-300 group-hover:text-zinc-900 transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>  
-                    </div>  
-                    <p class="text-sm text-zinc-600 mb-6 leading-relaxed">为纯净的数字 PDF 添加逼真的扫描质感、噪点和纸张纹理。</p>  
-                    <div class="mt-auto flex gap-2">  
-                        <span class="text-[10px] font-mono uppercase tracking-wide text-zinc-500 bg-zinc-100 px-2 py-1 rounded">PDF</span>  
-                    </div>  
-                </a>  
-  
-                <!-- SVGMoji -->  
-                <a href="https://svgmoji.ffutop.com/en/svgmoji" target="_blank" rel="noopener noreferrer" class="project-card group rounded-lg p-6 h-full flex flex-col">  
-                    <div class="flex justify-between items-start mb-4">  
-                        <h3 class="text-lg font-bold text-zinc-900 group-hover:underline decoration-zinc-400 underline-offset-4">SVGMoji</h3>  
-                        <svg class="text-zinc-300 group-hover:text-zinc-900 transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>  
-                    </div>  
-                    <p class="text-sm text-zinc-600 mb-6 leading-relaxed">SVG Emoji 集合与字体提取工具。从系统字体中提取矢量 Emoji。</p>  
-                    <div class="mt-auto flex gap-2">  
-                        <span class="text-[10px] font-mono uppercase tracking-wide text-zinc-500 bg-zinc-100 px-2 py-1 rounded">Assets</span>  
-                    </div>  
-                </a>  
-  
-                <!-- Font Splitter -->  
-                <a href="https://font.ffutop.com/" target="_blank" rel="noopener noreferrer" class="project-card group rounded-lg p-6 h-full flex flex-col">  
-                    <div class="flex justify-between items-start mb-4">  
-                        <h3 class="text-lg font-bold text-zinc-900 group-hover:underline decoration-zinc-400 underline-offset-4">Font Splitter</h3>  
-                        <svg class="text-zinc-300 group-hover:text-zinc-900 transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>  
-                    </div>  
-                    <p class="text-sm text-zinc-600 mb-6 leading-relaxed">中文网络字体在线分片工具，基于 WASM，用于优化字体加载性能。</p>  
-                    <div class="mt-auto flex gap-2">  
-                        <span class="text-[10px] font-mono uppercase tracking-wide text-zinc-500 bg-zinc-100 px-2 py-1 rounded">Performance</span>  
-                    </div>  
-                </a>  
-  
-                <!-- Page Screenshot -->  
-                <a href="https://chromewebstore.google.com/detail/page-screenshot/ipkjoefdghciejihoidiombcapicnmlc" target="_blank" rel="noopener noreferrer" class="project-card group rounded-lg p-6 h-full flex flex-col">  
-                    <div class="flex justify-between items-start mb-4">  
-                        <h3 class="text-lg font-bold text-zinc-900 group-hover:underline decoration-zinc-400 underline-offset-4">Page Screenshot</h3>  
-                        <svg class="text-zinc-300 group-hover:text-zinc-900 transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>  
-                    </div>  
-                    <p class="text-sm text-zinc-600 mb-6 leading-relaxed">轻量级 Chrome 扩展，一键截取完整网页长图。</p>  
-                    <div class="mt-auto flex gap-2">  
-                        <span class="text-[10px] font-mono uppercase tracking-wide text-zinc-500 bg-zinc-100 px-2 py-1 rounded">Extension</span>  
-                    </div>  
-                </a>  
-  
-            </div>  
-        </section>  
-  
-        <!-- Research & Experiments -->  
-        <section class="mb-24">  
-            <div class="flex items-center gap-3 mb-8">  
-                <span class="text-xs font-mono uppercase tracking-widest text-zinc-500 font-bold">研究与实验</span>  
-                <div class="h-px bg-zinc-200 flex-1"></div>  
-            </div>  
-            <p class="text-sm text-zinc-500 mb-8">源自技术博文的概念验证和研究。</p>  
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN">
 
-            <div class="space-y-5">  
-                <!-- Item -->
-                <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 group">  
-                    <span class="font-mono text-sm text-zinc-400 w-12 shrink-0 group-hover:text-zinc-600 transition-colors">2023</span>  
-                    <a href="/posts/2025-08-22-intranet-https-practice/" class="text-zinc-900 hover:text-black font-medium underline underline-offset-4 decoration-zinc-300 hover:decoration-black transition-all">  
-                        UTCP.tech
-                    </a>  
-                    <span class="text-zinc-500 text-sm">- 内网环境 HTTPS 实施方案。</span>  
-                </div>  
-                <!-- Item -->  
-                <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 group">  
-                    <span class="font-mono text-sm text-zinc-400 w-12 shrink-0 group-hover:text-zinc-600 transition-colors">2020</span>  
-                    <a href="/posts/2020-08-06-tun/" class="text-zinc-900 hover:text-black font-medium underline underline-offset-4 decoration-zinc-300 hover:decoration-black transition-all">  
-                        TCP Tunnel  
-                    </a>  
-                    <span class="text-zinc-500 text-sm">- 一个简单的网络隧道实现。</span>  
-                </div>  
-  
-                <!-- Item -->  
-                <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 group">  
-                    <span class="font-mono text-sm text-zinc-400 w-12 shrink-0 group-hover:text-zinc-600 transition-colors">2018</span>  
-                    <a href="/posts/2018-06-11-asm-classreader/" class="text-zinc-900 hover:text-black font-medium underline underline-offset-4 decoration-zinc-300 hover:decoration-black transition-all">  
-                        Java Bytecode Engineering  
-                    </a>  
-                    <span class="text-zinc-500 text-sm">- 关于 ASM、CGlib 和 JVM 指令的实验。</span>  
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - ffutop</title>
+    <meta name="description" content="Projects, tools, and experiments by ffutop.">
+    <meta name="author" content="ffutop">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Noto+Sans+SC:wght@400;500;700&family=Source+Code+Pro:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: [
+                            'Noto Sans SC',
+                            '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Noto Sans"',
+                            '"Helvetica"', '"Arial"', 'sans-serif',
+                            '"Apple Color Emoji"', '"Segoe UI Emoji"'
+                        ],
+                        logo: ['"Bungee Shade"', 'sans-serif'],
+                        mono: ['"Source Code Pro"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+                    },
+                    colors: {
+                        zinc: {
+                            50: '#fafafa',
+                            100: '#f4f4f5',
+                            200: '#e4e4e7',
+                            300: '#d4d4d8',
+                            400: '#a1a1aa',
+                            500: '#71717a',
+                            600: '#52525b',
+                            700: '#3f3f46',
+                            800: '#27272a',
+                            900: '#18181b',
+                            950: '#09090b',
+                        }
+                    }
+                }
+            }
+        }  
+    </script>
+
+    <style>
+        body {
+            color: #1f2328;
+            -webkit-font-smoothing: antialiased;
+            font-family: theme('fontFamily.sans');
+        }
+
+        /* 导航链接效果优化：去除字重变化导致的抖动 */
+        .nav-link {
+            color: #52525b;
+            /* zinc-600 */
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #09090b;
+            /* zinc-950 */
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .nav-link.active {
+            color: #09090b;
+            /* zinc-950 */
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            /* 移除 font-weight: 600 以保持布局稳定 */
+        }
+
+        /* 卡片 Hover：纯粹的边框加深 */
+        .project-card {
+            border: 1px solid #e4e4e7;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .project-card:hover {
+            border-color: #27272a;
+            /* zinc-800 */
+            background-color: #fafafa;
+            /* zinc-50: 极淡的背景色变化增加层次 */
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen px-6 py-10 md:px-12 max-w-5xl mx-auto bg-white">
+
+    <!-- Header -->
+    <header class="mb-20">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-100 pb-6">
+            <div class="text-3xl md:text-4xl font-bold">
+                <a href="/"
+                    class="font-logo text-zinc-900 hover:text-zinc-700 no-underline transition-colors">FFUTOP</a>
+            </div>
+
+            <!-- 导航栏：修正间距和对齐 -->
+            <nav class="flex flex-wrap gap-6 text-[15px] font-medium">
+                <a href="/" class="nav-link">Blog</a>
+                <a href="/index.xml" target="_blank" class="nav-link">RSS</a>
+                <span class="nav-link active">Projects</span>
+                <a href="https://github.com/ffutop" target="_blank" rel="noopener noreferrer"
+                    class="nav-link">Github</a>
+                <a href="https://ffkit.ffutop.com/author" target="_blank" rel="noopener noreferrer"
+                    class="nav-link">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-1">
+        <!-- Intro: 优化排版，增强仪式感 -->
+        <section class="mb-24">
+            <div class="pl-6 border-l-4 border-zinc-900 space-y-3 py-1">
+                <p class="text-xl md:text-2xl font-medium text-zinc-800 tracking-tight leading-snug">
+                    源于工程痛点的开源方案
+                </p>
+                <p class="text-xl md:text-2xl font-medium text-zinc-800 tracking-tight leading-snug">
+                    始于个人兴趣的实用工具
+                </p>
+            </div>
+        </section>
+
+        <!-- Featured: Modbus Gateway -->
+        <section class="mb-24">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-xs font-mono uppercase tracking-widest text-zinc-500 font-bold">Connectivity</span>
+                <div class="h-px bg-zinc-200 flex-1"></div>
+            </div>
+
+            <div
+                class="group relative rounded-lg border border-zinc-200 p-6 md:p-8 hover:border-zinc-800 hover:bg-zinc-50 transition-colors duration-300">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-8">
+                    <div class="flex-1 space-y-5">
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-2xl font-bold tracking-tight text-zinc-900">Modbus Gateway</h2>
+                            <span
+                                class="font-mono text-xs font-medium text-zinc-500 border border-zinc-200 px-1.5 py-0.5 rounded bg-zinc-50">v1.0.0</span>
+                        </div>
+                        <p class="text-zinc-600 leading-relaxed max-w-2xl text-[16px]">
+                            高性能、可配置的 Modbus TCP 转 RTU (RS485) 网关。采用串行化请求队列设计，彻底解决了多主站环境下串口通信冲突的问题。
+                        </p>
+
+                        <!-- 关联博文 -->
+                        <div class="pt-2 flex items-center gap-2 text-sm text-zinc-500">
+                            <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
+                                </path>
+                            </svg>
+                            <span class="font-mono text-xs uppercase tracking-wide">Related:</span>
+                            <a href="/posts/2025-04-24-serialize-read-write/"
+                                class="text-zinc-600 hover:text-black underline underline-offset-4 decoration-zinc-300 hover:decoration-black transition-all">
+                                Modbus 多主站并发访问控制
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-row md:flex-col gap-3 shrink-0 mt-2 md:mt-0">
+                        <a href="/modbus-gateway/"
+                            class="inline-flex items-center justify-center gap-2 rounded bg-zinc-900 px-5 py-2.5 text-sm font-bold text-white hover:bg-black transition-colors active:scale-95">
+                            访问网站
+                        </a>
+                        <a href="https://github.com/ffutop/modbus-gateway" target="_blank" rel="noopener noreferrer"
+                            class="inline-flex items-center justify-center gap-2 rounded border border-zinc-300 bg-white px-5 py-2.5 text-sm font-bold text-zinc-900 hover:border-zinc-900 hover:bg-zinc-50 transition-colors">
+                            查看源码
+                        </a>
+                    </div>
                 </div>
-            </div>  
-        </section>  
-  
-    </main>  
-  
-    <!-- Footer -->  
-    <footer class="mt-32 py-8 border-t border-zinc-100 flex justify-between items-center text-sm text-zinc-500">  
-        <div>  
-            © <span id="currentYear">2025</span> ffutop  
-        </div>  
-        <div class="flex gap-6">  
-            <a href="https://github.com/ffutop" target="_blank" rel="noopener noreferrer" class="hover:text-black transition-colors">GitHub</a>  
-            <a href="/index.xml" target="_blank" class="hover:text-black transition-colors">RSS</a>  
-        </div>  
-    </footer>  
+            </div>
+
+            <div
+                class="group relative rounded-lg border border-zinc-200 p-6 md:p-8 hover:border-zinc-800 hover:bg-zinc-50 transition-colors duration-300 mt-6">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-8">
+                    <div class="flex-1 space-y-5">
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-2xl font-bold tracking-tight text-zinc-900">Data Diode Connector / 网闸连接器</h2>
+                            <span
+                                class="font-mono text-xs font-medium text-zinc-500 border border-zinc-200 px-1.5 py-0.5 rounded bg-zinc-50">v1.0.0</span>
+                        </div>
+                        <p class="text-zinc-600 leading-relaxed max-w-2xl text-[16px]">
+                            网闸连接器 (Data Diode Connector, DDC) 是一款基于 Rust 编写的、云原生架构的高性能数据单向传输套件。作为物理网闸的智能驱动，解决隔离环境下的 Kafka、UDP 等数据跨网难题。
+                        </p>
+                    </div>
+
+                    <div class="flex flex-row md:flex-col gap-3 shrink-0 mt-2 md:mt-0">
+                        <a href="https://data-diode-connector.ffutop.com/" target="_blank" rel="noopener noreferrer"
+                            class="inline-flex items-center justify-center gap-2 rounded bg-zinc-900 px-5 py-2.5 text-sm font-bold text-white hover:bg-black transition-colors active:scale-95">
+                            访问网站
+                        </a>
+                        <a href="https://github.com/ffutop/DataDiodeConnector" target="_blank" rel="noopener noreferrer"
+                            class="inline-flex items-center justify-center gap-2 rounded border border-zinc-300 bg-white px-5 py-2.5 text-sm font-bold text-zinc-900 hover:border-zinc-900 hover:bg-zinc-50 transition-colors">
+                            查看源码
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+
+        <!-- Web Tools -->
+        <section class="mb-24">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-xs font-mono uppercase tracking-widest text-zinc-500 font-bold">Web 工具</span>
+                <div class="h-px bg-zinc-200 flex-1"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- ShotCraft -->
+                <a href="https://shotcraft.ffutop.com/" target="_blank" rel="noopener noreferrer"
+                    class="project-card group rounded-lg p-6 h-full flex flex-col">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3
+                            class="text-lg font-bold text-zinc-900 group-hover:underline decoration-zinc-400 underline-offset-4">
+                            ShotCraft</h3>
+                        <svg class="text-zinc-300 group-hover:text-zinc-900 transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="7" y1="17" x2="17" y2="7" />
+                            <polyline points="7 7 17 7 17 17" />
+                        </svg>
+                    </div>
+                    <p class="text-sm text-zinc-600 mb-6 leading-relaxed">截图美化工具。在浏览器中直接为截图添加精美的设备外壳和背景。</p>
+                    <!-- mt-auto 确保标签始终沉底对齐 -->
+                    <div class="mt-auto flex gap-2">
+                        <span
+                            class="text-[10px] font-mono uppercase tracking-wide text-zinc-500 bg-zinc-100 px-2 py-1 rounded">Design</span>
+                    </div>
+                </a>
+
+                <!-- Paperize -->
+                <a href="https://ffkit.ffutop.com/en/paperize/starter" target="_blank" rel="noopener noreferrer"
+                    class="project-card group rounded-lg p-6 h-full flex flex-col">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3
+                            class="text-lg font-bold text-zinc-900 group-hover:underline decoration-zinc-400 underline-offset-4">
+                            Paperize</h3>
+                        <svg class="text-zinc-300 group-hover:text-zinc-900 transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="7" y1="17" x2="17" y2="7" />
+                            <polyline points="7 7 17 7 17 17" />
+                        </svg>
+                    </div>
+                    <p class="text-sm text-zinc-600 mb-6 leading-relaxed">为纯净的数字 PDF 添加逼真的扫描质感、噪点和纸张纹理。</p>
+                    <div class="mt-auto flex gap-2">
+                        <span
+                            class="text-[10px] font-mono uppercase tracking-wide text-zinc-500 bg-zinc-100 px-2 py-1 rounded">PDF</span>
+                    </div>
+                </a>
+
+                <!-- SVGMoji -->
+                <a href="https://svgmoji.ffutop.com/en/svgmoji" target="_blank" rel="noopener noreferrer"
+                    class="project-card group rounded-lg p-6 h-full flex flex-col">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3
+                            class="text-lg font-bold text-zinc-900 group-hover:underline decoration-zinc-400 underline-offset-4">
+                            SVGMoji</h3>
+                        <svg class="text-zinc-300 group-hover:text-zinc-900 transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="7" y1="17" x2="17" y2="7" />
+                            <polyline points="7 7 17 7 17 17" />
+                        </svg>
+                    </div>
+                    <p class="text-sm text-zinc-600 mb-6 leading-relaxed">SVG Emoji 集合与字体提取工具。从系统字体中提取矢量 Emoji。</p>
+                    <div class="mt-auto flex gap-2">
+                        <span
+                            class="text-[10px] font-mono uppercase tracking-wide text-zinc-500 bg-zinc-100 px-2 py-1 rounded">Assets</span>
+                    </div>
+                </a>
+
+                <!-- Font Splitter -->
+                <a href="https://font.ffutop.com/" target="_blank" rel="noopener noreferrer"
+                    class="project-card group rounded-lg p-6 h-full flex flex-col">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3
+                            class="text-lg font-bold text-zinc-900 group-hover:underline decoration-zinc-400 underline-offset-4">
+                            Font Splitter</h3>
+                        <svg class="text-zinc-300 group-hover:text-zinc-900 transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="7" y1="17" x2="17" y2="7" />
+                            <polyline points="7 7 17 7 17 17" />
+                        </svg>
+                    </div>
+                    <p class="text-sm text-zinc-600 mb-6 leading-relaxed">中文网络字体在线分片工具，基于 WASM，用于优化字体加载性能。</p>
+                    <div class="mt-auto flex gap-2">
+                        <span
+                            class="text-[10px] font-mono uppercase tracking-wide text-zinc-500 bg-zinc-100 px-2 py-1 rounded">Performance</span>
+                    </div>
+                </a>
+
+                <!-- Page Screenshot -->
+                <a href="https://chromewebstore.google.com/detail/page-screenshot/ipkjoefdghciejihoidiombcapicnmlc"
+                    target="_blank" rel="noopener noreferrer"
+                    class="project-card group rounded-lg p-6 h-full flex flex-col">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3
+                            class="text-lg font-bold text-zinc-900 group-hover:underline decoration-zinc-400 underline-offset-4">
+                            Page Screenshot</h3>
+                        <svg class="text-zinc-300 group-hover:text-zinc-900 transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="7" y1="17" x2="17" y2="7" />
+                            <polyline points="7 7 17 7 17 17" />
+                        </svg>
+                    </div>
+                    <p class="text-sm text-zinc-600 mb-6 leading-relaxed">轻量级 Chrome 扩展，一键截取完整网页长图。</p>
+                    <div class="mt-auto flex gap-2">
+                        <span
+                            class="text-[10px] font-mono uppercase tracking-wide text-zinc-500 bg-zinc-100 px-2 py-1 rounded">Extension</span>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- Research & Experiments -->
+        <section class="mb-24">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-xs font-mono uppercase tracking-widest text-zinc-500 font-bold">研究与实验</span>
+                <div class="h-px bg-zinc-200 flex-1"></div>
+            </div>
+            <p class="text-sm text-zinc-500 mb-8">源自技术博文的概念验证和研究。</p>
+
+            <div class="space-y-5">
+                <!-- Item -->
+                <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 group">
+                    <span
+                        class="font-mono text-sm text-zinc-400 w-12 shrink-0 group-hover:text-zinc-600 transition-colors">2023</span>
+                    <a href="/posts/2025-08-22-intranet-https-practice/"
+                        class="text-zinc-900 hover:text-black font-medium underline underline-offset-4 decoration-zinc-300 hover:decoration-black transition-all">
+                        UTCP.tech
+                    </a>
+                    <span class="text-zinc-500 text-sm">- 内网环境 HTTPS 实施方案。</span>
+                </div>
+                <!-- Item -->
+                <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 group">
+                    <span
+                        class="font-mono text-sm text-zinc-400 w-12 shrink-0 group-hover:text-zinc-600 transition-colors">2020</span>
+                    <a href="/posts/2020-08-06-tun/"
+                        class="text-zinc-900 hover:text-black font-medium underline underline-offset-4 decoration-zinc-300 hover:decoration-black transition-all">
+                        TCP Tunnel
+                    </a>
+                    <span class="text-zinc-500 text-sm">- 一个简单的网络隧道实现。</span>
+                </div>
+
+                <!-- Item -->
+                <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 group">
+                    <span
+                        class="font-mono text-sm text-zinc-400 w-12 shrink-0 group-hover:text-zinc-600 transition-colors">2018</span>
+                    <a href="/posts/2018-06-11-asm-classreader/"
+                        class="text-zinc-900 hover:text-black font-medium underline underline-offset-4 decoration-zinc-300 hover:decoration-black transition-all">
+                        Java Bytecode Engineering
+                    </a>
+                    <span class="text-zinc-500 text-sm">- 关于 ASM、CGlib 和 JVM 指令的实验。</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-32 py-8 border-t border-zinc-100 flex justify-between items-center text-sm text-zinc-500">
+        <div>
+            © <span id="currentYear">2025</span> ffutop
+        </div>
+        <div class="flex gap-6">
+            <a href="https://github.com/ffutop" target="_blank" rel="noopener noreferrer"
+                class="hover:text-black transition-colors">GitHub</a>
+            <a href="/index.xml" target="_blank" class="hover:text-black transition-colors">RSS</a>
+        </div>
+    </footer>
     <script>
         document.getElementById('currentYear').textContent = new Date().getFullYear();
     </script>
-</body>  
-</html>  
+</body>
+
+</html>
