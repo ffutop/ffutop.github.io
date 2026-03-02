@@ -1,0 +1,21 @@
+# Utop's Blog
+
+> A technical blog documenting explorations in algorithms, Java, Linux Kernel, and system engineering.
+
+This site is a Hugo-based personal blog maintained by ffutop, featuring deep dives into technical topics and research notes.
+
+## Core Content
+
+- [Posts](https://www.ffutop.com/posts/): Main technical articles and blog posts.
+- [About](https://www.ffutop.com/about/): Information about the author and their background.
+- [Project](https://www.ffutop.com/project/): Portfolio and project showcase.
+
+## Resources
+
+- [GitHub](https://github.com/ffutop): Author's GitHub profile and source code.
+- [RSS Feed](https://www.ffutop.com/index.xml): XML feed for site updates.
+
+## Optional
+
+- [Tags](https://www.ffutop.com/tags/): Content grouped by specific topics.
+- [Categories](https://www.ffutop.com/categories/): Higher-level categorization of articles.
