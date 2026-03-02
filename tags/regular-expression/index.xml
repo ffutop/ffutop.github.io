@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>regular expression on Utop's Blog</title><link>https://www.ffutop.com/tags/regular-expression/</link><description>Recent content in regular expression on Utop's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cmn-Hans-CN</language><lastBuildDate>Fri, 16 Nov 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://www.ffutop.com/tags/regular-expression/index.xml" rel="self" type="application/rss+xml"/><item><title>正则表达式指数爆炸</title><link>https://www.ffutop.com/posts/2018-11-16-regex-exponential-explosion/</link><pubDate>Fri, 16 Nov 2018 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2018-11-16-regex-exponential-explosion/</guid><description>&lt;h2 id="背景">背景&lt;/h2>
+&lt;p>昨天接触到一个很有意思的问题, 公司测试环境一台机器 CPU 跑到了 400%，导致该机器上的所有服务都挂掉了。&lt;/p>
+&lt;p>最后查到的原因竟然是正则表达式所引起的，大大出乎意料啊。虽然早就知道正则效率很差，但绝对没有想到会导致整个机器上服务崩溃的情况。&lt;/p>
+&lt;p>先简单展示下问题正则:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>String regex &lt;span style="color:#666">=&lt;/span> &lt;span style="color:#4070a0">&amp;#34;(\\w+,?)+&amp;#34;&lt;/span>&lt;span style="color:#666">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>String val &lt;span style="color:#666">=&lt;/span> &lt;span style="color:#4070a0">&amp;#34;abcdefghijklmno,abcdefghijklmno+&amp;#34;&lt;/span>&lt;span style="color:#666">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>System&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">out&lt;/span>&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">println&lt;/span>&lt;span style="color:#666">(&lt;/span>val&lt;span style="color:#666">.&lt;/span>&lt;span style="color:#4070a0">matches&lt;/span>&lt;span style="color:#666">(&lt;/span>regex&lt;span style="color:#666">));&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>最终的执行时间是 17s 左右。&lt;/p>
+&lt;p>相反，如果改成 &lt;code>String val = &amp;quot;abcdefghijklmno,abcdefghijklmno&amp;quot;&lt;/code> ，实际执行时间 1ms 左右。&lt;/p>
+&lt;p>哈哈，完全不是一个量级的结果。&lt;/p>
+&lt;p>最后，当然是要找原因了:&amp;lt; 当然，有其它重要的事在耽搁，没时间去看 Java Regex 源码。不过，从正则本身下手反而是个好事情。毕竟几乎所有的编程语言都有对正则的支持。而同样的，都存在着这样的问题。那就可以大胆猜想其实是和语言本身无关，而在于正则规范本身了。&lt;/p>
+&lt;p>先给个结果，罪魁祸首就是&lt;code>指数爆炸&lt;/code>&lt;/p></description></item></channel></rss>

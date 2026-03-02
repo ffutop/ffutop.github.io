@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Trie on Utop's Blog</title><link>https://www.ffutop.com/tags/trie/</link><description>Recent content in Trie on Utop's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cmn-Hans-CN</language><lastBuildDate>Sun, 24 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://www.ffutop.com/tags/trie/index.xml" rel="self" type="application/rss+xml"/><item><title>双数组前缀树</title><link>https://www.ffutop.com/posts/2021-01-24-darts/</link><pubDate>Sun, 24 Jan 2021 00:00:00 +0000</pubDate><guid>https://www.ffutop.com/posts/2021-01-24-darts/</guid><description>&lt;h2 id="一前缀树">一、前缀树&lt;/h2>
+&lt;p>前缀树，又称字典树。常见的场景为大规模词库下做词匹配、词前缀匹配、词频统计等。目前唯一碰到的业务场景只有自建 UGC 风控的违禁词检测。&lt;/p>
+&lt;p>经典前缀树基于多叉树结构实现，组成字符串的字符全集数量决定了多叉树的阶。如下图为字符串集合 ab, abc, bc, d, da, dda 形成的前缀树。&lt;/p>
+&lt;p>&lt;img src="https://img.ffutop.com/5C605336-E961-463E-9919-9360FC8AFA27.png" alt="Trie Tree">
+&lt;small>&lt;center>图 1. Trie Tree&lt;/center>&lt;/small>&lt;/p>
+&lt;p>前缀树的核心思想是空间换时间，利用字符串的公共前缀来降低查询时间的开销，相较于哈希等能够显著降低失配字符串的匹配耗时。&lt;/p></description></item></channel></rss>

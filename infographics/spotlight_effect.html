@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>焦点效应 | @ffutop</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* Custom styles inspired by the Espresso infographic */
+        :root {
+            --bg-color: #FDFBF8;
+            --text-color: #6B5E59;
+            --heading-color: #4E423D;
+            --accent-color: #D17B4B;
+            --subtle-border-color: #EAE2DC;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--heading-color);
+        }
+        
+        .accent-color {
+            color: var(--accent-color);
+        }
+        
+        .accent-border-color {
+            border-color: var(--accent-color);
+        }
+
+        .subtle-border-color {
+            border-color: var(--subtle-border-color);
+        }
+
+    </style>
+</head>
+<body class="font-sans">
+
+    <div class="max-w-4xl mx-auto p-8 md:p-16">
+
+        <!-- I. 页头 (Header) -->
+        <header class="text-center mb-16 md:mb-24">
+            <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight">焦点效应</h1>
+            <p class="text-lg mt-4 tracking-wide">A VISUAL GUIDE TO THE SPOTLIGHT EFFECT</p>
+            <div class="font-english text-xs text-gray-500 mt-4 space-x-4">
+                <span>ISSUE: 08.2025</span>
+                <span>BY: FFUTOP</span>
+            </div>
+        </header>
+
+        <!-- II. 主内容区 (Main Body) -->
+        <main class="space-y-16">
+
+            <!-- Card 1: Definition -->
+            <section class="border-l-4 accent-border-color pl-8">
+                <h2 class="text-3xl md:text-4xl font-semibold">你并非舞台中央</h2>
+                <p class="text-lg leading-loose mt-4">
+                    焦点效应是一种认知偏见，使我们高估他人对自己外貌和行为的关注度。我们倾向于认为自己时刻处于聚光灯下，但实际上，观众远比我们想象的要少。
+                </p>
+            </section>
+
+            <!-- Card 2: The Two Perspectives -->
+            <section>
+                <h3 class="text-center text-2xl md:text-3xl font-semibold mb-12">两种截然不同的视角</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                    
+                    <div class="py-6 border-b subtle-border-color">
+                        <div class="flex items-start space-x-5">
+                            <i class="fa-solid fa-user-astronaut text-2xl accent-color mt-1"></i>
+                            <div>
+                                <h4 class="text-xl font-semibold">我们的视角</h4>
+                                <p class="text-sm mt-1 tracking-wider">Our Perspective</p>
+                                <p class="mt-3 text-base leading-relaxed">我们是自己世界的中心，所有经历都以自我为参照，因此很难跳出自己的视角。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="py-6 border-b subtle-border-color">
+                        <div class="flex items-start space-x-5">
+                            <i class="fa-solid fa-users-viewfinder text-2xl accent-color mt-1"></i>
+                            <div>
+                                <h4 class="text-xl font-semibold">他人的视角</h4>
+                                <p class="text-sm mt-1 tracking-wider">Others' Perspective</p>
+                                <p class="mt-3 text-base leading-relaxed">他人也同样是自己世界的中心，他们大部分注意力都在自己的生活上，而非我们身上。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- III. 中段分隔区 (Mid-Breaker) -->
+            <section class="w-full text-center py-16">
+                <div class="max-w-3xl mx-auto">
+                    <i class="fa-solid fa-quote-left text-4xl" style="color: var(--subtle-border-color);"></i>
+                    <blockquote class="text-2xl md:text-3xl font-semibold leading-relaxed mt-6">
+                        <p>"当你意识到别人很少关注你时，你对他们的看法就会少很多担忧。"</p>
+                        <p class="mt-6 text-xl font-normal tracking-wide opacity-75">"You will become way less concerned with what other people think of you when you realize how seldom they do."</p>
+                    </blockquote>
+                    <cite class="block text-base mt-8 tracking-wider">—— 大卫·福斯特·华莱士</cite>
+                </div>
+            </section>
+
+            <!-- Card 3: How to Cope -->
+            <section>
+                <h3 class="text-center text-2xl md:text-3xl font-semibold mb-12">如何摆脱聚光灯？</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                    
+                    <div class="py-6 border-b subtle-border-color">
+                        <div class="flex items-start space-x-5">
+                            <i class="fa-solid fa-brain text-2xl accent-color mt-1"></i>
+                            <div>
+                                <h4 class="text-xl font-semibold">提高自我意识</h4>
+                                <p class="text-sm mt-1 tracking-wider">Increase Self-Awareness</p>
+                                <p class="mt-3 text-base leading-relaxed">认识到这种偏见的存在是克服它的第一步。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="py-6 border-b subtle-border-color">
+                        <div class="flex items-start space-x-5">
+                            <i class="fa-solid fa-people-arrows text-2xl accent-color mt-1"></i>
+                            <div>
+                                <h4 class="text-xl font-semibold">换位思考</h4>
+                                <p class="text-sm mt-1 tracking-wider">Shift Perspective</p>
+                                <p class="mt-3 text-base leading-relaxed">主动将注意力从自己身上移开，多关注周围的人和事。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="py-6 border-b subtle-border-color">
+                        <div class="flex items-start space-x-5">
+                            <i class="fa-solid fa-person-circle-check text-2xl accent-color mt-1"></i>
+                            <div>
+                                <h4 class="text-xl font-semibold">降低完美主义</h4>
+                                <p class="text-sm mt-1 tracking-wider">Reduce Perfectionism</p>
+                                <p class="mt-3 text-base leading-relaxed">允许自己犯错，并接受生活中的不完美。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="py-6 border-b subtle-border-color">
+                        <div class="flex items-start space-x-5">
+                            <i class="fa-solid fa-bolt text-2xl accent-color mt-1"></i>
+                            <div>
+                                <h4 class="text-xl font-semibold">立即行动</h4>
+                                <p class="text-sm mt-1 tracking-wider">Take Action</p>
+                                <p class="mt-3 text-base leading-relaxed">与其担心被评判，不如专注于完成任务本身。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- IV. 页脚 (Footer) -->
+    <footer class="w-full py-12 px-8 mt-16 border-t subtle-border-color">
+        <div class="max-w-4xl mx-auto text-center">
+            <h3 class="text-2xl font-semibold">走出聚光灯</h3>
+            <p class="text-base mt-4 leading-relaxed max-w-2xl mx-auto">
+                记住，大多数人都在忙于自己的生活，并没有像你想象中那样关注你。卸下心理负担，你会发现一个更轻松、更自由的世界。
+            </p>
+            <div class="mt-8 text-sm" style="color: var(--text-color); opacity: 0.6;">
+                <p>版权所有 &copy; 2025 FFUTOP</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
